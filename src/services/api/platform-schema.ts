@@ -3,6116 +3,6076 @@
  * Do not make direct changes to the file.
  */
 
+export type $Read<T> = {
+    readonly $read: T;
+};
+export type $Write<T> = {
+    readonly $write: T;
+};
+export type Readable<T> = T extends $Write<any> ? never : T extends $Read<infer U> ? Readable<U> : T extends (infer E)[] ? Readable<E>[] : T extends object ? {
+    [K in keyof T as NonNullable<T[K]> extends $Write<any> ? never : K]: Readable<T[K]>;
+} : T;
+export type Writable<T> = T extends $Read<any> ? never : T extends $Write<infer U> ? Writable<U> : T extends (infer E)[] ? Writable<E>[] : T extends object ? {
+    [K in keyof T as NonNullable<T[K]> extends $Read<any> ? never : K]: Writable<T[K]>;
+} & {
+    [K in keyof T as NonNullable<T[K]> extends $Read<any> ? K : never]?: never;
+} : T;
 export interface paths {
-  "/api/v1/address": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/address": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve supported countries. */
+        get: {
+            parameters: {
+                query: {
+                    /** @description A zip code to map the city */
+                    zip: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of suggested cities */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AddressJson"][];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/address/countries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve supported countries. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of supported countries */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CountryListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/authentication/jwks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Expose the JSON Web Key Set used to sign tokens. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description JWKS containing the public keys */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/authentication/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Login user via oauth flow. */
+        get: {
+            parameters: {
+                query?: {
+                    route?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Redirect user to the identity provider */
+                302: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/authentication/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Logout user identified by the session cookie. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Redirect user to the logout page */
+                302: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/authentication/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh the access and refresh tokens using the refresh token cookie. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: {
+                    remsfal_refresh_token?: components["schemas"]["Cookie"];
+                };
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tokens refreshed successfully, new tokens set as cookies */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized - Invalid or missing refresh token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/authentication/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Start user session via oauth flow. */
+        get: {
+            parameters: {
+                query?: {
+                    code?: string;
+                    error?: string;
+                    state?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Redirect user to the frontend spa */
+                302: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/authentication/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login user via app token directly. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        app_id: string;
+                        app_token?: string;
+                        /** @default false */
+                        dev_services?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Tokens are set as cookies */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized - Invalid token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/authentication/verify-additional-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Verify an additional user email address using a verification token. */
+        get: {
+            parameters: {
+                query?: {
+                    token?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Additional email verified successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Verification token is missing or expired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Verification token is invalid */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Retrieve all organizations the authenticated user owns */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of owned organizations was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** @description Creates a new organization */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OrganizationJson"];
+                };
+            };
+            responses: {
+                /** @description Organization was created successfully */
+                201: {
+                    headers: {
+                        /** @description URL of the new organization */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/contractors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Retrieve all organizations acting as contractors in projects accessible to the user */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Maximum number of organizations to return */
+                    limit: number;
+                    /** @description Offset of the first organization to return */
+                    offset: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of contractor organizations was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/employments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Retrieve all organizations the user is employed in, including the user's role */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of organization employments was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationEmployeeListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Search organizations by name (min. 3 characters) */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Maximum number of organizations to return */
+                    limit: number;
+                    /** @description Name search query (min. 3 characters) */
+                    name: string;
+                    /** @description Offset of the first organization to return */
+                    offset: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Matching organizations were successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationListJson"];
+                    };
+                };
+                /** @description Name parameter too short (min. 3 characters) */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organizationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Retrieve information of an organization by id */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Id of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An organization was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The organization with the requested id doesn't exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing organization. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The organization was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The organization does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a specific organization. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Id of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OrganizationJson"];
+                };
+            };
+            responses: {
+                /** @description An existing organization was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The organization does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/organizations/{organizationId}/employees": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Id of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of all existing employees was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationEmployeeListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The organization does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Add an employee to an organization */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Id of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OrganizationEmployeeJson"];
+                };
+            };
+            responses: {
+                /** @description A new employee was successfully added */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationEmployeeJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organizationId}/employees/{employeeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Id of the employee */
+                    employeeId: components["schemas"]["UUID"];
+                    /** @description Id of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The employee was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationEmployeeJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The user is not an employee of this organization */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing employee. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Id of the employee */
+                    employeeId: components["schemas"]["UUID"];
+                    /** @description Id of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The employee was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The organization or the employee does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update role of an employee. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Id of the employee */
+                    employeeId: components["schemas"]["UUID"];
+                    /** @description Id of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OrganizationEmployeeJson"];
+                };
+            };
+            responses: {
+                /** @description An existing employee was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationEmployeeJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The organization or the employee does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all projects */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Maximum number of projects to return */
+                    limit: number;
+                    /** @description Offset of the first project to return */
+                    offset: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of projects was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new project */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectJson"];
+                };
+            };
+            responses: {
+                /** @description Project created successfully */
+                201: {
+                    headers: {
+                        /** @description URL of the new project */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a project */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The requested project was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing project */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The project was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a project */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectJson"];
+                };
+            };
+            responses: {
+                /** @description The project was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/apartments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new apartment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApartmentJson"];
+                };
+            };
+            responses: {
+                /** @description A new apartment was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new apartment */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/apartments/{apartmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of an apartment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the apartment */
+                    apartmentId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing apartment was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The apartment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing apartment */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the apartment */
+                    apartmentId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The building was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information on an apartment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the apartment */
+                    apartmentId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApartmentJson"];
+                };
+            };
+            responses: {
+                /** @description An existing apartment was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The apartment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/buildings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new building */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["BuildingJson"];
+                };
+            };
+            responses: {
+                /** @description A new building was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new building */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/buildings/{buildingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a building. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing building was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The building does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing building. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The building was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The building does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a building. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["BuildingJson"];
+                };
+            };
+            responses: {
+                /** @description An existing building was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The building does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/apartments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new apartment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApartmentJson"];
+                };
+            };
+            responses: {
+                /** @description A new apartment was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new apartment */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/apartments/{apartmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of an apartment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the apartment */
+                    apartmentId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing apartment was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The apartment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing apartment */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the apartment */
+                    apartmentId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The building was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information on an apartment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the apartment */
+                    apartmentId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApartmentJson"];
+                };
+            };
+            responses: {
+                /** @description An existing apartment was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The apartment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/commercials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new commercial */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CommercialJson"];
+                };
+            };
+            responses: {
+                /** @description A new commercial was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new commercial */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/commercials/{commercialId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information about a commercial */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the commercial unit */
+                    commercialId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing commercial was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The commercial does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing commercial unit */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the commercial unit */
+                    commercialId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The commercial was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a commercial unit */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the commercial unit */
+                    commercialId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CommercialJson"];
+                };
+            };
+            responses: {
+                /** @description An existing commercial was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The commercial does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/storages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new storage */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StorageJson"];
+                };
+            };
+            responses: {
+                /** @description A new storage was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new storage */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/storages/{storageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a storage. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the storage */
+                    storageId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing storage was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The storage does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing storage. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the storage */
+                    storageId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The storage was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a storage. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the storage */
+                    storageId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StorageJson"];
+                };
+            };
+            responses: {
+                /** @description An existing storage was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The storage does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/commercials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new commercial */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CommercialJson"];
+                };
+            };
+            responses: {
+                /** @description A new commercial was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new commercial */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/commercials/{commercialId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information about a commercial */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the commercial unit */
+                    commercialId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing commercial was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The commercial does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing commercial unit */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the commercial unit */
+                    commercialId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The commercial was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a commercial unit */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the commercial unit */
+                    commercialId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CommercialJson"];
+                };
+            };
+            responses: {
+                /** @description An existing commercial was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The commercial does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/contractors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all contractors of a project. */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Maximum number of contractors to return */
+                    limit: number;
+                    /** @description Offset of the first contractor to return */
+                    offset: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of contractors was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new contractor for a project. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ContractorJson"];
+                };
+            };
+            responses: {
+                /** @description Contractor created successfully */
+                201: {
+                    headers: {
+                        /** @description URL of the new contractor */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/contractors/{contractorId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a specific contractor. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the contractor */
+                    contractorId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing contractor was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or contractor does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing contractor. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the contractor */
+                    contractorId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The contractor was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or contractor does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a specific contractor. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the contractor */
+                    contractorId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ContractorJson"];
+                };
+            };
+            responses: {
+                /** @description An existing contractor was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or contractor does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of all project members. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of all existing members was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectMemberListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Add a member to project. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectMemberJson"];
+                };
+            };
+            responses: {
+                /** @description A new member was successfully added */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectMemberJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/members/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an existing project member. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the member */
+                    memberId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The project member was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or the member does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update role of a project member. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the member */
+                    memberId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectMemberJson"];
+                };
+            };
+            responses: {
+                /** @description An existing member was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectMemberJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or the member does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of all organizations assigned to the project */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of all assigned organizations was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationMemberListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Assign an organization to the project */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OrganizationMemberJson"];
+                };
+            };
+            responses: {
+                /** @description The organization was successfully assigned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationMemberJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Insufficient permissions */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/organizations/{organizationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove an organization from the project */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The organization was removed successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Insufficient permissions */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or organization assignment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update role of an organization in the project */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["OrganizationMemberJson"];
+                };
+            };
+            responses: {
+                /** @description The organization role was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OrganizationMemberJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Insufficient permissions */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or organization assignment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all properties */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of all existing properties with itsrentable units as tree was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PropertyListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new property */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PropertyJson"];
+                };
+            };
+            responses: {
+                /** @description A new property was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new property */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PropertyJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a property */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the property */
+                    propertyId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing property was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PropertyJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The property does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing property */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the property */
+                    propertyId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing property was successfully deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The property does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a property */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the property */
+                    propertyId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PropertyJson"];
+                };
+            };
+            responses: {
+                /** @description An existing property was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PropertyJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The property does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new building */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the property */
+                    propertyId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["BuildingJson"];
+                };
+            };
+            responses: {
+                /** @description A new building was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new building */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a building. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing building was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The building does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing building. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The building was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The building does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a building. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["BuildingJson"];
+                };
+            };
+            responses: {
+                /** @description An existing building was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The building does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/apartments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new apartment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApartmentJson"];
+                };
+            };
+            responses: {
+                /** @description A new apartment was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new apartment */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/apartments/{apartmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of an apartment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the apartment */
+                    apartmentId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing apartment was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The apartment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing apartment */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the apartment */
+                    apartmentId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The building was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information on an apartment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the apartment */
+                    apartmentId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApartmentJson"];
+                };
+            };
+            responses: {
+                /** @description An existing apartment was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The apartment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/commercials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new commercial */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CommercialJson"];
+                };
+            };
+            responses: {
+                /** @description A new commercial was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new commercial */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/commercials/{commercialId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information about a commercial */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the commercial unit */
+                    commercialId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing commercial was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The commercial does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing commercial unit */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the commercial unit */
+                    commercialId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The commercial was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a commercial unit */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the commercial unit */
+                    commercialId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CommercialJson"];
+                };
+            };
+            responses: {
+                /** @description An existing commercial was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The commercial does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/storages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new storage */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the building */
+                    buildingId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StorageJson"];
+                };
+            };
+            responses: {
+                /** @description A new storage was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new storage */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/storages/{storageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a storage. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the storage */
+                    storageId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing storage was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The storage does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing storage. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the storage */
+                    storageId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The storage was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a storage. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the storage */
+                    storageId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StorageJson"];
+                };
+            };
+            responses: {
+                /** @description An existing storage was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The storage does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/sites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new site */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the property */
+                    propertyId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SiteJson"];
+                };
+            };
+            responses: {
+                /** @description A new site was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new site */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/properties/{propertyId}/sites/{siteId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a site */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the site */
+                    siteId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing site was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The site does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing site. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the site */
+                    siteId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The site was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a site. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the site */
+                    siteId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SiteJson"];
+                };
+            };
+            responses: {
+                /** @description An existing site was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The site does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/rental-agreements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of all rental agreements */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description ID of the rental unit to filter by; only evaluated when rentalUnitType is set */
+                    rentalUnitId?: components["schemas"]["UUID"];
+                    /** @description Type of the rental unit to filter by */
+                    rentalUnitType?: components["schemas"]["UnitType"];
+                };
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The requested tenancies were successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RentalAgreementListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new tenancy */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RentalAgreementJson"];
+                };
+            };
+            responses: {
+                /** @description Rental agreement created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RentalAgreementJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/rental-agreements/{agreementId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve Information of a rental agreement. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the tenancy */
+                    agreementId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The requested rental agreement was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RentalAgreementJson"];
+                    };
+                };
+                /** @description No user authentication provided session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The rental agreement does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing rental agreement */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the tenancy */
+                    agreementId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Rental agreement was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a rental agreement */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the tenancy */
+                    agreementId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RentalAgreementJson"];
+                };
+            };
+            responses: {
+                /** @description The rental agreement was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RentalAgreementJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The rental agreement does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a tenant to a rental agreement */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the tenancy */
+                    agreementId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TenantJson"];
+                };
+            };
+            responses: {
+                /** @description Tenant was added to the rental agreement successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenantJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The rental agreement does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants/{tenantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a tenant from a rental agreement */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the tenancy */
+                    agreementId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the tenant */
+                    tenantId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tenant was removed from the rental agreement successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The rental agreement does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/{rentalUnitType}/{rentalUnitId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a new rent for a rental unit of a rental agreement */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the tenancy */
+                    agreementId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the rental unit */
+                    rentalUnitId: components["schemas"]["UUID"];
+                    /** @description Type of the rental unit */
+                    rentalUnitType: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RentJson"];
+                };
+            };
+            responses: {
+                /** @description Rent created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RentalAgreementJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The rental agreement does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        /** Delete all rents of a rental unit from a rental agreement */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the tenancy */
+                    agreementId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the rental unit */
+                    rentalUnitId: components["schemas"]["UUID"];
+                    /** @description Type of the rental unit */
+                    rentalUnitType: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Rents were deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The rental agreement does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/sites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new site */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SiteJson"];
+                };
+            };
+            responses: {
+                /** @description A new site was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new site */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/sites/{siteId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a site */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the site */
+                    siteId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing site was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The site does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing site. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the site */
+                    siteId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The site was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a site. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the site */
+                    siteId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SiteJson"];
+                };
+            };
+            responses: {
+                /** @description An existing site was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The site does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/storages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new storage */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StorageJson"];
+                };
+            };
+            responses: {
+                /** @description A new storage was successfully createded */
+                201: {
+                    headers: {
+                        /** @description URL of the new storage */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/storages/{storageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a storage. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the storage */
+                    storageId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description An existing storage was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The storage does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing storage. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the storage */
+                    storageId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The storage was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a storage. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the storage */
+                    storageId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StorageJson"];
+                };
+            };
+            responses: {
+                /** @description An existing storage was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The storage does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/tenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all tenants */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of tenants was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenantListJson"];
+                    };
+                };
+                /** @description The tenant does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/tenants/{tenantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a specific tenant */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the tenant */
+                    tenantId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The specific tenant was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenantJson"];
+                    };
+                };
+                /** @description The tenant you are looking for does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update information on an tenant */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the tenant */
+                    tenantId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TenantJson"];
+                };
+            };
+            responses: {
+                /** @description An existing tenant was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenantJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The tenant does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/tenancies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all tenancies of a lessee. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of tenancies successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyListJson"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of this user identified by the cookie. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Information about the logged in user was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete this user identified by the cookie. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The former logged in user was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of this user identified by the cookie. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserJson"];
+                };
+            };
+            responses: {
+                /** @description Information about the logged in user was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
     };
-    /** Retrieve supported countries. */
-    get: {
-      parameters: {
-        query: {
-          /** @description A zip code to map the city */
-          zip: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of suggested cities */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["AddressJson"][];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/address/countries": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve supported countries. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of supported countries */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CountryListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/authentication/jwks": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Expose the JSON Web Key Set used to sign tokens. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description JWKS containing the public keys */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/authentication/login": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Login user via oauth flow. */
-    get: {
-      parameters: {
-        query?: {
-          route?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Redirect user to the identity provider */
-        302: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/authentication/logout": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Logout user identified by the session cookie. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Redirect user to the logout page */
-        302: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/authentication/refresh": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Refresh the access and refresh tokens using the refresh token cookie. */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: {
-          remsfal_refresh_token?: components["schemas"]["Cookie"];
-        };
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Tokens refreshed successfully, new tokens set as cookies */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Unauthorized - Invalid or missing refresh token */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/authentication/session": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Start user session via oauth flow. */
-    get: {
-      parameters: {
-        query?: {
-          code?: string;
-          error?: string;
-          state?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Redirect user to the frontend spa */
-        302: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/authentication/token": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Login user via app token directly. */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/x-www-form-urlencoded": {
-            app_id: string;
-            app_token?: string;
-            /** @default false */
-            dev_services?: boolean;
-          };
-        };
-      };
-      responses: {
-        /** @description Tokens are set as cookies */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Unauthorized - Invalid token */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/authentication/verify-additional-email": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Verify an additional user email address using a verification token. */
-    get: {
-      parameters: {
-        query?: {
-          token?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Additional email verified successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Verification token is missing or expired */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Verification token is invalid */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organizations": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Retrieve all organizations the authenticated user owns */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description List of owned organizations was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** @description Creates a new organization */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["OrganizationJson"];
-        };
-      };
-      responses: {
-        /** @description Organization was created successfully */
-        201: {
-          headers: {
-            /** @description URL of the new organization */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organizations/contractors": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Retrieve all organizations acting as contractors in projects accessible to the user */
-    get: {
-      parameters: {
-        query: {
-          /** @description Maximum number of organizations to return */
-          limit: number;
-          /** @description Offset of the first organization to return */
-          offset: number;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description List of contractor organizations was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organizations/employments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Retrieve all organizations the user is employed in, including the user's role */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of organization employments was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationEmployeeListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organizations/search": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Search organizations by name (min. 3 characters) */
-    get: {
-      parameters: {
-        query: {
-          /** @description Maximum number of organizations to return */
-          limit: number;
-          /** @description Name search query (min. 3 characters) */
-          name: string;
-          /** @description Offset of the first organization to return */
-          offset: number;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Matching organizations were successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationListJson"];
-          };
-        };
-        /** @description Name parameter too short (min. 3 characters) */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organizations/{organizationId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** @description Retrieve information of an organization by id */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description Id of the organization */
-          organizationId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An organization was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The organization with the requested id doesn't exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing organization. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the organization */
-          organizationId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The organization was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The organization does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a specific organization. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description Id of the organization */
-          organizationId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["OrganizationJson"];
-        };
-      };
-      responses: {
-        /** @description An existing organization was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The organization does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/organizations/{organizationId}/employees": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description Id of the organization */
-          organizationId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of all existing employees was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationEmployeeListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The organization does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Add an employee to an organization */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description Id of the organization */
-          organizationId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["OrganizationEmployeeJson"];
-        };
-      };
-      responses: {
-        /** @description A new employee was successfully added */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationEmployeeJson"];
-          };
-        };
-        /** @description Invalid request message */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organizations/{organizationId}/employees/{employeeId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description Id of the employee */
-          employeeId: components["schemas"]["UUID"];
-          /** @description Id of the organization */
-          organizationId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The employee was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationEmployeeJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The user is not an employee of this organization */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing employee. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description Id of the employee */
-          employeeId: components["schemas"]["UUID"];
-          /** @description Id of the organization */
-          organizationId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The employee was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The organization or the employee does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update role of an employee. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description Id of the employee */
-          employeeId: components["schemas"]["UUID"];
-          /** @description Id of the organization */
-          organizationId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["OrganizationEmployeeJson"];
-        };
-      };
-      responses: {
-        /** @description An existing employee was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationEmployeeJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The organization or the employee does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information for all projects */
-    get: {
-      parameters: {
-        query: {
-          /** @description Maximum number of projects to return */
-          limit: number;
-          /** @description Offset of the first project to return */
-          offset: number;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of projects was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ProjectListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Create a new project */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ProjectJson"];
-        };
-      };
-      responses: {
-        /** @description Project created successfully */
-        201: {
-          headers: {
-            /** @description URL of the new project */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ProjectJson"];
-          };
-        };
-        /** @description Invalid request message */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a project */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The requested project was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ProjectJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing project */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The project was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a project */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ProjectJson"];
-        };
-      };
-      responses: {
-        /** @description The project was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ProjectJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/apartments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new apartment */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ApartmentJson"];
-        };
-      };
-      responses: {
-        /** @description A new apartment was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new apartment */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ApartmentJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/apartments/{apartmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of an apartment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the apartment */
-          apartmentId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing apartment was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ApartmentJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The apartment does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing apartment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the apartment */
-          apartmentId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The building was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information on an apartment */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the apartment */
-          apartmentId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ApartmentJson"];
-        };
-      };
-      responses: {
-        /** @description An existing apartment was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ApartmentJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The apartment does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/buildings": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new building */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["BuildingJson"];
-        };
-      };
-      responses: {
-        /** @description A new building was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new building */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BuildingJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/buildings/{buildingId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a building. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing building was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BuildingJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The building does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing building. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The building was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The building does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a building. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["BuildingJson"];
-        };
-      };
-      responses: {
-        /** @description An existing building was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BuildingJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The building does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/buildings/{buildingId}/apartments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new apartment */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ApartmentJson"];
-        };
-      };
-      responses: {
-        /** @description A new apartment was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new apartment */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ApartmentJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/buildings/{buildingId}/apartments/{apartmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of an apartment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the apartment */
-          apartmentId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing apartment was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ApartmentJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The apartment does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing apartment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the apartment */
-          apartmentId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The building was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information on an apartment */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the apartment */
-          apartmentId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ApartmentJson"];
-        };
-      };
-      responses: {
-        /** @description An existing apartment was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ApartmentJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The apartment does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/buildings/{buildingId}/commercials": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new commercial */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["CommercialJson"];
-        };
-      };
-      responses: {
-        /** @description A new commercial was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new commercial */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CommercialJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/buildings/{buildingId}/commercials/{commercialId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information about a commercial */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the commercial unit */
-          commercialId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing commercial was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CommercialJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The commercial does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing commercial unit */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the commercial unit */
-          commercialId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The commercial was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a commercial unit */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the commercial unit */
-          commercialId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["CommercialJson"];
-        };
-      };
-      responses: {
-        /** @description An existing commercial was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CommercialJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The commercial does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/buildings/{buildingId}/storages": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new storage */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["StorageJson"];
-        };
-      };
-      responses: {
-        /** @description A new storage was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new storage */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StorageJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/buildings/{buildingId}/storages/{storageId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a storage. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the storage */
-          storageId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing storage was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StorageJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The storage does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing storage. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the storage */
-          storageId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The storage was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a storage. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the storage */
-          storageId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["StorageJson"];
-        };
-      };
-      responses: {
-        /** @description An existing storage was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StorageJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The storage does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/commercials": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new commercial */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["CommercialJson"];
-        };
-      };
-      responses: {
-        /** @description A new commercial was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new commercial */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CommercialJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/commercials/{commercialId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information about a commercial */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the commercial unit */
-          commercialId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing commercial was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CommercialJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The commercial does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing commercial unit */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the commercial unit */
-          commercialId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The commercial was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a commercial unit */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the commercial unit */
-          commercialId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["CommercialJson"];
-        };
-      };
-      responses: {
-        /** @description An existing commercial was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CommercialJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The commercial does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/contractors": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information for all contractors of a project. */
-    get: {
-      parameters: {
-        query: {
-          /** @description Maximum number of contractors to return */
-          limit: number;
-          /** @description Offset of the first contractor to return */
-          offset: number;
-        };
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of contractors was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContractorListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Create a new contractor for a project. */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ContractorJson"];
-        };
-      };
-      responses: {
-        /** @description Contractor created successfully */
-        201: {
-          headers: {
-            /** @description URL of the new contractor */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContractorJson"];
-          };
-        };
-        /** @description Invalid request message */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/contractors/{contractorId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a specific contractor. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the contractor */
-          contractorId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing contractor was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContractorJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project or contractor does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing contractor. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the contractor */
-          contractorId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The contractor was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project or contractor does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a specific contractor. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the contractor */
-          contractorId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ContractorJson"];
-        };
-      };
-      responses: {
-        /** @description An existing contractor was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ContractorJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project or contractor does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/members": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of all project members. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of all existing members was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ProjectMemberListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Add a member to project. */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ProjectMemberJson"];
-        };
-      };
-      responses: {
-        /** @description A new member was successfully added */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ProjectMemberJson"];
-          };
-        };
-        /** @description Invalid request message */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/members/{memberId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an existing project member. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the member */
-          memberId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The project member was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project or the member does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update role of a project member. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the member */
-          memberId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ProjectMemberJson"];
-        };
-      };
-      responses: {
-        /** @description An existing member was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ProjectMemberJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project or the member does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/organizations": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of all organizations assigned to the project */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of all assigned organizations was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationMemberListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Assign an organization to the project */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["OrganizationMemberJson"];
-        };
-      };
-      responses: {
-        /** @description The organization was successfully assigned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationMemberJson"];
-          };
-        };
-        /** @description Invalid request message */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Insufficient permissions */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/organizations/{organizationId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Remove an organization from the project */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the organization */
-          organizationId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The organization was removed successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Insufficient permissions */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project or organization assignment does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update role of an organization in the project */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the organization */
-          organizationId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["OrganizationMemberJson"];
-        };
-      };
-      responses: {
-        /** @description The organization role was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["OrganizationMemberJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Insufficient permissions */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The project or organization assignment does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information for all properties */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of all existing properties with itsrentable units as tree was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["PropertyListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Create a new property */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["PropertyJson"];
-        };
-      };
-      responses: {
-        /** @description A new property was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new property */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["PropertyJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a property */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the property */
-          propertyId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing property was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["PropertyJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The property does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing property */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the property */
-          propertyId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing property was successfully deleted */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The property does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a property */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the property */
-          propertyId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["PropertyJson"];
-        };
-      };
-      responses: {
-        /** @description An existing property was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["PropertyJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The property does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/buildings": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new building */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the property */
-          propertyId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["BuildingJson"];
-        };
-      };
-      responses: {
-        /** @description A new building was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new building */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BuildingJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a building. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing building was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BuildingJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The building does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing building. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The building was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The building does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a building. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["BuildingJson"];
-        };
-      };
-      responses: {
-        /** @description An existing building was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["BuildingJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The building does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/apartments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new apartment */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ApartmentJson"];
-        };
-      };
-      responses: {
-        /** @description A new apartment was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new apartment */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ApartmentJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/apartments/{apartmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of an apartment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the apartment */
-          apartmentId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing apartment was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ApartmentJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The apartment does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing apartment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the apartment */
-          apartmentId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The building was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information on an apartment */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the apartment */
-          apartmentId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ApartmentJson"];
-        };
-      };
-      responses: {
-        /** @description An existing apartment was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ApartmentJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The apartment does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/commercials": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new commercial */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["CommercialJson"];
-        };
-      };
-      responses: {
-        /** @description A new commercial was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new commercial */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CommercialJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/commercials/{commercialId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information about a commercial */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the commercial unit */
-          commercialId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing commercial was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CommercialJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The commercial does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing commercial unit */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the commercial unit */
-          commercialId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The commercial was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a commercial unit */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the commercial unit */
-          commercialId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["CommercialJson"];
-        };
-      };
-      responses: {
-        /** @description An existing commercial was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["CommercialJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The commercial does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/storages": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new storage */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the building */
-          buildingId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["StorageJson"];
-        };
-      };
-      responses: {
-        /** @description A new storage was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new storage */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StorageJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/storages/{storageId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a storage. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the storage */
-          storageId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing storage was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StorageJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The storage does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing storage. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the storage */
-          storageId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The storage was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a storage. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the storage */
-          storageId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["StorageJson"];
-        };
-      };
-      responses: {
-        /** @description An existing storage was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StorageJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The storage does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/sites": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new site */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the property */
-          propertyId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["SiteJson"];
-        };
-      };
-      responses: {
-        /** @description A new site was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new site */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SiteJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/properties/{propertyId}/sites/{siteId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a site */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the site */
-          siteId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing site was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SiteJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The site does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing site. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the site */
-          siteId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The site was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a site. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the site */
-          siteId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["SiteJson"];
-        };
-      };
-      responses: {
-        /** @description An existing site was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SiteJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The site does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/rental-agreements": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of all rental agreements */
-    get: {
-      parameters: {
-        query?: {
-          /** @description ID of the rental unit to filter by; only evaluated when rentalUnitType is set */
-          rentalUnitId?: components["schemas"]["UUID"];
-          /** @description Type of the rental unit to filter by */
-          rentalUnitType?: components["schemas"]["UnitType"];
-        };
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The requested tenancies were successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RentalAgreementListJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Create a new tenancy */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["RentalAgreementJson"];
-        };
-      };
-      responses: {
-        /** @description Rental agreement created successfully */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RentalAgreementJson"];
-          };
-        };
-        /** @description Invalid request message */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/rental-agreements/{agreementId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve Information of a rental agreement. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the tenancy */
-          agreementId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The requested rental agreement was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RentalAgreementJson"];
-          };
-        };
-        /** @description No user authentication provided session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The rental agreement does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing rental agreement */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the tenancy */
-          agreementId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Rental agreement was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a rental agreement */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the tenancy */
-          agreementId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["RentalAgreementJson"];
-        };
-      };
-      responses: {
-        /** @description The rental agreement was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RentalAgreementJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The rental agreement does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Add a tenant to a rental agreement */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the tenancy */
-          agreementId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["TenantJson"];
-        };
-      };
-      responses: {
-        /** @description Tenant was added to the rental agreement successfully */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TenantJson"];
-          };
-        };
-        /** @description Invalid request message */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The rental agreement does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants/{tenantId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Remove a tenant from a rental agreement */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the tenancy */
-          agreementId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the tenant */
-          tenantId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Tenant was removed from the rental agreement successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The rental agreement does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/{rentalUnitType}/{rentalUnitId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Add a new rent for a rental unit of a rental agreement */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the tenancy */
-          agreementId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the rental unit */
-          rentalUnitId: components["schemas"]["UUID"];
-          /** @description Type of the rental unit */
-          rentalUnitType: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["RentJson"];
-        };
-      };
-      responses: {
-        /** @description Rent created successfully */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RentalAgreementJson"];
-          };
-        };
-        /** @description Invalid request message */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The rental agreement does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    /** Delete all rents of a rental unit from a rental agreement */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the tenancy */
-          agreementId: components["schemas"]["UUID"];
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the rental unit */
-          rentalUnitId: components["schemas"]["UUID"];
-          /** @description Type of the rental unit */
-          rentalUnitType: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Rents were deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The rental agreement does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/sites": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new site */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["SiteJson"];
-        };
-      };
-      responses: {
-        /** @description A new site was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new site */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SiteJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/sites/{siteId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a site */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the site */
-          siteId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing site was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SiteJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The site does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing site. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the site */
-          siteId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The site was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a site. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the site */
-          siteId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["SiteJson"];
-        };
-      };
-      responses: {
-        /** @description An existing site was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SiteJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The site does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/storages": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new storage */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["StorageJson"];
-        };
-      };
-      responses: {
-        /** @description A new storage was successfully createded */
-        201: {
-          headers: {
-            /** @description URL of the new storage */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StorageJson"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/storages/{storageId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a storage. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the storage */
-          storageId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description An existing storage was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StorageJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The storage does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete an existing storage. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the storage */
-          storageId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The storage was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of a storage. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the storage */
-          storageId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["StorageJson"];
-        };
-      };
-      responses: {
-        /** @description An existing storage was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["StorageJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The storage does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/tenants": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information for all tenants */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description A list of tenants was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TenantListJson"];
-          };
-        };
-        /** @description The tenant does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/projects/{projectId}/tenants/{tenantId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of a specific tenant */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the tenant */
-          tenantId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The specific tenant was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TenantJson"];
-          };
-        };
-        /** @description The tenant you are looking for does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Update information on an tenant */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the project */
-          projectId: components["schemas"]["UUID"];
-          /** @description ID of the tenant */
-          tenantId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["TenantJson"];
-        };
-      };
-      responses: {
-        /** @description An existing tenant was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TenantJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The tenant does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/api/v1/tenancies": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information for all tenancies of a lessee. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description List of tenancies successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TenancyListJson"];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/user": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve information of this user identified by the cookie. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Information about the logged in user was successfully returned */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["UserJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete this user identified by the cookie. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The former logged in user was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update information of this user identified by the cookie. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["UserJson"];
-        };
-      };
-      responses: {
-        /** @description Information about the logged in user was successfully updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["UserJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description The address of a customer, a building or a site */
-    AddressJson: {
-      street: string;
-      city: string;
-      province: string;
-      zip: string;
-      countryCode: string;
+    schemas: {
+        /** @description The address of a customer, a building or a site */
+        AddressJson: {
+            street: string;
+            city: string;
+            province: string;
+            zip: string;
+            countryCode: string;
+        };
+        /** @description An apartment inside a building according to WoFIV */
+        ApartmentJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            livingSpace?: number;
+            /** Format: float */
+            usableSpace?: number;
+            /** Format: float */
+            heatingSpace?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+            /** Format: float */
+            space?: number;
+        };
+        /** @enum {string} */
+        BillingCycle: "WEEKLY" | "MONTHLY";
+        /** @description A building as part of a property */
+        BuildingJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            grossFloorArea?: number;
+            /** Format: float */
+            netFloorArea?: number;
+            /** Format: float */
+            constructionFloorArea?: number;
+            /** Format: float */
+            commercialHeatingSpace?: number;
+            /** Format: float */
+            livingSpace?: number;
+            /** Format: float */
+            usableSpace?: number;
+            /** Format: float */
+            heatingSpace?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+            address?: components["schemas"]["AddressJson"];
+            /** Format: float */
+            space?: number;
+        };
+        /** @description An internal chat message between project members for an issue */
+        ChatMessageJson: {
+            issueId?: $Read<components["schemas"]["UUID"]>;
+            messageId?: $Read<components["schemas"]["UUID"]>;
+            senderId?: $Read<components["schemas"]["UUID"]>;
+            senderName?: $Read<string>;
+            message: string;
+            createdAt?: $Read<components["schemas"]["Instant"]>;
+            modifiedAt?: $Read<components["schemas"]["Instant"]>;
+        };
+        /** @description A list of internal issue chat messages */
+        ChatMessageListJson: {
+            /** @description Chat messages */
+            messages?: $Read<components["schemas"]["ChatMessageJson"][]>;
+        };
+        /** @description Tenant information in a rental agreement */
+        CoTenantJson: {
+            id?: $Read<components["schemas"]["UUID"]>;
+            firstName?: $Read<string>;
+            lastName?: $Read<string>;
+            userId?: $Read<components["schemas"]["UUID"]>;
+        };
+        /** @description An commercial inside a building */
+        CommercialJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            netFloorArea?: number;
+            /** Format: float */
+            usableFloorArea?: number;
+            /** Format: float */
+            technicalServicesArea?: number;
+            /** Format: float */
+            trafficArea?: number;
+            /** Format: float */
+            heatingSpace?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+            /** Format: float */
+            space?: number;
+        };
+        /** @description A contractor */
+        ContractorJson: {
+            /** @description Unique identifier of the organization (generated by server) */
+            id?: $Read<components["schemas"]["UUID"]>;
+            /** @description ID of the project this contractor belongs to */
+            projectId?: $Read<components["schemas"]["UUID"]>;
+            /** @description ID of the organization this contractor is linked to (derived by the server from a matching email; cannot be set by the client) */
+            organizationId?: $Read<components["schemas"]["UUID"]>;
+            name?: string;
+            phone?: string;
+            email?: string;
+            trade?: string;
+            contactPerson?: string;
+            remarks?: string;
+            organization?: components["schemas"]["OrganizationJson"];
+            address?: components["schemas"]["AddressJson"];
+        };
+        /** @description A list of contractors */
+        ContractorListJson: {
+            /**
+             * Format: int32
+             * @description Index of the first element
+             */
+            offset?: $Read<number>;
+            /**
+             * Format: int64
+             * @description Total number of available contractors
+             */
+            total?: $Read<number>;
+            contractors?: components["schemas"]["ContractorJson"][];
+        };
+        Cookie: {
+            name?: string;
+            value?: string;
+            /** Format: int32 */
+            version?: number;
+            path?: string;
+            domain?: string;
+        };
+        /** @description A country item of a list */
+        CountryItemJson: {
+            countryCode: string;
+            name: string;
+        };
+        /** @description A list of countries */
+        CountryListJson: {
+            countries?: components["schemas"]["CountryItemJson"][];
+        };
+        /** @description A request to create one quotation request per contractor */
+        CreateQuotationRequestJson: {
+            contractors: components["schemas"]["ContractorJson"][];
+            scopeOfWork?: string;
+            projectOwner?: string;
+            projectCareOf?: string;
+            billingAddress?: components["schemas"]["AddressJson"];
+        };
+        /** @enum {string} */
+        EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
+        /** @description Represents an enriched issue event stored in a user's inbox */
+        InboxMessage: {
+            /** @description Unique identifier of this inbox message */
+            id?: string;
+            /** @description User who received this notification */
+            userId?: string;
+            /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
+            eventType?: string;
+            /** @description Related issue ID */
+            issueId?: string;
+            /** @description Issue title */
+            title?: string;
+            /** @description Issue description */
+            description?: string;
+            /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
+            issueType?: string;
+            /** @description Current status of the issue */
+            status?: string;
+            /** @description Link to the frontend issue page */
+            link?: string;
+            /** @description Whether the message has been read */
+            read?: boolean;
+            /** @description Timestamp when the notification was created */
+            createdAt?: components["schemas"]["OffsetDateTime"];
+            /** @description Email of the actor who triggered the event */
+            actorEmail?: string;
+            /** @description Email of the owner assigned to the issue */
+            ownerEmail?: string;
+        };
+        /**
+         * Format: date-time
+         * @example 2022-03-10T16:15:50Z
+         */
+        Instant: string;
+        /** @description An issue attachment */
+        IssueAttachmentJson: {
+            issueId?: components["schemas"]["UUID"];
+            attachmentId?: components["schemas"]["UUID"];
+            fileName?: string;
+            contentType?: string;
+            objectName?: string;
+            uploaderId?: components["schemas"]["UUID"];
+            uploadedBy?: string;
+            createdAt?: components["schemas"]["Instant"];
+        };
+        /** @enum {string} */
+        IssueCategory: "BLOCKED_DRAIN" | "ELECTRICAL_FAULT" | "FIRE_DAMAGE" | "HEATING_SYSTEM_MALFUNCTION" | "PEST_INFESTATION" | "POLLUTION_INSIDE_BUILDING" | "POLLUTION_OUTSIDE_BUILDING" | "SANITARY_SYSTEM_DAMAGE" | "ROLLER_SHUTTER_DAMAGE" | "WATER_DAMAGE" | "CERTIFICATE_OF_NO_RENT_ARREARS" | "CONFIRMATION_OF_RESIDENCE" | "ALARM_SYSTEM_MAINTENANCE" | "CHIMNEY_SWEEP_MAINTENANCE" | "CLEANING_MAINTENANCE" | "FIRE_ALARM_MAINTENANCE" | "FIRE_EXTINGUISHER_MAINTENANCE" | "GARDEN_MAINTENANCE" | "HEATING_MAINTENANCE" | "PUMP_MAINTENANCE" | "SNOW_REMOVAL_MAINTENANCE" | "TREE_CARE_MAINTENANCE" | "GENERAL";
+        /** @description An issue item with basic information */
+        IssueItemJson: {
+            /** @description Unique identifier of the issue */
+            id?: $Read<components["schemas"]["UUID"]>;
+            /** @description Unique identifier of the project this issue belongs to */
+            projectId?: $Read<components["schemas"]["UUID"]>;
+            /** @description Last modification timestamp of the issue */
+            modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            /** @description Title of the issue */
+            name?: $Read<string>;
+            /** @description Title of the issue */
+            title?: $Read<string>;
+            /** @description Type of the issue */
+            type?: $Read<components["schemas"]["IssueType"]>;
+            /** @description Status of the issue */
+            status?: $Read<components["schemas"]["IssueStatus"]>;
+            /** @description Priority of the issue */
+            priority?: $Read<components["schemas"]["IssuePriority"]>;
+            /** @description Unique identifier of the assignee of the issue */
+            assigneeId?: $Read<components["schemas"]["UUID"]>;
+            /** @description Name of the user who reported this issue */
+            reportedBy?: $Read<string>;
+        };
+        /** @description An issue, as visible to the project manager with full access to all fields and relations */
+        IssueJson: {
+            id?: $Read<components["schemas"]["UUID"]>;
+            projectId?: components["schemas"]["UUID"];
+            modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            title?: string;
+            type?: components["schemas"]["IssueType"];
+            category?: components["schemas"]["IssueCategory"];
+            status?: components["schemas"]["IssueStatus"];
+            priority?: components["schemas"]["IssuePriority"];
+            /** @description ID of the user who reported this issue */
+            reporterId?: $Read<components["schemas"]["UUID"]>;
+            /** @description Name of the user who reported this issue */
+            reportedBy?: $Read<string>;
+            agreementId?: components["schemas"]["UUID"];
+            visibleToTenants?: boolean;
+            rentalUnitId?: components["schemas"]["UUID"];
+            rentalUnitType?: components["schemas"]["UnitType"];
+            assigneeId?: components["schemas"]["UUID"];
+            location?: string;
+            description?: string;
+            parentIssue?: components["schemas"]["UUID"];
+            childrenIssues?: string[];
+            relatedTo?: string[];
+            duplicateOf?: string[];
+            blockedBy?: string[];
+            blocks?: string[];
+            /** @description Proposed data change submitted via self-service, for manager review */
+            tenantUpdate?: components["schemas"]["TenantJson"];
+            /** @description Proposed contractor data change derived from a linked organization update, for manager review */
+            contractorUpdate?: components["schemas"]["ContractorJson"];
+            attachments?: components["schemas"]["IssueAttachmentJson"][];
+        };
+        /** @description A cursor-paginated list of issues */
+        IssueListJson: {
+            /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+            nextCursor?: $Read<string>;
+            /**
+             * Format: int32
+             * @description Number of elements in this page
+             */
+            size: $Read<number>;
+            issues?: components["schemas"]["IssueItemJson"][];
+        };
+        /** @enum {string} */
+        IssuePriority: "URGENT" | "HIGH" | "MEDIUM" | "LOW" | "UNCLASSIFIED";
+        /** @enum {string} */
+        IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
+        /** @enum {string} */
+        IssueType: "APPLICATION" | "DEFECT" | "INQUIRY" | "MAINTENANCE" | "SELF_SERVICE" | "TASK" | "TERMINATION";
+        /**
+         * Format: date
+         * @example 2022-03-10
+         */
+        LocalDate: string;
+        /**
+         * Format: date-time
+         * @example 2022-03-10T12:15:50
+         */
+        LocalDateTime: string;
+        /** @enum {string} */
+        MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
+        /** @enum {string} */
+        MessagePurpose: "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
+        /**
+         * Format: date-time
+         * @example 2022-03-10T12:15:50-04:00
+         */
+        OffsetDateTime: string;
+        /** @description An attachment associated with a quotation request, quotation, or order placement */
+        OrderAttachmentJson: {
+            processPhase?: components["schemas"]["OrderProcessPhase"];
+            processId?: components["schemas"]["UUID"];
+            attachmentId?: components["schemas"]["UUID"];
+            fileName?: string;
+            contentType?: string;
+            objectName?: string;
+            uploaderId?: components["schemas"]["UUID"];
+            uploadedBy?: string;
+            createdAt?: components["schemas"]["Instant"];
+        };
+        /** @description An order placement created by a manager based on a quotation */
+        OrderPlacementJson: {
+            organizationId?: components["schemas"]["UUID"];
+            id?: components["schemas"]["UUID"];
+            issueId?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            projectOwner?: string;
+            projectCareOf?: string;
+            projectBillingAddress1?: string;
+            projectBillingAddress2?: string;
+            projectBillingAddress3?: string;
+            contractorId?: components["schemas"]["UUID"];
+            contractorName?: string;
+            createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
+            attachments?: components["schemas"]["OrderAttachmentJson"][];
+            /** @description ID of the quotation this order is based on */
+            quotationId?: $Read<components["schemas"]["UUID"]>;
+            /** @description ID of the user who placed the order */
+            ordererId?: $Read<components["schemas"]["UUID"]>;
+            /** @description Name of the user who placed the order */
+            orderedBy?: $Read<string>;
+            /** @description Status of the order placement: PLACED, CONFIRMED, REJECTED, WITHDRAWN */
+            status?: components["schemas"]["OrderPlacementStatus"];
+            /** @description ID of the user who confirmed or rejected the order */
+            confirmorId?: $Read<components["schemas"]["UUID"]>;
+            /** @description Name of the user who confirmed or rejected the order */
+            confirmedBy?: $Read<string>;
+        };
+        /** @description A list of order placements */
+        OrderPlacementListJson: {
+            items?: components["schemas"]["OrderPlacementJson"][];
+        };
+        /** @enum {string} */
+        OrderPlacementStatus: "PLACED" | "CONFIRMED" | "REJECTED" | "WITHDRAWN";
+        /** @enum {string} */
+        OrderProcessPhase: "QUOTATION_REQUEST" | "QUOTATION" | "ORDER_PLACEMENT";
+        /** @description Employee information in context of an organization */
+        OrganizationEmployeeJson: {
+            /** @description Unique identifier of the employee (generated by server) */
+            id?: $Read<components["schemas"]["UUID"]>;
+            organizationId?: $Read<components["schemas"]["UUID"]>;
+            organizationName?: $Read<string>;
+            /** @description Full name of the employee (retrieved from user profile) */
+            name?: $Read<string>;
+            email?: string;
+            active?: boolean;
+            employeeRole: components["schemas"]["EmployeeRole"];
+        };
+        /** @description A list of organization employees */
+        OrganizationEmployeeListJson: {
+            employees: components["schemas"]["OrganizationEmployeeJson"][];
+        };
+        /** @description An organization */
+        OrganizationJson: {
+            /** @description Unique identifier of the organization (generated by server) */
+            id?: $Read<components["schemas"]["UUID"]>;
+            name?: string;
+            phone?: string;
+            email?: string;
+            trade?: string;
+            vatIdentificationNumber?: string;
+            address?: components["schemas"]["AddressJson"];
+        };
+        /** @description A list of organizations */
+        OrganizationListJson: {
+            organizations: components["schemas"]["OrganizationJson"][];
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int64 */
+            total?: number;
+        };
+        /** @description Organization assignment to a project */
+        OrganizationMemberJson: {
+            organizationId?: components["schemas"]["UUID"];
+            organizationName?: string;
+            role: components["schemas"]["MemberRole"];
+            /** @description Members of the organization together with their derived role in this project */
+            members?: $Read<components["schemas"]["ProjectMemberJson"][]>;
+        };
+        /** @description List of organizations assigned to a project */
+        OrganizationMemberListJson: {
+            organizations?: components["schemas"]["OrganizationMemberJson"][];
+        };
+        /** @description A project item with the user's member role only */
+        ProjectItemJson: {
+            id: $Read<components["schemas"]["UUID"]>;
+            name: string;
+            memberRole: components["schemas"]["MemberRole"];
+        };
+        /** @description A project */
+        ProjectJson: {
+            /** @description Unique identifier of the project (generated by server) */
+            id?: $Read<components["schemas"]["UUID"]>;
+            title: string;
+            owner?: string;
+            careOf?: string;
+            billingAddress?: components["schemas"]["AddressJson"];
+            /** @description Project members (managed separately via members endpoint) */
+            members?: $Read<components["schemas"]["ProjectMemberJson"][]>;
+        };
+        /** @description A list of projects */
+        ProjectListJson: {
+            /**
+             * Format: int32
+             * @description Index of the first element in projects list of total available entries, starting at 1
+             * @example 1
+             */
+            first: $Read<number>;
+            /**
+             * Format: int32
+             * @description Number of elements in projects list
+             * @default 10
+             */
+            size: $Read<number>;
+            /**
+             * Format: int64
+             * @description Total number of available projects
+             */
+            total: $Read<number>;
+            projects?: components["schemas"]["ProjectItemJson"][];
+        };
+        /** @description Project member information in context of a project */
+        ProjectMemberJson: {
+            privileged?: boolean;
+            /** @description Unique identifier of the project member (generated by server) */
+            id?: $Read<components["schemas"]["UUID"]>;
+            /** @description Full name of the project member (retrieved from user profile) */
+            name?: $Read<string>;
+            email?: string;
+            /** @description Active status of the project member (managed by server) */
+            active?: $Read<boolean>;
+            role: components["schemas"]["MemberRole"];
+        };
+        /** @description A list of project members */
+        ProjectMemberListJson: {
+            members: components["schemas"]["ProjectMemberJson"][];
+        };
+        /** @description A property */
+        PropertyJson: {
+            type?: components["schemas"]["UnitType"];
+            landRegistry?: string;
+            cadastralDistrict?: string;
+            sheetNumber?: string;
+            /** Format: int32 */
+            plotNumber?: number;
+            cadastralSection?: string;
+            plot?: string;
+            economyType?: string;
+            location?: string;
+            /** Format: int32 */
+            plotArea?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            description?: string;
+            /** Format: float */
+            space?: number;
+        };
+        /** @description A list of properties */
+        PropertyListJson: {
+            properties?: $Read<components["schemas"]["RentalUnitTreeNodeJson"][]>;
+        };
+        /** @description A quotation response submitted by a contractor */
+        QuotationJson: {
+            id?: components["schemas"]["UUID"];
+            issueId?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            projectOwner?: string;
+            projectCareOf?: string;
+            projectBillingAddress1?: string;
+            projectBillingAddress2?: string;
+            projectBillingAddress3?: string;
+            contractorId?: components["schemas"]["UUID"];
+            contractorName?: string;
+            organizationId?: components["schemas"]["UUID"];
+            createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
+            attachments?: components["schemas"]["OrderAttachmentJson"][];
+            /** @description ID of the quotation request this quotation responds to */
+            requestId?: $Read<components["schemas"]["UUID"]>;
+            /** @description ID of the user who submitted this quotation */
+            offererId?: $Read<components["schemas"]["UUID"]>;
+            /** @description Name of the user who submitted this quotation */
+            offeredBy?: $Read<string>;
+            /** @description Status of the quotation: VALID, INVALID, ACCEPTED, REJECTED */
+            status?: components["schemas"]["QuotationStatus"];
+            /** @description Timestamp until which the quotation is valid */
+            validUntil?: components["schemas"]["Instant"];
+        };
+        /** @description A list of quotations */
+        QuotationListJson: {
+            items?: components["schemas"]["QuotationJson"][];
+        };
+        /** @description A request for quotation sent to a contractor */
+        QuotationRequestJson: {
+            id?: components["schemas"]["UUID"];
+            issueId?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            projectOwner?: string;
+            projectCareOf?: string;
+            projectBillingAddress1?: string;
+            projectBillingAddress2?: string;
+            projectBillingAddress3?: string;
+            contractorId?: components["schemas"]["UUID"];
+            contractorName?: string;
+            organizationId?: components["schemas"]["UUID"];
+            createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
+            attachments?: components["schemas"]["OrderAttachmentJson"][];
+            /** @description ID of the user who initiated this request */
+            initiatorId?: $Read<components["schemas"]["UUID"]>;
+            /** @description Name of the user who initiated this request */
+            initiatedBy?: $Read<string>;
+            /** @description Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED */
+            status?: components["schemas"]["RequestStatus"];
+            /** @description Scope of work description for the contractor */
+            scopeOfWork?: string;
+        };
+        /** @description A list of quotation requests */
+        QuotationRequestListJson: {
+            items?: components["schemas"]["QuotationRequestJson"][];
+        };
+        /** @enum {string} */
+        QuotationStatus: "VALID" | "INVALID" | "ACCEPTED" | "REJECTED";
+        /** @description Rent information for a rentable unit */
+        RentJson: {
+            rentalUnitId: components["schemas"]["UUID"];
+            billingCycle?: components["schemas"]["BillingCycle"];
+            firstPaymentDate?: components["schemas"]["LocalDate"];
+            lastPaymentDate?: components["schemas"]["LocalDate"];
+            /** Format: float */
+            basicRent?: number;
+            /** Format: float */
+            operatingCostsPrepayment?: number;
+            /** Format: float */
+            heatingCostsPrepayment?: number;
+        };
+        /** @description A rental agreement item with aggregated rent information for list views */
+        RentalAgreementItemJson: {
+            /** @description Unique identifier of the rental agreement */
+            id?: $Read<components["schemas"]["UUID"]>;
+            /** @description List of tenants in this rental agreement */
+            tenants?: $Read<components["schemas"]["TenantJson"][]>;
+            /** @description Start date of the rental period */
+            startOfRental: $Read<components["schemas"]["LocalDate"]>;
+            /** @description End date of the rental period */
+            endOfRental?: $Read<components["schemas"]["LocalDate"]>;
+            /** @description List of rental units in this agreement */
+            rentalUnits?: $Read<components["schemas"]["RentalUnitJson"][]>;
+            /** @description The currently valid rent for each rental unit in this agreement */
+            currentRents?: $Read<components["schemas"]["RentJson"][]>;
+            /**
+             * Format: float
+             * @description Sum of basic rent from the currently valid rent of each rental unit
+             */
+            basicRent?: $Read<number>;
+            /**
+             * Format: float
+             * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
+             */
+            operatingCostsPrepayment?: $Read<number>;
+            /**
+             * Format: float
+             * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
+             */
+            heatingCostsPrepayment?: $Read<number>;
+        };
+        /** @description A rental agreement for rentable units */
+        RentalAgreementJson: {
+            projectId?: components["schemas"]["UUID"];
+            id?: $Read<components["schemas"]["UUID"]>;
+            tenants?: components["schemas"]["TenantJson"][];
+            startOfRental?: components["schemas"]["LocalDate"];
+            endOfRental?: components["schemas"]["LocalDate"];
+            /** @description List of key handovers for this rental agreement */
+            keys?: components["schemas"]["RentalAgreementKeysJson"][];
+            /** @description List of property rents */
+            propertyRents?: components["schemas"]["RentJson"][];
+            /** @description List of site rents */
+            siteRents?: components["schemas"]["RentJson"][];
+            /** @description List of building rents */
+            buildingRents?: components["schemas"]["RentJson"][];
+            /** @description List of apartment rents */
+            apartmentRents?: components["schemas"]["RentJson"][];
+            /** @description List of storage rents */
+            storageRents?: components["schemas"]["RentJson"][];
+            /** @description List of commercial rents */
+            commercialRents?: components["schemas"]["RentJson"][];
+            /**
+             * Format: float
+             * @description Sum of basic rent from the currently valid rent of each rental unit
+             */
+            basicRent?: $Read<number>;
+            /**
+             * Format: float
+             * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
+             */
+            operatingCostsPrepayment?: $Read<number>;
+            /**
+             * Format: float
+             * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
+             */
+            heatingCostsPrepayment?: $Read<number>;
+        };
+        /** @description A key handover record for a rental agreement */
+        RentalAgreementKeysJson: {
+            /**
+             * Format: int32
+             * @description Number of keys of this type
+             */
+            amountOfKeys: number;
+            /** @description Date the key(s) were issued to the tenant */
+            issuedAt?: components["schemas"]["LocalDate"];
+            /** @description Date the key(s) were returned by the tenant */
+            returnedAt?: components["schemas"]["LocalDate"];
+            /** @description Free text describing the type of key, e.g. front door, mailbox, garage */
+            keyDescription?: string;
+        };
+        /** @description A list of rental agreements for a project */
+        RentalAgreementListJson: {
+            rentalAgreements?: components["schemas"]["RentalAgreementItemJson"][];
+        };
+        /** @description A general rental unit */
+        RentalUnitJson: {
+            type?: components["schemas"]["UnitType"];
+            location?: string;
+            description?: string;
+            id?: $Read<components["schemas"]["UUID"]>;
+            title?: string;
+            /** Format: float */
+            space?: $Read<number>;
+        };
+        /** @description Encapsulated data of a project tree node */
+        RentalUnitNodeDataJson: {
+            id?: components["schemas"]["UUID"];
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
+            type: $Read<components["schemas"]["UnitType"]>;
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
+            title: $Read<string>;
+            /**
+             * @description Location of the rental unit
+             * @example first floor left
+             */
+            location?: $Read<string>;
+            /**
+             * @description Description of the rental unit
+             * @example A multi-story office building
+             */
+            description?: $Read<string>;
+            /**
+             * Format: float
+             * @description Usable space in square meters
+             * @example 350.5
+             */
+            space?: $Read<number>;
+        };
+        /** @description A tree node representing a project entity */
+        RentalUnitTreeNodeJson: {
+            /** @description Key of the node */
+            key: $Read<components["schemas"]["UUID"]>;
+            /** @description Data encapsulating node attributes */
+            data: $Read<components["schemas"]["RentalUnitNodeDataJson"]>;
+            /** @description Children nodes */
+            children?: $Read<components["schemas"]["RentalUnitTreeNodeJson"][]>;
+        };
+        /** @enum {string} */
+        RequestStatus: "REQUESTED" | "WITHDRAWN" | "VIEWING_REQUIRED" | "CONSULTATION_REQUIRED" | "REJECTED" | "SUBMITTED";
+        /** @description A site as part of a property */
+        SiteJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            outdoorArea?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+            address?: components["schemas"]["AddressJson"];
+            /** Format: float */
+            space?: number;
+        };
+        /** @description A storage inside a building but with living space according to WoFIV */
+        StorageJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            usableSpace?: number;
+            /** Format: float */
+            heatingSpace?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+            /** Format: float */
+            space?: number;
+            heated?: boolean;
+        };
+        /** @description A read-only rental agreement of a rentable unit from a tenant's perspective */
+        TenancyJson: {
+            /** @description Unique identifier of the rental agreement */
+            agreementId?: $Read<components["schemas"]["UUID"]>;
+            /** @description Title of the project this rental agreement belongs to */
+            projectTitle?: $Read<string>;
+            /** @description Address of the building this rental agreement belongs to */
+            address?: $Read<components["schemas"]["AddressJson"]>;
+            /** @description List of tenants in this rental agreement */
+            tenants?: $Read<components["schemas"]["CoTenantJson"][]>;
+            /** @description Start date of the rental period */
+            startOfRental?: $Read<components["schemas"]["LocalDate"]>;
+            /** @description End date of the rental period */
+            endOfRental?: $Read<components["schemas"]["LocalDate"]>;
+            /** @description List of rental units in this agreement */
+            rentalUnits?: $Read<components["schemas"]["RentalUnitJson"][]>;
+            /**
+             * Format: float
+             * @description Sum of basic rent from the currently valid rent of each rental unit
+             */
+            basicRent?: $Read<number>;
+            /**
+             * Format: float
+             * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
+             */
+            operatingCostsPrepayment?: $Read<number>;
+            /**
+             * Format: float
+             * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
+             */
+            heatingCostsPrepayment?: $Read<number>;
+        };
+        /** @description A list of rental agreements from a tenant's perspective */
+        TenancyListJson: {
+            agreements?: components["schemas"]["TenancyJson"][];
+        };
+        /** @description An issue, as visible to the tenant who reported it or is affected by it */
+        TenantIssueJson: {
+            id?: $Read<components["schemas"]["UUID"]>;
+            modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            title: string;
+            type: components["schemas"]["IssueType"];
+            category?: components["schemas"]["IssueCategory"];
+            status?: $Read<components["schemas"]["IssueStatus"]>;
+            /** @description ID of the user who reported this issue */
+            reporterId?: $Read<components["schemas"]["UUID"]>;
+            /** @description Name of the user who reported this issue */
+            reportedBy?: $Read<string>;
+            agreementId: components["schemas"]["UUID"];
+            rentalUnitId?: components["schemas"]["UUID"];
+            rentalUnitType?: components["schemas"]["UnitType"];
+            location?: string;
+            description: string;
+        };
+        /** @description A cursor-paginated list of issues visible to a tenant */
+        TenantIssueListJson: {
+            /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+            nextCursor?: $Read<string>;
+            /**
+             * Format: int32
+             * @description Number of elements in this page
+             */
+            size?: $Read<number>;
+            /** @description The issues in this page */
+            issues?: $Read<components["schemas"]["TenantIssueJson"][]>;
+        };
+        /** @description A tenant item with rental units and active status for list views */
+        TenantItemJson: {
+            /** @description Unique identifier of the tenant */
+            id?: $Read<components["schemas"]["UUID"]>;
+            /** @description First name of the tenant */
+            firstName: string;
+            /** @description Last name of the tenant */
+            lastName: string;
+            /** @description Email address of the tenant */
+            email?: string;
+            /** @description Mobile phone number of the tenant */
+            mobilePhoneNumber?: string;
+            /** @description Business phone number of the tenant */
+            businessPhoneNumber?: string;
+            /** @description Private phone number of the tenant */
+            privatePhoneNumber?: string;
+            /** @description List of all rental units the tenant has ever rented */
+            rentalUnits?: components["schemas"]["RentalUnitJson"][];
+            /** @description Indicates if the tenant has any active rental agreements */
+            active?: boolean;
+        };
+        /** @description Tenant information in a rental agreement */
+        TenantJson: {
+            id: $Read<components["schemas"]["UUID"]>;
+            /** @example Max */
+            firstName: string;
+            /** @example Mustermann */
+            lastName: string;
+            /** @example tenant@example.com */
+            email?: string;
+            /** @example +491234567890 */
+            mobilePhoneNumber?: string;
+            /** @example +491234567890 */
+            businessPhoneNumber?: string;
+            /** @example +491234567890 */
+            privatePhoneNumber?: string;
+            address?: components["schemas"]["AddressJson"];
+            /** @example Berlin */
+            placeOfBirth?: string;
+            /** @example 1990-01-01 */
+            dateOfBirth?: components["schemas"]["LocalDate"];
+            userId?: $Read<components["schemas"]["UUID"]>;
+        };
+        /** @description A list of tenants for a project */
+        TenantListJson: {
+            tenants?: components["schemas"]["TenantItemJson"][];
+        };
+        /** @description An issue timeline entry */
+        TimelineJson: {
+            issueId?: $Read<components["schemas"]["UUID"]>;
+            tenancyId?: $Read<components["schemas"]["UUID"]>;
+            timelineId?: $Read<components["schemas"]["UUID"]>;
+            attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
+            senderId?: $Read<components["schemas"]["UUID"]>;
+            senderName?: $Read<string>;
+            purpose: components["schemas"]["MessagePurpose"];
+            message: string;
+            createdAt?: $Read<components["schemas"]["Instant"]>;
+            modifiedAt?: $Read<components["schemas"]["Instant"]>;
+        };
+        /** @description A list of issue timelines */
+        TimelineListJson: {
+            /** @description Timeline entries */
+            timelines?: $Read<components["schemas"]["TimelineJson"][]>;
+        };
+        /** Format: uuid */
+        UUID: string;
+        /** @enum {string} */
+        UnitType: "PROPERTY" | "SITE" | "BUILDING" | "APARTMENT" | "STORAGE" | "COMMERCIAL";
+        /** @enum {string} */
+        UserContext: "MANAGER" | "TENANT" | "CONTRACTOR";
+        /** @description User information globally */
+        UserJson: {
+            active?: boolean;
+            id: $Read<components["schemas"]["UUID"]>;
+            userContexts?: $Read<components["schemas"]["UserContext"][]>;
+            /** @example user@example.com */
+            email: $Read<string>;
+            firstName?: string;
+            lastName?: string;
+            address?: components["schemas"]["AddressJson"];
+            mobilePhoneNumber?: string;
+            businessPhoneNumber?: string;
+            privatePhoneNumber?: string;
+            locale?: string;
+            /** @example Berlin */
+            placeOfBirth?: string;
+            /** @example 1990-01-01 */
+            dateOfBirth?: components["schemas"]["LocalDate"];
+            /**
+             * @example [
+             *       "test@example.com",
+             *       "info@example.com"
+             *     ]
+             */
+            additionalEmails?: string[];
+            registeredDate?: $Read<components["schemas"]["LocalDate"]>;
+            lastLoginDate?: $Read<components["schemas"]["LocalDateTime"]>;
+        };
     };
-    /** @description An apartment inside a building according to WoFIV */
-    ApartmentJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      livingSpace?: number;
-      /** Format: float */
-      usableSpace?: number;
-      /** Format: float */
-      heatingSpace?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-      /** Format: float */
-      space?: number;
-    };
-    /** @enum {string} */
-    BillingCycle: "WEEKLY" | "MONTHLY";
-    /** @description A building as part of a property */
-    BuildingJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      grossFloorArea?: number;
-      /** Format: float */
-      netFloorArea?: number;
-      /** Format: float */
-      constructionFloorArea?: number;
-      /** Format: float */
-      commercialHeatingSpace?: number;
-      /** Format: float */
-      livingSpace?: number;
-      /** Format: float */
-      usableSpace?: number;
-      /** Format: float */
-      heatingSpace?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-      address?: components["schemas"]["AddressJson"];
-      /** Format: float */
-      space?: number;
-    };
-    /** @description A single chat message */
-    ChatMessageJson: {
-      messageId?: components["schemas"]["UUID"];
-      sessionId?: components["schemas"]["UUID"];
-      senderId?: components["schemas"]["UUID"];
-      contentType?: string;
-      content?: string;
-      url?: string;
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-    };
-    /** @description A list of chat messages */
-    ChatMessageListJson: {
-      messages?: components["schemas"]["ChatMessageJson"][];
-    };
-    /** @description A chat session */
-    ChatSessionJson: {
-      sessionId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      issueId?: components["schemas"]["UUID"];
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-    };
-    /** @description A list of chat sessions */
-    ChatSessionListJson: {
-      /**
-       * Format: int32
-       * @description Number of chat sessions in the list
-       */
-      size: number;
-      chatSessions?: components["schemas"]["ChatSessionJson"][];
-    };
-    /** @description Tenant information in a rental agreement */
-    CoTenantJson: {
-      readonly id?: components["schemas"]["UUID"];
-      readonly firstName?: string;
-      readonly lastName?: string;
-      readonly userId?: components["schemas"]["UUID"];
-    };
-    /** @description An commercial inside a building */
-    CommercialJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      netFloorArea?: number;
-      /** Format: float */
-      usableFloorArea?: number;
-      /** Format: float */
-      technicalServicesArea?: number;
-      /** Format: float */
-      trafficArea?: number;
-      /** Format: float */
-      heatingSpace?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-      /** Format: float */
-      space?: number;
-    };
-    /** @description A contractor employee */
-    ContractorEmployeeJson: {
-      contractorId?: components["schemas"]["UUID"];
-      userId?: components["schemas"]["UUID"];
-      responsibility?: string;
-      email?: string;
-      name?: string;
-      active?: boolean;
-      user?: components["schemas"]["UserModel"];
-    };
-    /** @description A contractor */
-    ContractorJson: {
-      organizationId?: components["schemas"]["UUID"];
-      /** @description Unique identifier of the organization (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
-      /** @description ID of the project this contractor belongs to */
-      readonly projectId?: components["schemas"]["UUID"];
-      companyName?: string;
-      phone?: string;
-      email?: string;
-      trade?: string;
-      contactPerson?: string;
-      remarks?: string;
-      organization?: components["schemas"]["OrganizationJson"];
-      address?: components["schemas"]["AddressJson"];
-    };
-    /** @description A list of contractors */
-    ContractorListJson: {
-      /**
-       * Format: int32
-       * @description Index of the first element
-       */
-      readonly offset?: number;
-      /**
-       * Format: int64
-       * @description Total number of available contractors
-       */
-      readonly total?: number;
-      contractors?: components["schemas"]["ContractorJson"][];
-    };
-    Cookie: {
-      name?: string;
-      value?: string;
-      /** Format: int32 */
-      version?: number;
-      path?: string;
-      domain?: string;
-    };
-    /** @description A country item of a list */
-    CountryItemJson: {
-      countryCode: string;
-      name: string;
-    };
-    /** @description A list of countries */
-    CountryListJson: {
-      countries?: components["schemas"]["CountryItemJson"][];
-    };
-    /** @description A request to create one quotation request per contractor */
-    CreateQuotationRequestJson: {
-      contractors: components["schemas"]["ContractorJson"][];
-      scopeOfWork?: string;
-      projectOwner?: string;
-      projectCareOf?: string;
-      billingAddress?: components["schemas"]["AddressJson"];
-    };
-    /** @enum {string} */
-    EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
-    /** @description Represents an enriched issue event stored in a user's inbox */
-    InboxMessage: {
-      /** @description Unique identifier of this inbox message */
-      id?: string;
-      /** @description User who received this notification */
-      userId?: string;
-      /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
-      eventType?: string;
-      /** @description Related issue ID */
-      issueId?: string;
-      /** @description Issue title */
-      title?: string;
-      /** @description Issue description */
-      description?: string;
-      /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
-      issueType?: string;
-      /** @description Current status of the issue */
-      status?: string;
-      /** @description Link to the frontend issue page */
-      link?: string;
-      /** @description Whether the message has been read */
-      read?: boolean;
-      /** @description Timestamp when the notification was created */
-      createdAt?: components["schemas"]["OffsetDateTime"];
-      /** @description Email of the actor who triggered the event */
-      actorEmail?: string;
-      /** @description Email of the owner assigned to the issue */
-      ownerEmail?: string;
-    };
-    /**
-     * Format: date-time
-     * @example 2022-03-10T16:15:50Z
-     */
-    Instant: string;
-    /** @description An issue attachment */
-    IssueAttachmentJson: {
-      issueId?: components["schemas"]["UUID"];
-      attachmentId?: components["schemas"]["UUID"];
-      fileName?: string;
-      contentType?: string;
-      objectName?: string;
-      uploaderId?: components["schemas"]["UUID"];
-      uploadedBy?: string;
-      createdAt?: components["schemas"]["Instant"];
-    };
-    /** @enum {string} */
-    IssueCategory:
-      | "BLOCKED_DRAIN"
-      | "ELECTRICAL_FAULT"
-      | "FIRE_DAMAGE"
-      | "HEATING_SYSTEM_MALFUNCTION"
-      | "PEST_INFESTATION"
-      | "POLLUTION_INSIDE_BUILDING"
-      | "POLLUTION_OUTSIDE_BUILDING"
-      | "SANITARY_SYSTEM_DAMAGE"
-      | "ROLLER_SHUTTER_DAMAGE"
-      | "WATER_DAMAGE"
-      | "CERTIFICATE_OF_NO_RENT_ARREARS"
-      | "CONFIRMATION_OF_RESIDENCE"
-      | "ALARM_SYSTEM_MAINTENANCE"
-      | "CHIMNEY_SWEEP_MAINTENANCE"
-      | "CLEANING_MAINTENANCE"
-      | "FIRE_ALARM_MAINTENANCE"
-      | "FIRE_EXTINGUISHER_MAINTENANCE"
-      | "GARDEN_MAINTENANCE"
-      | "HEATING_MAINTENANCE"
-      | "PUMP_MAINTENANCE"
-      | "SNOW_REMOVAL_MAINTENANCE"
-      | "TREE_CARE_MAINTENANCE"
-      | "GENERAL";
-    /** @description An issue item with basic information */
-    IssueItemJson: {
-      /** @description Unique identifier of the issue */
-      readonly id?: components["schemas"]["UUID"];
-      /** @description Unique identifier of the project this issue belongs to */
-      readonly projectId?: components["schemas"]["UUID"];
-      /** @description Last modification timestamp of the issue */
-      readonly modifiedAt?: components["schemas"]["Instant"];
-      /** @description Title of the issue */
-      readonly name?: string;
-      /** @description Title of the issue */
-      readonly title?: string;
-      /** @description Type of the issue */
-      readonly type?: components["schemas"]["IssueType"];
-      /** @description Status of the issue */
-      readonly status?: components["schemas"]["IssueStatus"];
-      /** @description Priority of the issue */
-      readonly priority?: components["schemas"]["IssuePriority"];
-      /** @description Unique identifier of the assignee of the issue */
-      readonly assigneeId?: components["schemas"]["UUID"];
-      /** @description Name of the user who reported this issue */
-      readonly reportedBy?: string;
-    };
-    /** @description An issue, as visible to the project manager with full access to all fields and relations */
-    IssueJson: {
-      readonly id?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      readonly modifiedAt?: components["schemas"]["Instant"];
-      title?: string;
-      type?: components["schemas"]["IssueType"];
-      category?: components["schemas"]["IssueCategory"];
-      status?: components["schemas"]["IssueStatus"];
-      priority?: components["schemas"]["IssuePriority"];
-      /** @description ID of the user who reported this issue */
-      readonly reporterId?: components["schemas"]["UUID"];
-      /** @description Name of the user who reported this issue */
-      readonly reportedBy?: string;
-      agreementId?: components["schemas"]["UUID"];
-      visibleToTenants?: boolean;
-      rentalUnitId?: components["schemas"]["UUID"];
-      rentalUnitType?: components["schemas"]["UnitType"];
-      assigneeId?: components["schemas"]["UUID"];
-      location?: string;
-      description?: string;
-      parentIssue?: components["schemas"]["UUID"];
-      childrenIssues?: string[];
-      relatedTo?: string[];
-      duplicateOf?: string[];
-      blockedBy?: string[];
-      blocks?: string[];
-      /** @description Proposed data change submitted via self-service, for manager review */
-      tenantUpdate?: components["schemas"]["TenantJson"];
-      attachments?: components["schemas"]["IssueAttachmentJson"][];
-    };
-    /** @description A cursor-paginated list of issues */
-    IssueListJson: {
-      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
-      readonly nextCursor?: string;
-      /**
-       * Format: int32
-       * @description Number of elements in this page
-       */
-      readonly size: number;
-      issues?: components["schemas"]["IssueItemJson"][];
-    };
-    /** @enum {string} */
-    IssuePriority: "URGENT" | "HIGH" | "MEDIUM" | "LOW" | "UNCLASSIFIED";
-    /** @enum {string} */
-    IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
-    /** @enum {string} */
-    IssueType: "APPLICATION" | "DEFECT" | "INQUIRY" | "MAINTENANCE" | "SELF_SERVICE" | "TASK" | "TERMINATION";
-    /**
-     * Format: date
-     * @example 2022-03-10
-     */
-    LocalDate: string;
-    /**
-     * Format: date-time
-     * @example 2022-03-10T12:15:50
-     */
-    LocalDateTime: string;
-    /** @enum {string} */
-    MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
-    /** @enum {string} */
-    MessagePurpose:
-      "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
-    /**
-     * Format: date-time
-     * @example 2022-03-10T12:15:50-04:00
-     */
-    OffsetDateTime: string;
-    /** @description An attachment associated with a quotation request, quotation, or order placement */
-    OrderAttachmentJson: {
-      processPhase?: components["schemas"]["OrderProcessPhase"];
-      processId?: components["schemas"]["UUID"];
-      attachmentId?: components["schemas"]["UUID"];
-      fileName?: string;
-      contentType?: string;
-      objectName?: string;
-      uploaderId?: components["schemas"]["UUID"];
-      uploadedBy?: string;
-      createdAt?: components["schemas"]["Instant"];
-    };
-    /** @description An order placement created by a manager based on a quotation */
-    OrderPlacementJson: {
-      organizationId?: components["schemas"]["UUID"];
-      id?: components["schemas"]["UUID"];
-      issueId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      projectOwner?: string;
-      projectCareOf?: string;
-      projectBillingAddress1?: string;
-      projectBillingAddress2?: string;
-      projectBillingAddress3?: string;
-      contractorId?: components["schemas"]["UUID"];
-      contractorName?: string;
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-      attachments?: components["schemas"]["OrderAttachmentJson"][];
-      /** @description ID of the quotation this order is based on */
-      readonly quotationId?: components["schemas"]["UUID"];
-      /** @description ID of the user who placed the order */
-      readonly ordererId?: components["schemas"]["UUID"];
-      /** @description Name of the user who placed the order */
-      readonly orderedBy?: string;
-      /** @description Status of the order placement: PLACED, CONFIRMED, REJECTED, WITHDRAWN */
-      status?: components["schemas"]["OrderPlacementStatus"];
-      /** @description ID of the user who confirmed or rejected the order */
-      readonly confirmorId?: components["schemas"]["UUID"];
-      /** @description Name of the user who confirmed or rejected the order */
-      readonly confirmedBy?: string;
-    };
-    /** @description A list of order placements */
-    OrderPlacementListJson: {
-      items?: components["schemas"]["OrderPlacementJson"][];
-    };
-    /** @enum {string} */
-    OrderPlacementStatus: "PLACED" | "CONFIRMED" | "REJECTED" | "WITHDRAWN";
-    /** @enum {string} */
-    OrderProcessPhase: "QUOTATION_REQUEST" | "QUOTATION" | "ORDER_PLACEMENT";
-    /** @description Employee information in context of an organization */
-    OrganizationEmployeeJson: {
-      /** @description Unique identifier of the employee (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
-      readonly organizationId?: components["schemas"]["UUID"];
-      readonly organizationName?: string;
-      /** @description Full name of the employee (retrieved from user profile) */
-      readonly name?: string;
-      email?: string;
-      active?: boolean;
-      employeeRole: components["schemas"]["EmployeeRole"];
-    };
-    /** @description A list of organization employees */
-    OrganizationEmployeeListJson: {
-      employees: components["schemas"]["OrganizationEmployeeJson"][];
-    };
-    /** @description An organization */
-    OrganizationJson: {
-      /** @description Unique identifier of the organization (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
-      name?: string;
-      phone?: string;
-      email?: string;
-      trade?: string;
-      vatIdentificationNumber?: string;
-      address?: components["schemas"]["AddressJson"];
-    };
-    /** @description A list of organizations */
-    OrganizationListJson: {
-      organizations: components["schemas"]["OrganizationJson"][];
-      /** Format: int32 */
-      offset?: number;
-      /** Format: int64 */
-      total?: number;
-    };
-    /** @description Organization assignment to a project */
-    OrganizationMemberJson: {
-      organizationId?: components["schemas"]["UUID"];
-      organizationName?: string;
-      role: components["schemas"]["MemberRole"];
-      /** @description Members of the organization together with their derived role in this project */
-      readonly members?: components["schemas"]["ProjectMemberJson"][];
-    };
-    /** @description List of organizations assigned to a project */
-    OrganizationMemberListJson: {
-      organizations?: components["schemas"]["OrganizationMemberJson"][];
-    };
-    /** @description A project item with the user's member role only */
-    ProjectItemJson: {
-      readonly id: components["schemas"]["UUID"];
-      name: string;
-      memberRole: components["schemas"]["MemberRole"];
-    };
-    /** @description A project */
-    ProjectJson: {
-      /** @description Unique identifier of the project (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
-      title: string;
-      owner?: string;
-      careOf?: string;
-      billingAddress?: components["schemas"]["AddressJson"];
-      /** @description Project members (managed separately via members endpoint) */
-      readonly members?: components["schemas"]["ProjectMemberJson"][];
-    };
-    /** @description A list of projects */
-    ProjectListJson: {
-      /**
-       * Format: int32
-       * @description Index of the first element in projects list of total available entries, starting at 1
-       * @example 1
-       */
-      readonly first: number;
-      /**
-       * Format: int32
-       * @description Number of elements in projects list
-       * @default 10
-       */
-      readonly size: number;
-      /**
-       * Format: int64
-       * @description Total number of available projects
-       */
-      readonly total: number;
-      projects?: components["schemas"]["ProjectItemJson"][];
-    };
-    /** @description Project member information in context of a project */
-    ProjectMemberJson: {
-      privileged?: boolean;
-      /** @description Unique identifier of the project member (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
-      /** @description Full name of the project member (retrieved from user profile) */
-      readonly name?: string;
-      email?: string;
-      /** @description Active status of the project member (managed by server) */
-      readonly active?: boolean;
-      role: components["schemas"]["MemberRole"];
-    };
-    /** @description A list of project members */
-    ProjectMemberListJson: {
-      members: components["schemas"]["ProjectMemberJson"][];
-    };
-    /** @description A property */
-    PropertyJson: {
-      type?: components["schemas"]["UnitType"];
-      landRegistry?: string;
-      cadastralDistrict?: string;
-      sheetNumber?: string;
-      /** Format: int32 */
-      plotNumber?: number;
-      cadastralSection?: string;
-      plot?: string;
-      economyType?: string;
-      location?: string;
-      /** Format: int32 */
-      plotArea?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      description?: string;
-      /** Format: float */
-      space?: number;
-    };
-    /** @description A list of properties */
-    PropertyListJson: {
-      readonly properties?: components["schemas"]["RentalUnitTreeNodeJson"][];
-    };
-    /** @description A quotation response submitted by a contractor */
-    QuotationJson: {
-      id?: components["schemas"]["UUID"];
-      issueId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      projectOwner?: string;
-      projectCareOf?: string;
-      projectBillingAddress1?: string;
-      projectBillingAddress2?: string;
-      projectBillingAddress3?: string;
-      contractorId?: components["schemas"]["UUID"];
-      contractorName?: string;
-      organizationId?: components["schemas"]["UUID"];
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-      attachments?: components["schemas"]["OrderAttachmentJson"][];
-      /** @description ID of the quotation request this quotation responds to */
-      readonly requestId?: components["schemas"]["UUID"];
-      /** @description ID of the user who submitted this quotation */
-      readonly offererId?: components["schemas"]["UUID"];
-      /** @description Name of the user who submitted this quotation */
-      readonly offeredBy?: string;
-      /** @description Status of the quotation: VALID, INVALID, ACCEPTED, REJECTED */
-      status?: components["schemas"]["QuotationStatus"];
-      /** @description Timestamp until which the quotation is valid */
-      validUntil?: components["schemas"]["Instant"];
-    };
-    /** @description A list of quotations */
-    QuotationListJson: {
-      items?: components["schemas"]["QuotationJson"][];
-    };
-    /** @description A request for quotation sent to a contractor */
-    QuotationRequestJson: {
-      id?: components["schemas"]["UUID"];
-      issueId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      projectOwner?: string;
-      projectCareOf?: string;
-      projectBillingAddress1?: string;
-      projectBillingAddress2?: string;
-      projectBillingAddress3?: string;
-      contractorId?: components["schemas"]["UUID"];
-      contractorName?: string;
-      organizationId?: components["schemas"]["UUID"];
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-      attachments?: components["schemas"]["OrderAttachmentJson"][];
-      /** @description ID of the user who initiated this request */
-      readonly initiatorId?: components["schemas"]["UUID"];
-      /** @description Name of the user who initiated this request */
-      readonly initiatedBy?: string;
-      /** @description Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED */
-      status?: components["schemas"]["RequestStatus"];
-      /** @description Scope of work description for the contractor */
-      scopeOfWork?: string;
-    };
-    /** @description A list of quotation requests */
-    QuotationRequestListJson: {
-      items?: components["schemas"]["QuotationRequestJson"][];
-    };
-    /** @enum {string} */
-    QuotationStatus: "VALID" | "INVALID" | "ACCEPTED" | "REJECTED";
-    /** @description Rent information for a rentable unit */
-    RentJson: {
-      rentalUnitId: components["schemas"]["UUID"];
-      billingCycle?: components["schemas"]["BillingCycle"];
-      firstPaymentDate?: components["schemas"]["LocalDate"];
-      lastPaymentDate?: components["schemas"]["LocalDate"];
-      /** Format: float */
-      basicRent?: number;
-      /** Format: float */
-      operatingCostsPrepayment?: number;
-      /** Format: float */
-      heatingCostsPrepayment?: number;
-    };
-    /** @description A rental agreement item with aggregated rent information for list views */
-    RentalAgreementItemJson: {
-      /** @description Unique identifier of the rental agreement */
-      readonly id?: components["schemas"]["UUID"];
-      /** @description List of tenants in this rental agreement */
-      readonly tenants?: components["schemas"]["TenantJson"][];
-      /** @description Start date of the rental period */
-      readonly startOfRental: components["schemas"]["LocalDate"];
-      /** @description End date of the rental period */
-      readonly endOfRental?: components["schemas"]["LocalDate"];
-      /** @description List of rental units in this agreement */
-      readonly rentalUnits?: components["schemas"]["RentalUnitJson"][];
-      /** @description The currently valid rent for each rental unit in this agreement */
-      readonly currentRents?: components["schemas"]["RentJson"][];
-      /**
-       * Format: float
-       * @description Sum of basic rent from the currently valid rent of each rental unit
-       */
-      readonly basicRent?: number;
-      /**
-       * Format: float
-       * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
-       */
-      readonly operatingCostsPrepayment?: number;
-      /**
-       * Format: float
-       * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
-       */
-      readonly heatingCostsPrepayment?: number;
-    };
-    /** @description A rental agreement for rentable units */
-    RentalAgreementJson: {
-      projectId?: components["schemas"]["UUID"];
-      readonly id?: components["schemas"]["UUID"];
-      tenants?: components["schemas"]["TenantJson"][];
-      startOfRental?: components["schemas"]["LocalDate"];
-      endOfRental?: components["schemas"]["LocalDate"];
-      /** @description List of key handovers for this rental agreement */
-      keys?: components["schemas"]["RentalAgreementKeysJson"][];
-      /** @description List of property rents */
-      propertyRents?: components["schemas"]["RentJson"][];
-      /** @description List of site rents */
-      siteRents?: components["schemas"]["RentJson"][];
-      /** @description List of building rents */
-      buildingRents?: components["schemas"]["RentJson"][];
-      /** @description List of apartment rents */
-      apartmentRents?: components["schemas"]["RentJson"][];
-      /** @description List of storage rents */
-      storageRents?: components["schemas"]["RentJson"][];
-      /** @description List of commercial rents */
-      commercialRents?: components["schemas"]["RentJson"][];
-      /**
-       * Format: float
-       * @description Sum of basic rent from the currently valid rent of each rental unit
-       */
-      readonly basicRent?: number;
-      /**
-       * Format: float
-       * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
-       */
-      readonly operatingCostsPrepayment?: number;
-      /**
-       * Format: float
-       * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
-       */
-      readonly heatingCostsPrepayment?: number;
-    };
-    /** @description A key handover record for a rental agreement */
-    RentalAgreementKeysJson: {
-      /**
-       * Format: int32
-       * @description Number of keys of this type
-       */
-      amountOfKeys: number;
-      /** @description Date the key(s) were issued to the tenant */
-      issuedAt?: components["schemas"]["LocalDate"];
-      /** @description Date the key(s) were returned by the tenant */
-      returnedAt?: components["schemas"]["LocalDate"];
-      /** @description Free text describing the type of key, e.g. front door, mailbox, garage */
-      keyDescription?: string;
-    };
-    /** @description A list of rental agreements for a project */
-    RentalAgreementListJson: {
-      rentalAgreements?: components["schemas"]["RentalAgreementItemJson"][];
-    };
-    /** @description A general rental unit */
-    RentalUnitJson: {
-      type?: components["schemas"]["UnitType"];
-      location?: string;
-      description?: string;
-      readonly id?: components["schemas"]["UUID"];
-      title?: string;
-      /** Format: float */
-      readonly space?: number;
-    };
-    /** @description Encapsulated data of a project tree node */
-    RentalUnitNodeDataJson: {
-      id?: components["schemas"]["UUID"];
-      /**
-       * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
-       * @example PROPERTY
-       */
-      readonly type: components["schemas"]["UnitType"];
-      /**
-       * @description Title of the node
-       * @example Main Building
-       */
-      readonly title: string;
-      /**
-       * @description Location of the rental unit
-       * @example first floor left
-       */
-      readonly location?: string;
-      /**
-       * @description Description of the rental unit
-       * @example A multi-story office building
-       */
-      readonly description?: string;
-      /**
-       * Format: float
-       * @description Usable space in square meters
-       * @example 350.5
-       */
-      readonly space?: number;
-    };
-    /** @description A tree node representing a project entity */
-    RentalUnitTreeNodeJson: {
-      /** @description Key of the node */
-      readonly key: components["schemas"]["UUID"];
-      /** @description Data encapsulating node attributes */
-      readonly data: components["schemas"]["RentalUnitNodeDataJson"];
-      /** @description Children nodes */
-      readonly children?: components["schemas"]["RentalUnitTreeNodeJson"][];
-    };
-    /** @enum {string} */
-    RequestStatus: "REQUESTED" | "WITHDRAWN" | "VIEWING_REQUIRED" | "CONSULTATION_REQUIRED" | "REJECTED" | "SUBMITTED";
-    /** @description A site as part of a property */
-    SiteJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      outdoorArea?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-      address?: components["schemas"]["AddressJson"];
-      /** Format: float */
-      space?: number;
-    };
-    /** @description A storage inside a building but with living space according to WoFIV */
-    StorageJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      usableSpace?: number;
-      /** Format: float */
-      heatingSpace?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-      /** Format: float */
-      space?: number;
-      heated?: boolean;
-    };
-    /** @description A read-only rental agreement of a rentable unit from a tenant's perspective */
-    TenancyJson: {
-      /** @description Unique identifier of the rental agreement */
-      readonly agreementId?: components["schemas"]["UUID"];
-      /** @description Title of the project this rental agreement belongs to */
-      readonly projectTitle?: string;
-      /** @description Address of the building this rental agreement belongs to */
-      readonly address?: components["schemas"]["AddressJson"];
-      /** @description List of tenants in this rental agreement */
-      readonly tenants?: components["schemas"]["CoTenantJson"][];
-      /** @description Start date of the rental period */
-      readonly startOfRental?: components["schemas"]["LocalDate"];
-      /** @description End date of the rental period */
-      readonly endOfRental?: components["schemas"]["LocalDate"];
-      /** @description List of rental units in this agreement */
-      readonly rentalUnits?: components["schemas"]["RentalUnitJson"][];
-      /**
-       * Format: float
-       * @description Sum of basic rent from the currently valid rent of each rental unit
-       */
-      readonly basicRent?: number;
-      /**
-       * Format: float
-       * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
-       */
-      readonly operatingCostsPrepayment?: number;
-      /**
-       * Format: float
-       * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
-       */
-      readonly heatingCostsPrepayment?: number;
-    };
-    /** @description A list of rental agreements from a tenant's perspective */
-    TenancyListJson: {
-      agreements?: components["schemas"]["TenancyJson"][];
-    };
-    /** @description An issue, as visible to the tenant who reported it or is affected by it */
-    TenantIssueJson: {
-      readonly id?: components["schemas"]["UUID"];
-      readonly modifiedAt?: components["schemas"]["Instant"];
-      title: string;
-      type: components["schemas"]["IssueType"];
-      category?: components["schemas"]["IssueCategory"];
-      readonly status?: components["schemas"]["IssueStatus"];
-      /** @description ID of the user who reported this issue */
-      readonly reporterId?: components["schemas"]["UUID"];
-      /** @description Name of the user who reported this issue */
-      readonly reportedBy?: string;
-      agreementId: components["schemas"]["UUID"];
-      rentalUnitId?: components["schemas"]["UUID"];
-      rentalUnitType?: components["schemas"]["UnitType"];
-      location?: string;
-      description: string;
-    };
-    /** @description A cursor-paginated list of issues visible to a tenant */
-    TenantIssueListJson: {
-      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
-      readonly nextCursor?: string;
-      /**
-       * Format: int32
-       * @description Number of elements in this page
-       */
-      readonly size?: number;
-      /** @description The issues in this page */
-      readonly issues?: components["schemas"]["TenantIssueJson"][];
-    };
-    /** @description A tenant item with rental units and active status for list views */
-    TenantItemJson: {
-      /** @description Unique identifier of the tenant */
-      readonly id?: components["schemas"]["UUID"];
-      /** @description First name of the tenant */
-      firstName: string;
-      /** @description Last name of the tenant */
-      lastName: string;
-      /** @description Email address of the tenant */
-      email?: string;
-      /** @description Mobile phone number of the tenant */
-      mobilePhoneNumber?: string;
-      /** @description Business phone number of the tenant */
-      businessPhoneNumber?: string;
-      /** @description Private phone number of the tenant */
-      privatePhoneNumber?: string;
-      /** @description List of all rental units the tenant has ever rented */
-      rentalUnits?: components["schemas"]["RentalUnitJson"][];
-      /** @description Indicates if the tenant has any active rental agreements */
-      active?: boolean;
-    };
-    /** @description Tenant information in a rental agreement */
-    TenantJson: {
-      readonly id?: components["schemas"]["UUID"];
-      /** @example Max */
-      firstName: string;
-      /** @example Mustermann */
-      lastName: string;
-      /** @example tenant@example.com */
-      email?: string;
-      /** @example +491234567890 */
-      mobilePhoneNumber?: string;
-      /** @example +491234567890 */
-      businessPhoneNumber?: string;
-      /** @example +491234567890 */
-      privatePhoneNumber?: string;
-      address?: components["schemas"]["AddressJson"];
-      /** @example Berlin */
-      placeOfBirth?: string;
-      /** @example 1990-01-01 */
-      dateOfBirth?: components["schemas"]["LocalDate"];
-      readonly userId?: components["schemas"]["UUID"];
-    };
-    /** @description A list of tenants for a project */
-    TenantListJson: {
-      tenants?: components["schemas"]["TenantItemJson"][];
-    };
-    /** @description An issue timeline entry */
-    TimelineJson: {
-      readonly issueId?: components["schemas"]["UUID"];
-      readonly tenancyId?: components["schemas"]["UUID"];
-      readonly timelineId?: components["schemas"]["UUID"];
-      readonly attachments?: components["schemas"]["IssueAttachmentJson"][];
-      readonly senderId?: components["schemas"]["UUID"];
-      readonly senderName?: string;
-      purpose: components["schemas"]["MessagePurpose"];
-      message: string;
-      readonly createdAt?: components["schemas"]["Instant"];
-      readonly modifiedAt?: components["schemas"]["Instant"];
-    };
-    /** @description A list of issue timelines */
-    TimelineListJson: {
-      /** @description Timeline entries */
-      readonly timelines?: components["schemas"]["TimelineJson"][];
-    };
-    /** Format: uuid */
-    UUID: string;
-    /** @enum {string} */
-    UnitType: "PROPERTY" | "SITE" | "BUILDING" | "APARTMENT" | "STORAGE" | "COMMERCIAL";
-    /** @enum {string} */
-    UserContext: "MANAGER" | "TENANT" | "CONTRACTOR";
-    /** @description User information globally */
-    UserJson: {
-      active?: boolean;
-      readonly id?: components["schemas"]["UUID"];
-      readonly userContexts?: components["schemas"]["UserContext"][];
-      /** @example user@example.com */
-      readonly email?: string;
-      firstName?: string;
-      lastName?: string;
-      address?: components["schemas"]["AddressJson"];
-      mobilePhoneNumber?: string;
-      businessPhoneNumber?: string;
-      privatePhoneNumber?: string;
-      locale?: string;
-      /** @example Berlin */
-      placeOfBirth?: string;
-      /** @example 1990-01-01 */
-      dateOfBirth?: components["schemas"]["LocalDate"];
-      /**
-       * @example [
-       *       "test@example.com",
-       *       "info@example.com"
-       *     ]
-       */
-      additionalEmails?: string[];
-      readonly registeredDate?: components["schemas"]["LocalDate"];
-      readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
-    };
-    UserModel: {
-      id?: components["schemas"]["UUID"];
-      email?: string;
-      name?: string;
-      active?: boolean;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;

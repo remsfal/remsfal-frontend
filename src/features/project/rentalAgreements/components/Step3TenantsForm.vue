@@ -8,7 +8,7 @@ import Message from 'primevue/message';
 
 // Services & Types
 import type { TenantItemJson } from '../services/TenantService';
-import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type { TenantJson, TenantWritableJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Components
 import TenantForm from './TenantForm.vue';
@@ -20,11 +20,11 @@ export type { TenantJson };
 // Props & Emits
 const props = defineProps<{
   projectId: string;
-  tenants: TenantJson[];
+  tenants: TenantWritableJson[];
 }>();
 
 const emit = defineEmits<{
-  'update:tenants': [value: TenantJson[]];
+  'update:tenants': [value: TenantWritableJson[]];
   back: [];
   next: [];
 }>();
@@ -42,17 +42,16 @@ const onTenantSelected = (tenant: TenantItemJson | null) => {
     return;
   }
 
-  // Check if tenant already added
-  const alreadyAdded = props.tenants.some((t) => t.id === tenant.id);
+  // Check if tenant already added (by email, since neither list nor selection carries an id here)
+  const alreadyAdded = !!tenant.email && props.tenants.some((t) => t.email === tenant.email);
   if (alreadyAdded) {
     selectedExistingTenant.value = null;
     showTenantForm.value = false;
     return;
   }
 
-  // Convert TenantItemJson to TenantJson (add missing fields as undefined)
-  const tenantForRental: TenantJson = {
-    id: tenant.id,
+  // Convert TenantItemJson to TenantWritableJson (add missing fields as undefined)
+  const tenantForRental: TenantWritableJson = {
     firstName: tenant.firstName,
     lastName: tenant.lastName,
     email: tenant.email,
@@ -98,7 +97,7 @@ const canProceed = computed(() => {
 });
 
 // Handle tenant form submission
-const onTenantFormSubmit = (tenant: TenantJson) => {
+const onTenantFormSubmit = (tenant: TenantWritableJson) => {
   emit('update:tenants', [...props.tenants, tenant]);
   showTenantForm.value = false;
 };
@@ -139,7 +138,13 @@ const onTenantFormCancel = () => {
     </div>
 
     <!-- Tenant Form (shown when adding new tenant) -->
-    <TenantForm v-if="showTenantForm" @submit="onTenantFormSubmit" @cancel="onTenantFormCancel" />
+    <TenantForm
+      v-if="showTenantForm"
+      :heading="t('rentalAgreement.step3.newTenantDetails')"
+      :submitLabel="t('rentalAgreement.step3.addTenantToList')"
+      @submit="onTenantFormSubmit"
+      @cancel="onTenantFormCancel"
+    />
 
     <!-- Selected Tenants List (Compact Display) -->
     <div v-if="tenants.length > 0" class="flex flex-col gap-2">
@@ -148,7 +153,7 @@ const onTenantFormCancel = () => {
       </h4>
       <div
         v-for="(tenant, index) in tenants"
-        :key="tenant.id || index"
+        :key="index"
         class="flex items-center justify-between p-3 border rounded-lg bg-gray-50"
       >
         <div class="flex-1">

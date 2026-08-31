@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { userService, type UserJson } from '@/features/common/users/services/UserService';
 import i18n from '@/i18n/i18n';
 
-export type User = ApiComponents['schemas']['UserJson'];
+export type User = UserJson;
 
 export const useUserSessionStore = defineStore('user-session', {
   state: () => ({ user: null as User | null, sessionInitialized: false }),
@@ -10,7 +10,7 @@ export const useUserSessionStore = defineStore('user-session', {
   actions: {
     async refreshSessionState() {
       try {
-        const user = await apiClient.get('/api/v1/user');
+        const user = await userService.getUser();
         this.user = user;
         console.log('Active user session:', user);
         if (user?.locale) {

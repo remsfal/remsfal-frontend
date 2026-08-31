@@ -1,6 +1,6 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type StorageJson = ApiComponents['schemas']['StorageJson'];
+export type StorageJson = Readable<ApiComponents['schemas']['StorageJson']>;
 
 export default class StorageService {
   // Create a new storage

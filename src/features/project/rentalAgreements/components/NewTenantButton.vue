@@ -6,7 +6,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue';
 import TenantForm from './TenantForm.vue';
 import TenantSelect from './TenantSelect.vue';
 import type { TenantItemJson } from '../services/TenantService';
-import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type { TenantJson, TenantWritableJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 const props = defineProps<{
   projectId: string;
@@ -15,7 +15,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  newTenant: [tenant: TenantJson];
+  newTenant: [tenant: TenantWritableJson];
 }>();
 
 const { t } = useI18n();
@@ -34,7 +34,7 @@ function confirmExistingTenant() {
   const tenant = selectedExistingTenant.value;
   if (!tenant || isSelectedTenantAlreadyAdded.value) return;
 
-  const tenantForRental: TenantJson = {
+  const tenantForRental: TenantWritableJson = {
     firstName: tenant.firstName,
     lastName: tenant.lastName,
     email: tenant.email,
@@ -54,7 +54,8 @@ function openDialog() {
   visible.value = true;
 }
 
-function onSubmit(tenant: TenantJson) {
+function onSubmit(tenant: TenantWritableJson) {
+  // TenantForm never emits id/userId (server-assigned); this dialog only creates new tenants.
   emit('newTenant', tenant);
   visible.value = false;
   showTenantForm.value = false;
@@ -106,7 +107,13 @@ function onCancel() {
         />
       </div>
 
-      <TenantForm v-if="showTenantForm" @submit="onSubmit" @cancel="onCancel" />
+      <TenantForm
+        v-if="showTenantForm"
+        :heading="t('rentalAgreement.step3.newTenantDetails')"
+        :submitLabel="t('rentalAgreement.step3.addTenantToList')"
+        @submit="onSubmit"
+        @cancel="onCancel"
+      />
     </div>
   </BaseDialog>
 </template>

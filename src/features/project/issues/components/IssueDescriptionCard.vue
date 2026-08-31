@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueWritableJson } from '@/services/IssueService';
 
 const props = defineProps<{
   projectId: string;
@@ -40,7 +40,7 @@ const handleSave = async () => {
 
   loadingSave.value = true;
   try {
-    const payload: Partial<IssueJson> = { description: description.value };
+    const payload: IssueWritableJson = { description: description.value };
 
     // Call backend API
     await issueService.updateIssue(props.issueId, payload);

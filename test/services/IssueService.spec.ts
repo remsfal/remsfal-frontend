@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import { issueService, type IssueJson, type IssueStatus, type IssueType } from '@/services/IssueService';
+import { issueService, type IssueWritableJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
 const projectId = 'test-project';
 const issueId = 'test-issue';
@@ -23,7 +23,7 @@ describe('IssueService with MSW (http)', () => {
   });
 
   test('createIssue returns the newly created issue', async () => {
-    const newIssue: Partial<IssueJson> = {
+    const newIssue: IssueWritableJson = {
       title: 'New Issue',
       description: 'New Description',
       status: 'OPEN' as IssueStatus,
@@ -35,7 +35,7 @@ describe('IssueService with MSW (http)', () => {
   });
 
   test('updateIssue returns the updated issue', async () => {
-    const updates: Partial<IssueJson> = {
+    const updates: IssueWritableJson = {
       title: 'Updated Issue',
       description: 'Updated Description',
     };

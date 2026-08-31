@@ -9,7 +9,8 @@ import TenantDeleteButton from './TenantDeleteButton.vue';
 import NewTenantButton from './NewTenantButton.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,
-  type TenantJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
+  type TenantJson,
+  type TenantWritableJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 const props = defineProps<{
   projectId: string;
@@ -48,7 +49,7 @@ function showErrorToast(error: unknown) {
   });
 }
 
-async function onNewTenant(tenant: TenantJson) {
+async function onNewTenant(tenant: TenantWritableJson) {
   if (!props.rentalAgreement.id) return;
 
   saving.value = true;

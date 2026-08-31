@@ -29,7 +29,7 @@ const mockTenant = {
   businessPhoneNumber: '',
   privatePhoneNumber: '',
   address: {
-    street: 'Musterstraße 1', zip: '12345', city: 'Berlin', province: 'Berlin', countryCode: 'DE' 
+    street: 'Musterstraße 1', zip: '12345', city: 'Berlin', province: 'Berlin', countryCode: 'DE'
   },
 };
 

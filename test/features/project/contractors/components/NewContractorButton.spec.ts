@@ -131,7 +131,7 @@ describe('NewContractorButton', () => {
     await flushPromises();
 
     expect(projectContractorService.createContractor).toHaveBeenCalledWith(
-      'proj-1', expect.objectContaining({ companyName: 'Test GmbH', remarks: 'Handles roofing jobs' }),
+      'proj-1', expect.objectContaining({ name: 'Test GmbH', remarks: 'Handles roofing jobs' }),
     );
     expect(wrapper.emitted('newContractor')).toBeTruthy();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
@@ -154,7 +154,7 @@ describe('NewContractorButton', () => {
     await flushPromises();
 
     expect(projectContractorService.createContractor).toHaveBeenCalledWith('proj-1', {
-      companyName: 'Minimal GmbH',
+      name: 'Minimal GmbH',
       email: undefined,
       phone: undefined,
       contactPerson: undefined,

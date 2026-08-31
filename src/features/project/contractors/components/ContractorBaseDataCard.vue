@@ -63,7 +63,7 @@ onMounted(async () => {
   try {
     const c = await projectContractorService.getContractor(props.projectId, props.contractorId);
     const loaded = {
-      companyName: c.companyName ?? '',
+      companyName: c.name ?? '',
       email: c.email ?? '',
       phone: c.phone ?? '',
       contactPerson: c.contactPerson ?? '',
@@ -85,7 +85,7 @@ async function onSubmit(event: FormSubmitEvent) {
   if (!event.valid || phoneError.value) return;
   const s = event.states;
   const payload = {
-    companyName: s.companyName?.value || undefined,
+    name: s.companyName?.value || undefined,
     email: currentValues.email || undefined,
     phone: currentValues.phone || undefined,
     contactPerson: currentValues.contactPerson || undefined,
@@ -95,7 +95,7 @@ async function onSubmit(event: FormSubmitEvent) {
   try {
     const updated = await projectContractorService.updateContractor(props.projectId, props.contractorId, payload);
     const saved = {
-      companyName: updated.companyName ?? '',
+      companyName: updated.name ?? '',
       email: updated.email ?? '',
       phone: updated.phone ?? '',
       contactPerson: updated.contactPerson ?? '',

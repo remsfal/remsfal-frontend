@@ -8,14 +8,11 @@ import type { TreeNode } from 'primevue/treenode';
 
 // Services & Types
 import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
-import type { ApiComponents } from '@/services/ApiClient';
+import type { RentJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Components
 import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import RentalDetailsForm, { type RentalDetails } from './RentalDetailsForm.vue';
-
-// Extract RentJson from API schema
-type RentJson = ApiComponents['schemas']['RentJson'];
 
 // Extend RentJson with additional UI-specific fields
 export interface SelectedUnit extends RentJson {
