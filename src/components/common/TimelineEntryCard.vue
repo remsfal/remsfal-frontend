@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Image from 'primevue/image';
+import { formatDateTime } from '@/helper/dataHelper';
 
 export interface TimelineAttachmentView {
   attachmentId: string;
@@ -28,33 +29,15 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { locale } = useI18n();
 
-const imageFileExtensions = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
+const formattedDate = computed(() => formatDateTime(props.date, locale.value));
 
-const formattedDate = computed(() => {
-  if (!props.date) return null;
-  const date = new Date(props.date);
-  if (Number.isNaN(date.getTime())) return props.date;
-  return date.toLocaleString(locale.value);
-});
+const imageAttachments = computed(() => props.attachments.filter(
+  attachment => attachment.contentType?.startsWith('image/')
+));
 
-const isImageAttachment = (attachment: TimelineAttachmentView) => {
-  if (attachment.contentType?.startsWith('image/')) {
-    return true;
-  }
-
-  const fileName = attachment.fileName?.trim().toLowerCase();
-  if (!fileName || !fileName.includes('.')) {
-    return false;
-  }
-
-  const extension = fileName.split('.').pop();
-  return extension ? imageFileExtensions.has(extension) : false;
-};
-
-const imageAttachments = computed(() => props.attachments.filter(isImageAttachment));
-const nonImageAttachments = computed(() =>
-  props.attachments.filter((attachment) => !isImageAttachment(attachment)),
-);
+const nonImageAttachments = computed(() => props.attachments.filter(
+  attachment => !attachment.contentType?.startsWith('image/')
+));
 
 const getAttachmentTypeLabel = (attachment: TimelineAttachmentView) => {
   const fileName = attachment.fileName?.trim().toLowerCase();

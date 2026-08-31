@@ -43,17 +43,25 @@ export function useTimeline(options: UseTimelineOptions) {
       !(options.isBlocked?.(items.value) ?? false),
   );
 
+  let fetchSequence = 0;
+
   const fetchItems = async () => {
+    const currentFetch = ++fetchSequence;
     loading.value = true;
     error.value = false;
     try {
-      items.value = await options.load();
+      const result = await options.load();
+      if (currentFetch !== fetchSequence) return;
+      items.value = result;
     } catch (fetchError) {
+      if (currentFetch !== fetchSequence) return;
       console.error(options.loadErrorLogLabel ?? 'Failed to load timeline', fetchError);
       items.value = [];
       error.value = true;
     } finally {
-      loading.value = false;
+      if (currentFetch === fetchSequence) {
+        loading.value = false;
+      }
     }
   };
 

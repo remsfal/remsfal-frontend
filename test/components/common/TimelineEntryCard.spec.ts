@@ -60,7 +60,7 @@ describe('TimelineEntryCard component', () => {
     openSpy.mockRestore();
   });
 
-  it('treats image extensions as images even without a content type', () => {
+  it('treats attachments without a content type as files, even with an image extension', () => {
     const wrapper = mount(TimelineEntryCard, {
       props: {
         title: 'Titel',
@@ -75,8 +75,39 @@ describe('TimelineEntryCard component', () => {
       },
     });
 
-    expect(wrapper.find('img').exists()).toBe(true);
-    expect(wrapper.text()).not.toContain('WEBP');
+    expect(wrapper.find('img').exists()).toBe(false);
+    expect(wrapper.text()).toContain('WEBP');
+  });
+
+  it('renders one tile per non-image attachment, even with the same extension', async () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    const wrapper = mount(TimelineEntryCard, {
+      props: {
+        title: 'Titel',
+        attachmentsLabel: 'Anhänge',
+        downloadAttachmentLabel: 'Herunterladen',
+        attachments: [
+          {
+            attachmentId: 'att-1', fileName: 'a.pdf', contentType: 'application/pdf', downloadUrl: '/att-1' 
+          },
+          {
+            attachmentId: 'att-2', fileName: 'b.pdf', contentType: 'application/pdf', downloadUrl: '/att-2' 
+          },
+        ],
+      },
+    });
+
+    const tiles = wrapper.findAll('button.cursor-pointer');
+    expect(tiles).toHaveLength(2);
+    expect(tiles[0].text()).toBe('PDF');
+    expect(tiles[1].text()).toBe('PDF');
+
+    await tiles[0].trigger('click');
+    expect(openSpy).toHaveBeenCalledWith('/att-1', '_blank', 'noopener,noreferrer');
+
+    await tiles[1].trigger('click');
+    expect(openSpy).toHaveBeenCalledWith('/att-2', '_blank', 'noopener,noreferrer');
+    openSpy.mockRestore();
   });
 
   it('renders non-image attachments as a labeled tile and triggers download on click', async () => {

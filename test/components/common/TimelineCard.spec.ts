@@ -16,15 +16,11 @@ const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
   ...overrides,
 });
 
-const defaultLabels = {
-  title: 'Verlauf',
-  emptyText: 'Keine Einträge',
-  loadErrorText: 'Laden fehlgeschlagen',
-  messagePlaceholder: 'Nachricht...',
-  uploadButtonLabel: 'Hochladen',
-  uploadEmptyText: 'Dateien hier ablegen',
-  sendButtonLabel: 'Senden',
-  sendErrorMessage: 'Senden fehlgeschlagen',
+const defaultLabels = { title: 'Verlauf' };
+
+const i18nTexts = {
+  loadErrorText: 'Timeline-Einträge konnten nicht geladen werden.',
+  sendErrorMessage: 'Nachricht konnte nicht gesendet werden. Versuchen sie es später noch einmal.',
 };
 
 const mountCard = (props: Partial<InstanceType<typeof TimelineCard>['$props']> = {}) =>
@@ -62,7 +58,42 @@ describe('TimelineCard component', () => {
     await flushPromises();
 
     expect(wrapper.find('[data-testid="timeline-error"]').exists()).toBe(true);
-    expect(wrapper.text()).toContain(defaultLabels.loadErrorText);
+    expect(wrapper.text()).toContain(i18nTexts.loadErrorText);
+  });
+
+  it('disables the compose form while the timeline is loading', async () => {
+    let resolveLoad: ((value: TimelineJson[]) => void) | undefined;
+    const load = vi.fn().mockReturnValue(new Promise<TimelineJson[]>((resolve) => { resolveLoad = resolve; }));
+    const wrapper = mountCard({ load });
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="timeline-message-input"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.getComponent(FileUpload).props('disabled')).toBe(true);
+    expect(wrapper.get('[data-testid="timeline-message-submit"]').attributes('disabled')).toBeDefined();
+
+    resolveLoad?.([]);
+    await flushPromises();
+  });
+
+  it('disables the compose form when loading failed', async () => {
+    const wrapper = mountCard({ load: vi.fn().mockRejectedValue(new Error('fail')) });
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="timeline-message-input"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.getComponent(FileUpload).props('disabled')).toBe(true);
+    expect(wrapper.get('[data-testid="timeline-message-submit"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('does not send a message typed while the timeline could not be loaded', async () => {
+    const send = vi.fn().mockResolvedValue(undefined);
+    const wrapper = mountCard({ load: vi.fn().mockRejectedValue(new Error('fail')), send });
+    await flushPromises();
+
+    await wrapper.get('[data-testid="timeline-message-input"]').setValue('Text');
+    await wrapper.get('[data-testid="timeline-message-submit"]').trigger('click');
+    await flushPromises();
+
+    expect(send).not.toHaveBeenCalled();
   });
 
   it('renders the item slot with the loaded entries', async () => {
@@ -155,6 +186,9 @@ describe('TimelineCard component', () => {
     await flushPromises();
 
     expect(send).toHaveBeenCalledTimes(1);
+    expect(wrapper.get('[data-testid="timeline-message-input"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.getComponent(FileUpload).props('disabled')).toBe(true);
+
     resolveSend?.();
     await flushPromises();
   });
@@ -169,7 +203,7 @@ describe('TimelineCard component', () => {
     await flushPromises();
 
     expect(toastAddMock).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: 'error', detail: defaultLabels.sendErrorMessage }),
+      expect.objectContaining({ severity: 'error', detail: i18nTexts.sendErrorMessage }),
     );
   });
 });
