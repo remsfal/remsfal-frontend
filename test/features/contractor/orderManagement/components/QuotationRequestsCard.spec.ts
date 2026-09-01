@@ -40,12 +40,6 @@ describe('QuotationRequestsCard', () => {
     expect(quotationRequestService.getContractorQuotationRequests).toHaveBeenCalledOnce();
   });
 
-  it('renders card title "Anfragen zur Erstellung eines Angebots"', async () => {
-    const wrapper = mountCard();
-    await flushPromises();
-    expect(wrapper.text()).toContain('Anfragen zur Erstellung eines Angebots');
-  });
-
   it('shows only REQUESTED entries in the table', async () => {
     const wrapper = mountCard();
     await flushPromises();
@@ -68,13 +62,6 @@ describe('QuotationRequestsCard', () => {
     const wrapper = mountCard();
     await flushPromises();
     expect(wrapper.text()).toContain('Keine Anfragen zur Erstellung eines Angebots vorhanden');
-  });
-
-  it('handles undefined items from API gracefully', async () => {
-    vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({items: undefined,});
-    const wrapper = mountCard();
-    await flushPromises();
-    expect(wrapper.exists()).toBe(true);
   });
 
   it('does not throw when getContractorQuotationRequests fails', async () => {

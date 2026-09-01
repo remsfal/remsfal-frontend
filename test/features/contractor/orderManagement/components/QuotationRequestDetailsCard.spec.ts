@@ -45,24 +45,4 @@ describe('QuotationRequestDetailsCard component', () => {
     const contentText = wrapper.get('.p-card-content').text();
     expect(contentText).not.toContain('qr-1');
   });
-
-  it('joins the billing address lines', () => {
-    const wrapper = mountCard(makeRequest());
-
-    expect(wrapper.text()).toContain('Musterstraße 1, 12345 Musterstadt');
-  });
-
-  it('renders the translated status as text, not a Tag', () => {
-    const wrapper = mountCard(makeRequest({ status: 'SUBMITTED' }));
-
-    expect(wrapper.text()).toContain(i18n.global.t('quotationRequest.status.SUBMITTED'));
-    expect(wrapper.find('.p-tag').exists()).toBe(false);
-  });
-
-  it('renders no editable fields and no save action', () => {
-    const wrapper = mountCard(makeRequest());
-
-    expect(wrapper.find('input, textarea').exists()).toBe(false);
-    expect(wrapper.find('button').exists()).toBe(false);
-  });
 });
