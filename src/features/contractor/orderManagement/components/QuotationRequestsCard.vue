@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
+import { useRouter } from 'vue-router';
 import BaseCard from '@/components/common/BaseCard.vue';
+import QuotationRequestsTable from './QuotationRequestsTable.vue';
 import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
+const router = useRouter();
 
 const requests = ref<QuotationRequestJson[]>([]);
 const isLoading = ref(true);
@@ -27,6 +28,11 @@ async function fetchRequests() {
   }
 }
 
+function onRequestSelect(request: QuotationRequestJson) {
+  if (!request.id) return;
+  router.push({ name: 'ContractorOrderDetails', params: { requestId: request.id } });
+}
+
 onMounted(() => {
   fetchRequests();
 });
@@ -38,22 +44,7 @@ onMounted(() => {
       {{ t('orderManagement.quotationRequests.title') }}
     </template>
     <template #content>
-      <DataTable :value="quotationRequests">
-        <template #empty>
-          <span class="text-muted-color">{{ t('orderManagement.quotationRequests.empty') }}</span>
-        </template>
-        <Column field="status" :header="t('quotationRequest.table.status')">
-          <template #body="{ data }">
-            {{ data.status ? t(`quotationRequest.status.${data.status}`) : '' }}
-          </template>
-        </Column>
-        <Column field="scopeOfWork" :header="t('quotationRequest.table.scopeOfWork')" />
-        <Column field="createdAt" :header="t('quotationRequest.table.createdAt')">
-          <template #body="{ data }">
-            {{ data.createdAt ? d(new Date(data.createdAt), 'shortFormat') : '' }}
-          </template>
-        </Column>
-      </DataTable>
+      <QuotationRequestsTable :requests="quotationRequests" @rowSelect="onRequestSelect" />
     </template>
   </BaseCard>
 </template>

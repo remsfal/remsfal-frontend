@@ -2684,7 +2684,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": unknown;
+                        "application/json": components["schemas"]["OrderAttachmentJson"][];
                     };
                 };
                 /** @description Invalid input or unsupported file type */
@@ -2974,6 +2974,112 @@ export interface paths {
                     content?: never;
                 };
                 /** @description Quotation request not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ticketing/v1/order-management/quotation-requests/{requestId}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve the timeline entries for a quotation request. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the quotation request */
+                    requestId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Timeline entries retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorTimelineListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to access this request */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The quotation request does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new timeline entry for a quotation request. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the quotation request */
+                    requestId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ContractorTimelineJson"];
+                };
+            };
+            responses: {
+                /** @description Timeline entry created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to access this request */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The quotation request does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -3852,6 +3958,28 @@ export interface components {
             total?: $Read<number>;
             contractors?: components["schemas"]["ContractorJson"][];
         };
+        /** @description A contractor timeline entry */
+        ContractorTimelineJson: {
+            requestId?: $Read<components["schemas"]["UUID"]>;
+            issueId?: $Read<components["schemas"]["UUID"]>;
+            timelineId?: $Read<components["schemas"]["UUID"]>;
+            /** @description IDs of attachments (uploaded via the quotation request's attachments endpoint) to link to this timeline entry */
+            attachmentIds?: string[];
+            senderId?: $Read<components["schemas"]["UUID"]>;
+            senderName?: $Read<string>;
+            senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+            recipient?: components["schemas"]["ParticipantRole"];
+            title?: string;
+            purpose: components["schemas"]["MessagePurpose"];
+            message: string;
+            createdAt?: $Read<components["schemas"]["Instant"]>;
+            modifiedAt?: $Read<components["schemas"]["Instant"]>;
+        };
+        /** @description A list of contractor timelines */
+        ContractorTimelineListJson: {
+            /** @description Timeline entries */
+            timelines?: $Read<components["schemas"]["ContractorTimelineJson"][]>;
+        };
         /** @description A country item of a list */
         CountryItemJson: {
             countryCode: string;
@@ -4106,6 +4234,8 @@ export interface components {
         OrganizationMemberListJson: {
             organizations?: components["schemas"]["OrganizationMemberJson"][];
         };
+        /** @enum {string} */
+        ParticipantRole: "CONTRACTOR" | "MANAGER" | "TENANT";
         /** @description A project item with the user's member role only */
         ProjectItemJson: {
             id: $Read<components["schemas"]["UUID"]>;

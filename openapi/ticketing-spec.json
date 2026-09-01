@@ -347,6 +347,87 @@
           }
         }
       },
+      "ContractorTimelineJson" : {
+        "description" : "A contractor timeline entry",
+        "type" : "object",
+        "properties" : {
+          "requestId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "issueId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "timelineId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "attachmentIds" : {
+            "description" : "IDs of attachments (uploaded via the quotation request's attachments endpoint) to link to this timeline entry",
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "senderId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "senderName" : {
+            "type" : "string",
+            "readOnly" : true
+          },
+          "senderRole" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/ParticipantRole"
+          },
+          "recipient" : {
+            "$ref" : "#/components/schemas/ParticipantRole"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "purpose" : {
+            "$ref" : "#/components/schemas/MessagePurpose"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          }
+        },
+        "required" : [ "purpose", "message" ]
+      },
+      "ContractorTimelineListJson" : {
+        "description" : "A list of contractor timelines",
+        "type" : "object",
+        "properties" : {
+          "timelines" : {
+            "description" : "Timeline entries",
+            "readOnly" : true,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ContractorTimelineJson"
+            }
+          }
+        }
+      },
       "CountryItemJson" : {
         "description" : "A country item of a list",
         "type" : "object",
@@ -1040,6 +1121,10 @@
             }
           }
         }
+      },
+      "ParticipantRole" : {
+        "type" : "string",
+        "enum" : [ "CONTRACTOR", "MANAGER", "TENANT" ]
       },
       "ProjectItemJson" : {
         "description" : "A project item with the user's member role only",
@@ -4420,7 +4505,12 @@
             "description" : "Attachments uploaded successfully",
             "content" : {
               "application/json" : {
-                "schema" : { }
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/OrderAttachmentJson"
+                  }
+                }
               }
             }
           },
@@ -4625,6 +4715,83 @@
           },
           "404" : {
             "description" : "Quotation request not found"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/order-management/quotation-requests/{requestId}/timeline" : {
+      "get" : {
+        "summary" : "Retrieve the timeline entries for a quotation request.",
+        "parameters" : [ {
+          "description" : "ID of the quotation request",
+          "required" : true,
+          "name" : "requestId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Timeline entries retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorTimelineListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The quotation request does not exist"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a new timeline entry for a quotation request.",
+        "parameters" : [ {
+          "description" : "ID of the quotation request",
+          "required" : true,
+          "name" : "requestId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ContractorTimelineJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Timeline entry created successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The quotation request does not exist"
           }
         },
         "security" : [ {

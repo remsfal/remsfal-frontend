@@ -5,8 +5,16 @@ import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import type { components as ticketingComponents, Readable } from '@/services/api/ticketing-schema';
 
 export type TimelineJson = Readable<ticketingComponents['schemas']['TimelineJson']>;
+export type ContractorTimelineJson = Readable<ticketingComponents['schemas']['ContractorTimelineJson']>;
+export type TimelinePurpose = ticketingComponents['schemas']['MessagePurpose'];
 
-type TimelinePurpose = NonNullable<TimelineJson['purpose']>;
+/**
+ * Union of every timeline-entry shape the shared TimelineCard/useTimeline base can render.
+ * TimelineCard stays a single, non-generic component (Vue's `generic=` SFC attribute breaks
+ * vue-tsc's public type emission and @vue/test-utils' findComponent/InstanceType typing), so each
+ * feature-level item card narrows its own concrete member of this union at its own #item slot.
+ */
+export type TimelineEntry = TimelineJson | ContractorTimelineJson;
 
 export interface TimelineSendPayload {
   purpose: TimelinePurpose;
@@ -14,11 +22,11 @@ export interface TimelineSendPayload {
 }
 
 export interface UseTimelineOptions {
-  load: () => Promise<TimelineJson[]>;
+  load: () => Promise<TimelineEntry[]>;
   send: (payload: TimelineSendPayload, files: File[]) => Promise<void>;
   watchSource?: WatchSource;
   sendPurpose?: TimelinePurpose;
-  isBlocked?: (items: TimelineJson[]) => boolean;
+  isBlocked?: (items: TimelineEntry[]) => boolean;
   sendErrorMessage: () => string;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
@@ -30,7 +38,7 @@ export function useTimeline(options: UseTimelineOptions) {
 
   const loading = ref(false);
   const error = ref(false);
-  const items = ref([]) as Ref<TimelineJson[]>;
+  const items = ref([]) as Ref<TimelineEntry[]>;
   const messageText = ref('');
   const selectedFiles = ref<File[]>([]);
   const fileUploadKey = ref(0);
