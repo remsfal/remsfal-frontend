@@ -59,6 +59,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ContractorOrderDetails': RouteRecordInfo<
+      'ContractorOrderDetails',
+      '/contractor/orders/:requestId',
+      { requestId: ParamValue<true> },
+      { requestId: ParamValue<false> },
+      | never
+    >,
     'ContractorOrdersClosed': RouteRecordInfo<
       'ContractorOrdersClosed',
       '/contractor/orders/closed',
@@ -355,6 +362,14 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | never
+    }
+    'src/pages/contractor/orders/[requestId].vue': {
+      routes:
+        | 'ContractorOrderDetails'
+      views:
+        | never
+      pathParamNames:
+        | 'requestId'
     }
     'src/pages/contractor/orders/closed.vue': {
       routes:

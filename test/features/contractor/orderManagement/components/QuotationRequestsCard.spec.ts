@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import QuotationRequestsCard from '@/features/contractor/orderManagement/components/QuotationRequestsCard.vue';
+import QuotationRequestsTable from '@/features/contractor/orderManagement/components/QuotationRequestsTable.vue';
 import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
+
+const pushMock = vi.fn();
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('vue-router')>();
+  return { ...actual, useRouter: () => ({ push: pushMock }) };
+});
 
 const mockRequests: QuotationRequestJson[] = [
   {
@@ -21,6 +28,7 @@ const mockRequests: QuotationRequestJson[] = [
 describe('QuotationRequestsCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    pushMock.mockClear();
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({items: mockRequests,});
   });
 
@@ -78,5 +86,17 @@ describe('QuotationRequestsCard', () => {
     await flushPromises();
     expect(wrapper.exists()).toBe(true);
     consoleSpy.mockRestore();
+  });
+
+  it('navigates to the order details route when a row is selected', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+
+    wrapper.getComponent(QuotationRequestsTable).vm.$emit('rowSelect', mockRequests[0]);
+
+    expect(pushMock).toHaveBeenCalledWith({
+      name: 'ContractorOrderDetails',
+      params: { requestId: 'qr-1' },
+    });
   });
 });
