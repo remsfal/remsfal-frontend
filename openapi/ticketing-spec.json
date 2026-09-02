@@ -351,48 +351,16 @@
         "description" : "A contractor timeline entry",
         "type" : "object",
         "properties" : {
-          "requestId" : {
-            "readOnly" : true,
-            "type" : "string",
-            "$ref" : "#/components/schemas/UUID"
-          },
           "issueId" : {
-            "readOnly" : true,
-            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "timelineId" : {
-            "readOnly" : true,
-            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
-          "attachmentIds" : {
-            "description" : "IDs of attachments (uploaded via the quotation request's attachments endpoint) to link to this timeline entry",
-            "type" : "array",
-            "items" : {
-              "type" : "string",
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            }
-          },
           "senderId" : {
-            "readOnly" : true,
-            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "senderName" : {
-            "type" : "string",
-            "readOnly" : true
-          },
-          "senderRole" : {
-            "readOnly" : true,
-            "type" : "string",
-            "$ref" : "#/components/schemas/ParticipantRole"
-          },
-          "recipient" : {
-            "$ref" : "#/components/schemas/ParticipantRole"
-          },
-          "title" : {
             "type" : "string"
           },
           "purpose" : {
@@ -402,14 +370,30 @@
             "type" : "string"
           },
           "createdAt" : {
-            "readOnly" : true,
-            "type" : "string",
             "$ref" : "#/components/schemas/Instant"
           },
           "modifiedAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "requestId" : {
             "readOnly" : true,
             "type" : "string",
-            "$ref" : "#/components/schemas/Instant"
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "senderRole" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/ParticipantRole"
+          },
+          "recipient" : {
+            "$ref" : "#/components/schemas/ParticipantRole"
+          },
+          "attachments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderAttachmentJson"
+            },
+            "readOnly" : true
           }
         },
         "required" : [ "purpose", "message" ]
@@ -419,12 +403,12 @@
         "type" : "object",
         "properties" : {
           "timelines" : {
-            "description" : "Timeline entries",
-            "readOnly" : true,
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ContractorTimelineJson"
-            }
+            },
+            "description" : "Timeline entries",
+            "readOnly" : true
           }
         }
       },
@@ -844,8 +828,8 @@
         "examples" : [ "2022-03-10T12:15:50-04:00" ]
       },
       "OrderAttachmentJson" : {
-        "description" : "An attachment associated with a quotation request, quotation, or order placement",
         "type" : "object",
+        "description" : "An attachment associated with a quotation request, quotation, or order placement",
         "properties" : {
           "processPhase" : {
             "$ref" : "#/components/schemas/OrderProcessPhase"
@@ -2224,13 +2208,6 @@
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
-          "attachments" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/IssueAttachmentJson"
-            },
-            "readOnly" : true
-          },
           "senderId" : {
             "readOnly" : true,
             "type" : "string",
@@ -2255,6 +2232,13 @@
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/Instant"
+          },
+          "attachments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
+            },
+            "readOnly" : true
           }
         },
         "required" : [ "purpose", "message" ]
@@ -3645,6 +3629,155 @@
         } ]
       }
     },
+    "/ticketing/v1/issues/{issueId}/quotation-request/{requestId}/timeline" : {
+      "get" : {
+        "summary" : "Retrieve the timeline entries for a quotation request.",
+        "parameters" : [ {
+          "description" : "ID of the quotation request",
+          "required" : true,
+          "name" : "requestId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Timeline entries retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorTimelineListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The quotation request does not exist"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a new timeline entry with attachments for a quotation request.",
+        "parameters" : [ {
+          "description" : "ID of the quotation request",
+          "required" : true,
+          "name" : "requestId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "required" : [ "timeline" ],
+                "type" : "object",
+                "properties" : {
+                  "timeline" : {
+                    "description" : "Timeline entry information as JSON",
+                    "type" : "object",
+                    "properties" : {
+                      "issueId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "timelineId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderName" : {
+                        "type" : "string"
+                      },
+                      "purpose" : {
+                        "$ref" : "#/components/schemas/MessagePurpose"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "modifiedAt" : {
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "requestId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderRole" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/ParticipantRole"
+                      },
+                      "recipient" : {
+                        "$ref" : "#/components/schemas/ParticipantRole"
+                      },
+                      "attachments" : {
+                        "type" : "array",
+                        "items" : {
+                          "$ref" : "#/components/schemas/OrderAttachmentJson"
+                        },
+                        "readOnly" : true
+                      }
+                    },
+                    "required" : [ "purpose", "message" ]
+                  },
+                  "attachment" : {
+                    "description" : "One or more files to attach to the timeline entry",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Timeline entry created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorTimelineJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The quotation request does not exist"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
     "/ticketing/v1/issues/{issueId}/quotations" : {
       "get" : {
         "summary" : "Retrieve all quotations for an issue.",
@@ -3999,13 +4132,6 @@
                         "type" : "string",
                         "$ref" : "#/components/schemas/UUID"
                       },
-                      "attachments" : {
-                        "type" : "array",
-                        "items" : {
-                          "$ref" : "#/components/schemas/IssueAttachmentJson"
-                        },
-                        "readOnly" : true
-                      },
                       "senderId" : {
                         "readOnly" : true,
                         "type" : "string",
@@ -4030,6 +4156,13 @@
                         "readOnly" : true,
                         "type" : "string",
                         "$ref" : "#/components/schemas/Instant"
+                      },
+                      "attachments" : {
+                        "type" : "array",
+                        "items" : {
+                          "$ref" : "#/components/schemas/IssueAttachmentJson"
+                        },
+                        "readOnly" : true
                       }
                     },
                     "required" : [ "purpose", "message" ]
@@ -4505,12 +4638,7 @@
             "description" : "Attachments uploaded successfully",
             "content" : {
               "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/OrderAttachmentJson"
-                  }
-                }
+                "schema" : { }
               }
             }
           },
@@ -4760,7 +4888,7 @@
         } ]
       },
       "post" : {
-        "summary" : "Create a new timeline entry for a quotation request.",
+        "summary" : "Create a new timeline entry with attachments for a quotation request.",
         "parameters" : [ {
           "description" : "ID of the quotation request",
           "required" : true,
@@ -4772,9 +4900,71 @@
         } ],
         "requestBody" : {
           "content" : {
-            "application/json" : {
+            "multipart/form-data" : {
               "schema" : {
-                "$ref" : "#/components/schemas/ContractorTimelineJson"
+                "required" : [ "timeline" ],
+                "type" : "object",
+                "properties" : {
+                  "timeline" : {
+                    "description" : "Timeline entry information as JSON",
+                    "type" : "object",
+                    "properties" : {
+                      "issueId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "timelineId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderName" : {
+                        "type" : "string"
+                      },
+                      "purpose" : {
+                        "$ref" : "#/components/schemas/MessagePurpose"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "modifiedAt" : {
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "requestId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderRole" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/ParticipantRole"
+                      },
+                      "recipient" : {
+                        "$ref" : "#/components/schemas/ParticipantRole"
+                      },
+                      "attachments" : {
+                        "type" : "array",
+                        "items" : {
+                          "$ref" : "#/components/schemas/OrderAttachmentJson"
+                        },
+                        "readOnly" : true
+                      }
+                    },
+                    "required" : [ "purpose", "message" ]
+                  },
+                  "attachment" : {
+                    "description" : "One or more files to attach to the timeline entry",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -4782,7 +4972,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Timeline entry created successfully"
+            "description" : "Timeline entry created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorTimelineJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -5364,13 +5564,6 @@
                         "type" : "string",
                         "$ref" : "#/components/schemas/UUID"
                       },
-                      "attachments" : {
-                        "type" : "array",
-                        "items" : {
-                          "$ref" : "#/components/schemas/IssueAttachmentJson"
-                        },
-                        "readOnly" : true
-                      },
                       "senderId" : {
                         "readOnly" : true,
                         "type" : "string",
@@ -5395,6 +5588,13 @@
                         "readOnly" : true,
                         "type" : "string",
                         "$ref" : "#/components/schemas/Instant"
+                      },
+                      "attachments" : {
+                        "type" : "array",
+                        "items" : {
+                          "$ref" : "#/components/schemas/IssueAttachmentJson"
+                        },
+                        "readOnly" : true
                       }
                     },
                     "required" : [ "purpose", "message" ]

@@ -3,7 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
 import type { ContractorTimelineJson }
   from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';
-import type { OrderAttachmentJson } from '@/features/contractor/orderManagement/services/OrderAttachmentService';
 import ContractorOrderTimelineItemCard from
   '@/features/contractor/orderManagement/components/ContractorOrderTimelineItemCard.vue';
 import TimelineEntryCard from '@/components/common/TimelineEntryCard.vue';
@@ -17,15 +16,8 @@ const makeTimeline = (overrides: Partial<ContractorTimelineJson> = {}): Contract
   ...overrides,
 });
 
-const mountItemCard = (
-  item: ContractorTimelineJson,
-  requestId = 'request-1',
-  attachmentsById: Map<string, OrderAttachmentJson> = new Map(),
-) => shallowMount(ContractorOrderTimelineItemCard, {
-  props: {
-    item, requestId, attachmentsById 
-  } 
-});
+const mountItemCard = (item: ContractorTimelineJson, requestId = 'request-1') =>
+  shallowMount(ContractorOrderTimelineItemCard, { props: { item, requestId } });
 
 const entryCardProps = (wrapper: ReturnType<typeof mountItemCard>) =>
   wrapper.getComponent(TimelineEntryCard).props();
@@ -59,38 +51,48 @@ describe('ContractorOrderTimelineItemCard component', () => {
     expect(titleFor({ purpose: undefined })).toBe(i18n.global.t('orderManagement.timeline.entryFallbackTitle'));
   });
 
-  it('resolves attachmentIds present in attachmentsById into downloadable attachments', () => {
-    const attachmentsById = new Map<string, OrderAttachmentJson>([
-      ['att-1', {
-        attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf' 
-      }],
-    ]);
+  it('builds attachment download URLs, falling back to the attachment id as filename', () => {
     const wrapper = mountItemCard(
-      makeTimeline({ attachmentIds: ['att-1'] }),
-      'request-1',
-      attachmentsById,
+      makeTimeline({
+        attachments: [
+          {
+            attachmentId: 'att-1',
+            fileName: 'report.pdf',
+            contentType: 'application/pdf',
+          },
+          { attachmentId: 'fallback-att', contentType: 'application/pdf' },
+        ],
+      }),
     );
 
     expect(entryCardProps(wrapper).attachments).toEqual([
       expect.objectContaining({
         attachmentId: 'att-1',
-        fileName: 'report.pdf',
         downloadUrl: '/ticketing/v1/order-management/quotation-requests/request-1/attachments/att-1/report.pdf',
+      }),
+      expect.objectContaining({
+        attachmentId: 'fallback-att',
+        downloadUrl:
+          '/ticketing/v1/order-management/quotation-requests/request-1/attachments/fallback-att/fallback-att',
       }),
     ]);
   });
 
-  it('shows an unresolved-attachment hint for attachmentIds missing from attachmentsById', () => {
-    const wrapper = mountItemCard(makeTimeline({ attachmentIds: ['att-1', 'att-2'] }));
+  it('encodes request, attachment and filename in the generated download URL', () => {
+    const wrapper = mountItemCard(
+      makeTimeline({
+        attachments: [{
+          attachmentId: 'att id/1',
+          fileName: 'file name #1.pdf',
+          contentType: 'application/pdf',
+        }],
+      }),
+      'request id/ä',
+    );
 
-    expect(entryCardProps(wrapper).attachments).toEqual([]);
-    const hint = wrapper.get('[data-testid="contractor-order-timeline-unresolved-attachment"]');
-    expect(hint.text()).toContain('2');
-  });
-
-  it('renders no unresolved hint when there are no attachmentIds', () => {
-    const wrapper = mountItemCard(makeTimeline());
-
-    expect(wrapper.find('[data-testid="contractor-order-timeline-unresolved-attachment"]').exists()).toBe(false);
+    expect(entryCardProps(wrapper).attachments?.[0]?.downloadUrl).toBe(
+      '/ticketing/v1/order-management/quotation-requests/request%20id%2F%C3%A4'
+      + '/attachments/att%20id%2F1/file%20name%20%231.pdf',
+    );
   });
 });

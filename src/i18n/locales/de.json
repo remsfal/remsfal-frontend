@@ -1113,7 +1113,6 @@
   "orderManagement.timeline.managerPanelTitle": "Verwalter-Kommunikation",
   "orderManagement.timeline.attachmentsLabel": "Anhänge",
   "orderManagement.timeline.downloadAttachmentLabel": "Anhang herunterladen",
-  "orderManagement.timeline.unresolvedAttachment": "Anhang",
   "orderManagement.timeline.messageTitle": "Nachricht von {senderName}",
   "orderManagement.timeline.issueCreatedTitle": "Anfrage von {senderName} erstellt",
   "orderManagement.timeline.appointmentRequestedTitle": "Terminanfrage von {senderName}",

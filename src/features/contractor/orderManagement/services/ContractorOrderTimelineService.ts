@@ -2,6 +2,7 @@ import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClie
 
 export type ContractorTimelineJson = Readable<ApiComponents['schemas']['ContractorTimelineJson']>;
 export type ContractorTimelineListJson = Readable<ApiComponents['schemas']['ContractorTimelineListJson']>;
+export type OrderAttachmentJson = Readable<ApiComponents['schemas']['OrderAttachmentJson']>;
 export type ParticipantRole = ApiComponents['schemas']['ParticipantRole'];
 export type MessagePurpose = ApiComponents['schemas']['MessagePurpose'];
 
@@ -9,7 +10,6 @@ export interface CreateContractorTimelineEntry {
   purpose: MessagePurpose;
   message: string;
   recipient: ParticipantRole;
-  attachmentIds?: string[];
 }
 
 class ContractorOrderTimelineService {
@@ -21,10 +21,21 @@ class ContractorOrderTimelineService {
     return { timelines: result.timelines ?? [] };
   }
 
-  async createTimelineEntry(requestId: string, entry: CreateContractorTimelineEntry): Promise<void> {
+  async createTimelineEntryWithAttachments(
+    requestId: string,
+    entry: CreateContractorTimelineEntry,
+    files: File[],
+  ): Promise<void> {
+    const formData = new FormData();
+    formData.append('timeline', new Blob([JSON.stringify(entry)], { type: 'application/json' }));
+
+    files.forEach((file) => {
+      formData.append('attachment', file);
+    });
+
     await apiClient.post(
       '/ticketing/v1/order-management/quotation-requests/{requestId}/timeline',
-      entry,
+      formData as never,
       { pathParams: { requestId } },
     );
   }

@@ -1609,6 +1609,139 @@ export interface paths {
         };
         trace?: never;
     };
+    "/ticketing/v1/issues/{issueId}/quotation-request/{requestId}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve the timeline entries for a quotation request. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the quotation request */
+                    requestId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Timeline entries retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorTimelineListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to access this request */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The quotation request does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new timeline entry with attachments for a quotation request. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the quotation request */
+                    requestId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description Timeline entry information as JSON */
+                        timeline: {
+                            issueId?: components["schemas"]["UUID"];
+                            timelineId?: components["schemas"]["UUID"];
+                            senderId?: components["schemas"]["UUID"];
+                            senderName?: string;
+                            purpose: components["schemas"]["MessagePurpose"];
+                            message: string;
+                            createdAt?: components["schemas"]["Instant"];
+                            modifiedAt?: components["schemas"]["Instant"];
+                            requestId?: $Read<components["schemas"]["UUID"]>;
+                            senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+                            recipient?: components["schemas"]["ParticipantRole"];
+                            attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+                        };
+                        /** @description One or more files to attach to the timeline entry */
+                        attachment?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Timeline entry created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorTimelineJson"];
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to access this request */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The quotation request does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ticketing/v1/issues/{issueId}/quotations": {
         parameters: {
             query?: never;
@@ -2066,13 +2199,13 @@ export interface paths {
                             issueId?: $Read<components["schemas"]["UUID"]>;
                             tenancyId?: $Read<components["schemas"]["UUID"]>;
                             timelineId?: $Read<components["schemas"]["UUID"]>;
-                            attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
                             senderId?: $Read<components["schemas"]["UUID"]>;
                             senderName?: $Read<string>;
                             purpose: components["schemas"]["MessagePurpose"];
                             message: string;
                             createdAt?: $Read<components["schemas"]["Instant"]>;
                             modifiedAt?: $Read<components["schemas"]["Instant"]>;
+                            attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
                         };
                         /** @description One or more files to attach to the timeline entry */
                         attachment?: string[];
@@ -2684,7 +2817,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["OrderAttachmentJson"][];
+                        "application/json": unknown;
                     };
                 };
                 /** @description Invalid input or unsupported file type */
@@ -3041,7 +3174,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Create a new timeline entry for a quotation request. */
+        /** Create a new timeline entry with attachments for a quotation request. */
         post: {
             parameters: {
                 query?: never;
@@ -3054,12 +3187,39 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ContractorTimelineJson"];
+                    "multipart/form-data": {
+                        /** @description Timeline entry information as JSON */
+                        timeline: {
+                            issueId?: components["schemas"]["UUID"];
+                            timelineId?: components["schemas"]["UUID"];
+                            senderId?: components["schemas"]["UUID"];
+                            senderName?: string;
+                            purpose: components["schemas"]["MessagePurpose"];
+                            message: string;
+                            createdAt?: components["schemas"]["Instant"];
+                            modifiedAt?: components["schemas"]["Instant"];
+                            requestId?: $Read<components["schemas"]["UUID"]>;
+                            senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+                            recipient?: components["schemas"]["ParticipantRole"];
+                            attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+                        };
+                        /** @description One or more files to attach to the timeline entry */
+                        attachment?: string[];
+                    };
                 };
             };
             responses: {
                 /** @description Timeline entry created successfully */
                 201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorTimelineJson"];
+                    };
+                };
+                /** @description Invalid input */
+                400: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -3771,13 +3931,13 @@ export interface paths {
                             issueId?: $Read<components["schemas"]["UUID"]>;
                             tenancyId?: $Read<components["schemas"]["UUID"]>;
                             timelineId?: $Read<components["schemas"]["UUID"]>;
-                            attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
                             senderId?: $Read<components["schemas"]["UUID"]>;
                             senderName?: $Read<string>;
                             purpose: components["schemas"]["MessagePurpose"];
                             message: string;
                             createdAt?: $Read<components["schemas"]["Instant"]>;
                             modifiedAt?: $Read<components["schemas"]["Instant"]>;
+                            attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
                         };
                         /** @description One or more files to attach to the timeline entry */
                         attachment?: string[];
@@ -3960,20 +4120,18 @@ export interface components {
         };
         /** @description A contractor timeline entry */
         ContractorTimelineJson: {
-            requestId?: $Read<components["schemas"]["UUID"]>;
-            issueId?: $Read<components["schemas"]["UUID"]>;
-            timelineId?: $Read<components["schemas"]["UUID"]>;
-            /** @description IDs of attachments (uploaded via the quotation request's attachments endpoint) to link to this timeline entry */
-            attachmentIds?: string[];
-            senderId?: $Read<components["schemas"]["UUID"]>;
-            senderName?: $Read<string>;
-            senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
-            recipient?: components["schemas"]["ParticipantRole"];
-            title?: string;
+            issueId?: components["schemas"]["UUID"];
+            timelineId?: components["schemas"]["UUID"];
+            senderId?: components["schemas"]["UUID"];
+            senderName?: string;
             purpose: components["schemas"]["MessagePurpose"];
             message: string;
-            createdAt?: $Read<components["schemas"]["Instant"]>;
-            modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
+            requestId?: $Read<components["schemas"]["UUID"]>;
+            senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+            recipient?: components["schemas"]["ParticipantRole"];
+            attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
         };
         /** @description A list of contractor timelines */
         ContractorTimelineListJson: {
@@ -4671,13 +4829,13 @@ export interface components {
             issueId?: $Read<components["schemas"]["UUID"]>;
             tenancyId?: $Read<components["schemas"]["UUID"]>;
             timelineId?: $Read<components["schemas"]["UUID"]>;
-            attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
             senderId?: $Read<components["schemas"]["UUID"]>;
             senderName?: $Read<string>;
             purpose: components["schemas"]["MessagePurpose"];
             message: string;
             createdAt?: $Read<components["schemas"]["Instant"]>;
             modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
         };
         /** @description A list of issue timelines */
         TimelineListJson: {

@@ -1110,7 +1110,6 @@
   "orderManagement.timeline.managerPanelTitle": "Manager Communication",
   "orderManagement.timeline.attachmentsLabel": "Attachments",
   "orderManagement.timeline.downloadAttachmentLabel": "Download attachment",
-  "orderManagement.timeline.unresolvedAttachment": "Attachment",
   "orderManagement.timeline.messageTitle": "Message from {senderName}",
   "orderManagement.timeline.issueCreatedTitle": "Request created by {senderName}",
   "orderManagement.timeline.appointmentRequestedTitle": "Appointment requested by {senderName}",

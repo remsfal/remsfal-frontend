@@ -33,24 +33,34 @@ describe('ContractorOrderTimelineService', () => {
     expect(result).toEqual({ timelines: [] });
   });
 
-  test('createTimelineEntry posts a plain JSON body with recipient and attachmentIds', async () => {
+  test('createTimelineEntryWithAttachments sends multipart form data', async () => {
     const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce(undefined);
+    const files = [
+      new File(['a'], 'a.txt', { type: 'text/plain' }),
+      new File(['b'], 'b.txt', { type: 'text/plain' }),
+    ];
 
-    await contractorOrderTimelineService.createTimelineEntry('request-1', {
-      purpose: 'MESSAGE_SENT',
-      message: 'Hello tenant',
-      recipient: 'TENANT',
-      attachmentIds: ['att-1'],
-    });
-
-    expect(postSpy).toHaveBeenCalledWith(
-      '/ticketing/v1/order-management/quotation-requests/{requestId}/timeline',
+    await contractorOrderTimelineService.createTimelineEntryWithAttachments(
+      'request-1',
       {
-        purpose: 'MESSAGE_SENT', message: 'Hello tenant', recipient: 'TENANT', attachmentIds: ['att-1']
+        purpose: 'MESSAGE_SENT', message: 'Hello tenant', recipient: 'TENANT' 
       },
-      { pathParams: { requestId: 'request-1' } },
+      files,
     );
-    const [, payload] = postSpy.mock.calls[0];
-    expect(payload).not.toBeInstanceOf(FormData);
+
+    const [path, payload, options] = postSpy.mock.calls[0];
+    expect(path).toBe('/ticketing/v1/order-management/quotation-requests/{requestId}/timeline');
+    expect(payload).toBeInstanceOf(FormData);
+    expect(options).toEqual({ pathParams: { requestId: 'request-1' } });
+
+    const formData = payload as FormData;
+    const timelinePart = formData.get('timeline');
+    expect(timelinePart).toBeInstanceOf(Blob);
+    expect(await (timelinePart as Blob).text()).toBe(
+      JSON.stringify({
+        purpose: 'MESSAGE_SENT', message: 'Hello tenant', recipient: 'TENANT' 
+      }),
+    );
+    expect(formData.getAll('attachment')).toHaveLength(2);
   });
 });

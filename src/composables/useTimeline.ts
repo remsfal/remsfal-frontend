@@ -7,13 +7,6 @@ import type { components as ticketingComponents, Readable } from '@/services/api
 export type TimelineJson = Readable<ticketingComponents['schemas']['TimelineJson']>;
 export type ContractorTimelineJson = Readable<ticketingComponents['schemas']['ContractorTimelineJson']>;
 export type TimelinePurpose = ticketingComponents['schemas']['MessagePurpose'];
-
-/**
- * Union of every timeline-entry shape the shared TimelineCard/useTimeline base can render.
- * TimelineCard stays a single, non-generic component (Vue's `generic=` SFC attribute breaks
- * vue-tsc's public type emission and @vue/test-utils' findComponent/InstanceType typing), so each
- * feature-level item card narrows its own concrete member of this union at its own #item slot.
- */
 export type TimelineEntry = TimelineJson | ContractorTimelineJson;
 
 export interface TimelineSendPayload {

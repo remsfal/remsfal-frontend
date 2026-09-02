@@ -50,22 +50,16 @@ watch(() => props.requestId, fetchRequest);
 
     <template v-else-if="request">
       <QuotationRequestDetailsCard :request="request" />
-      <div class="flex flex-col gap-4 md:flex-row">
-        <ContractorOrderTimelineCard
-          class="md:flex-1"
-          :requestId="props.requestId"
-          recipient="TENANT"
-          :title="t('orderManagement.timeline.tenantPanelTitle')"
-          :attachments="request.attachments ?? []"
-        />
-        <ContractorOrderTimelineCard
-          class="md:flex-1"
-          :requestId="props.requestId"
-          recipient="MANAGER"
-          :title="t('orderManagement.timeline.managerPanelTitle')"
-          :attachments="request.attachments ?? []"
-        />
-      </div>
+      <ContractorOrderTimelineCard
+        :requestId="props.requestId"
+        recipient="TENANT"
+        :title="t('orderManagement.timeline.tenantPanelTitle')"
+      />
+      <ContractorOrderTimelineCard
+        :requestId="props.requestId"
+        recipient="MANAGER"
+        :title="t('orderManagement.timeline.managerPanelTitle')"
+      />
     </template>
   </div>
 </template>

@@ -25,12 +25,6 @@ export const mockContractorTimelineEntry = {
   createdAt: '2026-01-16T10:00:00Z',
 };
 
-export const mockOrderAttachment = {
-  attachmentId: 'att-1',
-  fileName: 'foto.jpg',
-  contentType: 'image/jpeg',
-};
-
 export const quotationRequestHandlers = [
   http.get(`${TICKETING_BASE}/issues/:issueId/quotation-request`, () => {
     return HttpResponse.json({ items: [mockQuotationRequest] }, { status: 200 });
@@ -50,9 +44,5 @@ export const quotationRequestHandlers = [
 
   http.post(`${TICKETING_BASE}/order-management/quotation-requests/:requestId/timeline`, () => {
     return new HttpResponse(null, { status: 201 });
-  }),
-
-  http.post(`${TICKETING_BASE}/order-management/quotation-requests/:processId/attachments`, () => {
-    return HttpResponse.json([mockOrderAttachment], { status: 200 });
   }),
 ];

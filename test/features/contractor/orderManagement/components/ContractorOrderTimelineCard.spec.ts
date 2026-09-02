@@ -6,8 +6,6 @@ import ContractorOrderTimelineItemCard from
   '@/features/contractor/orderManagement/components/ContractorOrderTimelineItemCard.vue';
 import { contractorOrderTimelineService, type ContractorTimelineJson }
   from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';
-import { orderAttachmentService, type OrderAttachmentJson }
-  from '@/features/contractor/orderManagement/services/OrderAttachmentService';
 
 vi.mock('@/features/contractor/orderManagement/services/ContractorOrderTimelineService', async () => {
   const actual = await vi.importActual<
@@ -17,18 +15,8 @@ vi.mock('@/features/contractor/orderManagement/services/ContractorOrderTimelineS
     ...actual,
     contractorOrderTimelineService: {
       getTimelineEntries: vi.fn(),
-      createTimelineEntry: vi.fn(),
+      createTimelineEntryWithAttachments: vi.fn(),
     },
-  };
-});
-
-vi.mock('@/features/contractor/orderManagement/services/OrderAttachmentService', async () => {
-  const actual = await vi.importActual<
-    typeof import('@/features/contractor/orderManagement/services/OrderAttachmentService')
-      >('@/features/contractor/orderManagement/services/OrderAttachmentService');
-  return {
-    ...actual,
-    orderAttachmentService: { uploadAttachments: vi.fn() },
   };
 });
 
@@ -45,14 +33,12 @@ interface CardProps {
   requestId: string;
   recipient: 'TENANT' | 'MANAGER';
   title: string;
-  attachments: OrderAttachmentJson[];
 }
 
 const defaultProps: CardProps = {
   requestId: 'request-1',
   recipient: 'TENANT',
   title: 'Mieter-Kommunikation',
-  attachments: [],
 };
 
 const mountCardShallow = async (props: Partial<CardProps> = {}) => {
@@ -73,55 +59,38 @@ describe('ContractorOrderTimelineCard component', () => {
     expect(result).toEqual([makeTimeline()]);
   });
 
-  it('sends a text-only message with the fixed recipient and no attachments', async () => {
-    vi.mocked(contractorOrderTimelineService.createTimelineEntry).mockResolvedValueOnce();
+  it('sends messages with attachments for the given request and fixed recipient', async () => {
+    vi.mocked(contractorOrderTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
 
     const wrapper = await mountCardShallow({ recipient: 'MANAGER' });
-    const send = wrapper.getComponent(TimelineCard).props('send');
-    await send({ purpose: 'MESSAGE_SENT', message: 'Hallo' }, []);
-
-    expect(orderAttachmentService.uploadAttachments).not.toHaveBeenCalled();
-    expect(contractorOrderTimelineService.createTimelineEntry).toHaveBeenCalledWith('request-1', {
-      purpose: 'MESSAGE_SENT',
-      message: 'Hallo',
-      recipient: 'MANAGER',
-      attachmentIds: [],
-    });
-  });
-
-  it('uploads files first, then creates the timeline entry with the returned attachmentIds', async () => {
-    const uploaded: OrderAttachmentJson[] = [{ attachmentId: 'att-1', fileName: 'a.pdf' }];
-    vi.mocked(orderAttachmentService.uploadAttachments).mockResolvedValueOnce(uploaded);
-    vi.mocked(contractorOrderTimelineService.createTimelineEntry).mockResolvedValueOnce();
-
-    const wrapper = await mountCardShallow();
     const send = wrapper.getComponent(TimelineCard).props('send');
     const files = [new File(['a'], 'a.pdf')];
     await send({ purpose: 'MESSAGE_SENT', message: 'Hallo' }, files);
 
-    expect(orderAttachmentService.uploadAttachments).toHaveBeenCalledWith('request-1', files);
-    expect(contractorOrderTimelineService.createTimelineEntry).toHaveBeenCalledWith('request-1', {
-      purpose: 'MESSAGE_SENT',
-      message: 'Hallo',
-      recipient: 'TENANT',
-      attachmentIds: ['att-1'],
-    });
+    expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
+      'request-1',
+      {
+        purpose: 'MESSAGE_SENT', message: 'Hallo', recipient: 'MANAGER' 
+      },
+      files,
+    );
   });
 
   it('sends an empty message when only attachments are submitted', async () => {
-    vi.mocked(orderAttachmentService.uploadAttachments).mockResolvedValueOnce([]);
-    vi.mocked(contractorOrderTimelineService.createTimelineEntry).mockResolvedValueOnce();
+    vi.mocked(contractorOrderTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
 
     const wrapper = await mountCardShallow();
     const send = wrapper.getComponent(TimelineCard).props('send');
-    await send({ purpose: 'MESSAGE_SENT' }, [new File(['a'], 'a.pdf')]);
+    const files = [new File(['a'], 'a.pdf')];
+    await send({ purpose: 'MESSAGE_SENT' }, files);
 
-    expect(contractorOrderTimelineService.createTimelineEntry).toHaveBeenCalledWith('request-1', {
-      purpose: 'MESSAGE_SENT',
-      message: '',
-      recipient: 'TENANT',
-      attachmentIds: [],
-    });
+    expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
+      'request-1',
+      {
+        purpose: 'MESSAGE_SENT', message: '', recipient: 'TENANT' 
+      },
+      files,
+    );
   });
 
   it('does not render a FileUpload composer of its own (reuses the base TimelineCard one)', async () => {
@@ -136,15 +105,15 @@ describe('ContractorOrderTimelineCard component', () => {
     expect(wrapper.findAllComponents(FileUpload)).toHaveLength(1);
   });
 
-  it('renders ContractorOrderTimelineItemCard for each entry with item, requestId and attachmentsById', async () => {
-    const timeline = makeTimeline({ timelineId: 'abc', attachmentIds: ['att-1'] });
+  it('renders ContractorOrderTimelineItemCard for each entry with item and requestId', async () => {
+    const timeline = makeTimeline({ timelineId: 'abc' });
     vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce({ timelines: [timeline] });
 
     const { default: ContractorOrderTimelineCard } = await import(
       '@/features/contractor/orderManagement/components/ContractorOrderTimelineCard.vue'
     );
     const wrapper = mount(ContractorOrderTimelineCard, {
-      props: { ...defaultProps, attachments: [{ attachmentId: 'att-1', fileName: 'a.pdf' }] },
+      props: defaultProps,
       global: { stubs: { ContractorOrderTimelineItemCard: true } },
     });
     await flushPromises();
@@ -152,6 +121,5 @@ describe('ContractorOrderTimelineCard component', () => {
     const itemCard = wrapper.getComponent(ContractorOrderTimelineItemCard);
     expect(itemCard.props('item')).toEqual(timeline);
     expect(itemCard.props('requestId')).toBe('request-1');
-    expect(itemCard.props('attachmentsById').get('att-1')).toEqual({ attachmentId: 'att-1', fileName: 'a.pdf' });
   });
 });
