@@ -6,6 +6,7 @@ import type { AddressJson } from '@/services/AddressService'
 
 const storeMocks = vi.hoisted(() => ({
   fetchUserOrganization: vi.fn().mockResolvedValue(undefined),
+  setOrganization: vi.fn(),
   initialized: false,
 }))
 
@@ -15,6 +16,7 @@ vi.mock('@/stores/OrganizationStore', () => ({
       return storeMocks.initialized
     },
     fetchUserOrganization: storeMocks.fetchUserOrganization,
+    setOrganization: storeMocks.setOrganization,
     userOrganizations: [],
   }),
 }))
@@ -63,6 +65,7 @@ describe('OrganizationSettingsView.vue', () => {
     capturedSaveAddress = undefined
     storeMocks.initialized = false
     storeMocks.fetchUserOrganization.mockClear()
+    storeMocks.setOrganization.mockClear()
     vi.spyOn(organizationService, 'getOrganization').mockResolvedValue(mockOrg)
     vi.spyOn(organizationService, 'updateOrganization').mockResolvedValue(mockOrg)
   })
@@ -130,5 +133,17 @@ describe('OrganizationSettingsView.vue', () => {
     await capturedSaveAddress!(address)
 
     expect(organizationService.updateOrganization).toHaveBeenCalledWith('org-123', { address })
+  })
+
+  it('saveAddress updates the organization store with the response so other views stay in sync', async () => {
+    mountView('org-123')
+    await flushPromises()
+
+    const address: AddressJson = {
+      street: 'Neue Str. 2', city: 'Hamburg', zip: '20095', province: 'Hamburg', countryCode: 'DE'
+    }
+    await capturedSaveAddress!(address)
+
+    expect(storeMocks.setOrganization).toHaveBeenCalledWith(mockOrg)
   })
 })

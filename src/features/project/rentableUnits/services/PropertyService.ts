@@ -1,11 +1,11 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
 /** -------------------- TYPES & UTILS -------------------- **/
 
-export type PropertyJson = ApiComponents['schemas']['PropertyJson'];
-export type PropertyListJson = ApiComponents['schemas']['PropertyListJson'];
-export type RentalUnitTreeNodeJson = ApiComponents['schemas']['RentalUnitTreeNodeJson'];
-export type RentalUnitNodeDataJson = ApiComponents['schemas']['RentalUnitNodeDataJson'];
+export type PropertyJson = Readable<ApiComponents['schemas']['PropertyJson']>;
+export type PropertyListJson = Readable<ApiComponents['schemas']['PropertyListJson']>;
+export type RentalUnitTreeNodeJson = Readable<ApiComponents['schemas']['RentalUnitTreeNodeJson']>;
+export type RentalUnitNodeDataJson = Readable<ApiComponents['schemas']['RentalUnitNodeDataJson']>;
 export type UnitType = ApiComponents['schemas']['UnitType'];
 
 export enum EntityType {

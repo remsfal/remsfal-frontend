@@ -57,7 +57,7 @@ describe('ContractorMenu.vue', () => {
   });
 
   it('should navigate correctly when menu items are clicked', async () => {
-    userSessionStore.user = { email: 'test@example.com' };
+    userSessionStore.user = { id: 'user-1', email: 'test@example.com' };
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
 
     await wrapper.find('.pi-home').trigger('click');

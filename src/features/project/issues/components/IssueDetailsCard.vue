@@ -12,11 +12,12 @@ import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
-import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssuePriority }
+import { issueService, type IssueJson, type IssueWritableJson, type IssueStatus, type IssueType, type IssuePriority }
   from '@/services/IssueService';
 import { type RentalAgreementItemJson }
   from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
+import { formatDateTime } from '@/helper/dataHelper';
 import {getDefectCategories,
   getInquiryCategories,
   getMaintenanceCategories,
@@ -142,12 +143,7 @@ const reporterName = computed(() => reportedBy.value || t('issueDetails.fields.n
 const issueNumber = computed(() => issueId.value?.split('-').pop() || issueId.value || '—');
 
 // Formatted "assigned on" date + time, derived from the read-only modifiedAt field
-const modifiedAtLabel = computed(() => {
-  if (!modifiedAt.value) return '—';
-  const date = new Date(modifiedAt.value);
-  if (Number.isNaN(date.getTime())) return modifiedAt.value;
-  return date.toLocaleString(locale.value);
-});
+const modifiedAtLabel = computed(() => formatDateTime(modifiedAt.value, locale.value) ?? '—');
 
 // Fixed at creation, so this is a display-only tag next to the title, not a form field.
 const visibilityTag = computed(() => (visibleToTenants.value
@@ -221,7 +217,7 @@ const handleSave = async () => {
   loadingSave.value = true;
 
   try {
-    const payload: Partial<IssueJson> = {};
+    const payload: IssueWritableJson = {};
     if (title.value !== originalTitle.value) payload.title = title.value;
     if (status.value !== originalStatus.value)
       payload.status = status.value as IssueJson["status"];

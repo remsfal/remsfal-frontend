@@ -17,6 +17,7 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 const mockProfile = {
+  id: 'user-1',
   email: 'primary@example.com',
   firstName: 'Max',
   lastName: 'Mustermann',
@@ -91,7 +92,8 @@ describe('UserContactDataCard', () => {
 
   test('falls back to empty defaults when optional profile fields are missing', async () => {
     vi.mocked(userService.getUser).mockResolvedValue({
-      email: undefined,
+      id: 'user-1',
+      email: '',
       firstName: '',
       lastName: '',
       placeOfBirth: '',
@@ -241,7 +243,8 @@ describe('UserContactDataCard', () => {
     wrapper = mountCard();
     await flushPromises();
     vi.mocked(userService.updateUser).mockResolvedValue({
-      email: undefined,
+      id: 'user-1',
+      email: '',
       firstName: '',
       lastName: '',
       placeOfBirth: undefined,

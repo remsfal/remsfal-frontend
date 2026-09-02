@@ -6,3 +6,10 @@ export function toISODateString(date: Date | string | null | undefined): string 
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+
+export function formatDateTime(date: string | null | undefined, locale: string): string | null {
+  if (!date) return null;
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return date;
+  return parsed.toLocaleString(locale);
+}
