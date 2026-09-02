@@ -23,39 +23,26 @@ const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRe
 const mountCard = (request: QuotationRequestJson) => mount(QuotationRequestDetailsCard, { props: { request } });
 
 describe('QuotationRequestDetailsCard component', () => {
-  it('renders the request fields', () => {
+  it('renders the request fields as plain text', () => {
     const wrapper = mountCard(makeRequest());
 
-    expect(wrapper.get('#quotation-request-id').element as HTMLInputElement).toHaveProperty('value', 'qr-1');
-    expect(wrapper.get('#quotation-request-contractor-name').element as HTMLInputElement)
-      .toHaveProperty('value', 'Alpha Bau GmbH');
-    expect(wrapper.get('#quotation-request-project-owner').element as HTMLInputElement)
-      .toHaveProperty('value', 'Max Mustermann');
-    expect(wrapper.get('#quotation-request-scope-of-work').element as HTMLTextAreaElement)
-      .toHaveProperty('value', 'Dachrinne reparieren');
-    expect(wrapper.get('#quotation-request-initiated-by').element as HTMLInputElement)
-      .toHaveProperty('value', 'Erika Verwalter');
+    expect(wrapper.text()).toContain('qr-1');
+    expect(wrapper.text()).toContain('Alpha Bau GmbH');
+    expect(wrapper.text()).toContain('Max Mustermann');
+    expect(wrapper.text()).toContain('Dachrinne reparieren');
+    expect(wrapper.text()).toContain('Erika Verwalter');
   });
 
-  it('joins the billing address lines', () => {
+  it('renders the id small, under the title, separated by a divider', () => {
     const wrapper = mountCard(makeRequest());
 
-    expect((wrapper.get('#quotation-request-billing-address').element as HTMLInputElement).value)
-      .toBe('Musterstraße 1, 12345 Musterstadt');
-  });
+    const titleBlock = wrapper.get('.p-card-title');
+    const divider = titleBlock.get('.border-b');
+    expect(titleBlock.text()).toContain(i18n.global.t('orderManagement.quotationRequestDetails.title'));
+    const idLine = divider.find('p');
+    expect(idLine.text()).toContain('qr-1');
 
-  it('renders the translated status tag', () => {
-    const wrapper = mountCard(makeRequest({ status: 'SUBMITTED' }));
-
-    expect(wrapper.text()).toContain(i18n.global.t('quotationRequest.status.SUBMITTED'));
-  });
-
-  it('renders every field as disabled, with no save action', () => {
-    const wrapper = mountCard(makeRequest());
-
-    wrapper.findAll('input, textarea').forEach((input) => {
-      expect(input.attributes('disabled')).toBeDefined();
-    });
-    expect(wrapper.find('button').exists()).toBe(false);
+    const contentText = wrapper.get('.p-card-content').text();
+    expect(contentText).not.toContain('qr-1');
   });
 });

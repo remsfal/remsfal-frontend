@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
-import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
 import type { QuotationRequestJson } from '@/services/QuotationRequestService';
 
@@ -11,91 +8,101 @@ const props = defineProps<{ request: QuotationRequestJson }>();
 
 const { t, d } = useI18n();
 
-const dateLabel = (value?: string) => (value ? d(new Date(value), 'shortDateTime') : '');
+const dateLabel = (value?: string) => (value ? d(new Date(value), 'shortDateTime') : null);
+
+const statusLabel = computed(() =>
+  props.request.status ? t(`quotationRequest.status.${props.request.status}`) : null,
+);
 
 const billingAddress = computed(() =>
   [props.request.projectBillingAddress1, props.request.projectBillingAddress2, props.request.projectBillingAddress3]
     .filter((line) => !!line)
-    .join(', '),
+    .join(', ') || null,
 );
+
+const createdAtLabel = computed(() => dateLabel(props.request.createdAt));
 </script>
 
 <template>
   <BaseCard>
     <template #title>
-      <div class="flex items-center justify-between gap-2">
-        <span>{{ t('orderManagement.quotationRequestDetails.title') }}</span>
-        <Tag v-if="request.status" :value="t(`quotationRequest.status.${request.status}`)" />
+      <div class="border-b border-gray-200 pb-4">
+        <span class="text-xl font-semibold">{{ t('orderManagement.quotationRequestDetails.title') }}</span>
+        <p v-if="request.id" class="text-base text-gray-500 font-normal mt-1">
+          {{ t('orderManagement.quotationRequestDetails.fields.id') }} {{ request.id }}
+        </p>
       </div>
     </template>
     <template #content>
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div class="flex flex-col gap-1">
-          <label for="quotation-request-id" class="text-sm text-gray-600">
-            {{ t('orderManagement.quotationRequestDetails.fields.id') }}
-          </label>
-          <InputText id="quotation-request-id" :modelValue="request.id" disabled fluid />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="quotation-request-contractor-name" class="text-sm text-gray-600">
-            {{ t('orderManagement.quotationRequestDetails.fields.contractorName') }}
-          </label>
-          <InputText id="quotation-request-contractor-name" :modelValue="request.contractorName" disabled fluid />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="quotation-request-project-owner" class="text-sm text-gray-600">
-            {{ t('orderManagement.quotationRequestDetails.fields.projectOwner') }}
-          </label>
-          <InputText id="quotation-request-project-owner" :modelValue="request.projectOwner" disabled fluid />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="quotation-request-project-care-of" class="text-sm text-gray-600">
-            {{ t('orderManagement.quotationRequestDetails.fields.projectCareOf') }}
-          </label>
-          <InputText id="quotation-request-project-care-of" :modelValue="request.projectCareOf" disabled fluid />
-        </div>
-
-        <div class="flex flex-col gap-1 lg:col-span-2">
-          <label for="quotation-request-billing-address" class="text-sm text-gray-600">
-            {{ t('orderManagement.quotationRequestDetails.fields.billingAddress') }}
-          </label>
-          <InputText id="quotation-request-billing-address" :modelValue="billingAddress" disabled fluid />
-        </div>
-
-        <div class="flex flex-col gap-1 lg:col-span-2">
-          <label for="quotation-request-scope-of-work" class="text-sm text-gray-600">
-            {{ t('orderManagement.quotationRequestDetails.fields.scopeOfWork') }}
-          </label>
-          <Textarea
-            id="quotation-request-scope-of-work" :modelValue="request.scopeOfWork"
-            disabled rows="3"
-            fluid
-          />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="quotation-request-initiated-by" class="text-sm text-gray-600">
-            {{ t('orderManagement.quotationRequestDetails.fields.initiatedBy') }}
-          </label>
-          <InputText id="quotation-request-initiated-by" :modelValue="request.initiatedBy" disabled fluid />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="quotation-request-created-at" class="text-sm text-gray-600">
-            {{ t('orderManagement.quotationRequestDetails.fields.createdAt') }}
-          </label>
-          <InputText id="quotation-request-created-at" :modelValue="dateLabel(request.createdAt)" disabled fluid />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label for="quotation-request-modified-at" class="text-sm text-gray-600">
-            {{ t('orderManagement.quotationRequestDetails.fields.modifiedAt') }}
-          </label>
-          <InputText id="quotation-request-modified-at" :modelValue="dateLabel(request.modifiedAt)" disabled fluid />
-        </div>
+      <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3">
+        <dl class="space-y-2 text-base text-gray-600">
+          <div v-if="statusLabel" class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ t('quotationRequest.table.status') }}
+            </dt>
+            <dd class="text-gray-900">
+              {{ statusLabel }}
+            </dd>
+          </div>
+          <div v-if="createdAtLabel" class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ t('orderManagement.quotationRequestDetails.fields.createdAt') }}
+            </dt>
+            <dd class="text-gray-900">
+              {{ createdAtLabel }}
+            </dd>
+          </div>
+        </dl>
+        <dl class="space-y-2 text-base text-gray-600">
+          <div v-if="request.contractorName" class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ t('orderManagement.quotationRequestDetails.fields.contractorName') }}
+            </dt>
+            <dd class="text-gray-900 break-words">
+              {{ request.contractorName }}
+            </dd>
+          </div>
+          <div v-if="request.initiatedBy" class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ t('orderManagement.quotationRequestDetails.fields.initiatedBy') }}
+            </dt>
+            <dd class="text-gray-900 break-words">
+              {{ request.initiatedBy }}
+            </dd>
+          </div>
+        </dl>
+        <dl class="space-y-2 text-base text-gray-600">
+          <div v-if="request.projectOwner" class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ t('orderManagement.quotationRequestDetails.fields.projectOwner') }}
+            </dt>
+            <dd class="text-gray-900 break-words">
+              {{ request.projectOwner }}
+            </dd>
+          </div>
+          <div v-if="request.projectCareOf" class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ t('orderManagement.quotationRequestDetails.fields.projectCareOf') }}
+            </dt>
+            <dd class="text-gray-900 break-words">
+              {{ request.projectCareOf }}
+            </dd>
+          </div>
+          <div v-if="billingAddress" class="flex items-start justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ t('orderManagement.quotationRequestDetails.fields.billingAddress') }}
+            </dt>
+            <dd class="text-gray-900 break-words">
+              {{ billingAddress }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+      <div v-if="request.scopeOfWork" class="mt-4 text-base text-gray-600">
+        {{ t('orderManagement.quotationRequestDetails.fields.scopeOfWork') }}
+        <span class="text-gray-900 whitespace-pre-line break-words">
+          {{ request.scopeOfWork }}
+        </span>
       </div>
     </template>
   </BaseCard>

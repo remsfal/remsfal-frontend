@@ -1100,7 +1100,7 @@
   "orderManagement.quotationRequestDetails.title": "Auftragsdetails",
   "orderManagement.quotationRequestDetails.loadError": "Anfrage konnte nicht geladen werden.",
   "orderManagement.quotationRequestDetails.notFound": "Anfrage nicht gefunden.",
-  "orderManagement.quotationRequestDetails.fields.id": "ID",
+  "orderManagement.quotationRequestDetails.fields.id": "ID:",
   "orderManagement.quotationRequestDetails.fields.scopeOfWork": "Leistungsbeschreibung",
   "orderManagement.quotationRequestDetails.fields.projectOwner": "Eigentümer",
   "orderManagement.quotationRequestDetails.fields.projectCareOf": "c/o",
