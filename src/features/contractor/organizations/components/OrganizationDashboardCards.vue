@@ -48,7 +48,7 @@ function formatAddressLine(address: { street?: string; zip?: string; city?: stri
     <BaseCard v-for="org in organizations" :key="org.id">
       <template #title>
         <RouterLink
-          :to="{ name: 'ContractorOrganizationSettings', params: { organizationId: org.id } }"
+          :to="{ name: 'ContractorOrganizationSettings', params: { organizationId: org.id! } }"
           class="hover:underline"
         >
           {{ org.name }}
