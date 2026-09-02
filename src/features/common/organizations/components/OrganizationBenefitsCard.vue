@@ -28,6 +28,10 @@ const dialogVisible = ref(false);
             <i class="pi pi-building text-primary mt-0.5 text-xl" />
             <span class="text-base">{{ t('organization.benefits.feature2') }}</span>
           </li>
+          <li class="flex items-start gap-3">
+            <i class="pi pi-briefcase text-primary mt-0.5 text-xl" />
+            <span class="text-base">{{ t('organization.benefits.feature3') }}</span>
+          </li>
         </ul>
 
         <div class="flex">
