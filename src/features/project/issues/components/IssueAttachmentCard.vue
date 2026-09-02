@@ -8,6 +8,7 @@ import FileUpload from 'primevue/fileupload';
 import type { FileUploadUploaderEvent } from 'primevue/fileupload';
 import Image from 'primevue/image';
 import { issueService, type IssueAttachmentJson } from '@/services/IssueService';
+import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';
 
 const props = defineProps<{
   issueId: string;
@@ -22,15 +23,13 @@ const { t } = useI18n();
 const loadingUpload = ref(false);
 const deletingAttachmentId = ref<string | null>(null);
 
-const imageAttachments = computed(() => props.attachments.filter(
-  attachment => attachment.contentType?.startsWith('image/')
-));
+const imageAttachments = computed(() => props.attachments.filter(isImageAttachment));
 
 const nonImageAttachmentGroups = computed(() => {
   const groups = new Map<string, number>();
   for (const attachment of props.attachments) {
-    if (attachment.contentType?.startsWith('image/')) continue;
-    const ext = attachment.fileName?.split('.').pop()?.toUpperCase() ?? '?';
+    if (isImageAttachment(attachment)) continue;
+    const ext = getAttachmentTypeLabel(attachment);
     groups.set(ext, (groups.get(ext) ?? 0) + 1);
   }
   return Array.from(groups.entries()).map(([ext, count]) => ({ ext, count }));
