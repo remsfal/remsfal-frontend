@@ -15,13 +15,14 @@ onMounted(() => {
   }
 });
 
-async function loadAddress(): Promise<AddressJson | undefined> {
+async function loadAddress(): Promise<AddressJson> {
   const org = await organizationService.getOrganization(props.organizationId);
-  return org.address as AddressJson | undefined;
+  return org.address as AddressJson;
 }
 
 async function saveAddress(addr: AddressJson): Promise<void> {
-  await organizationService.updateOrganization(props.organizationId, { address: addr });
+  const updated = await organizationService.updateOrganization(props.organizationId, { address: addr });
+  organizationStore.setOrganization(updated);
 }
 </script>
 
