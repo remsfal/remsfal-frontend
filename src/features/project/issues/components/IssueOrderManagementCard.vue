@@ -5,7 +5,7 @@ import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import QuotationRequestTable from './QuotationRequestTable.vue';
 import QuoteTable from './QuoteTable.vue';
 import OrderTable from './OrderTable.vue';

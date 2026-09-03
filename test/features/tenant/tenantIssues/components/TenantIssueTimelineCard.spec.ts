@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { flushPromises, shallowMount, mount } from '@vue/test-utils';
-import TimelineCard from '@/components/common/TimelineCard.vue';
+import TimelineCard from '@/components/TimelineCard.vue';
 import TenantIssueTimelineItemCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineItemCard.vue';
 import { tenantTimelineService, type TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 

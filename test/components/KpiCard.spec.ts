@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import KpiCard from '@/components/common/KpiCard.vue';
+import KpiCard from '@/components/KpiCard.vue';
 
 describe('KpiCard', () => {
   it('renders icon, title, value and subtext', () => {

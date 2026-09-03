@@ -11,7 +11,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
 import { type OrganizationEmployeeWritableJson, type EmployeeRole, organizationService } from '@/services/OrganizationService';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 
 const props = defineProps<{ organizationId: string }>();
 const emit = defineEmits<(e: 'newEmployee', email: string) => void>();

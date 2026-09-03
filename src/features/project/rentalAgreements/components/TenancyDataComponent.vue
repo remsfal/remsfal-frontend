@@ -2,7 +2,7 @@
 import type { components } from '@/services/api/platform-schema';
 import DatePicker from 'primevue/datepicker';
 import { computed, ref, watch } from 'vue';
-import { toISODateString } from '@/helper/dataHelper';
+import { toISODateString } from '@/helper/dateHelper';
 
 type RentalAgreementJson = components['schemas']['RentalAgreementJson'];
 

@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import Breadcrumb from 'primevue/breadcrumb';
 import type { MenuItem } from 'primevue/menuitem';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import {toRentableUnitView, EntityType,
   type RentalUnitTreeNodeJson, type RentalUnitNodeDataJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType } from '../unitTypeIcons';

@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { defineComponent } from 'vue';
-import PhoneInput from '@/components/common/PhoneInput.vue';
+import PhoneInput from '@/components/PhoneInput.vue';
 
 // Stub PrimeVue components to avoid complex rendering
 const InputTextStub = defineComponent({

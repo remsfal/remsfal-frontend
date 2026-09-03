@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import BaseCard from '@/components/common/BaseCard.vue';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseCard from '@/components/BaseCard.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import Button from 'primevue/button';
 
 const props = withDefaults(defineProps<{

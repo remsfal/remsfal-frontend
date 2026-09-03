@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
 import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import TenantIssueTimelineItemCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineItemCard.vue';
-import TimelineEntryCard from '@/components/common/TimelineEntryCard.vue';
+import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 
 const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
   timelineId: 'timeline-1',

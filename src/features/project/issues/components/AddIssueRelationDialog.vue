@@ -6,7 +6,7 @@ import Select from 'primevue/select';
 import InputText from 'primevue/inputtext';
 import Listbox from 'primevue/listbox';
 import Button from 'primevue/button';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import { issueService, type IssueItemJson, type IssueRelationGroup } from '@/services/IssueService';
 
 const props = defineProps<{

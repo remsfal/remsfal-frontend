@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import TenantForm from './TenantForm.vue';
 import TenantSelect from './TenantSelect.vue';
 import type { TenantItemJson } from '../services/TenantService';

@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
-import KpiCard from '@/components/common/KpiCard.vue';
+import KpiCard from '@/components/KpiCard.vue';
 import {getIconForUnitType,
   type RentalUnitTreeNodeJson,
   type UnitType,} from '@/features/project/rentableUnits';

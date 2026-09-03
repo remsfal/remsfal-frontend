@@ -102,7 +102,7 @@ describe('OrderManagementDashboardCards', () => {
     await flushPromises();
 
     const table = wrapper.findAllComponents(DataTable)[0]!;
-    expect((table.props('value') as unknown[]).length).toBe(5);
+    expect(table.props('value') as unknown[]).toHaveLength(5);
   });
 
   it('shows empty-state text per card when there are no matching entries', async () => {

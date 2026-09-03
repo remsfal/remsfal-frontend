@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { toISODateString } from '@/helper/dataHelper';
+import { toISODateString } from '@/helper/dateHelper';
 
 // PrimeVue Components
 import Button from 'primevue/button';
@@ -14,7 +14,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 // Components
-import PhoneInput from '@/components/common/PhoneInput.vue';
+import PhoneInput from '@/components/PhoneInput.vue';
 
 // Types
 import type { TenantJson, TenantWritableJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';

@@ -10,7 +10,7 @@ import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import { quotationRequestService, type CreateQuotationRequestJson } from '@/services/QuotationRequestService';
 import { type ContractorJson, projectContractorService } from '@/services/ProjectContractorService';
 import { projectService } from '@/services/ProjectService';

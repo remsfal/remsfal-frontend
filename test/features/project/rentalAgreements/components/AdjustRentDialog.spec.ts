@@ -3,7 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils';
 import TreeSelect from 'primevue/treeselect';
 import AdjustRentDialog, {type RentAdjustmentUnit,} from '@/features/project/rentalAgreements/components/AdjustRentDialog.vue';
 import RentalDetailsForm from '@/features/project/rentalAgreements/components/RentalDetailsForm.vue';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';

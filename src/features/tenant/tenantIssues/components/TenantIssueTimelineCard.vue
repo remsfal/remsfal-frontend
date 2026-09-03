@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import TimelineCard from '@/components/common/TimelineCard.vue';
+import TimelineCard from '@/components/TimelineCard.vue';
 import type { TimelineJson } from '@/composables/useTimeline';
 import TenantIssueTimelineItemCard from './TenantIssueTimelineItemCard.vue';
 import { tenantTimelineService } from '@/features/tenant/tenantIssues/services/TenantTimelineService';

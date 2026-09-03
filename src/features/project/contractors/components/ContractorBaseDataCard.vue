@@ -10,8 +10,8 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
-import BaseCard from '@/components/common/BaseCard.vue';
-import PhoneInput from '@/components/common/PhoneInput.vue';
+import BaseCard from '@/components/BaseCard.vue';
+import PhoneInput from '@/components/PhoneInput.vue';
 import { projectContractorService } from '@/services/ProjectContractorService';
 
 const props = defineProps<{ projectId: string; contractorId: string }>();

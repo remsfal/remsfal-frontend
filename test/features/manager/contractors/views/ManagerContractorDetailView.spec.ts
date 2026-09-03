@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import ManagerContractorDetailView from '@/views/ManagerContractorDetailView.vue';
+import ManagerContractorDetailView from '@/features/manager/contractors/views/ManagerContractorDetailView.vue';
 import router from '@/router';
 
 vi.mock('@/features/manager/contractors', () => ({
