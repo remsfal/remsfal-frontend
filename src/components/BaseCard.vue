@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
 import { computed } from 'vue';
-import CardSkeletonRows from '@/components/common/CardSkeletonRows.vue';
+import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
 
 interface Props {
   /**

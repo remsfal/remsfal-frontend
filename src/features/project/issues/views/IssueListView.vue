@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import IssueTable, { type IssueColumn } from '../components/IssueTable.vue';
 import NewIssueButton from '../components/NewIssueButton.vue';
 import NewTenantIssueButton from '../components/NewTenantIssueButton.vue';

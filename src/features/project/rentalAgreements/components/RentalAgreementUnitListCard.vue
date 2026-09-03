@@ -6,8 +6,8 @@ import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import BaseCard from '@/components/common/BaseCard.vue';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseCard from '@/components/BaseCard.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,
   type RentJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';

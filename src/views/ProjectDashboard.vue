@@ -10,7 +10,7 @@ import { useRoute } from 'vue-router';
 
 import Chart from 'primevue/chart';
 import Card from 'primevue/card';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 const chartPlugins = [ChartDataLabels];
 const { t } = useI18n();
 const route = useRoute('ProjectDashboard');

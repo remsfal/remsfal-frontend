@@ -9,7 +9,7 @@ import Message from 'primevue/message';
 import Popover from 'primevue/popover';
 import Textarea from 'primevue/textarea';
 import { Form } from '@primevue/forms';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';

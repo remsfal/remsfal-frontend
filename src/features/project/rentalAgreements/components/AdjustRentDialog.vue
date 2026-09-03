@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import type { TreeNode } from 'primevue/treenode';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import {rentalAgreementService,

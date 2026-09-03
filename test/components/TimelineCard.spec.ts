@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { ref } from 'vue';
 import FileUpload from 'primevue/fileupload';
-import TimelineCard from '@/components/common/TimelineCard.vue';
+import TimelineCard from '@/components/TimelineCard.vue';
 import type { TimelineJson } from '@/composables/useTimeline';
 
 const toastAddMock = vi.fn();

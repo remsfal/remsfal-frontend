@@ -5,7 +5,7 @@ import { useToast } from 'primevue/usetoast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import { orderPlacementService, type OrderPlacementJson } from '@/services/OrderPlacementService';
 
 const { t, d } = useI18n();

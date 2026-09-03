@@ -10,8 +10,8 @@ import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
-import BaseDialog from '@/components/common/BaseDialog.vue';
-import PhoneInput from '@/components/common/PhoneInput.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
+import PhoneInput from '@/components/PhoneInput.vue';
 import { type ContractorWritableJson, projectContractorService } from '@/services/ProjectContractorService';
 
 const props = defineProps<{ projectId: string }>();

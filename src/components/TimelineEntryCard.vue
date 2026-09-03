@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Image from 'primevue/image';
-import { formatDateTime } from '@/helper/dataHelper';
+import { formatDateTime } from '@/helper/dateHelper';
 import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';
 
 export interface TimelineAttachmentView {

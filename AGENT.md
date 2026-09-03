@@ -590,10 +590,10 @@ const props = defineProps<{ inputId?: string }>()
 <PhoneInput inputId="org-phone" v-model="phone" />
 ```
 
-- Existing composite components with this pattern: `PhoneInput` (`src/components/common/PhoneInput.vue`), `MemberAutoComplete` (`src/components/MemberAutoComplete.vue`)
+- Existing composite components with this pattern: `PhoneInput` (`src/components/PhoneInput.vue`), `MemberAutoComplete` (`src/components/MemberAutoComplete.vue`)
 - Apply the same `inputId` prop to every new composite input component
 
-**BaseCard Component** (`src/components/common/BaseCard.vue`):
+**BaseCard Component** (`src/components/BaseCard.vue`):
 - Standardized wrapper around PrimeVue Card with consistent styling
 - Default classes: `flex flex-col gap-4 basis-full`
 - Default title styling: `font-semibold text-xl`
@@ -637,7 +637,7 @@ Props:
 - `titleClass` (string): CSS classes for the title wrapper div. Default: `'font-semibold text-xl'`
 - `unstyled` (boolean): Disable automatic title wrapper. Default: `false`
 
-**BaseDialog Component** (`src/components/common/BaseDialog.vue`):
+**BaseDialog Component** (`src/components/BaseDialog.vue`):
 - Standardized wrapper around PrimeVue Dialog with consistent styling
 - Default: `modal: true`, `dialogClass: 'w-full max-w-lg'`
 - All PrimeVue Dialog slots and attributes are forwarded via `v-bind="$attrs"`

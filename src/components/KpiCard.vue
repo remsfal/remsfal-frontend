@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import Skeleton from 'primevue/skeleton';
 
 interface Props {

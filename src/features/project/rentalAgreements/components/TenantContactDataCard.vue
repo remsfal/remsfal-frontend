@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import Skeleton from 'primevue/skeleton';
 import { tenantService, type TenantJson, type TenantWritableJson } from '../services/TenantService';
 import TenantForm from './TenantForm.vue';
