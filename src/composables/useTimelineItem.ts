@@ -8,11 +8,15 @@ export interface UseTimelineItemProps {
   issueId: string;
 }
 
-export function useTimelineItem(
-  props: UseTimelineItemProps,
-  buildDownloadUrl: (issueId: string, attachmentId: string, fileName?: string) => string,
-) {
+export function useTimelineItem(props: UseTimelineItemProps, attachmentsBasePath: string) {
   const { t } = useI18n();
+
+  const buildDownloadUrl = (issueId: string, attachmentId: string, fileName?: string) => {
+    const encodedIssueId = encodeURIComponent(issueId);
+    const encodedAttachmentId = encodeURIComponent(attachmentId);
+    const encodedFileName = encodeURIComponent(fileName || attachmentId);
+    return `${attachmentsBasePath}/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+  };
 
   const getIssueNumber = (issueId: string) => issueId.split('-').pop() || issueId;
 

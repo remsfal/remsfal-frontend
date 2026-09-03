@@ -11,14 +11,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const buildDownloadUrl = (issueId: string, attachmentId: string, fileName?: string) => {
-  const encodedIssueId = encodeURIComponent(issueId);
-  const encodedAttachmentId = encodeURIComponent(attachmentId);
-  const encodedFileName = encodeURIComponent(fileName || attachmentId);
-  return `/ticketing/v1/tenant-relations/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
-};
-
-const { title, attachments } = useTimelineItem(props, buildDownloadUrl);
+const { title, attachments } = useTimelineItem(props, '/ticketing/v1/tenant-relations/issues');
 </script>
 
 <template>

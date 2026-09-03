@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
@@ -13,17 +13,13 @@ const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
   ...overrides,
 });
 
-const buildDownloadUrl = vi.fn(
-  (issueId: string, attachmentId: string, fileName?: string) => `/${issueId}/${attachmentId}/${fileName ?? attachmentId}`,
-);
-
 const TestComponent = defineComponent({
   props: {
     item: { type: Object as () => TimelineJson, required: true },
     issueId: { type: String, required: true },
   },
   setup(props) {
-    return { ...useTimelineItem(props, buildDownloadUrl) };
+    return { ...useTimelineItem(props, '/base') };
   },
   template: '<div></div>',
 });
@@ -77,8 +73,7 @@ describe('useTimelineItem', () => {
     );
   });
 
-  it('builds a normalized attachment list via the given buildDownloadUrl, ignoring entries without an id', () => {
-    buildDownloadUrl.mockClear();
+  it('builds a normalized attachment list under the given base path, ignoring entries without an id', () => {
     const wrapper = mountTimelineItem(makeTimeline({
       attachments: [
         {
@@ -95,10 +90,9 @@ describe('useTimelineItem', () => {
         attachmentId: 'att-1',
         contentType: 'application/pdf',
         fileName: 'report.pdf',
-        downloadUrl: '/issue-1/att-1/report.pdf',
+        downloadUrl: '/base/issue-1/attachments/att-1/report.pdf',
       }),
     ]);
-    expect(buildDownloadUrl).toHaveBeenCalledWith('issue-1', 'att-1', 'report.pdf');
   });
 
   it('recomputes title and attachments when the item prop changes', async () => {
