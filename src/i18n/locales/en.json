@@ -685,7 +685,6 @@
   "tenantIssues.timeline.downloadAttachment": "Download attachment",
   "tenantIssues.timeline.sendMessage": "Send message",
   "tenantIssues.timeline.tenantMessageTitle": "Message from {senderName}",
-  "tenantIssues.timeline.managerMessageTitle": "Message from administrator {senderName}",
   "tenantIssues.timeline.issueCreatedTitle": "Issue created by {senderName}",
   "tenantIssues.timeline.appointmentRequestedTitle": "Appointment requested by {senderName}",
   "tenantIssues.timeline.appointmentScheduledTitle": "Appointment scheduled by {senderName}",
