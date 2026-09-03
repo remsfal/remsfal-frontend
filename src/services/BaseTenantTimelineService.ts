@@ -12,7 +12,7 @@ export function createTimelineService<B extends TimelineBasePath>(basePath: B) {
     async getTimelineEntries(issueId: string): Promise<TimelineListJson> {
       const result = await apiClient.get(
         timelinePath,
-        { pathParams: { issueId } },
+        { pathParams: { issueId } } as never,
       ) as Partial<TimelineListJson>;
       return { timelines: result.timelines ?? [] };
     },
@@ -32,7 +32,7 @@ export function createTimelineService<B extends TimelineBasePath>(basePath: B) {
       await apiClient.post(
         timelinePath,
         formData as never,
-        { pathParams: { issueId } },
+        { pathParams: { issueId } } as never,
       );
     },
   };
