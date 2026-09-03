@@ -1,8 +1,7 @@
-// tests/views/ProjectDashboard.spec.ts
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import ProjectDashboard from '@/views/project/ProjectDashboard.vue';
+import ProjectDashboard from '@/views/ProjectDashboard.vue';
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';

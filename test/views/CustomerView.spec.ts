@@ -1,6 +1,6 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
 import {describe, it, expect, beforeEach, vi} from 'vitest';
-import CustomerView from '@/views/contractor/CustomerView.vue';
+import CustomerView from '@/views/CustomerView.vue';
 
 vi.mock('@/components/ContractorTable.vue', () => ({
   default: {
