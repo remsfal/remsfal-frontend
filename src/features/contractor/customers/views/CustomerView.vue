@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ContractorTable from '@/components/ContractorTable.vue';
+import { ContractorTable } from '@/features/contractor/customers';
 </script>
 
 <template>

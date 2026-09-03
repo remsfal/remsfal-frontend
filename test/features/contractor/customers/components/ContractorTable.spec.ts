@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import DataTable from 'primevue/datatable';
-import ContractorTable from '@/components/ContractorTable.vue';
+import ContractorTable from '@/features/contractor/customers/components/ContractorTable.vue';
 import { contractorService } from '@/services/ContractorService';
 import type { IssueItemJson } from '@/services/IssueService';
 

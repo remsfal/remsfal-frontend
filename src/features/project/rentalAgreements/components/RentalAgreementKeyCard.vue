@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import NewKeyButton from './NewKeyButton.vue';
 import ReturnKeyButton from './ReturnKeyButton.vue';
 import {rentalAgreementService,

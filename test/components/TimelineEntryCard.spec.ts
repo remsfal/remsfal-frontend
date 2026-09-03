@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import TimelineEntryCard from '@/components/common/TimelineEntryCard.vue';
+import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 
 describe('TimelineEntryCard component', () => {
   it('renders title, message and formatted date', () => {

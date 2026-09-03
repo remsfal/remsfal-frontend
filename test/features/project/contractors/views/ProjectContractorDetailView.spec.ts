@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import ProjectContractorDetailView from '@/views/project/ProjectContractorDetailView.vue';
+import ProjectContractorDetailView from '@/features/project/contractors/views/ProjectContractorDetailView.vue';
 import { projectContractorService } from '@/services/ProjectContractorService';
 
 vi.mock('@/features/project/contractors', () => ({

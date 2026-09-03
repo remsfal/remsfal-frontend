@@ -2,7 +2,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Message from 'primevue/message';
 import RentableUnitsKpiCards from '@/features/project/rentableUnits/components/RentableUnitsKpiCards.vue';
-import KpiCard from '@/components/common/KpiCard.vue';
+import KpiCard from '@/components/KpiCard.vue';
 import type { RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 

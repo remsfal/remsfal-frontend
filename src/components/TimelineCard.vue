@@ -4,8 +4,8 @@ import FileUpload from 'primevue/fileupload';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
-import BaseCard from '@/components/common/BaseCard.vue';
-import CardSkeletonRows from '@/components/common/CardSkeletonRows.vue';
+import BaseCard from '@/components/BaseCard.vue';
+import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
 import { useTimeline, type UseTimelineOptions, type TimelineJson } from '@/composables/useTimeline';
 import { useI18n } from 'vue-i18n';
 

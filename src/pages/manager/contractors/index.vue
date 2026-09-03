@@ -6,7 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ManagerContractorListView from '@/views/ManagerContractorListView.vue';
+import { ManagerContractorListView } from '@/features/manager/contractors';
 </script>
 
 <template>

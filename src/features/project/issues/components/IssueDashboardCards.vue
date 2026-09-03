@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import { issueService, type IssueItemJson, type IssuePriority, type IssueStatus } from '@/services/IssueService';
 import { getIssueTypeLabel } from '@/features/common/issues/issueLabels';
 import { useUserSessionStore } from '@/stores/UserSession';

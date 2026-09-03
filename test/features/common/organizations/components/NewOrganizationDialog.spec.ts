@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import NewOrganizationDialog from '@/features/common/organizations/components/NewOrganizationDialog.vue';
-import PhoneInputComponent from '@/components/common/PhoneInput.vue';
+import PhoneInputComponent from '@/components/PhoneInput.vue';
 import { organizationService } from '@/services/OrganizationService';
 
 const DialogStub = {

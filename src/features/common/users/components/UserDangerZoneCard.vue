@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import { userService } from '@/features/common/users/services/UserService';
-import DangerZoneCard from '@/components/common/DangerZoneCard.vue';
+import DangerZoneCard from '@/components/DangerZoneCard.vue';
 
 const { t } = useI18n();
 const toast = useToast();

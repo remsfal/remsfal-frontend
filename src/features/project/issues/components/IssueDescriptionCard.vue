@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import { issueService, type IssueWritableJson } from '@/services/IssueService';
