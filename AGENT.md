@@ -83,64 +83,90 @@ src/
 │       └── clients/
 │           └── index.vue
 │
-├── features/                   # Domain-based feature slices
-│   ├── manager/
-│   │   ├── components/         # ProjectSelectionTable, NewProjectDialog, ...
-│   │   ├── views/              # Feature-specific page-level components (*View.vue)
-│   │   ├── stores/             # ProjectStore (belongs to manager domain)
-│   │   └── index.ts            # Public API of this feature
-│   ├── project/
-│   │   ├── units/
+├── features/                   # Domain-based feature slices, grouped by view
+│   ├── manager/                 # Domains specific to the manager view
+│   │   ├── projects/
+│   │   │   ├── components/     # ProjectSelectionTable, NewProjectDialog, ...
+│   │   │   ├── views/          # Feature-specific page-level components (*View.vue)
+│   │   │   ├── stores/         # ProjectStore
+│   │   │   └── index.ts        # Public API of this feature
+│   │   ├── inbox/
+│   │   │   ├── components/     # InboxSidebar, InboxMessageList, InboxToolbar, ...
+│   │   │   ├── composables/    # useInboxHelpers
+│   │   │   ├── stores/         # InboxStore
+│   │   │   ├── services/       # InboxService
+│   │   │   └── index.ts
+│   │   └── contractors/
+│   │       ├── components/
+│   │       └── index.ts
+│   ├── project/                 # Domains specific to the project view
+│   │   ├── rentableUnits/
 │   │   │   ├── components/     # RentableUnitsTable, UnitBreadcrumb, ...
+│   │   │   ├── composables/
 │   │   │   ├── services/       # PropertyService, BuildingService, ApartmentService, ...
+│   │   │   ├── stores/
 │   │   │   └── index.ts
-│   │   ├── tenants/
-│   │   │   ├── components/     # TenantCard, TenantToolbar, TenantContactButtons
-│   │   │   ├── services/       # TenantService
-│   │   │   └── index.ts
-│   │   ├── rental-agreements/
+│   │   ├── rentalAgreements/
 │   │   │   ├── components/     # Step1..Step4Forms, RentalDetailsForm
+│   │   │   ├── views/
 │   │   │   ├── services/       # RentalAgreementService, TenancyService
 │   │   │   └── index.ts
 │   │   ├── issues/
 │   │   │   ├── components/     # NewIssueDialog, IssueTable, IssueDetailsCard, IssueDescriptionCard
 │   │   │   ├── views/          # IssueView, ProjectIssueView
 │   │   │   └── index.ts
-│   │   └── contractors/
-│   │       ├── components/     # ContractorTable
-│   │       ├── services/       # ContractorService, ProjectMemberService
+│   │   ├── contractors/
+│   │   │   ├── components/     # ContractorTable
+│   │   │   ├── services/       # ProjectContractorService
+│   │   │   └── index.ts
+│   │   └── settings/
+│   │       ├── components/
+│   │       ├── views/
 │   │       └── index.ts
-│   ├── tenant/
+│   ├── tenant/                  # Domains specific to the tenant view
 │   │   ├── tenancies/
 │   │   │   ├── components/     # Tenant tenancy dashboard cards
 │   │   │   └── index.ts
-│   │   ├── components/         # TenantIssueList, tenancyDetails/*, tenantIssue/*
-│   │   ├── services/           # TenancyService (tenant-side)
-│   │   └── index.ts
-│   ├── contractor/
-│   │   ├── components/
-│   │   └── index.ts
-│   └── inbox/
-│       ├── components/         # InboxSidebar, InboxMessageList, InboxToolbar, ...
-│       ├── stores/             # InboxStore (belongs to inbox domain)
-│       ├── services/           # InboxService
-│       └── index.ts
+│   │   └── tenantIssues/
+│   │       ├── components/     # TenantIssueList, tenancyDetails/*, tenantIssue/*
+│   │       ├── services/       # TenancyService (tenant-side)
+│   │       └── index.ts
+│   ├── contractor/               # Domains specific to the contractor view
+│   │   ├── orderManagement/
+│   │   │   ├── components/
+│   │   │   └── index.ts
+│   │   └── organizations/
+│   │       ├── components/
+│   │       └── index.ts
+│   └── common/                   # Domain features used by MORE THAN ONE view — the counterpart to
+│       │                         # generic UI atoms (which live in src/components/ / src/composables/, see below)
+│       ├── organizations/
+│       │   ├── components/
+│       │   ├── views/
+│       │   └── index.ts
+│       ├── users/
+│       │   ├── components/
+│       │   ├── services/       # UserService
+│       │   └── index.ts
+│       └── issues/               # issueCategories.ts, issueLabels.ts — shared by project/issues and tenant/tenantIssues
 │
-├── shared/                     # Code used by ≥2 features (target for Phase 3 completion)
-│   ├── components/             # → until migration complete: use src/components/common/
-│   ├── composables/            # useTopbarUserActions
-│   ├── services/               # ApiClient.ts, AuthService.ts (infrastructure)
-│   ├── stores/                 # UserSession.ts, EventStore.ts (app-wide state)
-│   ├── i18n/                   # i18n config + locale files
-│   ├── types/                  # Shared TypeScript types
-│   ├── helpers/                # viewHelper, platform, indexeddb, service-worker-init
-│   └── constants/              # countries.ts
+├── components/                  # Base/generic UI components used by ≥2 features (permanent, not a staging area)
+│   └── common/                  # e.g. BaseCard.vue, BaseDialog.vue, KpiCard.vue, PhoneInput.vue
+├── composables/                  # Base/generic composables used by ≥2 features (permanent), e.g. useAddressForm
+├── services/                     # App-wide infrastructure services only: ApiClient.ts, AuthService.ts
+│                                  # (feature-specific services live in features/*/services/)
+├── stores/                       # App-wide Pinia stores only: UserSession.ts, EventStore.ts
+│                                  # (feature-specific stores live in features/*/stores/)
+├── i18n/                         # i18n config + locale files
+├── types/                        # App-wide TypeScript types
+├── helper/                       # Utility functions
+├── constants/                    # App-wide constants
 │
-├── App.vue                     # Root: resolves route.meta.layout → renders <component>
-├── main.ts                     # Bootstrap only
-└── mocks/                      # MSW service worker
+├── App.vue                      # Root: resolves route.meta.layout → renders <component>
+├── main.ts                      # Bootstrap only
+└── mocks/                       # MSW service worker
 
-test/                           # Mirrors src/ structure (pages/ + features/ + shared/)
+test/                           # Mirrors src/ structure (pages/ + features/ + top-level src/ dirs)
 ```
 
 ---
@@ -181,7 +207,7 @@ setupRouterGuards(router)
 **`src/router/guards.ts`** — extracted `beforeEach` logic:
 ```ts
 import type { Router } from 'vue-router'
-import { useUserSessionStore } from '@/shared/stores/UserSession'
+import { useUserSessionStore } from '@/stores/UserSession'
 
 export function setupRouterGuards(router: Router) {
   router.beforeEach((to) => {
@@ -301,16 +327,19 @@ declare module 'vue-router' {
 **Goal**: Co-locate components, services, and stores by domain instead of by technical type.
 
 **Rules**:
-- New features are created in `src/features/<domain>/`
+- Features are grouped by view: `src/features/<view>/<domain>/`, where `<view>` is one of `manager`, `project`, `tenant`, `contractor`
+- New features are created under the view they belong to
 - Existing code moves to its feature slice when the file is next modified
 - Never reach into a feature's internals from outside — use `index.ts` as the public API
-- `shared/` is for code actually used by ≥2 features; when in doubt, start in the feature
-- Feature-specific Views (`*View.vue`) go in `src/features/<domain>/views/` and are exported via `index.ts` — the global `src/views/` is only for Views without a clear feature home
+- A domain used by more than one view (e.g. organizations, used by both `manager` and `contractor`) does not belong to any single view — it goes into `src/features/common/<domain>/`. This is the feature-level counterpart to shared UI atoms (see below); when in doubt, start the domain under the view that needs it first and promote it to `common/` once a second view needs it too
+- Feature-specific Views (`*View.vue`) go in `src/features/<view>/<domain>/views/` and are exported via `index.ts` — the global `src/views/` is only for Views without a clear feature home
 
-**Shared components during migration**:
-- Until `src/shared/` is fully established, all shared components (used by ≥2 features) go into `src/components/common/`
-- `src/components/` (root level) remains for app-wide non-common components (e.g. `ProjectDangerZoneCard.vue`)
-- When Phase 3 migration is complete, `src/components/common/` contents move to `src/shared/components/`
+**Base/generic components and composables (not tied to a feature domain)**:
+- The earlier idea of a top-level `src/shared/` directory has been discarded — `src/components/` and `src/composables/` are its permanent replacement, not a staging area before a future move
+- Generic, reusable UI atoms (e.g. `BaseCard`, `BaseDialog`, `KpiCard`, `PhoneInput`) used by ≥2 features live in `src/components/common/`
+- Non-`common` app-wide components (e.g. `AddressCard.vue`) live in `src/components/` (root level)
+- Generic composables used by ≥2 features (e.g. `useAddressForm`) live in `src/composables/`
+- Don't confuse these with `features/common/<domain>/`: `components/`/`composables/` are for generic, domain-agnostic building blocks; `features/common/` is for a cohesive feature domain that happens to be used by more than one view
 
 ```ts
 // ✅ Correct — import through public API
@@ -348,8 +377,8 @@ import type { MyType } from '@/services/MyService';
 **Priority order for migration** (highest impact first):
 1. `src/services/` → split into feature slices (most files, clearest ownership)
 2. `src/components/` subdirectories → already partially organized, finish the grouping
-3. `src/stores/ProjectStore.ts` → move to `features/manager/`
-4. `src/stores/InboxStore.ts` → move to `features/inbox/`
+3. `src/stores/ProjectStore.ts` → move to `features/manager/projects/`
+4. `src/stores/InboxStore.ts` → move to `features/manager/inbox/`
 5. `src/views/` → replaced by `src/pages/` in Phase 1, then co-located with features
 
 ---
@@ -360,7 +389,7 @@ import type { MyType } from '@/services/MyService';
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` and `src/features/project/issues/` complete; incremental for other domains |
+| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` and `src/features/project/issues/` complete; `src/features/common/{organizations,users,issues}/` established; incremental for other domains |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
@@ -373,17 +402,20 @@ import type { MyType } from '@/services/MyService';
 
 ```
 src/
-├── components/          # Reusable Vue components (→ features/ or shared/components/)
-├── views/               # Page-level components (→ pages/ + features/)
-├── layout/              # Layout components (→ layouts/ + features/*/layout/)
-├── stores/              # Pinia stores (→ shared/stores/ or features/*/stores/)
-├── services/            # API services (→ shared/services/ or features/*/services/)
+├── components/          # Feature-specific pieces still pending a move to features/*/components/;
+│                        # common/ and other genuinely generic components stay here permanently (see Phase 3)
+├── views/               # Page-level components (→ pages/ + features/*/views/)
+├── layout/              # Legacy layout components (→ layouts/, superseded by Phase 2)
+├── stores/              # Feature-specific stores still pending a move to features/*/stores/;
+│                        # UserSession.ts and EventStore.ts stay here permanently
+├── services/            # Feature-specific services still pending a move to features/*/services/;
+│                        # ApiClient.ts and AuthService.ts stay here permanently
 ├── router/              # Vue Router config (→ thin wrapper after Phase 1)
-├── i18n/                # i18n config + locales (→ shared/i18n/)
-├── types/               # TypeScript types (→ shared/types/)
-├── helper/              # Utility functions (→ shared/helpers/)
+├── i18n/                # i18n config + locales (stays here permanently)
+├── types/               # TypeScript types (stays here permanently)
+├── helper/              # Utility functions (stays here permanently)
 ├── assets/              # Static assets
-├── constants/           # App constants (→ shared/constants/)
+├── constants/           # App constants (stays here permanently)
 └── mocks/               # MSW service worker
 
 test/

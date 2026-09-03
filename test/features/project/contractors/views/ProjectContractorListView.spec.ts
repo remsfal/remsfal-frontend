@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import ProjectContractorListView from '@/views/project/ProjectContractorListView.vue';
+import ProjectContractorListView from '@/features/project/contractors/views/ProjectContractorListView.vue';
 
 vi.mock('@/features/project/contractors', () => ({
   ContractorListCard: {
