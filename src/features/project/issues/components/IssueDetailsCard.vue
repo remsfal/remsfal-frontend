@@ -7,7 +7,7 @@ import Select from 'primevue/select';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
@@ -17,7 +17,7 @@ import { issueService, type IssueJson, type IssueWritableJson, type IssueStatus,
 import { type RentalAgreementItemJson }
   from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
-import { formatDateTime } from '@/helper/dataHelper';
+import { formatDateTime } from '@/helper/dateHelper';
 import {getDefectCategories,
   getInquiryCategories,
   getMaintenanceCategories,

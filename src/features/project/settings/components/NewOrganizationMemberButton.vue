@@ -13,7 +13,7 @@ import { useOrganizationStore } from '@/stores/OrganizationStore';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import { type MemberRole } from '@/services/ProjectMemberService';
 import { organizationMemberService } from '@/services/OrganizationMemberService';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newOrganization', organizationName: string) => void>();

@@ -6,13 +6,13 @@ import RentalAgreementUnitListCard from '../components/RentalAgreementUnitListCa
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import Button from 'primevue/button';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
-import DangerZoneCard from "@/components/common/DangerZoneCard.vue";
+import DangerZoneCard from "@/components/DangerZoneCard.vue";
 import {useToast} from "primevue/usetoast";
 
 const props = defineProps<{

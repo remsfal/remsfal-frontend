@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
-import KpiCard from '@/components/common/KpiCard.vue';
+import KpiCard from '@/components/KpiCard.vue';
 import { type RentalUnitTreeNodeJson, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';

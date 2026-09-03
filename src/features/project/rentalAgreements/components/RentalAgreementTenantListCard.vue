@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import TenantCard from './TenantCard.vue';
 import TenantDeleteButton from './TenantDeleteButton.vue';
 import NewTenantButton from './NewTenantButton.vue';

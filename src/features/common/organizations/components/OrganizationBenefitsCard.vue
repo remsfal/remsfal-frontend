@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import NewOrganizationDialog from './NewOrganizationDialog.vue';
 
 const { t } = useI18n();
@@ -27,6 +27,10 @@ const dialogVisible = ref(false);
           <li class="flex items-start gap-3">
             <i class="pi pi-building text-primary mt-0.5 text-xl" />
             <span class="text-base">{{ t('organization.benefits.feature2') }}</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i class="pi pi-briefcase text-primary mt-0.5 text-xl" />
+            <span class="text-base">{{ t('organization.benefits.feature3') }}</span>
           </li>
         </ul>
 

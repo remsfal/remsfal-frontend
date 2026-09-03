@@ -4,7 +4,7 @@ import { useToast } from 'primevue/usetoast';
 import { useRouter } from 'vue-router';
 import { projectService } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
-import DangerZoneCard from '@/components/common/DangerZoneCard.vue';
+import DangerZoneCard from '@/components/DangerZoneCard.vue';
 
 const props = defineProps<{
   projectId: string;

@@ -10,7 +10,7 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
 import Select from 'primevue/select';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 
 // PrimeVue Forms
 import { Form } from '@primevue/forms';
