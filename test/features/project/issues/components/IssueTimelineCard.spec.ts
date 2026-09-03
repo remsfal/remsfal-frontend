@@ -25,11 +25,11 @@ const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
   ...overrides,
 });
 
-const mountCardShallow = async (issueId = 'issue-1') => {
+const mountCardShallow = async (issueId = 'issue-1', visibleToTenants = true) => {
   const { default: IssueTimelineCard } = await import(
     '@/features/project/issues/components/IssueTimelineCard.vue'
   );
-  return shallowMount(IssueTimelineCard, { props: { issueId } });
+  return shallowMount(IssueTimelineCard, { props: { issueId, visibleToTenants } });
 };
 
 describe('IssueTimelineCard component', () => {
@@ -66,7 +66,7 @@ describe('IssueTimelineCard component', () => {
       '@/features/project/issues/components/IssueTimelineCard.vue'
     );
     const wrapper = mount(IssueTimelineCard, {
-      props: { issueId: 'issue-1' },
+      props: { issueId: 'issue-1', visibleToTenants: true },
       global: { stubs: { IssueTimelineItemCard: true } },
     });
     await flushPromises();

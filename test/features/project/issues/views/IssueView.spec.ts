@@ -30,6 +30,7 @@ const mockIssue = {
   tenancyId: "tenant-1",
   type: "BUG",
   description: "Test description",
+  visibleToTenants: true,
   attachments: [
     {
       attachmentId: "att-1",
