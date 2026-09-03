@@ -1,4 +1,4 @@
-import { apiClient, type ApiComponents, type Readable, type PathsForMethod } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
 export type TimelineJson = Readable<ApiComponents['schemas']['TimelineJson']>;
 export type TimelineListJson = Readable<ApiComponents['schemas']['TimelineListJson']>;
