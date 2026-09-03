@@ -11,7 +11,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import { type ProjectMemberWritableJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newMember', email: string) => void>();

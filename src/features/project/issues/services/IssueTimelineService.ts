@@ -1,17 +1,5 @@
-import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
+import { createTimelineService } from '@/services/BaseTenantTimelineService';
 
-export type MessagePurpose = ApiComponents['schemas']['MessagePurpose'];
-export type TimelineJson = Readable<ApiComponents['schemas']['TimelineJson']>;
+export type { TimelineJson, TimelineListJson } from '@/services/BaseTenantTimelineService';
 
-class IssueTimelineService {
-  async createTimelineEntry(issueId: string, purpose: MessagePurpose, message: string): Promise<TimelineJson> {
-    const formData = new FormData();
-    formData.append('timeline', new Blob([JSON.stringify({ purpose, message })], { type: 'application/json' }));
-
-    const path = '/ticketing/v1/issues/{issueId}/timeline';
-    // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
-    return apiClient.post(path, formData as never, { pathParams: { issueId } }) as Promise<TimelineJson>;
-  }
-}
-
-export const issueTimelineService = new IssueTimelineService();
+export const issueTimelineService = createTimelineService('/ticketing/v1/issues');

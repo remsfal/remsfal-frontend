@@ -6,7 +6,7 @@ import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import TenantIssueTimelineCard from '../components/TenantIssueTimelineCard.vue';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import Button from 'primevue/button';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import TenantIssueSummaryCard from '../components/TenantIssueSummaryCard.vue';

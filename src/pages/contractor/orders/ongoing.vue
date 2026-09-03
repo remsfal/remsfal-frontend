@@ -6,7 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import CustomerView from '@/views/contractor/CustomerView.vue'
+import { CustomerView } from '@/features/contractor/customers'
 </script>
 
 <template>

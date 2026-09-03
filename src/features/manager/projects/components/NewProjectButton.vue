@@ -5,7 +5,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';

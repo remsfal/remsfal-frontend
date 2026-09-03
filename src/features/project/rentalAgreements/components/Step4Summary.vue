@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
 import Button from 'primevue/button';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 
 // Types (imported from Step components)
 import type { SelectedUnit } from './Step2UnitsForm.vue';

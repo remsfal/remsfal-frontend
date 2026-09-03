@@ -2,7 +2,7 @@
 import { ref, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -11,8 +11,8 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
-import PhoneInput from '@/components/common/PhoneInput.vue';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import PhoneInput from '@/components/PhoneInput.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import { organizationService } from '@/services/OrganizationService';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -22,9 +22,17 @@ const emit = defineEmits<{ 'update:visible': [value: boolean] }>();
 
 const { t } = useI18n();
 const toast = useToast();
+const route = useRoute();
 const router = useRouter();
 const organizationStore = useOrganizationStore();
 const sessionStore = useUserSessionStore();
+
+const settingsRouteName = computed(() =>
+  route.meta.layout === 'contractor' ? 'ContractorOrganizationSettings' : 'ManagerOrganizationSettings',
+);
+const organizationsRouteName = computed(() =>
+  route.meta.layout === 'contractor' ? 'ContractorOrganizations' : 'ManagerOrganizations',
+);
 
 const formKey = ref(0);
 const submitting = ref(false);
@@ -74,9 +82,9 @@ async function onSubmit(event: FormSubmitEvent) {
     const newOrg = organizationStore.userOrganizations.find(o => !previousIds.has(o.id));
     const orgId = newOrg?.id;
     if (orgId) {
-      router.push(`/manager/organizations/${orgId}`);
+      router.push({ name: settingsRouteName.value, params: { organizationId: orgId } });
     } else {
-      router.push('/manager/organizations/new');
+      router.push({ name: organizationsRouteName.value });
     }
   } catch {
     toast.add({

@@ -5,7 +5,7 @@ import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
 import NewOrganizationEmployeeButton from '@/features/common/organizations/components/NewOrganizationEmployeeButton.vue';
 import { type OrganizationEmployeeJson, organizationService } from '@/services/OrganizationService';
