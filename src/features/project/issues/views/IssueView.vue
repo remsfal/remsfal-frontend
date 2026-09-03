@@ -151,7 +151,9 @@ watch(
 
   <!-- Issue Timeline Card -->
   <IssueTimelineCard
+    v-if="issueDetailsData?.visibleToTenants"
     :issueId="issueId"
+    :visibleToTenants="issueDetailsData.visibleToTenants"
   />
 
   <!-- Issue Relationships Card -->

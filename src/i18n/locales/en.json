@@ -691,6 +691,7 @@
   "tenantIssues.timeline.appointmentScheduledTitle": "Appointment scheduled by {senderName}",
   "tenantIssues.timeline.statusChangedTitle": "Status changed",
   "tenantIssues.timeline.createError": "Timeline entry could not be created.",
+  "issue.timeline.title": "Tenant Communication",
   "tenantIssues.loading": "Loading issues…",
   "tenantNewIssueDialog.title": "Create New Issue",
   "tenantNewIssueDialog.createButton": "Create",

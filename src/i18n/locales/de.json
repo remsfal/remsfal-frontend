@@ -695,6 +695,7 @@
   "tenantIssues.timeline.appointmentScheduledTitle": "Terminankündigung von {senderName}",
   "tenantIssues.timeline.statusChangedTitle": "Status geändert",
   "tenantIssues.timeline.createError": "Nachricht konnte nicht gesendet werden. Versuchen sie es später noch einmal.",
+  "issue.timeline.title": "Mieter Kommunikation",
   "tenantNewIssueDialog.title": "Neue Meldung erstellen",
   "tenantNewIssueDialog.createButton": "Erstellen",
   "tenantNewIssueDialog.noActiveContracts": "Keine aktiven Mietverhältnisse vorhanden. Bitte wenden Sie sich an Ihren Vermieter.",

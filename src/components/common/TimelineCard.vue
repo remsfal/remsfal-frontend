@@ -24,6 +24,7 @@ const props = defineProps<Props>();
 
 defineSlots<{
   item(props: { item: TimelineJson }): unknown;
+  title?(): unknown;
 }>();
 
 const testIdPrefix = 'timeline';
@@ -61,7 +62,9 @@ const {
 <template>
   <BaseCard>
     <template #title>
-      <span class="text-xl font-semibold">{{ props.title }}</span>
+      <slot name="title">
+        <span class="text-xl font-semibold">{{ props.title }}</span>
+      </slot>
     </template>
     <template #content>
       <CardSkeletonRows
