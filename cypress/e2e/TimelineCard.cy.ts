@@ -17,6 +17,7 @@ const baseIssue = {
   type: 'DEFECT',
   agreementId: 'agreement-1',
   description: 'Wasser tropft von der Decke',
+  visibleToTenants: true,
 };
 
 function setupAuthIntercepts() {
