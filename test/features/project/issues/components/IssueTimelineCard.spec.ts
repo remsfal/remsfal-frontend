@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { flushPromises, shallowMount, mount } from '@vue/test-utils';
-import TimelineCard from '@/components/common/TimelineCard.vue';
+import TimelineCard from '@/components/TimelineCard.vue';
 import IssueTimelineItemCard from '@/features/project/issues/components/IssueTimelineItemCard.vue';
 import { issueTimelineService, type TimelineJson } from '@/features/project/issues/services/IssueTimelineService';
 

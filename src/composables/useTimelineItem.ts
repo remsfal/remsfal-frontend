@@ -1,7 +1,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { TimelineJson } from '@/composables/useTimeline';
-import type { TimelineAttachmentView } from '@/components/common/TimelineEntryCard.vue';
+import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
 
 export interface UseTimelineItemProps {
   item: TimelineJson;

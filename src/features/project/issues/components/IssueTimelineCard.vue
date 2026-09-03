@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Tag from 'primevue/tag';
-import TimelineCard from '@/components/common/TimelineCard.vue';
+import TimelineCard from '@/components/TimelineCard.vue';
 import IssueTimelineItemCard from './IssueTimelineItemCard.vue';
 import { issueTimelineService } from '@/features/project/issues/services/IssueTimelineService';
 

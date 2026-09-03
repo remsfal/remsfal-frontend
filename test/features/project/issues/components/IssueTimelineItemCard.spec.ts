@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 import type { TimelineJson } from '@/features/project/issues/services/IssueTimelineService';
 import IssueTimelineItemCard from '@/features/project/issues/components/IssueTimelineItemCard.vue';
-import TimelineEntryCard from '@/components/common/TimelineEntryCard.vue';
+import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 
 const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
   timelineId: 'timeline-1',

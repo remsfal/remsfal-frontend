@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import type { TimelineJson } from '@/features/project/issues/services/IssueTimelineService';
-import TimelineEntryCard from '@/components/common/TimelineEntryCard.vue';
+import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import { useTimelineItem } from '@/composables/useTimelineItem';
 
 const props = defineProps<{
