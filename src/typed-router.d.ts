@@ -171,13 +171,6 @@ declare module 'vue-router/auto-routes' {
       { projectId: ParamValue<false>, agreementId: ParamValue<false> },
       | never
     >,
-    'ProjectChatView': RouteRecordInfo<
-      'ProjectChatView',
-      '/projects/:projectId/chat',
-      { projectId: ParamValue<true> },
-      { projectId: ParamValue<false> },
-      | never
-    >,
     'ProjectContractorList': RouteRecordInfo<
       'ProjectContractorList',
       '/projects/:projectId/contractors',
@@ -483,14 +476,6 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | 'agreementId'
-    }
-    'src/pages/projects/[projectId]/chat.vue': {
-      routes:
-        | 'ProjectChatView'
-      views:
-        | never
-      pathParamNames:
-        | never
     }
     'src/pages/projects/[projectId]/contractors/index.vue': {
       routes:

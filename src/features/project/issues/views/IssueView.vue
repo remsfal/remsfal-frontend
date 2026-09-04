@@ -4,6 +4,7 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import IssueDetailsCard from '../components/IssueDetailsCard.vue';
 import IssueDescriptionCard from '../components/IssueDescriptionCard.vue';
+import IssueChatCard from '../components/IssueChatCard.vue';
 import IssueAttachmentCard from '../components/IssueAttachmentCard.vue';
 import IssueRelationshipsCard from '../components/IssueRelationshipsCard.vue';
 import IssueOrderManagementCard from '../components/IssueOrderManagementCard.vue';
@@ -140,6 +141,9 @@ watch(
     :projectId="projectId"
     @saved="handleDescriptionSaved"
   />
+
+  <!-- Issue Chat Card -->
+  <IssueChatCard :issueId="issueId" />
 
   <!-- Issue Attachment Card -->
   <IssueAttachmentCard
