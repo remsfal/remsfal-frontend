@@ -80,7 +80,7 @@ describe('IssueChatCard.vue', () => {
   test('falls back to a placeholder label when senderName is missing', async () => {
     const messages: ChatMessageJson[] = [
       {
-        messageId: 'm1', senderId: 'user-2', message: 'hi' 
+        messageId: 'm1', senderId: 'user-2', message: 'hi'
       },
     ];
     (issueChatService.getMessages as Mock).mockResolvedValue(messages);
@@ -89,6 +89,32 @@ describe('IssueChatCard.vue', () => {
     await flushPromises();
 
     expect(wrapper.findComponent(TimelineEntryCard).props('title')).toBe('Unbekannter Absender');
+  });
+
+  test('falls back to a placeholder label when senderName is whitespace-only', async () => {
+    const messages: ChatMessageJson[] = [
+      {
+        messageId: 'm1', senderId: 'user-2', senderName: '   ', message: 'hi'
+      },
+    ];
+    (issueChatService.getMessages as Mock).mockResolvedValue(messages);
+
+    const wrapper = mountComponent();
+    await flushPromises();
+
+    expect(wrapper.findComponent(TimelineEntryCard).props('title')).toBe('Unbekannter Absender');
+  });
+
+  test('treats a message without a senderId as not own', async () => {
+    const messages: ChatMessageJson[] = [
+      { messageId: 'm1', message: 'hi' },
+    ];
+    (issueChatService.getMessages as Mock).mockResolvedValue(messages);
+
+    const wrapper = mountComponent();
+    await flushPromises();
+
+    expect(wrapper.findComponent(TimelineEntryCard).props('own')).toBe(false);
   });
 
   test('sorts messages chronologically by createdAt', async () => {
@@ -108,6 +134,47 @@ describe('IssueChatCard.vue', () => {
     const entries = wrapper.findAllComponents(TimelineEntryCard);
     expect(entries[0].props('message')).toBe('first');
     expect(entries[1].props('message')).toBe('second');
+  });
+
+  test('sorts messages with a missing createdAt before dated messages', async () => {
+    const messages: ChatMessageJson[] = [
+      {
+        messageId: 'm2', senderId: 'user-1', message: 'dated', createdAt: '2024-01-01T10:00:00Z',
+      },
+      {
+        messageId: 'm1', senderId: 'user-1', message: 'undated' 
+      },
+    ];
+    (issueChatService.getMessages as Mock).mockResolvedValue(messages);
+
+    const wrapper = mountComponent();
+    await flushPromises();
+
+    const entries = wrapper.findAllComponents(TimelineEntryCard);
+    expect(entries[0].props('message')).toBe('undated');
+    expect(entries[1].props('message')).toBe('dated');
+  });
+
+  test('sorts messages with a missing createdAt before dated messages, reversed input order', async () => {
+    // Original array order is swapped relative to the test above so the sort
+    // comparator is exercised with the missing-createdAt entry in the other
+    // argument position too (both sides of the `createdAt ?? ''` fallback).
+    const messages: ChatMessageJson[] = [
+      {
+        messageId: 'm1', senderId: 'user-1', message: 'undated' 
+      },
+      {
+        messageId: 'm2', senderId: 'user-1', message: 'dated', createdAt: '2024-01-01T10:00:00Z',
+      },
+    ];
+    (issueChatService.getMessages as Mock).mockResolvedValue(messages);
+
+    const wrapper = mountComponent();
+    await flushPromises();
+
+    const entries = wrapper.findAllComponents(TimelineEntryCard);
+    expect(entries[0].props('message')).toBe('undated');
+    expect(entries[1].props('message')).toBe('dated');
   });
 
   test('sends a message and appends it to the list', async () => {
@@ -137,6 +204,34 @@ describe('IssueChatCard.vue', () => {
     await flushPromises();
 
     expect(issueChatService.sendMessage).not.toHaveBeenCalled();
+  });
+
+  test('pressing Enter with an empty message does not call sendMessage', async () => {
+    const wrapper = mountComponent();
+    await flushPromises();
+
+    // The Textarea itself is never disabled, so this exercises handleSend's
+    // canSend guard directly, unlike clicking the (disabled) send button.
+    await wrapper.find('#issue-chat-message').trigger('keydown.enter');
+    await flushPromises();
+
+    expect(issueChatService.sendMessage).not.toHaveBeenCalled();
+  });
+
+  test('pressing Enter with a message sends it', async () => {
+    const created: ChatMessageJson = {
+      messageId: 'm4', senderId: 'user-1', message: 'Enter msg', createdAt: '2024-01-01T10:03:00Z',
+    };
+    (issueChatService.sendMessage as Mock).mockResolvedValue(created);
+
+    const wrapper = mountComponent();
+    await flushPromises();
+
+    await wrapper.find('#issue-chat-message').setValue('Enter msg');
+    await wrapper.find('#issue-chat-message').trigger('keydown.enter');
+    await flushPromises();
+
+    expect(issueChatService.sendMessage).toHaveBeenCalledWith('issue-1', 'Enter msg');
   });
 
   test('shows an error toast when sending a message fails', async () => {
