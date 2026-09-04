@@ -6,9 +6,10 @@ import IssueDetailsCard from '../components/IssueDetailsCard.vue';
 import IssueDescriptionCard from '../components/IssueDescriptionCard.vue';
 import IssueChatCard from '../components/IssueChatCard.vue';
 import IssueAttachmentCard from '../components/IssueAttachmentCard.vue';
+import IssueTimelineCard from '../components/IssueTimelineCard.vue';
 import IssueRelationshipsCard from '../components/IssueRelationshipsCard.vue';
 import IssueOrderManagementCard from '../components/IssueOrderManagementCard.vue';
-import { issueService, type IssueAttachmentJson, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueJson, type IssueAttachmentJson } from '@/services/IssueService';
 
 /* Props */
 const props = defineProps<{ projectId: string; issueId: string }>();
@@ -104,7 +105,7 @@ const handleDescriptionSaved = () => {
 };
 
 const handleAttachmentsSaved = () => {
-  fetchIssue(); // refresh after attachment changes
+  fetchIssue(); // refresh after attachment upload/delete
 };
 
 const handleRelationshipsSaved = () => {
@@ -147,9 +148,16 @@ watch(
 
   <!-- Issue Attachment Card -->
   <IssueAttachmentCard
-    :attachments="attachments"
     :issueId="issueId"
+    :attachments="attachments"
     @saved="handleAttachmentsSaved"
+  />
+
+  <!-- Issue Timeline Card -->
+  <IssueTimelineCard
+    v-if="issueDetailsData?.visibleToTenants"
+    :issueId="issueId"
+    :visibleToTenants="issueDetailsData.visibleToTenants"
   />
 
   <!-- Issue Relationships Card -->
