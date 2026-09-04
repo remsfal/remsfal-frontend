@@ -4,7 +4,7 @@ import { useToast } from 'primevue/usetoast';
 import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import type { components as ticketingComponents, Readable } from '@/services/api/ticketing-schema';
 
-export type TimelineJson = Readable<ticketingComponents['schemas']['TimelineJson']>;
+export type TimelineJson = Readable<ticketingComponents['schemas']['TenantTimelineJson']>;
 
 type TimelinePurpose = NonNullable<TimelineJson['purpose']>;
 
