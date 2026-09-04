@@ -1105,7 +1105,7 @@
   "orderManagement.quotationRequestDetails.title": "Order Details",
   "orderManagement.quotationRequestDetails.loadError": "Failed to load the request.",
   "orderManagement.quotationRequestDetails.notFound": "Request not found.",
-  "orderManagement.quotationRequestDetails.fields.ticketNumber": "Ticket number",
+  "orderManagement.quotationRequestDetails.fields.ticketNumber": "Ticket number:",
   "orderManagement.quotationRequestDetails.fields.requestNumber": "Request number:",
   "orderManagement.quotationRequestDetails.fields.scopeOfWork": "Scope of Work:",
   "orderManagement.quotationRequestDetails.fields.projectOwner": "Property owner:",

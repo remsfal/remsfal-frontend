@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { ContractorTimelineJson } from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';
-import TimelineEntryCard, { type TimelineAttachmentView } from '@/components/common/TimelineEntryCard.vue';
+import TimelineEntryCard, { type TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
 
 const props = defineProps<{
   item: ContractorTimelineJson;

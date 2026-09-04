@@ -1108,7 +1108,7 @@
   "orderManagement.quotationRequestDetails.title": "Auftragsdetails",
   "orderManagement.quotationRequestDetails.loadError": "Anfrage konnte nicht geladen werden.",
   "orderManagement.quotationRequestDetails.notFound": "Anfrage nicht gefunden.",
-  "orderManagement.quotationRequestDetails.fields.ticketNumber": "Ticketnummer",
+  "orderManagement.quotationRequestDetails.fields.ticketNumber": "Ticketnummer:",
   "orderManagement.quotationRequestDetails.fields.requestNumber": "Vorgangsnummer:",
   "orderManagement.quotationRequestDetails.fields.scopeOfWork": "Leistungsbeschreibung:",
   "orderManagement.quotationRequestDetails.fields.projectOwner": "Grundstückseigentümer:",

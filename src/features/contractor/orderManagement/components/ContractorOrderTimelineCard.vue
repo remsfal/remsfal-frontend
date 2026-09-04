@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TimelineCard from '@/components/common/TimelineCard.vue';
+import TimelineCard from '@/components/TimelineCard.vue';
 import ContractorOrderTimelineItemCard from './ContractorOrderTimelineItemCard.vue';
 import { contractorOrderTimelineService, type ContractorTimelineJson, type ParticipantRole }
   from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';

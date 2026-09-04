@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount, shallowMount } from '@vue/test-utils';
-import TimelineCard from '@/components/common/TimelineCard.vue';
+import TimelineCard from '@/components/TimelineCard.vue';
 import FileUpload from 'primevue/fileupload';
 import ContractorOrderTimelineItemCard from
   '@/features/contractor/orderManagement/components/ContractorOrderTimelineItemCard.vue';

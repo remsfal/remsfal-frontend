@@ -5,7 +5,7 @@ import type { ContractorTimelineJson }
   from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';
 import ContractorOrderTimelineItemCard from
   '@/features/contractor/orderManagement/components/ContractorOrderTimelineItemCard.vue';
-import TimelineEntryCard from '@/components/common/TimelineEntryCard.vue';
+import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 
 const makeTimeline = (overrides: Partial<ContractorTimelineJson> = {}): ContractorTimelineJson => ({
   timelineId: 'timeline-1',
