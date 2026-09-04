@@ -66,6 +66,10 @@ describe("IssueView.vue", () => {
             template:
               '<div data-test="attachments" @click="$emit(\'saved\')" />',
           },
+          IssueRelationshipsCard: {
+            template:
+              '<div data-test="relationships" @click="$emit(\'saved\')" />',
+          },
           IssueOrderManagementCard: true,
         },
       },
@@ -205,6 +209,13 @@ describe("IssueView.vue", () => {
 
   test("refetches issue when attachment card emits saved", async () => {
     await wrapper.find('[data-test="attachments"]').trigger("click");
+    await flushPromises();
+
+    expect(issueService.getIssue).toHaveBeenCalledTimes(2);
+  });
+
+  test("refetches issue when relationships card emits saved", async () => {
+    await wrapper.find('[data-test="relationships"]').trigger("click");
     await flushPromises();
 
     expect(issueService.getIssue).toHaveBeenCalledTimes(2);
