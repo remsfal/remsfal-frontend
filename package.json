@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@capacitor/android": "^8.2.0",
-    "@capacitor/camera": "^8.2.1",
+    "@capacitor/camera": "^8.2.3",
     "@capacitor/core": "^8.4.2",
     "@capacitor/ios": "^8.4.1",
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
@@ -60,7 +60,7 @@
     "pinia": "^3.0.4",
     "primeicons": "^7.0.0",
     "primevue": ">=4.5.5 <5.0.0",
-    "vue": "^3.5.39",
+    "vue": "^3.5.42",
     "vue-i18n": "^11.4.8",
     "vue-router": "^5.2.0",
     "zod": "^4.4.3"
@@ -92,7 +92,7 @@
     "globals": "^17.6.0",
     "jsdom": "^29.1.1",
     "msw": "^2.15.0",
-    "npm-run-all2": "^9.0.2",
+    "npm-run-all2": "^9.0.3",
     "nyc": "^18.0.0",
     "openapi-typescript": "^7.10.1",
     "postcss": "^8.5.26",
