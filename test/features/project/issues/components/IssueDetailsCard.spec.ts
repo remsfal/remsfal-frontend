@@ -165,7 +165,7 @@ describe('IssueDetailsCard.vue', () => {
   // ───────────────────────────────────────────────────────────────────────────
   test('shows "internal issue" tag with info severity when visibleToTenants is false', () => {
     const tag = wrapper.findComponent({ name: 'Tag' });
-    expect(tag.props('value')).toBe('Interner Vorgang');
+    expect(tag.props('value')).toBe('Nur für Verwalter sichtbar');
     expect(tag.props('severity')).toBe('info');
   });
 
