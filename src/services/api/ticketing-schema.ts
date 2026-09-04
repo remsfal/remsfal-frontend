@@ -4627,6 +4627,7 @@ export interface components {
     UserContext: "MANAGER" | "TENANT" | "CONTRACTOR";
     /** @description User information globally */
     UserJson: {
+      name?: string;
       active?: boolean;
       id: $Read<components["schemas"]["UUID"]>;
       userContexts?: $Read<components["schemas"]["UserContext"][]>;

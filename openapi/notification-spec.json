@@ -2281,6 +2281,9 @@
         "description" : "User information globally",
         "type" : "object",
         "properties" : {
+          "name" : {
+            "type" : "string"
+          },
           "active" : {
             "type" : "boolean"
           },
@@ -2398,6 +2401,30 @@
         "tags" : [ "Mailing Resource" ]
       }
     },
+    "/notification/test/additional-email-verification" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "to",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          }
+        },
+        "summary" : "Test Additional Email Verification",
+        "tags" : [ "Mailing Resource" ]
+      }
+    },
     "/notification/test/issue-assigned" : {
       "get" : {
         "parameters" : [ {
@@ -2467,6 +2494,30 @@
           }
         },
         "summary" : "Test Issue Updated",
+        "tags" : [ "Mailing Resource" ]
+      }
+    },
+    "/notification/test/new-employment" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "to",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          }
+        },
+        "summary" : "Test New Employment",
         "tags" : [ "Mailing Resource" ]
       }
     }

@@ -74,6 +74,44 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/notification/test/additional-email-verification": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Test Additional Email Verification */
+    get: {
+      parameters: {
+        query: {
+          to: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": unknown;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/notification/test/issue-assigned": {
     parameters: {
       query?: never;
@@ -158,6 +196,44 @@ export interface paths {
       cookie?: never;
     };
     /** Test Issue Updated */
+    get: {
+      parameters: {
+        query: {
+          to: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": unknown;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/notification/test/new-employment": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Test New Employment */
     get: {
       parameters: {
         query: {
@@ -1073,6 +1149,7 @@ export interface components {
     UserContext: "MANAGER" | "TENANT" | "CONTRACTOR";
     /** @description User information globally */
     UserJson: {
+      name?: string;
       active?: boolean;
       id: $Read<components["schemas"]["UUID"]>;
       userContexts?: $Read<components["schemas"]["UserContext"][]>;

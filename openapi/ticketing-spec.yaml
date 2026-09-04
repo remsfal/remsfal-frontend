@@ -1866,6 +1866,8 @@ components:
       description: User information globally
       type: object
       properties:
+        name:
+          type: string
         active:
           type: boolean
         id:
