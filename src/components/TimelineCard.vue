@@ -24,17 +24,18 @@ const props = defineProps<Props>();
 
 defineSlots<{
   item(props: { item: TimelineJson }): unknown;
+  title?(): unknown;
 }>();
 
 const testIdPrefix = 'timeline';
 const { t } = useI18n();
-const emptyText = t('tenantIssues.timeline.empty');
-const loadErrorText = t('tenantIssues.timeline.loadError');
-const messagePlaceholder = t('tenantIssues.timeline.messagePlaceholder');
-const uploadButtonLabel = t('tenantIssues.timeline.uploadButton');
-const uploadEmptyText = t('tenantIssues.timeline.uploadEmpty');
-const sendButtonLabel = t('tenantIssues.timeline.sendMessage');
-const sendErrorMessage = t('tenantIssues.timeline.createError');
+const emptyText = t('timeline.empty');
+const loadErrorText = t('timeline.loadError');
+const messagePlaceholder = t('timeline.messagePlaceholder');
+const uploadButtonLabel = t('timeline.uploadButton');
+const uploadEmptyText = t('timeline.uploadEmpty');
+const sendButtonLabel = t('timeline.sendMessage');
+const sendErrorMessage = t('timeline.createError');
 
 const {
   loading,
@@ -61,7 +62,9 @@ const {
 <template>
   <BaseCard>
     <template #title>
-      <span class="text-xl font-semibold">{{ props.title }}</span>
+      <slot name="title">
+        <span class="text-xl font-semibold">{{ props.title }}</span>
+      </slot>
     </template>
     <template #content>
       <CardSkeletonRows

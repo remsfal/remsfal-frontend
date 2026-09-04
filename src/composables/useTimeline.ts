@@ -5,8 +5,9 @@ import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import type { components as ticketingComponents, Readable } from '@/services/api/ticketing-schema';
 
 export type TimelineJson = Readable<ticketingComponents['schemas']['TimelineJson']>;
-
-type TimelinePurpose = NonNullable<TimelineJson['purpose']>;
+export type ContractorTimelineJson = Readable<ticketingComponents['schemas']['ContractorTimelineJson']>;
+export type TimelinePurpose = ticketingComponents['schemas']['MessagePurpose'];
+export type TimelineEntry = TimelineJson | ContractorTimelineJson;
 
 export interface TimelineSendPayload {
   purpose: TimelinePurpose;
@@ -14,11 +15,11 @@ export interface TimelineSendPayload {
 }
 
 export interface UseTimelineOptions {
-  load: () => Promise<TimelineJson[]>;
+  load: () => Promise<TimelineEntry[]>;
   send: (payload: TimelineSendPayload, files: File[]) => Promise<void>;
   watchSource?: WatchSource;
   sendPurpose?: TimelinePurpose;
-  isBlocked?: (items: TimelineJson[]) => boolean;
+  isBlocked?: (items: TimelineEntry[]) => boolean;
   sendErrorMessage: () => string;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
@@ -30,7 +31,7 @@ export function useTimeline(options: UseTimelineOptions) {
 
   const loading = ref(false);
   const error = ref(false);
-  const items = ref([]) as Ref<TimelineJson[]>;
+  const items = ref([]) as Ref<TimelineEntry[]>;
   const messageText = ref('');
   const selectedFiles = ref<File[]>([]);
   const fileUploadKey = ref(0);

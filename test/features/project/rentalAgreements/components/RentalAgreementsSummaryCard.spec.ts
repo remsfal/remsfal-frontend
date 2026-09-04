@@ -13,7 +13,7 @@ vi.mock('vue-i18n', () => ({
   }),
 }));
 
-vi.mock('@/components/common/BaseCard.vue', () => ({
+vi.mock('@/components/BaseCard.vue', () => ({
   default: {
     template: `
       <div>
