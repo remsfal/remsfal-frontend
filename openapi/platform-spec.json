@@ -347,6 +347,78 @@
           }
         }
       },
+      "ContractorTimelineJson" : {
+        "description" : "A contractor timeline entry",
+        "type" : "object",
+        "properties" : {
+          "issueId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "timelineId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "senderId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "senderName" : {
+            "type" : "string"
+          },
+          "purpose" : {
+            "$ref" : "#/components/schemas/MessagePurpose"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "requestId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "contractorId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "organizationId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "senderRole" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/ParticipantRole"
+          },
+          "attachments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderAttachmentJson"
+            },
+            "readOnly" : true
+          }
+        },
+        "required" : [ "purpose", "message" ]
+      },
+      "ContractorTimelineListJson" : {
+        "description" : "A list of contractor timelines",
+        "type" : "object",
+        "properties" : {
+          "timelines" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ContractorTimelineJson"
+            },
+            "description" : "Timeline entries",
+            "readOnly" : true
+          }
+        }
+      },
       "Cookie" : {
         "type" : "object",
         "properties" : {
@@ -496,9 +568,6 @@
         "description" : "An issue attachment",
         "type" : "object",
         "properties" : {
-          "issueId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
           "attachmentId" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -519,6 +588,9 @@
           },
           "createdAt" : {
             "$ref" : "#/components/schemas/Instant"
+          },
+          "issueId" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         }
       },
@@ -784,15 +856,9 @@
         "examples" : [ "2022-03-10T12:15:50-04:00" ]
       },
       "OrderAttachmentJson" : {
-        "description" : "An attachment associated with a quotation request, quotation, or order placement",
         "type" : "object",
+        "description" : "An attachment associated with a quotation request, quotation, or order placement",
         "properties" : {
-          "processPhase" : {
-            "$ref" : "#/components/schemas/OrderProcessPhase"
-          },
-          "processId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
           "attachmentId" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -813,6 +879,12 @@
           },
           "createdAt" : {
             "$ref" : "#/components/schemas/Instant"
+          },
+          "processPhase" : {
+            "$ref" : "#/components/schemas/OrderProcessPhase"
+          },
+          "processId" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         }
       },
@@ -1061,6 +1133,10 @@
             }
           }
         }
+      },
+      "ParticipantRole" : {
+        "type" : "string",
+        "enum" : [ "CONTRACTOR", "MANAGER", "TENANT" ]
       },
       "ProjectItemJson" : {
         "description" : "A project item with the user's member role only",
@@ -2141,7 +2217,7 @@
           }
         }
       },
-      "TimelineJson" : {
+      "TenantTimelineJson" : {
         "description" : "An issue timeline entry",
         "type" : "object",
         "properties" : {
@@ -2159,13 +2235,6 @@
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
-          },
-          "attachments" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/IssueAttachmentJson"
-            },
-            "readOnly" : true
           },
           "senderId" : {
             "readOnly" : true,
@@ -2191,18 +2260,25 @@
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/Instant"
+          },
+          "attachments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
+            },
+            "readOnly" : true
           }
         },
         "required" : [ "purpose", "message" ]
       },
-      "TimelineListJson" : {
+      "TenantTimelineListJson" : {
         "description" : "A list of issue timelines",
         "type" : "object",
         "properties" : {
           "timelines" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/TimelineJson"
+              "$ref" : "#/components/schemas/TenantTimelineJson"
             },
             "description" : "Timeline entries",
             "readOnly" : true
