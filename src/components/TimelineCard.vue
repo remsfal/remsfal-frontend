@@ -6,7 +6,7 @@ import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/BaseCard.vue';
 import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
-import { useTimeline, type UseTimelineOptions, type TimelineEntry } from '@/composables/useTimeline';
+import { useTimeline, type UseTimelineOptions, type TimelineJson } from '@/composables/useTimeline';
 import { useI18n } from 'vue-i18n';
 
 interface Props {
@@ -23,7 +23,8 @@ interface Props {
 const props = defineProps<Props>();
 
 defineSlots<{
-  item(props: { item: TimelineEntry }): unknown;
+  item(props: { item: TimelineJson }): unknown;
+  title?(): unknown;
 }>();
 
 const testIdPrefix = 'timeline';
@@ -61,7 +62,9 @@ const {
 <template>
   <BaseCard>
     <template #title>
-      <span class="text-xl font-semibold">{{ props.title }}</span>
+      <slot name="title">
+        <span class="text-xl font-semibold">{{ props.title }}</span>
+      </slot>
     </template>
     <template #content>
       <CardSkeletonRows

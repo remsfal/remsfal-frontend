@@ -6,6 +6,8 @@ export { default as IssueDashboardCards } from './components/IssueDashboardCards
 export { default as IssueDetailsCard } from './components/IssueDetailsCard.vue';
 export { default as IssueDescriptionCard } from './components/IssueDescriptionCard.vue';
 export { default as IssueAttachmentCard } from './components/IssueAttachmentCard.vue';
+export { default as IssueTimelineCard } from './components/IssueTimelineCard.vue';
+export { default as IssueTimelineItemCard } from './components/IssueTimelineItemCard.vue';
 export { default as IssueOrderManagementCard } from './components/IssueOrderManagementCard.vue';
 export { default as QuotationRequestTable } from './components/QuotationRequestTable.vue';
 export { default as QuoteTable } from './components/QuoteTable.vue';

@@ -62,6 +62,11 @@ function goToOpenOrders() {
   router.push({ name: 'ContractorOrdersOpen' });
 }
 
+function goToQuotationRequestDetails(event: { data: QuotationRequestJson }) {
+  if (!event.data.id) return;
+  router.push({ name: 'ContractorOrderDetails', params: { requestId: event.data.id } });
+}
+
 onMounted(() => loadData());
 </script>
 
@@ -81,7 +86,7 @@ onMounted(() => loadData());
           selectionMode="single"
           :metaKeySelection="false"
           :showHeaders="false"
-          @rowSelect="goToOpenOrders"
+          @rowSelect="goToQuotationRequestDetails"
         >
           <Column field="scopeOfWork">
             <template #body="{ data }">

@@ -15,22 +15,29 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const request = ref<QuotationRequestJson | null>(null);
 
+let fetchSequence = 0;
+
 const fetchRequest = async () => {
+  const currentFetch = ++fetchSequence;
   loading.value = true;
   error.value = null;
 
   try {
     const result = await quotationRequestService.getContractorQuotationRequests();
+    if (currentFetch !== fetchSequence) return;
     const found = (result.items ?? []).find((item) => item.id === props.requestId) ?? null;
     request.value = found;
     if (!found) {
       error.value = t('orderManagement.quotationRequestDetails.notFound');
     }
   } catch (fetchError) {
+    if (currentFetch !== fetchSequence) return;
     console.error('Error fetching quotation request:', fetchError);
     error.value = t('orderManagement.quotationRequestDetails.loadError');
   } finally {
-    loading.value = false;
+    if (currentFetch === fetchSequence) {
+      loading.value = false;
+    }
   }
 };
 
