@@ -6,7 +6,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import { quotationService, type QuotationJson } from '@/features/project/issues/services/QuotationService';
-import { orderPlacementService } from '@/services/OrderPlacementService';
+import { orderPlacementService } from '@/features/project/issues/services/OrderPlacementService';
 
 const props = defineProps<{ issueId: string }>();
 

@@ -24,11 +24,9 @@ class IssueTimelineService {
       formData.append('attachment', file);
     });
 
-    await apiClient.post(
-      '/ticketing/v1/issues/{issueId}/timeline',
-      formData as never,
-      { pathParams: { issueId } },
-    );
+    const path = '/ticketing/v1/issues/{issueId}/tenant-timeline';
+    // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
+    return apiClient.post(path, formData as never, { pathParams: { issueId } }) as Promise<TimelineJson>;
   }
 }
 
