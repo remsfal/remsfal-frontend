@@ -297,7 +297,7 @@ components:
         senderRole:
           readOnly: true
           type: string
-          $ref: "#/components/schemas/ParticipantRole"
+          $ref: "#/components/schemas/UserContext"
         attachments:
           type: array
           items:
@@ -920,12 +920,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OrganizationMemberJson"
-    ParticipantRole:
-      type: string
-      enum:
-      - CONTRACTOR
-      - MANAGER
-      - TENANT
     ProjectItemJson:
       description: A project item with the user's member role only
       type: object
@@ -1865,9 +1859,9 @@ components:
     UserContext:
       type: string
       enum:
+      - CONTRACTOR
       - MANAGER
       - TENANT
-      - CONTRACTOR
     UserJson:
       description: User information globally
       type: object

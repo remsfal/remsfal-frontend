@@ -866,7 +866,7 @@ export interface paths {
               createdAt?: components["schemas"]["Instant"];
               modifiedAt?: components["schemas"]["Instant"];
               organizationId?: $Read<components["schemas"]["UUID"]>;
-              senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+              senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
             };
             /** @description One or more files to attach to the timeline entry */
@@ -3524,7 +3524,7 @@ export interface paths {
               createdAt?: components["schemas"]["Instant"];
               modifiedAt?: components["schemas"]["Instant"];
               organizationId?: $Read<components["schemas"]["UUID"]>;
-              senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+              senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
             };
             /** @description One or more files to attach to the timeline entry */
@@ -4139,7 +4139,7 @@ export interface components {
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
       organizationId?: $Read<components["schemas"]["UUID"]>;
-      senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+      senderRole?: $Read<components["schemas"]["UserContext"]>;
       attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
     };
     /** @description A list of contractor timelines */
@@ -4425,8 +4425,6 @@ export interface components {
     OrganizationMemberListJson: {
       organizations?: components["schemas"]["OrganizationMemberJson"][];
     };
-    /** @enum {string} */
-    ParticipantRole: "CONTRACTOR" | "MANAGER" | "TENANT";
     /** @description A project item with the user's member role only */
     ProjectItemJson: {
       id: $Read<components["schemas"]["UUID"]>;
@@ -4880,7 +4878,7 @@ export interface components {
     /** @enum {string} */
     UnitType: "PROPERTY" | "SITE" | "BUILDING" | "APARTMENT" | "STORAGE" | "COMMERCIAL";
     /** @enum {string} */
-    UserContext: "MANAGER" | "TENANT" | "CONTRACTOR";
+    UserContext: "CONTRACTOR" | "MANAGER" | "TENANT";
     /** @description User information globally */
     UserJson: {
       name?: string;
