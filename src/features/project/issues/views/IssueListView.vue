@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/BaseCard.vue';
 import IssueTable, { type IssueColumn } from '../components/IssueTable.vue';
 import NewIssueButton from '../components/NewIssueButton.vue';
 import NewTenantIssueButton from '../components/NewTenantIssueButton.vue';
-import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
+import type { IssueItemJson, IssueStatus, IssueType } from '@/features/project/issues/services/IssueService';
+import { useIssueList } from '../composables/useIssueList';
 
 const props = defineProps<{
   projectId: string;
@@ -17,30 +18,15 @@ const props = defineProps<{
 const router = useRouter();
 const { t } = useI18n();
 
-const issues = ref<IssueItemJson[]>([]);
+const { issues, loadIssues } = useIssueList();
 
 // --- Filters (status, type, assigneeId) are applied server-side ---
-// Follows nextCursor until exhausted, since the backend caps a single page at 100 issues.
-const loadIssues = async () => {
-  try {
-    const firstPage = await issueService.getIssues(props.projectId, props.status, props.type, props.assigneeId);
-    const allIssues = [...(firstPage?.issues ?? [])];
-    let cursor = firstPage?.nextCursor;
-
-    while (cursor) {
-      const nextPage = await issueService.getIssues(
-        props.projectId, props.status, props.type, props.assigneeId,
-        undefined, undefined, undefined, cursor,
-      );
-      allIssues.push(...(nextPage?.issues ?? []));
-      cursor = nextPage?.nextCursor;
-    }
-
-    issues.value = allIssues;
-  } catch (err) {
-    console.error(err);
-  }
-};
+const load = () => loadIssues({
+  projectId: props.projectId,
+  status: props.status,
+  type: props.type,
+  assigneeId: props.assigneeId,
+});
 
 function toArray<T>(value?: T | T[]): T[] {
   if (value === undefined) return [];
@@ -109,7 +95,7 @@ const heading = computed(() => t(activePreset.value.key));
 const columns = computed<IssueColumn[]>(() => activePreset.value.columns);
 
 const handleIssueCreated = async (newIssue: IssueItemJson) => {
-  await loadIssues();
+  await load();
   router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: newIssue.id ?? '' } });
 };
 
@@ -117,10 +103,10 @@ const onIssueSelect = (issue: IssueItemJson) => {
   router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: issue.id ?? '' } });
 };
 
-onMounted(loadIssues);
+onMounted(load);
 
 // --- Re-fetch when the backend-relevant filters change ---
-watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadIssues);
+watch(() => [props.projectId, props.status, props.type, props.assigneeId], load);
 </script>
 
 <template>

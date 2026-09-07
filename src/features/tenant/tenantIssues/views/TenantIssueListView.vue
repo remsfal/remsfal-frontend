@@ -10,7 +10,7 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
-import type { IssueStatus, IssueType } from '@/services/IssueService';
+import type { IssueStatus, IssueType } from '@/features/project/issues/services/IssueService';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import NewTenancyIssueDialog from '../components/NewTenancyIssueDialog.vue';
 import TenantIssueCard from '../components/TenantIssueCard.vue';
