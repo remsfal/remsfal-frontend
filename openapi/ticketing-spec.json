@@ -375,16 +375,6 @@
           "modifiedAt" : {
             "$ref" : "#/components/schemas/Instant"
           },
-          "requestId" : {
-            "readOnly" : true,
-            "type" : "string",
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "contractorId" : {
-            "readOnly" : true,
-            "type" : "string",
-            "$ref" : "#/components/schemas/UUID"
-          },
           "organizationId" : {
             "readOnly" : true,
             "type" : "string",
@@ -393,7 +383,7 @@
           "senderRole" : {
             "readOnly" : true,
             "type" : "string",
-            "$ref" : "#/components/schemas/ParticipantRole"
+            "$ref" : "#/components/schemas/UserContext"
           },
           "attachments" : {
             "type" : "array",
@@ -1112,10 +1102,6 @@
             }
           }
         }
-      },
-      "ParticipantRole" : {
-        "type" : "string",
-        "enum" : [ "CONTRACTOR", "MANAGER", "TENANT" ]
       },
       "ProjectItemJson" : {
         "description" : "A project item with the user's member role only",
@@ -2275,7 +2261,7 @@
       },
       "UserContext" : {
         "type" : "string",
-        "enum" : [ "MANAGER", "TENANT", "CONTRACTOR" ]
+        "enum" : [ "CONTRACTOR", "MANAGER", "TENANT" ]
       },
       "UserJson" : {
         "description" : "User information globally",
@@ -2987,6 +2973,142 @@
           },
           "404" : {
             "description" : "Issue not found"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/issues/{issueId}/contractor-timeline" : {
+      "get" : {
+        "summary" : "Retrieve the timeline entries for a contractor's communication about an issue.",
+        "responses" : {
+          "200" : {
+            "description" : "Timeline entries retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorTimelineListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The quotation request does not exist"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a new timeline entry with attachments for a contractor's communication about an issue.",
+        "parameters" : [ {
+          "description" : "ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization",
+          "name" : "organizationId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "required" : [ "timeline" ],
+                "type" : "object",
+                "properties" : {
+                  "timeline" : {
+                    "description" : "Timeline entry information as JSON",
+                    "type" : "object",
+                    "properties" : {
+                      "issueId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "timelineId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderName" : {
+                        "type" : "string"
+                      },
+                      "purpose" : {
+                        "$ref" : "#/components/schemas/MessagePurpose"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "modifiedAt" : {
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "organizationId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderRole" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UserContext"
+                      },
+                      "attachments" : {
+                        "type" : "array",
+                        "items" : {
+                          "$ref" : "#/components/schemas/OrderAttachmentJson"
+                        },
+                        "readOnly" : true
+                      }
+                    },
+                    "required" : [ "purpose", "message" ]
+                  },
+                  "attachment" : {
+                    "description" : "One or more files to attach to the timeline entry",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Timeline entry created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorTimelineJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The quotation request does not exist"
           }
         },
         "security" : [ {
@@ -3919,7 +4041,7 @@
         } ]
       }
     },
-    "/ticketing/v1/issues/{issueId}/timeline" : {
+    "/ticketing/v1/issues/{issueId}/tenant-timeline" : {
       "get" : {
         "summary" : "Get all timeline entries for an issue",
         "parameters" : [ {
@@ -4919,6 +5041,142 @@
           },
           "404" : {
             "description" : "Quotation not found"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/order-management/{issueId}/timeline" : {
+      "get" : {
+        "summary" : "Retrieve the timeline entries for a contractor's communication about an issue.",
+        "responses" : {
+          "200" : {
+            "description" : "Timeline entries retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorTimelineListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The quotation request does not exist"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a new timeline entry with attachments for a contractor's communication about an issue.",
+        "parameters" : [ {
+          "description" : "ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization",
+          "name" : "organizationId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "required" : [ "timeline" ],
+                "type" : "object",
+                "properties" : {
+                  "timeline" : {
+                    "description" : "Timeline entry information as JSON",
+                    "type" : "object",
+                    "properties" : {
+                      "issueId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "timelineId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderName" : {
+                        "type" : "string"
+                      },
+                      "purpose" : {
+                        "$ref" : "#/components/schemas/MessagePurpose"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "modifiedAt" : {
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "organizationId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderRole" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UserContext"
+                      },
+                      "attachments" : {
+                        "type" : "array",
+                        "items" : {
+                          "$ref" : "#/components/schemas/OrderAttachmentJson"
+                        },
+                        "readOnly" : true
+                      }
+                    },
+                    "required" : [ "purpose", "message" ]
+                  },
+                  "attachment" : {
+                    "description" : "One or more files to attach to the timeline entry",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Timeline entry created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorTimelineJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The quotation request does not exist"
           }
         },
         "security" : [ {
