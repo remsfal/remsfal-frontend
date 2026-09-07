@@ -5351,8 +5351,6 @@ export interface components {
       message: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
-      requestId?: $Read<components["schemas"]["UUID"]>;
-      contractorId?: $Read<components["schemas"]["UUID"]>;
       organizationId?: $Read<components["schemas"]["UUID"]>;
       senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
       attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;

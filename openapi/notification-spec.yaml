@@ -290,14 +290,6 @@ components:
           $ref: "#/components/schemas/Instant"
         modifiedAt:
           $ref: "#/components/schemas/Instant"
-        requestId:
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/UUID"
-        contractorId:
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/UUID"
         organizationId:
           readOnly: true
           type: string

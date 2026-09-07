@@ -791,6 +791,135 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/ticketing/v1/issues/{issueId}/contractor-timeline": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve the timeline entries for a contractor's communication about an issue. */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Timeline entries retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ContractorTimelineListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to access this request */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The quotation request does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /** Create a new timeline entry with attachments for a contractor's communication about an issue. */
+    post: {
+      parameters: {
+        query?: {
+          /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
+          organizationId?: components["schemas"]["UUID"];
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            /** @description Timeline entry information as JSON */
+            timeline: {
+              issueId?: components["schemas"]["UUID"];
+              timelineId?: components["schemas"]["UUID"];
+              senderId?: components["schemas"]["UUID"];
+              senderName?: string;
+              purpose: components["schemas"]["MessagePurpose"];
+              message: string;
+              createdAt?: components["schemas"]["Instant"];
+              modifiedAt?: components["schemas"]["Instant"];
+              organizationId?: $Read<components["schemas"]["UUID"]>;
+              senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+              attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+            };
+            /** @description One or more files to attach to the timeline entry */
+            attachment?: string[];
+          };
+        };
+      };
+      responses: {
+        /** @description Timeline entry created successfully */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ContractorTimelineJson"];
+          };
+        };
+        /** @description Invalid input */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to access this request */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The quotation request does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/ticketing/v1/issues/{issueId}/orders": {
     parameters: {
       query?: never;
@@ -2012,7 +2141,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/ticketing/v1/issues/{issueId}/timeline": {
+  "/ticketing/v1/issues/{issueId}/tenant-timeline": {
     parameters: {
       query?: never;
       header?: never;
@@ -3320,6 +3449,135 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/ticketing/v1/order-management/{issueId}/timeline": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve the timeline entries for a contractor's communication about an issue. */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Timeline entries retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ContractorTimelineListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to access this request */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The quotation request does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /** Create a new timeline entry with attachments for a contractor's communication about an issue. */
+    post: {
+      parameters: {
+        query?: {
+          /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
+          organizationId?: components["schemas"]["UUID"];
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            /** @description Timeline entry information as JSON */
+            timeline: {
+              issueId?: components["schemas"]["UUID"];
+              timelineId?: components["schemas"]["UUID"];
+              senderId?: components["schemas"]["UUID"];
+              senderName?: string;
+              purpose: components["schemas"]["MessagePurpose"];
+              message: string;
+              createdAt?: components["schemas"]["Instant"];
+              modifiedAt?: components["schemas"]["Instant"];
+              organizationId?: $Read<components["schemas"]["UUID"]>;
+              senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+              attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+            };
+            /** @description One or more files to attach to the timeline entry */
+            attachment?: string[];
+          };
+        };
+      };
+      responses: {
+        /** @description Timeline entry created successfully */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ContractorTimelineJson"];
+          };
+        };
+        /** @description Invalid input */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to access this request */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The quotation request does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/ticketing/v1/tenant-relations/issues": {
     parameters: {
       query?: never;
@@ -3880,8 +4138,6 @@ export interface components {
       message: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
-      requestId?: $Read<components["schemas"]["UUID"]>;
-      contractorId?: $Read<components["schemas"]["UUID"]>;
       organizationId?: $Read<components["schemas"]["UUID"]>;
       senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
       attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
