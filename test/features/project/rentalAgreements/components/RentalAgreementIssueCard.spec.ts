@@ -1,14 +1,17 @@
 import { describe, test, expect, beforeEach, vi, type Mock } from 'vitest';
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import RentalAgreementIssueCard from '@/features/project/rentalAgreements/components/RentalAgreementIssueCard.vue';
-import { issueService, type IssueItemJson } from '@/services/IssueService';
+import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
 
 const push = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }));
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-vi.mock('@/services/IssueService', () => ({ issueService: { getIssues: vi.fn() } }));
+const toastAddMock = vi.fn();
+vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAddMock }) }));
+
+vi.mock('@/features/project/issues/services/IssueService', () => ({ issueService: { getIssues: vi.fn() } }));
 
 const IssueTableStub = {
   props: ['issues', 'projectId', 'columns'],
@@ -58,6 +61,8 @@ describe('RentalAgreementIssueCard', () => {
       undefined,
       undefined,
       'agreement-2',
+      undefined,
+      undefined,
     );
     expect(wrapper.findComponent(IssueTableStub).props('issues')).toEqual([sampleIssue]);
   });
@@ -76,14 +81,15 @@ describe('RentalAgreementIssueCard', () => {
     ]);
   });
 
-  test('logs an error and keeps the issue list empty when loading fails', async () => {
+  test('logs an error, shows a toast and keeps the issue list empty when loading fails', async () => {
     (issueService.getIssues as Mock).mockRejectedValue(new Error('network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     wrapper = mountCard();
     await flushPromises();
 
-    expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to load issues:', expect.any(Error));
+    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
     expect(wrapper.findComponent(IssueTableStub).props('issues')).toEqual([]);
     consoleSpy.mockRestore();
   });

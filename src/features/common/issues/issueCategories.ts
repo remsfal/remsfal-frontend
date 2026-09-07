@@ -1,5 +1,5 @@
 import type { ComposerTranslation } from 'vue-i18n';
-import type { IssueCategory } from '@/services/IssueService';
+import type { IssueCategory } from '@/features/project/issues/services/IssueService';
 
 export interface CategoryOption {
   value: IssueCategory;

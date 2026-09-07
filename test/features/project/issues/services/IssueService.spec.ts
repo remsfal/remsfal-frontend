@@ -1,7 +1,8 @@
 import { describe, test, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server';
-import { issueService, type IssueWritableJson, type IssueStatus, type IssueType } from '@/services/IssueService';
+import { server } from '../../../../mocks/server';
+import { issueService, type IssueWritableJson, type IssueStatus, type IssueType }
+  from '@/features/project/issues/services/IssueService';
 
 const projectId = 'test-project';
 const issueId = 'test-issue';

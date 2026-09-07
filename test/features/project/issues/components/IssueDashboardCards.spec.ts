@@ -1,7 +1,7 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import IssueDashboardCards from '@/features/project/issues/components/IssueDashboardCards.vue';
-import { issueService, type IssueItemJson } from '@/services/IssueService';
+import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const addMock = vi.fn();
@@ -12,8 +12,10 @@ vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }));
 
 vi.mock('vue-i18n', () => ({useI18n: () => ({ t: (key: string) => key }),}));
 
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>('@/services/IssueService');
+vi.mock('@/features/project/issues/services/IssueService', async () => {
+  const actual = await vi.importActual<
+    typeof import('@/features/project/issues/services/IssueService')
+      >('@/features/project/issues/services/IssueService');
   return {
     ...actual,
     issueService: { getIssues: vi.fn() },
