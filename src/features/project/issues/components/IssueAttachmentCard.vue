@@ -7,7 +7,7 @@ import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 import type { FileUploadUploaderEvent } from 'primevue/fileupload';
 import Image from 'primevue/image';
-import { issueService, type IssueAttachmentJson } from '@/services/IssueService';
+import { issueService, type IssueAttachmentJson } from '@/features/project/issues/services/IssueService';
 import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';
 
 const props = defineProps<{

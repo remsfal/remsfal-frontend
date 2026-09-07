@@ -6,7 +6,8 @@ import { useToast } from 'primevue/usetoast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
-import { issueService, type IssueItemJson, type IssuePriority, type IssueStatus } from '@/services/IssueService';
+import { issueService, type IssueItemJson, type IssuePriority, type IssueStatus }
+  from '@/features/project/issues/services/IssueService';
 import { getIssueTypeLabel } from '@/features/common/issues/issueLabels';
 import { useUserSessionStore } from '@/stores/UserSession';
 

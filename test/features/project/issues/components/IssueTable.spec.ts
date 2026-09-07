@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueTable from '@/features/project/issues/components/IssueTable.vue';
 import DataTable from 'primevue/datatable';
-import { type IssueItemJson } from '@/services/IssueService';
+import { type IssueItemJson } from '@/features/project/issues/services/IssueService';
 import { type ProjectMemberListJson, projectMemberService } from '@/services/ProjectMemberService';
 import { type OrganizationMemberListJson, organizationMemberService } from '@/services/OrganizationMemberService';
 

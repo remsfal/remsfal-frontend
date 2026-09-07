@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import NewTenantIssueButton from '@/features/project/issues/components/NewTenantIssueButton.vue';
-import { issueService } from '@/services/IssueService';
+import { issueService } from '@/features/project/issues/services/IssueService';
 import { Form } from '@primevue/forms';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Select from 'primevue/select';
 import Message from 'primevue/message';
 
-vi.mock('@/services/IssueService', { spy: true });
+vi.mock('@/features/project/issues/services/IssueService', { spy: true });
 
 const mockAgreement = {
   id: 'agreement-1',

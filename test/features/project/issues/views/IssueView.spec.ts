@@ -1,12 +1,12 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { mount, flushPromises, VueWrapper } from "@vue/test-utils";
 import IssueView from "@/features/project/issues/views/IssueView.vue";
-import { issueService } from "@/services/IssueService";
+import { issueService } from "@/features/project/issues/services/IssueService";
 
 // ---- Mocks ----
 const toastAddMock = vi.fn();
 
-vi.mock("@/services/IssueService", () => ({issueService: { getIssue: vi.fn() },}));
+vi.mock("@/features/project/issues/services/IssueService", () => ({issueService: { getIssue: vi.fn() },}));
 vi.mock(
   "@/features/project/issues/services/QuotationRequestService",
   () => ({quotationRequestService: {getQuotationRequests: vi.fn().mockResolvedValue({ items: [] }),},})

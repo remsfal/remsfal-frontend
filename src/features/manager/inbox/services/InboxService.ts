@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/ApiClient';
-import type { IssueType, IssueStatus } from '@/services/IssueService';
+import type { IssueType, IssueStatus } from '@/features/project/issues/services/IssueService';
 
 export interface InboxMessage {
   id: string;

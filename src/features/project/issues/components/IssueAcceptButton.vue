@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ issueId: string }>();
