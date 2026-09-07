@@ -1,11 +1,11 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import IssueAttachmentCard from '@/features/project/issues/components/IssueAttachmentCard.vue';
-import { issueService } from '@/services/IssueService';
+import { issueService } from '@/features/project/issues/services/IssueService';
 
 const toastAddMock = vi.fn();
 
-vi.mock('@/services/IssueService', () => ({
+vi.mock('@/features/project/issues/services/IssueService', () => ({
   issueService: {
     uploadAttachments: vi.fn(),
     deleteAttachment: vi.fn(),

@@ -8,7 +8,7 @@ import Message from 'primevue/message';
 import Divider from 'primevue/divider';
 
 // Types
-import type { IssueType } from '@/services/IssueService';
+import type { IssueType } from '@/features/project/issues/services/IssueService';
 import type { TenancyJson } from '@/services/TenancyService';
 import { formatTenancyLabel } from '@/services/TenancyService';
 

@@ -564,6 +564,7 @@
   "unitTypes.apartment": "Wohnung",
   "unitTypes.storage": "Nebennutzungsraum",
   "unitTypes.commercial": "Gewerbe",
+  "issueList.fetchError": "Fehler beim Laden der Aufgaben",
   "issueDetails.fetchError": "Fehler beim Laden der Aufgabendetails",
   "issueDetails.saveSuccess": "Aufgabendetails erfolgreich aktualisiert",
   "issueDetails.saveError": "Fehler beim Speichern der Aufgabendetails",
@@ -1123,5 +1124,7 @@
   "orderPlacement.rejectButton": "Ablehnen",
   "orderPlacement.confirmSuccess": "Auftrag erfolgreich bestätigt",
   "orderPlacement.rejectSuccess": "Auftrag erfolgreich abgelehnt",
-  "orderPlacement.actionError": "Fehler beim Aktualisieren des Auftrags"
+  "orderPlacement.actionError": "Fehler beim Aktualisieren des Auftrags",
+  "customerView.title": "Übersicht aller Auftraggeber",
+  "customerView.notAvailable": "Die Auftraggeberübersicht ist noch nicht verfügbar."
 }

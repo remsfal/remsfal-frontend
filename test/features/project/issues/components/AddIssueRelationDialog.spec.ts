@@ -1,11 +1,11 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import AddIssueRelationDialog from '@/features/project/issues/components/AddIssueRelationDialog.vue';
-import { issueService, type IssueItemJson } from '@/services/IssueService';
+import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
 
 const toastAddMock = vi.fn();
 
-vi.mock('@/services/IssueService', () => ({
+vi.mock('@/features/project/issues/services/IssueService', () => ({
   issueService: {
     createIssueRelation: vi.fn(),
     setParentIssue: vi.fn(),

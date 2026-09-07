@@ -14,7 +14,7 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 
 // Services & Types
-import type { IssueCategory, IssueType } from '@/services/IssueService';
+import type { IssueCategory, IssueType } from '@/features/project/issues/services/IssueService';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import { useUserSessionStore } from '@/stores/UserSession';
