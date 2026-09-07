@@ -64,6 +64,14 @@ describe("IssueView.vue", () => {
               '<div data-test="description" @click="$emit(\'saved\')" />',
           },
           IssueTimelineCard: {template: '<div data-test="timeline" />',},
+          IssueAttachmentCard: {
+            template:
+              '<div data-test="attachments" @click="$emit(\'saved\')" />',
+          },
+          IssueRelationshipsCard: {
+            template:
+              '<div data-test="relationships" @click="$emit(\'saved\')" />',
+          },
           IssueOrderManagementCard: true,
         },
       },
@@ -201,6 +209,20 @@ describe("IssueView.vue", () => {
     expect(issueService.getIssue).toHaveBeenCalledTimes(2);
   });
 
+  test("refetches issue when attachment card emits saved", async () => {
+    await wrapper.find('[data-test="attachments"]').trigger("click");
+    await flushPromises();
+
+    expect(issueService.getIssue).toHaveBeenCalledTimes(2);
+  });
+
+  test("refetches issue when relationships card emits saved", async () => {
+    await wrapper.find('[data-test="relationships"]').trigger("click");
+    await flushPromises();
+
+    expect(issueService.getIssue).toHaveBeenCalledTimes(2);
+  });
+  
   test("refetches issue when projectId or issueId props change", async () => {
     await wrapper.setProps({ projectId: "PROJ-2", issueId: "ISSUE-2" });
     await flushPromises();

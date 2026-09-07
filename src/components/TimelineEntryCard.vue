@@ -21,11 +21,17 @@ interface Props {
   attachmentsLabel?: string;
   downloadAttachmentLabel?: string;
   testId?: string;
+  /**
+   * Renders this entry as an own/outgoing chat message: the row is reversed so the
+   * bubble sits on the right with a light gray background (e.g. for IssueChatCard).
+   */
+  own?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   attachments: () => [],
   testId: 'timeline-entry',
+  own: false,
 });
 
 const { locale } = useI18n();
@@ -42,13 +48,14 @@ const openAttachmentDownload = (downloadUrl: string) => {
 </script>
 
 <template>
-  <div class="mb-2 flex items-start gap-3">
-    <span class="w-40 shrink-0 text-sm text-gray-500">
+  <div class="mb-2 flex items-start gap-3" :class="{ 'flex-row-reverse': own }">
+    <span class="w-40 shrink-0 text-sm text-gray-500" :class="{ 'text-right': own }">
       {{ formattedDate || '-' }}
     </span>
     <article
       :data-testid="testId"
-      class="flex-1 rounded-lg border border-gray-200 bg-white p-4"
+      class="flex-1 rounded-lg border border-gray-200 p-4"
+      :class="own ? 'bg-gray-100' : 'bg-white'"
     >
       <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
         <p class="text-lg font-semibold text-gray-900">
