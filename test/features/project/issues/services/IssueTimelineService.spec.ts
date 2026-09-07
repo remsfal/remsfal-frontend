@@ -16,7 +16,7 @@ describe('IssueTimelineService', () => {
     const result = await issueTimelineService.createTimelineEntry('issue-1', 'MESSAGE_SENT', 'Hello');
 
     const [path, payload, options] = postSpy.mock.calls[0];
-    expect(path).toBe('/ticketing/v1/issues/{issueId}/timeline');
+    expect(path).toBe('/ticketing/v1/issues/{issueId}/tenant-timeline');
     expect(payload).toBeInstanceOf(FormData);
     expect(options).toEqual({ pathParams: { issueId: 'issue-1' } });
 
