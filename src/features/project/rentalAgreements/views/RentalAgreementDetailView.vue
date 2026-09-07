@@ -11,17 +11,15 @@ import Button from 'primevue/button';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 import DangerZoneCard from "@/components/DangerZoneCard.vue";
 import {useToast} from "primevue/usetoast";
 
 const props = defineProps<{
-  projectId: string; agreementId: string; status?: IssueStatus; type?: IssueType; assigneeId?: string;
+  projectId: string; agreementId: string;
 }>();
 
 const { t } = useI18n();
 const router = useRouter();
-const issues = ref<IssueItemJson[]>([]);
 const toast = useToast();
 
 const confirmationDialogVisible = ref(false);
@@ -76,17 +74,6 @@ function deleteRentalAgreement(agreementId: string) {
 function redirectToRentalAgreementList() {
   router.push({ name: 'RentalAgreementView', params: { projectId: props.projectId } });
 }
-
-const loadIssues = async () => {
-  try {
-    const issueList = await issueService.getIssues(props.projectId, props.status, props.type, props.assigneeId);
-    issues.value = issueList?.issues ?? [];
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-onMounted(loadIssues);
 
 const deleteAgreement = async () => {
   try {
