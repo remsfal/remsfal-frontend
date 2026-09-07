@@ -60,12 +60,7 @@ watch(() => props.requestId, fetchRequest);
       <ContractorOrderTimelineCard
         :issueId="request.issueId ?? ''"
         :requestId="props.requestId"
-        :title="t('orderManagement.timeline.tenantPanelTitle')"
-      />
-      <ContractorOrderTimelineCard
-        :issueId="request.issueId ?? ''"
-        :requestId="props.requestId"
-        :title="t('orderManagement.timeline.managerPanelTitle')"
+        :title="t('tenantIssues.timeline.title')"
       />
     </template>
   </div>

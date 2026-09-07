@@ -54,7 +54,7 @@ describe('QuotationRequestDetailView', () => {
     consoleSpy.mockRestore();
   });
 
-  it('passes the issueId and requestId to both timeline panels', async () => {
+  it('passes the issueId and requestId to the timeline panel', async () => {
     const request = makeRequest();
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValueOnce({ items: [request] });
 
@@ -62,10 +62,8 @@ describe('QuotationRequestDetailView', () => {
     await flushPromises();
 
     const timelineCards = wrapper.findAllComponents(ContractorOrderTimelineCard);
-    expect(timelineCards).toHaveLength(2);
-    timelineCards.forEach((card) => {
-      expect(card.props('issueId')).toBe('issue-1');
-      expect(card.props('requestId')).toBe('qr-1');
-    });
+    expect(timelineCards).toHaveLength(1);
+    expect(timelineCards[0].props('issueId')).toBe('issue-1');
+    expect(timelineCards[0].props('requestId')).toBe('qr-1');
   });
 });
