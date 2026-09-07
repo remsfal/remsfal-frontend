@@ -90,7 +90,7 @@ describe('ProjectTenanciesDetails', () => {
     const localWrapper = mount(ProjectTenanciesDetails, {props: { projectId: 'proj-1', agreementId: 'agreement-1' },});
     await flushPromises();
 
-    expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to load issues:', expect.any(Error));
 
     localWrapper.unmount();
   });
