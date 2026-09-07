@@ -8,7 +8,7 @@ class IssueTimelineService {
     const formData = new FormData();
     formData.append('timeline', new Blob([JSON.stringify({ purpose, message })], { type: 'application/json' }));
 
-    const path = '/ticketing/v1/issues/{issueId}/timeline';
+    const path = '/ticketing/v1/issues/{issueId}/tenant-timeline';
     // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
     return apiClient.post(path, formData as never, { pathParams: { issueId } }) as Promise<TimelineJson>;
   }
