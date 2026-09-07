@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import NewQuotationRequestDialog from './NewQuotationRequestDialog.vue';
-import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
+import { quotationRequestService, type QuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
 
 const props = defineProps<{ projectId: string; issueId: string }>();
 

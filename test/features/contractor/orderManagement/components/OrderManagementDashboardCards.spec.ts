@@ -2,8 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import DataTable from 'primevue/datatable';
 import OrderManagementDashboardCards from '@/features/contractor/orderManagement/components/OrderManagementDashboardCards.vue';
-import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
-import { orderPlacementService, type OrderPlacementJson } from '@/services/OrderPlacementService';
+import { quotationRequestService } from '@/features/contractor/orderManagement/services/QuotationRequestService';
+import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
+import { orderPlacementService } from '@/features/contractor/orderManagement/services/OrderPlacementService';
+import type { OrderPlacementJson } from '@/features/contractor/orderManagement/services/OrderPlacementService';
 
 const routerMocks = vi.hoisted(() => ({ push: vi.fn() }));
 
