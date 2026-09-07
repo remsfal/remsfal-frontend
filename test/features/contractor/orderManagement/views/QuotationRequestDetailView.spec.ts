@@ -9,6 +9,7 @@ import { quotationRequestService, type QuotationRequestJson } from '@/services/Q
 
 const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRequestJson => ({
   id: 'qr-1',
+  issueId: 'issue-1',
   status: 'REQUESTED',
   scopeOfWork: 'Dachrinne reparieren',
   ...overrides,
@@ -53,7 +54,7 @@ describe('QuotationRequestDetailView', () => {
     consoleSpy.mockRestore();
   });
 
-  it('passes recipient TENANT/MANAGER and the requestId to both timeline panels', async () => {
+  it('passes the issueId and requestId to both timeline panels', async () => {
     const request = makeRequest();
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValueOnce({ items: [request] });
 
@@ -62,7 +63,9 @@ describe('QuotationRequestDetailView', () => {
 
     const timelineCards = wrapper.findAllComponents(ContractorOrderTimelineCard);
     expect(timelineCards).toHaveLength(2);
-    expect(timelineCards.map((card) => card.props('recipient')).sort()).toEqual(['MANAGER', 'TENANT']);
-    timelineCards.forEach((card) => expect(card.props('requestId')).toBe('qr-1'));
+    timelineCards.forEach((card) => {
+      expect(card.props('issueId')).toBe('issue-1');
+      expect(card.props('requestId')).toBe('qr-1');
+    });
   });
 });

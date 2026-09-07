@@ -30,14 +30,14 @@ const makeTimeline = (overrides: Partial<ContractorTimelineJson> = {}): Contract
 });
 
 interface CardProps {
+  issueId: string;
   requestId: string;
-  recipient: 'TENANT' | 'MANAGER';
   title: string;
 }
 
 const defaultProps: CardProps = {
+  issueId: 'issue-1',
   requestId: 'request-1',
-  recipient: 'TENANT',
   title: 'Mieter-Kommunikation',
 };
 
@@ -49,29 +49,27 @@ const mountCardShallow = async (props: Partial<CardProps> = {}) => {
 };
 
 describe('ContractorOrderTimelineCard component', () => {
-  it('loads timeline entries for the given request', async () => {
+  it('loads timeline entries for the given issue', async () => {
     vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce({timelines: [makeTimeline()],});
 
     const wrapper = await mountCardShallow();
     const result = await wrapper.getComponent(TimelineCard).props('load')();
 
-    expect(contractorOrderTimelineService.getTimelineEntries).toHaveBeenCalledWith('request-1');
+    expect(contractorOrderTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-1');
     expect(result).toEqual([makeTimeline()]);
   });
 
-  it('sends messages with attachments for the given request and fixed recipient', async () => {
+  it('sends messages with attachments for the given issue', async () => {
     vi.mocked(contractorOrderTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
 
-    const wrapper = await mountCardShallow({ recipient: 'MANAGER' });
+    const wrapper = await mountCardShallow();
     const send = wrapper.getComponent(TimelineCard).props('send');
     const files = [new File(['a'], 'a.pdf')];
     await send({ purpose: 'MESSAGE_SENT', message: 'Hallo' }, files);
 
     expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
-      'request-1',
-      {
-        purpose: 'MESSAGE_SENT', message: 'Hallo', recipient: 'MANAGER' 
-      },
+      'issue-1',
+      { purpose: 'MESSAGE_SENT', message: 'Hallo' },
       files,
     );
   });
@@ -85,10 +83,8 @@ describe('ContractorOrderTimelineCard component', () => {
     await send({ purpose: 'MESSAGE_SENT' }, files);
 
     expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
-      'request-1',
-      {
-        purpose: 'MESSAGE_SENT', message: '', recipient: 'TENANT' 
-      },
+      'issue-1',
+      { purpose: 'MESSAGE_SENT', message: '' },
       files,
     );
   });

@@ -58,13 +58,13 @@ watch(() => props.requestId, fetchRequest);
     <template v-else-if="request">
       <QuotationRequestDetailsCard :request="request" />
       <ContractorOrderTimelineCard
+        :issueId="request.issueId ?? ''"
         :requestId="props.requestId"
-        recipient="TENANT"
         :title="t('orderManagement.timeline.tenantPanelTitle')"
       />
       <ContractorOrderTimelineCard
+        :issueId="request.issueId ?? ''"
         :requestId="props.requestId"
-        recipient="MANAGER"
         :title="t('orderManagement.timeline.managerPanelTitle')"
       />
     </template>

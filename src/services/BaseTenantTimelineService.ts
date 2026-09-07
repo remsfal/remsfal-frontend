@@ -1,7 +1,7 @@
 import { apiClient, type ApiComponents, type Readable, type RequestOptions } from '@/services/ApiClient';
 
-export type TimelineJson = Readable<ApiComponents['schemas']['TimelineJson']>;
-export type TimelineListJson = Readable<ApiComponents['schemas']['TimelineListJson']>;
+export type TimelineJson = Readable<ApiComponents['schemas']['TenantTimelineJson']>;
+export type TimelineListJson = Readable<ApiComponents['schemas']['TenantTimelineListJson']>;
 
 type TimelineBasePath = '/ticketing/v1/issues' | '/ticketing/v1/tenant-relations/issues';
 

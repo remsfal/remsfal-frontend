@@ -1616,15 +1616,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve the timeline entries for a quotation request. */
+        /** Retrieve the timeline entries for a contractor's communication about an issue. */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    /** @description ID of the quotation request */
-                    requestId: components["schemas"]["UUID"];
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody?: never;
@@ -1662,15 +1659,12 @@ export interface paths {
             };
         };
         put?: never;
-        /** Create a new timeline entry with attachments for a quotation request. */
+        /** Create a new timeline entry with attachments for a contractor's communication about an issue. */
         post: {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    /** @description ID of the quotation request */
-                    requestId: components["schemas"]["UUID"];
-                };
+                path?: never;
                 cookie?: never;
             };
             requestBody: {
@@ -1686,9 +1680,9 @@ export interface paths {
                             message: string;
                             createdAt?: components["schemas"]["Instant"];
                             modifiedAt?: components["schemas"]["Instant"];
-                            requestId?: $Read<components["schemas"]["UUID"]>;
+                            contractorId?: $Read<components["schemas"]["UUID"]>;
+                            organizationId?: $Read<components["schemas"]["UUID"]>;
                             senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
-                            recipient?: components["schemas"]["ParticipantRole"];
                             attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
                         };
                         /** @description One or more files to attach to the timeline entry */
@@ -2153,7 +2147,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["TimelineListJson"];
+                        "application/json": components["schemas"]["TenantTimelineListJson"];
                     };
                 };
                 /** @description No user authentication provided via session cookie */
@@ -2219,7 +2213,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["TimelineJson"];
+                        "application/json": components["schemas"]["TenantTimelineJson"];
                     };
                 };
                 /** @description Invalid input */
@@ -3121,139 +3115,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/ticketing/v1/order-management/quotation-requests/{requestId}/timeline": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieve the timeline entries for a quotation request. */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the quotation request */
-                    requestId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Timeline entries retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ContractorTimelineListJson"];
-                    };
-                };
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description User does not have permission to access this request */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The quotation request does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        /** Create a new timeline entry with attachments for a quotation request. */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the quotation request */
-                    requestId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "multipart/form-data": {
-                        /** @description Timeline entry information as JSON */
-                        timeline: {
-                            issueId?: components["schemas"]["UUID"];
-                            timelineId?: components["schemas"]["UUID"];
-                            senderId?: components["schemas"]["UUID"];
-                            senderName?: string;
-                            purpose: components["schemas"]["MessagePurpose"];
-                            message: string;
-                            createdAt?: components["schemas"]["Instant"];
-                            modifiedAt?: components["schemas"]["Instant"];
-                            requestId?: $Read<components["schemas"]["UUID"]>;
-                            senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
-                            recipient?: components["schemas"]["ParticipantRole"];
-                            attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
-                        };
-                        /** @description One or more files to attach to the timeline entry */
-                        attachment?: string[];
-                    };
-                };
-            };
-            responses: {
-                /** @description Timeline entry created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ContractorTimelineJson"];
-                    };
-                };
-                /** @description Invalid input */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description User does not have permission to access this request */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The quotation request does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/ticketing/v1/order-management/quotations": {
         parameters: {
             query?: never;
@@ -3562,6 +3423,133 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ticketing/v1/order-management/{issueId}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve the timeline entries for a contractor's communication about an issue. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Timeline entries retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorTimelineListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to access this request */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The quotation request does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new timeline entry with attachments for a contractor's communication about an issue. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description Timeline entry information as JSON */
+                        timeline: {
+                            issueId?: components["schemas"]["UUID"];
+                            timelineId?: components["schemas"]["UUID"];
+                            senderId?: components["schemas"]["UUID"];
+                            senderName?: string;
+                            purpose: components["schemas"]["MessagePurpose"];
+                            message: string;
+                            createdAt?: components["schemas"]["Instant"];
+                            modifiedAt?: components["schemas"]["Instant"];
+                            contractorId?: $Read<components["schemas"]["UUID"]>;
+                            organizationId?: $Read<components["schemas"]["UUID"]>;
+                            senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
+                            attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+                        };
+                        /** @description One or more files to attach to the timeline entry */
+                        attachment?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Timeline entry created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorTimelineJson"];
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to access this request */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The quotation request does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -3885,7 +3873,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["TimelineListJson"];
+                        "application/json": components["schemas"]["TenantTimelineListJson"];
                     };
                 };
                 /** @description No user authentication provided via session cookie */
@@ -3951,7 +3939,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["TimelineJson"];
+                        "application/json": components["schemas"]["TenantTimelineJson"];
                     };
                 };
                 /** @description Invalid input */
@@ -4128,9 +4116,9 @@ export interface components {
             message: string;
             createdAt?: components["schemas"]["Instant"];
             modifiedAt?: components["schemas"]["Instant"];
-            requestId?: $Read<components["schemas"]["UUID"]>;
+            contractorId?: $Read<components["schemas"]["UUID"]>;
+            organizationId?: $Read<components["schemas"]["UUID"]>;
             senderRole?: $Read<components["schemas"]["ParticipantRole"]>;
-            recipient?: components["schemas"]["ParticipantRole"];
             attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
         };
         /** @description A list of contractor timelines */
@@ -4193,7 +4181,6 @@ export interface components {
         Instant: string;
         /** @description An issue attachment */
         IssueAttachmentJson: {
-            issueId?: components["schemas"]["UUID"];
             attachmentId?: components["schemas"]["UUID"];
             fileName?: string;
             contentType?: string;
@@ -4201,6 +4188,7 @@ export interface components {
             uploaderId?: components["schemas"]["UUID"];
             uploadedBy?: string;
             createdAt?: components["schemas"]["Instant"];
+            issueId?: components["schemas"]["UUID"];
         };
         /** @enum {string} */
         IssueCategory: "BLOCKED_DRAIN" | "ELECTRICAL_FAULT" | "FIRE_DAMAGE" | "HEATING_SYSTEM_MALFUNCTION" | "PEST_INFESTATION" | "POLLUTION_INSIDE_BUILDING" | "POLLUTION_OUTSIDE_BUILDING" | "SANITARY_SYSTEM_DAMAGE" | "ROLLER_SHUTTER_DAMAGE" | "WATER_DAMAGE" | "CERTIFICATE_OF_NO_RENT_ARREARS" | "CONFIRMATION_OF_RESIDENCE" | "ALARM_SYSTEM_MAINTENANCE" | "CHIMNEY_SWEEP_MAINTENANCE" | "CLEANING_MAINTENANCE" | "FIRE_ALARM_MAINTENANCE" | "FIRE_EXTINGUISHER_MAINTENANCE" | "GARDEN_MAINTENANCE" | "HEATING_MAINTENANCE" | "PUMP_MAINTENANCE" | "SNOW_REMOVAL_MAINTENANCE" | "TREE_CARE_MAINTENANCE" | "GENERAL";
@@ -4298,8 +4286,6 @@ export interface components {
         OffsetDateTime: string;
         /** @description An attachment associated with a quotation request, quotation, or order placement */
         OrderAttachmentJson: {
-            processPhase?: components["schemas"]["OrderProcessPhase"];
-            processId?: components["schemas"]["UUID"];
             attachmentId?: components["schemas"]["UUID"];
             fileName?: string;
             contentType?: string;
@@ -4307,6 +4293,8 @@ export interface components {
             uploaderId?: components["schemas"]["UUID"];
             uploadedBy?: string;
             createdAt?: components["schemas"]["Instant"];
+            processPhase?: components["schemas"]["OrderProcessPhase"];
+            processId?: components["schemas"]["UUID"];
         };
         /** @description An order placement created by a manager based on a quotation */
         OrderPlacementJson: {
@@ -4825,7 +4813,7 @@ export interface components {
             tenants?: components["schemas"]["TenantItemJson"][];
         };
         /** @description An issue timeline entry */
-        TimelineJson: {
+        TenantTimelineJson: {
             issueId?: $Read<components["schemas"]["UUID"]>;
             tenancyId?: $Read<components["schemas"]["UUID"]>;
             timelineId?: $Read<components["schemas"]["UUID"]>;
@@ -4838,9 +4826,9 @@ export interface components {
             attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
         };
         /** @description A list of issue timelines */
-        TimelineListJson: {
+        TenantTimelineListJson: {
             /** @description Timeline entries */
-            timelines?: $Read<components["schemas"]["TimelineJson"][]>;
+            timelines?: $Read<components["schemas"]["TenantTimelineJson"][]>;
         };
         /** Format: uuid */
         UUID: string;

@@ -290,15 +290,17 @@ components:
           $ref: "#/components/schemas/Instant"
         modifiedAt:
           $ref: "#/components/schemas/Instant"
-        requestId:
+        contractorId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        organizationId:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
         senderRole:
           readOnly: true
           type: string
-          $ref: "#/components/schemas/ParticipantRole"
-        recipient:
           $ref: "#/components/schemas/ParticipantRole"
         attachments:
           type: array
@@ -420,8 +422,6 @@ components:
       description: An issue attachment
       type: object
       properties:
-        issueId:
-          $ref: "#/components/schemas/UUID"
         attachmentId:
           $ref: "#/components/schemas/UUID"
         fileName:
@@ -436,6 +436,8 @@ components:
           type: string
         createdAt:
           $ref: "#/components/schemas/Instant"
+        issueId:
+          $ref: "#/components/schemas/UUID"
     IssueCategory:
       type: string
       enum:
@@ -699,10 +701,6 @@ components:
       description: "An attachment associated with a quotation request, quotation,\
         \ or order placement"
       properties:
-        processPhase:
-          $ref: "#/components/schemas/OrderProcessPhase"
-        processId:
-          $ref: "#/components/schemas/UUID"
         attachmentId:
           $ref: "#/components/schemas/UUID"
         fileName:
@@ -717,6 +715,10 @@ components:
           type: string
         createdAt:
           $ref: "#/components/schemas/Instant"
+        processPhase:
+          $ref: "#/components/schemas/OrderProcessPhase"
+        processId:
+          $ref: "#/components/schemas/UUID"
     OrderPlacementJson:
       description: An order placement created by a manager based on a quotation
       type: object
@@ -1784,7 +1786,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenantItemJson"
-    TimelineJson:
+    TenantTimelineJson:
       description: An issue timeline entry
       type: object
       properties:
@@ -1827,14 +1829,14 @@ components:
       required:
       - purpose
       - message
-    TimelineListJson:
+    TenantTimelineListJson:
       description: A list of issue timelines
       type: object
       properties:
         timelines:
           type: array
           items:
-            $ref: "#/components/schemas/TimelineJson"
+            $ref: "#/components/schemas/TenantTimelineJson"
           description: Timeline entries
           readOnly: true
     UUID:
@@ -2808,14 +2810,8 @@ paths:
       - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/quotation-request/{requestId}/timeline:
     get:
-      summary: Retrieve the timeline entries for a quotation request.
-      parameters:
-      - description: ID of the quotation request
-        required: true
-        name: requestId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
+      summary: Retrieve the timeline entries for a contractor's communication about
+        an issue.
       responses:
         "200":
           description: Timeline entries retrieved successfully
@@ -2832,14 +2828,8 @@ paths:
       security:
       - SecurityScheme: []
     post:
-      summary: Create a new timeline entry with attachments for a quotation request.
-      parameters:
-      - description: ID of the quotation request
-        required: true
-        name: requestId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
+      summary: Create a new timeline entry with attachments for a contractor's communication
+        about an issue.
       requestBody:
         content:
           multipart/form-data:
@@ -2868,15 +2858,17 @@ paths:
                       $ref: "#/components/schemas/Instant"
                     modifiedAt:
                       $ref: "#/components/schemas/Instant"
-                    requestId:
+                    contractorId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    organizationId:
                       readOnly: true
                       type: string
                       $ref: "#/components/schemas/UUID"
                     senderRole:
                       readOnly: true
                       type: string
-                      $ref: "#/components/schemas/ParticipantRole"
-                    recipient:
                       $ref: "#/components/schemas/ParticipantRole"
                     attachments:
                       type: array
@@ -3119,7 +3111,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TimelineListJson"
+                $ref: "#/components/schemas/TenantTimelineListJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3201,7 +3193,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TimelineJson"
+                $ref: "#/components/schemas/TenantTimelineJson"
         "400":
           description: Invalid input
         "401":
@@ -3655,110 +3647,6 @@ paths:
           description: Quotation request not found
       security:
       - SecurityScheme: []
-  /ticketing/v1/order-management/quotation-requests/{requestId}/timeline:
-    get:
-      summary: Retrieve the timeline entries for a quotation request.
-      parameters:
-      - description: ID of the quotation request
-        required: true
-        name: requestId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Timeline entries retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ContractorTimelineListJson"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to access this request
-        "404":
-          description: The quotation request does not exist
-      security:
-      - SecurityScheme: []
-    post:
-      summary: Create a new timeline entry with attachments for a quotation request.
-      parameters:
-      - description: ID of the quotation request
-        required: true
-        name: requestId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              required:
-              - timeline
-              type: object
-              properties:
-                timeline:
-                  description: Timeline entry information as JSON
-                  type: object
-                  properties:
-                    issueId:
-                      $ref: "#/components/schemas/UUID"
-                    timelineId:
-                      $ref: "#/components/schemas/UUID"
-                    senderId:
-                      $ref: "#/components/schemas/UUID"
-                    senderName:
-                      type: string
-                    purpose:
-                      $ref: "#/components/schemas/MessagePurpose"
-                    message:
-                      type: string
-                    createdAt:
-                      $ref: "#/components/schemas/Instant"
-                    modifiedAt:
-                      $ref: "#/components/schemas/Instant"
-                    requestId:
-                      readOnly: true
-                      type: string
-                      $ref: "#/components/schemas/UUID"
-                    senderRole:
-                      readOnly: true
-                      type: string
-                      $ref: "#/components/schemas/ParticipantRole"
-                    recipient:
-                      $ref: "#/components/schemas/ParticipantRole"
-                    attachments:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/OrderAttachmentJson"
-                      readOnly: true
-                  required:
-                  - purpose
-                  - message
-                attachment:
-                  description: One or more files to attach to the timeline entry
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-        required: true
-      responses:
-        "201":
-          description: Timeline entry created successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ContractorTimelineJson"
-        "400":
-          description: Invalid input
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to access this request
-        "404":
-          description: The quotation request does not exist
-      security:
-      - SecurityScheme: []
   /ticketing/v1/order-management/quotations:
     get:
       summary: Retrieve quotations submitted by the authenticated contractor.
@@ -3906,6 +3794,100 @@ paths:
           description: User does not have sufficient organization role
         "404":
           description: Quotation not found
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/order-management/{issueId}/timeline:
+    get:
+      summary: Retrieve the timeline entries for a contractor's communication about
+        an issue.
+      responses:
+        "200":
+          description: Timeline entries retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractorTimelineListJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this request
+        "404":
+          description: The quotation request does not exist
+      security:
+      - SecurityScheme: []
+    post:
+      summary: Create a new timeline entry with attachments for a contractor's communication
+        about an issue.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - timeline
+              type: object
+              properties:
+                timeline:
+                  description: Timeline entry information as JSON
+                  type: object
+                  properties:
+                    issueId:
+                      $ref: "#/components/schemas/UUID"
+                    timelineId:
+                      $ref: "#/components/schemas/UUID"
+                    senderId:
+                      $ref: "#/components/schemas/UUID"
+                    senderName:
+                      type: string
+                    purpose:
+                      $ref: "#/components/schemas/MessagePurpose"
+                    message:
+                      type: string
+                    createdAt:
+                      $ref: "#/components/schemas/Instant"
+                    modifiedAt:
+                      $ref: "#/components/schemas/Instant"
+                    contractorId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    organizationId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    senderRole:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/ParticipantRole"
+                    attachments:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/OrderAttachmentJson"
+                      readOnly: true
+                  required:
+                  - purpose
+                  - message
+                attachment:
+                  description: One or more files to attach to the timeline entry
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+        required: true
+      responses:
+        "201":
+          description: Timeline entry created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractorTimelineJson"
+        "400":
+          description: Invalid input
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this request
+        "404":
+          description: The quotation request does not exist
       security:
       - SecurityScheme: []
   /ticketing/v1/tenant-relations/issues:
@@ -4125,7 +4107,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TimelineListJson"
+                $ref: "#/components/schemas/TenantTimelineListJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -4207,7 +4189,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TimelineJson"
+                $ref: "#/components/schemas/TenantTimelineJson"
         "400":
           description: Invalid input
         "401":
