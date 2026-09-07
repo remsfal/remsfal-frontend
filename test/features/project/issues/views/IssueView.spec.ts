@@ -8,7 +8,7 @@ const toastAddMock = vi.fn();
 
 vi.mock("@/services/IssueService", () => ({issueService: { getIssue: vi.fn() },}));
 vi.mock(
-  "@/services/QuotationRequestService",
+  "@/features/project/issues/services/QuotationRequestService",
   () => ({quotationRequestService: {getQuotationRequests: vi.fn().mockResolvedValue({ items: [] }),},})
 );
 vi.mock(
