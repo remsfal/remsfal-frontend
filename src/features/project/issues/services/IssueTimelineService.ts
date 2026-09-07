@@ -6,7 +6,7 @@ export type TimelineListJson = Readable<ApiComponents['schemas']['TenantTimeline
 class IssueTimelineService {
   async getTimelineEntries(issueId: string): Promise<TimelineListJson> {
     const result = await apiClient.get(
-      '/ticketing/v1/issues/{issueId}/timeline',
+      '/ticketing/v1/issues/{issueId}/tenant-timeline',
       { pathParams: { issueId } },
     ) as Partial<TimelineListJson>;
     return { timelines: result.timelines ?? [] };
@@ -25,7 +25,7 @@ class IssueTimelineService {
     });
 
     await apiClient.post(
-      '/ticketing/v1/issues/{issueId}/timeline',
+      '/ticketing/v1/issues/{issueId}/tenant-timeline',
       formData as never,
       { pathParams: { issueId } },
     );

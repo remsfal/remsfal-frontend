@@ -17,7 +17,7 @@ export const mockQuotationRequest = {
 
 export const mockContractorTimelineEntry = {
   timelineId: 'ct-1',
-  requestId: 'qr-1',
+  issueId: 'issue-1',
   senderName: 'Max Mustermann',
   senderRole: 'CONTRACTOR',
   purpose: 'MESSAGE_SENT',
@@ -38,11 +38,11 @@ export const quotationRequestHandlers = [
     return HttpResponse.json({ items: [mockQuotationRequest] }, { status: 200 });
   }),
 
-  http.get(`${TICKETING_BASE}/order-management/quotation-requests/:requestId/timeline`, () => {
+  http.get(`${TICKETING_BASE}/order-management/:issueId/timeline`, () => {
     return HttpResponse.json({ timelines: [mockContractorTimelineEntry] }, { status: 200 });
   }),
 
-  http.post(`${TICKETING_BASE}/order-management/quotation-requests/:requestId/timeline`, () => {
+  http.post(`${TICKETING_BASE}/order-management/:issueId/timeline`, () => {
     return new HttpResponse(null, { status: 201 });
   }),
 ];
