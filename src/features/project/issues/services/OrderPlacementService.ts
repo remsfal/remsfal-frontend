@@ -1,7 +1,6 @@
 import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
 export type OrderPlacementJson = Readable<ApiComponents['schemas']['OrderPlacementJson']>;
-export type OrderPlacementListJson = Readable<ApiComponents['schemas']['OrderPlacementListJson']>;
 
 class OrderPlacementService {
   async placeOrder(issueId: string, quotationId: string): Promise<OrderPlacementJson> {
@@ -9,18 +8,6 @@ class OrderPlacementService {
     const path = '/ticketing/v1/issues/{issueId}/quotations/{quotationId}/orders';
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return apiClient.post(path, undefined as any, { pathParams: { issueId, quotationId } }) as Promise<OrderPlacementJson>;
-  }
-
-  async getOrderPlacements(): Promise<OrderPlacementListJson> {
-    return apiClient.get('/ticketing/v1/order-management/order-placements');
-  }
-
-  async updateOrderPlacementStatus(
-    placementId: string,
-    status: Extract<OrderPlacementJson['status'], 'CONFIRMED' | 'REJECTED'>,
-  ): Promise<OrderPlacementJson> {
-    const path = '/ticketing/v1/order-management/order-placements/{placementId}';
-    return apiClient.patch(path, { status }, { pathParams: { placementId } }) as Promise<OrderPlacementJson>;
   }
 }
 

@@ -32,7 +32,6 @@ onMounted(() => loadIssues({ projectId: props.projectId, agreementId: props.agre
       {{ t('rentalAgreement.issue.heading.tasks') }}
     </template>
     <template #content>
-      <!-- Issues Table -->
       <IssueTable
         :issues="issues"
         :projectId="props.projectId"

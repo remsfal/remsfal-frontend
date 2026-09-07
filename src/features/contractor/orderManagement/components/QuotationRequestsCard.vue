@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
-import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
+import { quotationRequestService } from '@/features/contractor/orderManagement/services/QuotationRequestService';
+import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
 const { t, d } = useI18n();
 
