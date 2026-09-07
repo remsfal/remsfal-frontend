@@ -383,7 +383,7 @@
           "senderRole" : {
             "readOnly" : true,
             "type" : "string",
-            "$ref" : "#/components/schemas/ParticipantRole"
+            "$ref" : "#/components/schemas/UserContext"
           },
           "attachments" : {
             "type" : "array",
@@ -1102,10 +1102,6 @@
             }
           }
         }
-      },
-      "ParticipantRole" : {
-        "type" : "string",
-        "enum" : [ "CONTRACTOR", "MANAGER", "TENANT" ]
       },
       "ProjectItemJson" : {
         "description" : "A project item with the user's member role only",
@@ -2265,7 +2261,7 @@
       },
       "UserContext" : {
         "type" : "string",
-        "enum" : [ "MANAGER", "TENANT", "CONTRACTOR" ]
+        "enum" : [ "CONTRACTOR", "MANAGER", "TENANT" ]
       },
       "UserJson" : {
         "description" : "User information globally",
