@@ -8,7 +8,7 @@ import IssueChatCard from '../components/IssueChatCard.vue';
 import IssueAttachmentCard from '../components/IssueAttachmentCard.vue';
 import IssueRelationshipsCard from '../components/IssueRelationshipsCard.vue';
 import IssueOrderManagementCard from '../components/IssueOrderManagementCard.vue';
-import { issueService, type IssueAttachmentJson, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueAttachmentJson, type IssueJson } from '@/features/project/issues/services/IssueService';
 
 /* Props */
 const props = defineProps<{ projectId: string; issueId: string }>();

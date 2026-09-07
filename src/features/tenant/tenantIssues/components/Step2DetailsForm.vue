@@ -16,7 +16,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 // Types
-import type { IssueType } from '@/services/IssueService';
+import type { IssueType } from '@/features/project/issues/services/IssueService';
 
 // Props & Emits
 const props = defineProps<{

@@ -11,7 +11,8 @@ import Button from 'primevue/button';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
+import { issueService, type IssueItemJson, type IssueStatus, type IssueType }
+  from '@/features/project/issues/services/IssueService';
 import DangerZoneCard from "@/components/DangerZoneCard.vue";
 import {useToast} from "primevue/usetoast";
 

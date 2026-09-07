@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import BaseCard from '@/components/BaseCard.vue';
 import AddIssueRelationDialog from './AddIssueRelationDialog.vue';
-import { issueService, type IssueItemJson, type IssueRelationGroup } from '@/services/IssueService';
+import { issueService, type IssueItemJson, type IssueRelationGroup } from '@/features/project/issues/services/IssueService';
 
 const props = defineProps<{
   projectId: string;
