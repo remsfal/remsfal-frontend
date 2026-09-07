@@ -561,6 +561,7 @@
   "unitTypes.apartment": "Apartment",
   "unitTypes.storage": "Storage",
   "unitTypes.commercial": "Commercial",
+  "issueList.fetchError": "Failed to load issues",
   "issueDetails.fetchError": "Failed to load issue details",
   "issueDetails.saveSuccess": "Issue details updated successfully",
   "issueDetails.saveError": "Failed to save issue details",
@@ -1144,5 +1145,7 @@
   "orderPlacement.rejectButton": "Reject",
   "orderPlacement.confirmSuccess": "Order confirmed successfully",
   "orderPlacement.rejectSuccess": "Order rejected successfully",
-  "orderPlacement.actionError": "Error updating the order"
+  "orderPlacement.actionError": "Error updating the order",
+  "customerView.title": "Overview of all customers",
+  "customerView.notAvailable": "Customer overview is not yet available."
 }

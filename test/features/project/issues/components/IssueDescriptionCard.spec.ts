@@ -2,7 +2,7 @@ import { describe, test, expect, beforeEach, vi, type Mock } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import IssueDescriptionCard from '@/features/project/issues/components/IssueDescriptionCard.vue';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 import {defaultIssueDescriptionProps,
   edgeCaseTestData,
   expectModifyIssueCalled,
@@ -10,7 +10,7 @@ import {defaultIssueDescriptionProps,
   setupResizeObserverMock,} from '../../../../setup/issueTestHelpers';
 
 // ---- Mock issueService ----
-vi.mock('@/services/IssueService', () => ({ issueService: { updateIssue: vi.fn() } }));
+vi.mock('@/features/project/issues/services/IssueService', () => ({ issueService: { updateIssue: vi.fn() } }));
 
 // Textarea's autoResize feature relies on ResizeObserver, which JSDOM does not implement.
 setupResizeObserverMock();

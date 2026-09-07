@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import IssueRejectButton from '@/features/project/issues/components/IssueRejectButton.vue';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 import { issueTimelineService } from '@/features/project/issues/services/IssueTimelineService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
@@ -11,8 +11,10 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mocks ───────────────────────────────────────────────────────────
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>('@/services/IssueService');
+vi.mock('@/features/project/issues/services/IssueService', async () => {
+  const actual = await vi.importActual<
+    typeof import('@/features/project/issues/services/IssueService')
+      >('@/features/project/issues/services/IssueService');
   return {
     ...actual,
     issueService: { updateIssue: vi.fn() },

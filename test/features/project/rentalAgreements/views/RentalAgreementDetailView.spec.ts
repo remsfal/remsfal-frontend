@@ -2,7 +2,7 @@ import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import ProjectTenanciesDetails from '@/features/project/rentalAgreements/views/RentalAgreementDetailView.vue';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import { issueService } from '@/services/IssueService';
+import { issueService } from '@/features/project/issues/services/IssueService';
 
 // ---- Mocks ----
 const push = vi.fn();

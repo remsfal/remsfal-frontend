@@ -18,7 +18,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 // Services & Types
-import { issueService, type IssueJson, type IssueType } from '@/services/IssueService';
+import { issueService, type IssueJson, type IssueType } from '@/features/project/issues/services/IssueService';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
 import type { RentalAgreementItemJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 

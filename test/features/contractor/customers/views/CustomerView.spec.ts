@@ -1,26 +1,20 @@
-import { shallowMount, VueWrapper } from '@vue/test-utils';
-import {describe, it, expect, beforeEach, vi} from 'vitest';
+import { mount, VueWrapper } from '@vue/test-utils';
+import { describe, it, expect, beforeEach } from 'vitest';
 import CustomerView from '@/features/contractor/customers/views/CustomerView.vue';
-
-vi.mock('@/features/contractor/customers/components/ContractorTable.vue', () => ({
-  default: {
-    name: 'ContractorTable',
-    template: '<div class="mock-contractor-table"></div>',
-  },
-}));
 
 describe('CustomerView.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
-    wrapper = shallowMount(CustomerView);
+    wrapper = mount(CustomerView);
   });
 
   it('renders the view correctly', () => {
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.find('h5').text()).toBe('Übersicht aller Auftraggeber');
+  });
 
-    const contractorTable = wrapper.findComponent({ name: 'ContractorTable' });
-    expect(contractorTable.exists()).toBe(true);
+  it('shows a not-yet-available placeholder instead of a customer table', () => {
+    expect(wrapper.text()).toContain('Die Auftraggeberübersicht ist noch nicht verfügbar.');
   });
 });

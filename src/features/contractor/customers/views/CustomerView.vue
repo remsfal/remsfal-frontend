@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { ContractorTable } from '@/features/contractor/customers';
+import { useI18n } from 'vue-i18n';
+import Message from 'primevue/message';
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -7,8 +10,8 @@ import { ContractorTable } from '@/features/contractor/customers';
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-10">
         <div class="card">
-          <h5>Übersicht aller Auftraggeber</h5>
-          <ContractorTable />
+          <h5>{{ t('customerView.title') }}</h5>
+          <Message severity="info">{{ t('customerView.notAvailable') }}</Message>
         </div>
       </div>
     </div>

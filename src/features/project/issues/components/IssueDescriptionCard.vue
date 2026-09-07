@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/BaseCard.vue';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
-import { issueService, type IssueWritableJson } from '@/services/IssueService';
+import { issueService, type IssueWritableJson } from '@/features/project/issues/services/IssueService';
 
 const props = defineProps<{
   projectId: string;

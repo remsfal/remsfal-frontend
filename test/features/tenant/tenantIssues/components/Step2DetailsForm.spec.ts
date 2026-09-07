@@ -5,7 +5,7 @@ import Button from 'primevue/button';
 import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
 import Step2DetailsForm from '@/features/tenant/tenantIssues/components/Step2DetailsForm.vue';
-import type { IssueType } from '@/services/IssueService';
+import type { IssueType } from '@/features/project/issues/services/IssueService';
 import i18n from '@/i18n/i18n';
 
 describe('Step2DetailsForm', () => {
