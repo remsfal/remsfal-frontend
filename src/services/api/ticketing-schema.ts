@@ -36,19 +36,36 @@ export type Writable<T> =
             }
           : T;
 export interface paths {
-  "/api/v1/inbox": {
+  "/api/v1/activities": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Retrieve inbox messages for the authenticated user */
+    /**
+     * Retrieve the caller's activity feed.
+     * @description Aggregates issue lifecycle events, tenant communication, chat messages, and quotation/order placement activity for issues the caller is assigned to, newest first.
+     */
     get: {
       parameters: {
-        query?: {
-          /** @description Filter by read status (true = read, false = unread) */
-          read?: boolean;
+        query: {
+          /** @description Filter to return only activities of a specific rental agreement */
+          agreementId?: components["schemas"]["UUID"];
+          /** @description Filter to return only activities of issues assigned to a specific user */
+          assigneeId?: components["schemas"]["UUID"];
+          /** @description Filter to return only activities involving a specific contractor */
+          contractorId?: components["schemas"]["UUID"];
+          /** @description Opaque cursor returned by a previous call to fetch the next page */
+          cursor?: components["schemas"]["UUID"];
+          /** @description Filter to return only activities of a specific issue */
+          issueId?: components["schemas"]["UUID"];
+          /** @description Maximum number of activities to return */
+          limit: number;
+          /** @description Filter to return only activities involving a specific contractor organization */
+          organizationId?: components["schemas"]["UUID"];
+          /** @description Filter to return only activities of a specific project */
+          projectId?: components["schemas"]["UUID"];
         };
         header?: never;
         path?: never;
@@ -56,16 +73,16 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description List of inbox messages belonging to the authenticated user */
+        /** @description Activities retrieved successfully */
         200: {
           headers: {
             [name: string]: unknown;
           };
           content: {
-            "application/json": components["schemas"]["InboxMessage"][];
+            "application/json": components["schemas"]["ActivityFeedListJson"];
           };
         };
-        /** @description Not Authorized */
+        /** @description No user authentication provided via session cookie */
         401: {
           headers: {
             [name: string]: unknown;
@@ -89,7 +106,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/inbox/{messageId}": {
+  "/api/v1/activities/{activityId}": {
     parameters: {
       query?: never;
       header?: never;
@@ -99,20 +116,20 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    /** Delete an inbox message for the authenticated user */
+    /** Delete an activity for the authenticated user */
     delete: {
       parameters: {
         query?: never;
         header?: never;
         path: {
-          /** @description Message ID */
-          messageId: string;
+          /** @description Activity ID */
+          activityId: components["schemas"]["UUID"];
         };
         cookie?: never;
       };
       requestBody?: never;
       responses: {
-        /** @description Message deleted */
+        /** @description Activity deleted */
         204: {
           headers: {
             [name: string]: unknown;
@@ -133,7 +150,7 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description Message not found for this user */
+        /** @description Activity not found for this user */
         404: {
           headers: {
             [name: string]: unknown;
@@ -147,7 +164,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/inbox/{messageId}/status": {
+  "/api/v1/activities/{activityId}/status": {
     parameters: {
       query?: never;
       header?: never;
@@ -160,7 +177,7 @@ export interface paths {
     delete?: never;
     options?: never;
     head?: never;
-    /** Update the read/unread status of an inbox message */
+    /** Update the read/unread status of an activity */
     patch: {
       parameters: {
         query: {
@@ -169,20 +186,20 @@ export interface paths {
         };
         header?: never;
         path: {
-          /** @description Message ID */
-          messageId: string;
+          /** @description Activity ID */
+          activityId: components["schemas"]["UUID"];
         };
         cookie?: never;
       };
       requestBody?: never;
       responses: {
-        /** @description Message status updated */
+        /** @description Activity status updated */
         200: {
           headers: {
             [name: string]: unknown;
           };
           content: {
-            "application/json": components["schemas"]["InboxMessage"];
+            "application/json": components["schemas"]["ActivityFeedJson"];
           };
         };
         /** @description Not Authorized */
@@ -199,7 +216,7 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description Message not found for this user */
+        /** @description Activity not found for this user */
         404: {
           headers: {
             [name: string]: unknown;
@@ -4004,6 +4021,54 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** @description An entry of the caller's activity feed */
+    ActivityFeedJson: {
+      /** @description Unique identifier of this activity */
+      id?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the related project */
+      projectId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the related issue */
+      issueId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Type of activity */
+      activityType?: $Read<components["schemas"]["IssueEventType"]>;
+      /** @description Title of the related issue */
+      title?: $Read<string>;
+      /** @description Description of the activity, e.g. a message text */
+      description?: $Read<string>;
+      /** @description Link to the frontend issue page */
+      link?: $Read<string>;
+      /** @description Unique identifier of the user who triggered this activity */
+      actorId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Name of the user who triggered this activity */
+      actorName?: $Read<string>;
+      /** @description Type of the related issue */
+      issueType?: $Read<components["schemas"]["IssueType"]>;
+      /** @description Status of the related issue */
+      status?: $Read<components["schemas"]["IssueStatus"]>;
+      /** @description Unique identifier of the related rental agreement */
+      agreementId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the contractor organization involved, if any */
+      organizationId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the contractor involved, if any */
+      contractorId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the assignee of the related issue */
+      assigneeId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Whether the caller has already read this activity */
+      read?: $Read<boolean>;
+      /** @description Timestamp this activity was recorded at */
+      createdAt?: $Read<components["schemas"]["Instant"]>;
+    };
+    /** @description A cursor-paginated list of activities */
+    ActivityFeedListJson: {
+      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+      nextCursor?: $Read<string>;
+      /**
+       * Format: int32
+       * @description Number of elements in this page
+       */
+      size: $Read<number>;
+      activities?: components["schemas"]["ActivityFeedJson"][];
+    };
     /** @description The address of a customer, a building or a site */
     AddressJson: {
       street: string;
@@ -4166,35 +4231,6 @@ export interface components {
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
-    /** @description Represents an enriched issue event stored in a user's inbox */
-    InboxMessage: {
-      /** @description Unique identifier of this inbox message */
-      id?: string;
-      /** @description User who received this notification */
-      userId?: string;
-      /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
-      eventType?: string;
-      /** @description Related issue ID */
-      issueId?: string;
-      /** @description Issue title */
-      title?: string;
-      /** @description Issue description */
-      description?: string;
-      /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
-      issueType?: string;
-      /** @description Current status of the issue */
-      status?: string;
-      /** @description Link to the frontend issue page */
-      link?: string;
-      /** @description Whether the message has been read */
-      read?: boolean;
-      /** @description Timestamp when the notification was created */
-      createdAt?: components["schemas"]["OffsetDateTime"];
-      /** @description Email of the actor who triggered the event */
-      actorEmail?: string;
-      /** @description Email of the owner assigned to the issue */
-      ownerEmail?: string;
-    };
     /**
      * Format: date-time
      * @example 2022-03-10T16:15:50Z
@@ -4236,6 +4272,19 @@ export interface components {
       | "SNOW_REMOVAL_MAINTENANCE"
       | "TREE_CARE_MAINTENANCE"
       | "GENERAL";
+    /** @enum {string} */
+    IssueEventType:
+      | "ISSUE_CREATED"
+      | "ISSUE_UPDATED"
+      | "ISSUE_ASSIGNED"
+      | "ISSUE_MENTIONED"
+      | "TIMELINE_ENTRY_CREATED"
+      | "CHAT_MESSAGE_CREATED"
+      | "QUOTATION_REQUEST_CREATED"
+      | "QUOTATION_REQUEST_STATUS_CHANGED"
+      | "QUOTATION_CREATED"
+      | "ORDER_PLACED"
+      | "ORDER_PLACEMENT_STATUS_CHANGED";
     /** @description An issue item with basic information */
     IssueItemJson: {
       /** @description Unique identifier of the issue */
@@ -4324,11 +4373,6 @@ export interface components {
     /** @enum {string} */
     MessagePurpose:
       "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
-    /**
-     * Format: date-time
-     * @example 2022-03-10T12:15:50-04:00
-     */
-    OffsetDateTime: string;
     /** @description An attachment associated with a quotation request, quotation, or order placement */
     OrderAttachmentJson: {
       attachmentId?: components["schemas"]["UUID"];
