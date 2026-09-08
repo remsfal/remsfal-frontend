@@ -19,16 +19,20 @@ vi.mock('vue-router', async (importOriginal) => {
 
 const quotationRequests: QuotationRequestJson[] = [
   {
-    id: 'qr-1', status: 'REQUESTED', scopeOfWork: 'Dachrinne reparieren', createdAt: '2026-01-01T10:00:00Z'
+    id: 'qr-1', issueId: 'issue-1', status: 'REQUESTED', scopeOfWork: 'Dachrinne reparieren',
+    createdAt: '2026-01-01T10:00:00Z'
   },
   {
-    id: 'qr-2', status: 'REQUESTED', scopeOfWork: 'Dach reparieren', createdAt: '2026-01-03T10:00:00Z'
+    id: 'qr-2', issueId: 'issue-2', status: 'REQUESTED', scopeOfWork: 'Dach reparieren',
+    createdAt: '2026-01-03T10:00:00Z'
   },
   {
-    id: 'qr-3', status: 'REQUESTED', scopeOfWork: 'Heizung prüfen', createdAt: '2026-01-02T10:00:00Z'
+    id: 'qr-3', issueId: 'issue-3', status: 'REQUESTED', scopeOfWork: 'Heizung prüfen',
+    createdAt: '2026-01-02T10:00:00Z'
   },
   {
-    id: 'qr-4', status: 'VIEWING_REQUIRED', scopeOfWork: 'Fenster prüfen', createdAt: '2026-01-04T10:00:00Z'
+    id: 'qr-4', issueId: 'issue-4', status: 'VIEWING_REQUIRED', scopeOfWork: 'Fenster prüfen',
+    createdAt: '2026-01-04T10:00:00Z'
   },
 ];
 
@@ -131,7 +135,7 @@ describe('OrderManagementDashboardCards', () => {
 
     expect(routerMocks.push).toHaveBeenCalledWith({
       name: 'ContractorOrderDetails',
-      params: { requestId: 'qr-1' },
+      params: { requestId: 'issue-1' },
     });
   });
 

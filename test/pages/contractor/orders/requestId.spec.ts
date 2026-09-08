@@ -9,8 +9,8 @@ import ContractorOrderDetailsPage from '@/pages/contractor/orders/[requestId].vu
 config.global.plugins = config.global.plugins.filter((p) => p !== router)
 
 vi.mock('@/features/contractor/orderManagement', () => ({
-  QuotationRequestDetailView: {
-    name: 'QuotationRequestDetailView',
+  OrderManagementDetailsView: {
+    name: 'OrderManagementDetailsView',
     template: '<div data-test="quotation-request-detail-view" />',
     props: ['requestId'],
   },
@@ -32,15 +32,15 @@ describe('contractor/orders/[requestId].vue', () => {
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('renders QuotationRequestDetailView', () => {
+  it('renders OrderManagementDetailsView', () => {
     const wrapper = mountPage()
     expect(wrapper.find('[data-test="quotation-request-detail-view"]').exists()).toBe(true)
   })
 
-  it('passes requestId prop to QuotationRequestDetailView', async () => {
+  it('passes requestId prop to OrderManagementDetailsView', async () => {
     const wrapper = mountPage('request-456')
     await wrapper.vm.$nextTick()
-    const view = wrapper.findComponent({ name: 'QuotationRequestDetailView' })
+    const view = wrapper.findComponent({ name: 'OrderManagementDetailsView' })
     expect(view.props('requestId')).toBe('request-456')
   })
 })

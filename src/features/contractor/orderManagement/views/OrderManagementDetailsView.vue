@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
-import ProgressSpinner from 'primevue/progressspinner';
+import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
 import QuotationRequestDetailsCard from '../components/QuotationRequestDetailsCard.vue';
 import { quotationRequestService, type QuotationRequestJson } from
   '@/features/contractor/orderManagement/services/QuotationRequestService';
@@ -25,7 +25,7 @@ const fetchRequest = async () => {
   try {
     const result = await quotationRequestService.getContractorQuotationRequests();
     if (currentFetch !== fetchSequence) return;
-    const found = (result.items ?? []).find((item) => item.id === props.requestId) ?? null;
+    const found = (result.items ?? []).find((item) => item.issueId === props.requestId) ?? null;
     request.value = found;
     if (!found) {
       error.value = t('orderManagement.quotationRequestDetails.notFound');
@@ -51,9 +51,7 @@ watch(() => props.requestId, fetchRequest);
       {{ error }}
     </Message>
 
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
-    </div>
+    <CardSkeletonRows v-if="loading" :rows="4" />
 
     <template v-else-if="request">
       <QuotationRequestDetailsCard :request="request" />

@@ -14,12 +14,14 @@ vi.mock('vue-router', async (importOriginal) => {
 const mockRequests: QuotationRequestJson[] = [
   {
     id: 'qr-1',
+    issueId: 'issue-1',
     scopeOfWork: 'Dachrinne reparieren',
     status: 'REQUESTED',
     createdAt: '2026-01-15T10:00:00Z',
   },
   {
     id: 'qr-2',
+    issueId: 'issue-2',
     scopeOfWork: 'Fenster erneuern',
     status: 'SUBMITTED',
     createdAt: '2026-01-16T10:00:00Z',
@@ -84,7 +86,7 @@ describe('QuotationRequestsCard', () => {
 
     expect(pushMock).toHaveBeenCalledWith({
       name: 'ContractorOrderDetails',
-      params: { requestId: 'qr-1' },
+      params: { requestId: 'issue-1' },
     });
   });
 });

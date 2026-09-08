@@ -8,12 +8,12 @@ meta:
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { QuotationRequestDetailView } from '@/features/contractor/orderManagement';
+import { OrderManagementDetailsView } from '@/features/contractor/orderManagement';
 
 const route = useRoute('ContractorOrderDetails');
 const requestId = computed(() => route.params.requestId as string);
 </script>
 
 <template>
-  <QuotationRequestDetailView :requestId="requestId" />
+  <OrderManagementDetailsView :requestId="requestId" />
 </template>
