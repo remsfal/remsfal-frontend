@@ -123,6 +123,12 @@ describe('ProjectTenancies E2E Tests', () => {
       statusCode: 200,
       body: { properties: [] },
     }).as('getProperties');
+
+    // TenantSelect (used by the new-rental-agreement dialog) fetches the tenant list on mount.
+    cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
+      statusCode: 200,
+      body: { tenants: [] },
+    }).as('getTenants');
   });
 
   it('should display the rental agreements page with title', () => {

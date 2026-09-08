@@ -144,6 +144,20 @@ describe('RentalAgreementTenantListCard', () => {
     consoleSpy.mockRestore();
   });
 
+  it('logs the raw error when removing a tenant fails with a non-Error rejection', async () => {
+    vi.spyOn(rentalAgreementService, 'removeTenant').mockRejectedValue('boom');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const wrapper = mountCard();
+    await wrapper.find('[class*="pi-trash"]').trigger('click');
+    await flushPromises();
+    await confirmDelete();
+
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to save tenants:', 'boom');
+    consoleSpy.mockRestore();
+  });
+
   it('navigates to tenant detail when a tenant with an id is clicked', async () => {
     const wrapper = mountCard();
 

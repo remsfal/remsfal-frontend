@@ -97,6 +97,15 @@ const scenarios: Scenario[] = [
         `/ticketing/v1/issues/${issueId}/quotation-request`,
         { statusCode: 200, body: { quotationRequests: [] } },
       );
+      // IssueChatCard fetches chat messages on mount, independently of the timeline.
+      cy.intercept('GET', `/ticketing/v1/issues/${issueId}/chat`, { statusCode: 200, body: { messages: [] } });
+      // NewQuotationRequestDialog is mounted alongside QuotationRequestTable (PrimeVue TabPanels
+      // render every panel's content up front) and fetches contractors on mount even while hidden.
+      cy.intercept(
+        'GET',
+        `/api/v1/projects/${projectId}/contractors*`,
+        { statusCode: 200, body: { contractors: [] } },
+      );
       // Registered last so it wins over the broader '/ticketing/v1/issues**' stub above.
       cy.intercept('GET', `/ticketing/v1/issues/${issueId}`, {
         statusCode: 200,

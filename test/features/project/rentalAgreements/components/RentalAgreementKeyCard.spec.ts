@@ -173,4 +173,21 @@ describe('RentalAgreementKeyCard', () => {
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
+
+  it('logs the raw error when saving keys fails with a non-Error rejection', async () => {
+    vi.spyOn(rentalAgreementService, 'updateRentalAgreement').mockRejectedValue('boom');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const wrapper = mountCard();
+    const newKeyButton = wrapper.findComponent({ name: 'NewKeyButton' });
+    await newKeyButton.vm.$emit('newKey', {
+      amountOfKeys: 1, keyDescription: 'Dachbodenschlüssel', issuedAt: '2024-01-01'
+    });
+    await wrapper.vm.$nextTick();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to save keys:', 'boom');
+    consoleSpy.mockRestore();
+  });
 });
