@@ -14,8 +14,8 @@ const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRe
   ...overrides,
 });
 
-const mountView = (requestId = 'issue-1') => mount(OrderManagementDetailsView, {
-  props: { requestId },
+const mountView = (issueId = 'issue-1') => mount(OrderManagementDetailsView, {
+  props: { issueId },
   global: { stubs: { QuotationRequestDetailsCard: true } },
 });
 
@@ -31,7 +31,7 @@ describe('OrderManagementDetailsView', () => {
     expect(wrapper.getComponent(QuotationRequestDetailsCard).props('request')).toEqual(request);
   });
 
-  it('shows a not-found message when no item matches the requestId', async () => {
+  it('shows a not-found message when no item matches the issueId', async () => {
     const items = [makeRequest({ id: 'other', issueId: 'other-issue' })];
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValueOnce({ items });
 

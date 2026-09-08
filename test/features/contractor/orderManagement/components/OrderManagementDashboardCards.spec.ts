@@ -135,7 +135,7 @@ describe('OrderManagementDashboardCards', () => {
 
     expect(routerMocks.push).toHaveBeenCalledWith({
       name: 'ContractorOrderDetails',
-      params: { requestId: 'issue-1' },
+      params: { issueId: 'issue-1' },
     });
   });
 

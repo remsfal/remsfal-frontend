@@ -7,7 +7,7 @@ import QuotationRequestDetailsCard from '../components/QuotationRequestDetailsCa
 import { quotationRequestService, type QuotationRequestJson } from
   '@/features/contractor/orderManagement/services/QuotationRequestService';
 
-const props = defineProps<{ requestId: string }>();
+const props = defineProps<{ issueId: string }>();
 
 const { t } = useI18n();
 
@@ -25,7 +25,7 @@ const fetchRequest = async () => {
   try {
     const result = await quotationRequestService.getContractorQuotationRequests();
     if (currentFetch !== fetchSequence) return;
-    const found = (result.items ?? []).find((item) => item.issueId === props.requestId) ?? null;
+    const found = (result.items ?? []).find((item) => item.issueId === props.issueId) ?? null;
     request.value = found;
     if (!found) {
       error.value = t('orderManagement.quotationRequestDetails.notFound');
@@ -42,7 +42,7 @@ const fetchRequest = async () => {
 };
 
 onMounted(fetchRequest);
-watch(() => props.requestId, fetchRequest);
+watch(() => props.issueId, fetchRequest);
 </script>
 
 <template>

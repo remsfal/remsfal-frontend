@@ -86,7 +86,7 @@ describe('QuotationRequestsCard', () => {
 
     expect(pushMock).toHaveBeenCalledWith({
       name: 'ContractorOrderDetails',
-      params: { requestId: 'issue-1' },
+      params: { issueId: 'issue-1' },
     });
   });
 });
