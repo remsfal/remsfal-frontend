@@ -35,7 +35,7 @@ vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
   );
   return {
     ...actual,
-    issueTimelineService: {createTimelineEntry: vi.fn(),},
+    issueTimelineService: {createTimelineEntryWithAttachments: vi.fn(),},
   };
 });
 

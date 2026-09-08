@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
+import type { TimelineJson } from '@/features/project/issues/services/IssueTimelineService';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import { useTimelineItem } from '@/composables/useTimelineItem';
 
@@ -11,7 +11,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const { title, attachments } = useTimelineItem(props, '/ticketing/v1/tenant-relations/issues');
+const { title, attachments } = useTimelineItem(props, '/ticketing/v1/issues');
 </script>
 
 <template>
@@ -22,6 +22,6 @@ const { title, attachments } = useTimelineItem(props, '/ticketing/v1/tenant-rela
     :attachments="attachments"
     :attachmentsLabel="t('tenantIssues.timeline.attachmentsCount')"
     :downloadAttachmentLabel="t('tenantIssues.timeline.downloadAttachment')"
-    testId="tenant-issue-timeline-entry"
+    testId="issue-timeline-entry"
   />
 </template>
