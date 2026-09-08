@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import InputText from 'primevue/inputtext';
@@ -29,7 +28,6 @@ const props = defineProps<{
 const emit = defineEmits<(e: 'newUnit', title: string) => void>();
 
 const { t } = useI18n();
-const toast = useToast();
 
 const visible = ref<boolean>(false);
 const newUnitType = ref<EntityType | undefined>(undefined);
@@ -155,13 +153,8 @@ async function onSubmit(event: FormSubmitEvent) {
       formKey.value++;
       visible.value = false;
     })
-    .catch(() => {
-      toast.add({
-        severity: 'error',
-        summary: t('error.general'),
-        detail: t('rentableUnits.errorCreate'),
-        life: 5000,
-      });
+    .catch((error) => {
+      console.error('Failed to create rentable unit:', error);
     });
 }
 

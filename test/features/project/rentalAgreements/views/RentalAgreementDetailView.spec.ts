@@ -128,7 +128,7 @@ describe('ProjectTenanciesDetails', () => {
     });
   });
 
-  it('shows an error toast and does not redirect when deleting via the danger zone fails', async () => {
+  it('logs and shows no toast, and does not redirect, when deleting via the danger zone fails', async () => {
     vi.spyOn(rentalAgreementService, 'deleteRentalAgreement').mockRejectedValueOnce(new Error('network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -142,7 +142,7 @@ describe('ProjectTenanciesDetails', () => {
     confirmBtn.click();
     await flushPromises();
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalledWith('Error deleting rental agreement:', expect.any(Error));
     consoleSpy.mockRestore();

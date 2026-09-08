@@ -315,7 +315,7 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(consoleErrorSpy).toHaveBeenCalled();
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ severity: "error" }));
+    expect(toastAddMock).not.toHaveBeenCalled();
     expect(localWrapper.exists()).toBe(true);
 
     consoleErrorSpy.mockRestore();

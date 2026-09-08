@@ -280,7 +280,7 @@ describe('RentalAgreementUnitListCard', () => {
     expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('shows an error toast when removing a unit fails and still closes the dialog', async () => {
+  it('logs, shows no toast, and still closes the dialog when removing a unit fails', async () => {
     vi.mocked(rentalAgreementService.removeRentalUnit).mockRejectedValue(new Error('network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -295,7 +295,8 @@ describe('RentalAgreementUnitListCard', () => {
     confirmDeleteBtn.click();
     await flushPromises();
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     expect(document.querySelector('.p-dialog')).toBeNull();
     consoleSpy.mockRestore();
   });
@@ -449,7 +450,7 @@ describe('RentalAgreementUnitListCard', () => {
     expect(wrapper.text()).toContain('300,00');
   });
 
-  it('shows an error toast with a non-Error rejection when removing a unit fails', async () => {
+  it('logs and shows no toast with a non-Error rejection when removing a unit fails', async () => {
     vi.mocked(rentalAgreementService.removeRentalUnit).mockRejectedValue('boom');
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -464,7 +465,8 @@ describe('RentalAgreementUnitListCard', () => {
     confirmDeleteBtn.click();
     await flushPromises();
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 

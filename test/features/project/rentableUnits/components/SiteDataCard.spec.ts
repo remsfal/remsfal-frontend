@@ -13,7 +13,6 @@ beforeAll(() => {
 
 import SiteDataCard from '@/features/project/rentableUnits/components/SiteDataCard.vue';
 import { siteService, type SiteJson } from '@/features/project/rentableUnits/services/SiteService';
-import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -27,12 +26,6 @@ vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 // ─── Service Mock ─────────────────────────────────────────────────────────────
 const mockSiteService = vi.hoisted(() => ({ getSite: vi.fn(), updateSite: vi.fn() }));
 vi.mock('@/features/project/rentableUnits/services/SiteService', () => ({ siteService: mockSiteService }));
-
-// ─── viewHelper Mock ──────────────────────────────────────────────────────────
-vi.mock('@/helper/viewHelper', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/helper/viewHelper')>();
-  return {...actual, showSavingErrorToast: vi.fn(),};
-});
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
 const mockSite = {
@@ -71,11 +64,14 @@ describe('SiteDataCard.vue', () => {
     expect(siteService.getSite).not.toHaveBeenCalled();
   });
 
-  it('shows error toast when getSite fails', async () => {
+  it('logs and shows no toast when getSite fails', async () => {
     vi.mocked(siteService.getSite).mockRejectedValue(new Error('Network error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mount(SiteDataCard, { props: defaultProps });
     await flushPromises();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled before any changes', async () => {
@@ -126,8 +122,9 @@ describe('SiteDataCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('calls showSavingErrorToast when updateSite fails', async () => {
+  it('logs and shows no toast when updateSite fails', async () => {
     vi.mocked(siteService.updateSite).mockRejectedValue(new Error('Save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mount(SiteDataCard, { props: defaultProps });
     await flushPromises();
@@ -137,7 +134,9 @@ describe('SiteDataCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(viewHelper.showSavingErrorToast).toHaveBeenCalled();
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled again after successful save (no new changes)', async () => {

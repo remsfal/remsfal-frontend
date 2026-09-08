@@ -157,19 +157,20 @@ describe('RentalAgreementKeyCard', () => {
     ]);
   });
 
-  it('shows an error toast when saving keys fails', async () => {
+  it('logs and shows no toast when saving keys fails', async () => {
     vi.spyOn(rentalAgreementService, 'updateRentalAgreement').mockRejectedValue(new Error('API error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mountCard();
     const newKeyButton = wrapper.findComponent({ name: 'NewKeyButton' });
     await newKeyButton.vm.$emit('newKey', {
-      amountOfKeys: 1, keyDescription: 'Dachbodenschlüssel', issuedAt: '2024-01-01' 
+      amountOfKeys: 1, keyDescription: 'Dachbodenschlüssel', issuedAt: '2024-01-01'
     });
     await wrapper.vm.$nextTick();
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 });

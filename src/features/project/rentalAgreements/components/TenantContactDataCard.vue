@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import BaseCard from '@/components/BaseCard.vue';
 import Skeleton from 'primevue/skeleton';
 import { tenantService, type TenantJson, type TenantWritableJson } from '../services/TenantService';
@@ -15,7 +15,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const formKey = ref(0);
 const initialValues = ref<Partial<TenantJson>>({});
@@ -38,12 +38,8 @@ async function loadTenant() {
     initialValues.value = tenant;
     serverAddress.value = tenant.address;
     formKey.value++;
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: t('tenantDetail.error'),
-      life: 3000,
-    });
+  } catch (error) {
+    console.error('Failed to load tenant:', error);
     router.push({ name: 'TenantList', params: { projectId: props.projectId } });
   } finally {
     isLoading.value = false;
@@ -69,19 +65,9 @@ async function onSubmit(tenant: TenantWritableJson) {
     serverAddress.value = updated.address;
     formKey.value++;
 
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('tenantDetail.success'),
-      life: 3000,
-    });
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('tenantDetail.error'),
-      life: 4000,
-    });
+    appToast.success(t('tenantDetail.success'), { summary: t('success.saved') });
+  } catch (error) {
+    console.error('Failed to save tenant:', error);
   }
 }
 </script>

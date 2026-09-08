@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -46,7 +46,7 @@ const emit = defineEmits<{
 
 const { t, d, n } = useI18n();
 const router = useRouter();
-const toast = useToast();
+const appToast = useAppToast();
 
 const rentRows = ref<RentRow[]>([]);
 const loading = ref(false);
@@ -154,25 +154,6 @@ function navigateToUnit(row: RentRow) {
   } as Parameters<typeof router.push>[0]);
 }
 
-function showSuccessToast() {
-  toast.add({
-    severity: 'success',
-    summary: t('rentalAgreement.unitsCard.success'),
-    detail: t('rentalAgreement.unitsCard.successDetail'),
-    life: 3000,
-  });
-}
-
-function showErrorToast(error: unknown) {
-  console.error('Failed to save units:', error instanceof Error ? error.message : error);
-  toast.add({
-    severity: 'error',
-    summary: t('error.general'),
-    detail: t('rentalAgreement.unitsCard.error'),
-    life: 5000,
-  });
-}
-
 const existingUnitIds = computed(() => new Set(rentRows.value.map((row) => row.unitId)));
 
 const rentDialogVisible = ref(false);
@@ -220,9 +201,9 @@ async function confirmRemove() {
     const updated = await rentalAgreementService.getRentalAgreement(props.projectId, props.rentalAgreement.id);
     emit('update:rentalAgreement', updated);
     await loadRentRows(updated);
-    showSuccessToast();
+    appToast.success(t('rentalAgreement.unitsCard.successDetail'), {summary: t('rentalAgreement.unitsCard.success'),});
   } catch (error) {
-    showErrorToast(error);
+    console.error('Failed to save units:', error instanceof Error ? error.message : error);
   } finally {
     saving.value = false;
     removeDialogVisible.value = false;

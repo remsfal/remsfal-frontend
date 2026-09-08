@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import BaseCard from '@/components/BaseCard.vue';
@@ -21,7 +21,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ saved: [] }>();
 
-const toast = useToast();
+const appToast = useAppToast();
 const { t } = useI18n();
 
 const projectIssues = ref<IssueItemJson[]>([]);
@@ -129,12 +129,6 @@ async function fetchProjectIssues() {
     projectIssues.value = result.issues ?? [];
   } catch (error) {
     console.error('Failed to fetch project issues:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.relationshipsFetchError'),
-      life: 3000,
-    });
   } finally {
     loadingProjectIssues.value = false;
   }
@@ -147,21 +141,10 @@ async function handleRemove(id: string, group: RelationGroupDef) {
   removingKey.value = key;
   try {
     await issueService.deleteIssueRelation(props.issueId, group.key, id);
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.relationshipsDeleteSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.relationshipsDeleteSuccess'), { summary: t('success.saved') });
     emit('saved');
   } catch (error) {
     console.error('Failed to delete issue relation:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.relationshipsDeleteError'),
-      life: 3000,
-    });
   } finally {
     removingKey.value = null;
   }

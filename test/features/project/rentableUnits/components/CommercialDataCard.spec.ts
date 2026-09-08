@@ -14,7 +14,6 @@ beforeAll(() => {
 
 import CommercialDataCard from '@/features/project/rentableUnits/components/CommercialDataCard.vue';
 import { commercialService, type CommercialJson } from '@/features/project/rentableUnits/services/CommercialService';
-import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -28,12 +27,6 @@ vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 // ─── Service Mock ─────────────────────────────────────────────────────────────
 const mockCommercialService = vi.hoisted(() => ({ getCommercial: vi.fn(), updateCommercial: vi.fn() }));
 vi.mock('@/features/project/rentableUnits/services/CommercialService', () => ({ commercialService: mockCommercialService }));
-
-// ─── viewHelper Mock ──────────────────────────────────────────────────────────
-vi.mock('@/helper/viewHelper', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/helper/viewHelper')>();
-  return {...actual, showSavingErrorToast: vi.fn(),};
-});
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
 // CommercialDataCard.vue tracks "no value" internally as `null` (see its
@@ -80,11 +73,14 @@ describe('CommercialDataCard.vue', () => {
     expect(commercialService.getCommercial).not.toHaveBeenCalled();
   });
 
-  it('shows error toast when getCommercial fails', async () => {
+  it('logs and shows no toast when getCommercial fails', async () => {
     vi.mocked(commercialService.getCommercial).mockRejectedValue(new Error('Network error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled before any changes', async () => {
@@ -131,8 +127,9 @@ describe('CommercialDataCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('calls showSavingErrorToast when updateCommercial fails', async () => {
+  it('logs and shows no toast when updateCommercial fails', async () => {
     vi.mocked(commercialService.updateCommercial).mockRejectedValue(new Error('Save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
@@ -142,7 +139,9 @@ describe('CommercialDataCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(viewHelper.showSavingErrorToast).toHaveBeenCalled();
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled again after successful save (no new changes)', async () => {

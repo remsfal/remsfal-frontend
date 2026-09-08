@@ -165,8 +165,9 @@ describe('IssueRejectButton.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('error during updateIssue shows an error toast and keeps the dialog open', async () => {
+  test('error during updateIssue logs, shows no toast, and keeps the dialog open', async () => {
     vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await findRejectButton(wrapper).trigger('click');
     await wrapper.vm.$nextTick();
@@ -174,15 +175,18 @@ describe('IssueRejectButton.vue', () => {
     await findSubmitButton(wrapper).trigger('click');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('true');
     expect(wrapper.emitted('rejected')).toBeFalsy();
+    consoleErrorSpy.mockRestore();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('error during createTimelineEntry shows an error toast and keeps the dialog open', async () => {
+  test('error during createTimelineEntry logs, shows no toast, and keeps the dialog open', async () => {
     vi.spyOn(issueService, 'updateIssue').mockResolvedValue({} as IssueJson);
     vi.spyOn(issueTimelineService, 'createTimelineEntry').mockRejectedValue(new Error('fail'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await findRejectButton(wrapper).trigger('click');
     await wrapper.vm.$nextTick();
@@ -191,9 +195,11 @@ describe('IssueRejectButton.vue', () => {
     await findSubmitButton(wrapper).trigger('click');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('true');
     expect(wrapper.emitted('rejected')).toBeFalsy();
+    consoleErrorSpy.mockRestore();
   });
 
   // ───────────────────────────────────────────────────────────────────────────

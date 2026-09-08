@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 // PrimeVue Components
 import Dialog from 'primevue/dialog';
@@ -36,7 +36,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 // Stepper State
 const currentStep = ref<string>('1');
@@ -159,12 +159,7 @@ async function handleSubmit() {
     await rentalAgreementService.createRentalAgreement(props.projectId, rentalAgreement);
 
     // Success feedback
-    toast.add({
-      severity: 'success',
-      summary: t('success.created'),
-      detail: t('rentalAgreement.successCreated'),
-      life: 4000,
-    });
+    appToast.success(t('rentalAgreement.successCreated'), { summary: t('success.created') });
 
     // Reset form and close dialog
     resetForm();
@@ -172,12 +167,6 @@ async function handleSubmit() {
     emit('update:visible', false);
   } catch (error) {
     console.error('Failed to create rental agreement:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentalAgreement.errorCreated'),
-      life: 4000,
-    });
   } finally {
     isCreating.value = false;
   }

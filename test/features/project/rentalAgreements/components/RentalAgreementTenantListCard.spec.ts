@@ -102,7 +102,7 @@ describe('RentalAgreementTenantListCard', () => {
     expect(updatedAgreement.tenants).toEqual([]);
   });
 
-  it('shows an error toast when adding a tenant fails', async () => {
+  it('logs and shows no toast when adding a tenant fails', async () => {
     vi.spyOn(rentalAgreementService, 'addTenant').mockRejectedValue(new Error('API error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -125,11 +125,12 @@ describe('RentalAgreementTenantListCard', () => {
     });
     await flushPromises();
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 
-  it('shows an error toast when removing a tenant fails', async () => {
+  it('logs and shows no toast when removing a tenant fails', async () => {
     vi.spyOn(rentalAgreementService, 'removeTenant').mockRejectedValue(new Error('API error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -138,7 +139,8 @@ describe('RentalAgreementTenantListCard', () => {
     await flushPromises();
     await confirmDelete();
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 
@@ -164,7 +166,7 @@ describe('RentalAgreementTenantListCard', () => {
     expect(wrapper.text()).toContain('Aktiv');
   });
 
-  it('logs the raw error and shows a toast when a non-Error rejection occurs', async () => {
+  it('logs the raw error and shows no toast when a non-Error rejection occurs', async () => {
     vi.spyOn(rentalAgreementService, 'addTenant').mockRejectedValue('boom');
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -188,7 +190,7 @@ describe('RentalAgreementTenantListCard', () => {
     await flushPromises();
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to save tenants:', 'boom');
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 });

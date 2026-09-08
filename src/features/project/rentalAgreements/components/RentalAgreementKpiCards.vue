@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import KpiCard from '@/components/KpiCard.vue';
 import {getIconForUnitType,
@@ -34,7 +33,6 @@ const unitIdsByType = computed(() => {
   return acc;
 });
 const { t, n } = useI18n();
-const toast = useToast();
 
 const agreements = ref<RentalAgreementItemJson[]>([]);
 const isLoading = ref(true);
@@ -99,13 +97,8 @@ async function fetchData(projectId: string) {
   try {
     agreements.value = await rentalAgreementService.getRentalAgreements(projectId);
     isLoading.value = false;
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentalAgreement.kpi.loadError'),
-      life: 6000,
-    });
+  } catch (error) {
+    console.error('Failed to load rental agreements:', error);
   } finally {
     isLoading.value = false;
   }

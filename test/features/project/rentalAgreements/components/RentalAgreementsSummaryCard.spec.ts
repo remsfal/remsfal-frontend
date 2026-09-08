@@ -212,7 +212,7 @@ describe('RentalAgreementSummaryCard', () => {
     expect(document.querySelector('.p-dialog')).toBeNull();
   });
 
-  it('shows an error toast and keeps the dialog open when persisting fails', async () => {
+  it('logs, shows no toast, and keeps the dialog open when persisting fails', async () => {
     vi.spyOn(rentalAgreementService, 'updateRentalAgreement').mockRejectedValueOnce(new Error('network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -225,7 +225,8 @@ describe('RentalAgreementSummaryCard', () => {
     findDialogButton('rentalAgreement.terminate.dialogTitle')?.click();
     await flushPromises();
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     expect(document.querySelector('.p-dialog')).not.toBeNull();
     expect(wrapper.emitted('update:rentalAgreement')).toBeFalsy();
     consoleSpy.mockRestore();

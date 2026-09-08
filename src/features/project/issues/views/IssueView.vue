@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useI18n } from 'vue-i18n';
 import IssueDetailsCard from '../components/IssueDetailsCard.vue';
 import IssueDescriptionCard from '../components/IssueDescriptionCard.vue';
 import IssueChatCard from '../components/IssueChatCard.vue';
@@ -12,10 +10,6 @@ import { issueService, type IssueAttachmentJson, type IssueJson } from '@/featur
 
 /* Props */
 const props = defineProps<{ projectId: string; issueId: string }>();
-
-/* Toast & i18n */
-const toast = useToast();
-const { t } = useI18n();
 
 /* UI-friendly Issue type */
 type IssueUI = {
@@ -86,9 +80,6 @@ const fetchIssue = async () => {
     };
   } catch (error) {
     console.error('Error fetching issue:', error);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('issueDetails.fetchError'), life: 3000
-    });
   } finally {
     loadingFetch.value = false;
   }
