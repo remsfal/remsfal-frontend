@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import QuotationRequestDetailsCard from '../components/QuotationRequestDetailsCard.vue';
-import { quotationRequestService, type QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
+import { quotationRequestService, type QuotationRequestJson } from
+  '@/features/contractor/orderManagement/services/QuotationRequestService';
 import ContractorOrderTimelineCard from '../components/ContractorOrderTimelineCard.vue';
 
 const props = defineProps<{ requestId: string }>();
