@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useI18n } from 'vue-i18n';
 import Select from 'primevue/select';
 import InputText from 'primevue/inputtext';
@@ -21,7 +21,7 @@ const emit = defineEmits<{
   created: [];
 }>();
 
-const toast = useToast();
+const appToast = useAppToast();
 const { t } = useI18n();
 
 const query = ref('');
@@ -67,22 +67,11 @@ async function handleSubmit() {
     } else {
       await issueService.createIssueRelation(props.issueId, selectedRelationType.value, selectedIssue.value.id);
     }
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.relationshipsAddSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.relationshipsAddSuccess'), { summary: t('success.saved') });
     resetForm();
     emit('created');
   } catch (error) {
     console.error('Failed to add issue relation:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.relationshipsAddError'),
-      life: 3000,
-    });
   } finally {
     submitting.value = false;
   }

@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import App from '@/App.vue';
+import { useEventBus } from '@/stores/EventStore';
+
+const addMock = vi.fn();
+vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 
 vi.mock('vue-router', () => ({
@@ -46,5 +50,49 @@ describe('App.vue', () => {
     });
 
     expect(wrapper.find('.layout-public').exists()).toBe(true);
+  });
+
+  it('shows a toast with the matching TOAST_LIFE duration for a known severity', () => {
+    mount(App, {
+      global: {
+        stubs: {
+          Toast: true,
+          ConfirmDialog: true,
+          DynamicDialog: true,
+        },
+      },
+    });
+
+    addMock.mockClear();
+    const bus = useEventBus();
+    bus.emit('toast:show', {
+      severity: 'success', summary: 'Summary', detail: 'Detail' 
+    });
+
+    expect(addMock).toHaveBeenCalledWith({
+      severity: 'success', summary: 'Summary', detail: 'Detail', life: 3000,
+    });
+  });
+
+  it('falls back to the error TOAST_LIFE duration for an unknown severity', () => {
+    mount(App, {
+      global: {
+        stubs: {
+          Toast: true,
+          ConfirmDialog: true,
+          DynamicDialog: true,
+        },
+      },
+    });
+
+    addMock.mockClear();
+    const bus = useEventBus();
+    bus.emit('toast:show', {
+      severity: 'unknown-severity', summary: 'Summary', detail: 'Detail',
+    });
+
+    expect(addMock).toHaveBeenCalledWith({
+      severity: 'unknown-severity', summary: 'Summary', detail: 'Detail', life: 4000,
+    });
   });
 });

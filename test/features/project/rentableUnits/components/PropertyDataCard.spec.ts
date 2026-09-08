@@ -14,7 +14,6 @@ import Select from 'primevue/select';
 
 import PropertyDataCard from '@/features/project/rentableUnits/components/PropertyDataCard.vue';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
-import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -30,12 +29,6 @@ vi.mock(
   '@/features/project/rentableUnits/services/PropertyService',
   () => ({ propertyService: { getProperty: vi.fn(), updateProperty: vi.fn() } }),
 );
-
-// ─── viewHelper Mock ──────────────────────────────────────────────────────────
-vi.mock('@/helper/viewHelper', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/helper/viewHelper')>();
-  return {...actual, showSavingErrorToast: vi.fn()};
-});
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
 const mockProperty = {
@@ -81,11 +74,14 @@ describe('PropertyDataCard.vue', () => {
     expect(propertyService.getProperty).not.toHaveBeenCalled();
   });
 
-  it('shows error toast when getProperty fails', async () => {
+  it('logs and shows no toast when getProperty fails', async () => {
     vi.mocked(propertyService.getProperty).mockRejectedValue(new Error('Network error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled before any changes', async () => {
@@ -136,8 +132,9 @@ describe('PropertyDataCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('calls showSavingErrorToast when updateProperty fails', async () => {
+  it('logs and shows no toast when updateProperty fails', async () => {
     vi.mocked(propertyService.updateProperty).mockRejectedValue(new Error('Save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
@@ -147,7 +144,9 @@ describe('PropertyDataCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(viewHelper.showSavingErrorToast).toHaveBeenCalled();
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled again after successful save (no new changes)', async () => {

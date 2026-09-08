@@ -103,7 +103,7 @@ describe('IssueRelationshipsCard.vue', () => {
     expect(wrapper.emitted('saved')).toBeTruthy();
   });
 
-  test('shows error toast when removing a relation fails', async () => {
+  test('logs and shows no toast when removing a relation fails', async () => {
     vi.spyOn(issueService, 'deleteIssueRelation').mockRejectedValue(new Error('boom'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard({ blocks: ['blocker-1'] });
@@ -113,7 +113,8 @@ describe('IssueRelationshipsCard.vue', () => {
     await deleteButton?.trigger('click');
     await flushPromises();
 
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastAddMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     expect(wrapper.emitted('saved')).toBeFalsy();
     consoleSpy.mockRestore();
   });

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 // PrimeVue Components
 import Button from 'primevue/button';
@@ -32,7 +32,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const visible = ref(false);
 
@@ -120,12 +120,7 @@ async function createIssue(data: {
   try {
     // Check offline status
     if (!navigator.onLine) {
-      toast.add({
-        severity: 'warn',
-        summary: t('warning'),
-        detail: t('newTenantIssueDialog.offlineSaved'),
-        life: 4000,
-      });
+      appToast.warn(t('newTenantIssueDialog.offlineSaved'));
       visible.value = false;
       return;
     }
@@ -141,24 +136,13 @@ async function createIssue(data: {
     });
 
     // Success feedback
-    toast.add({
-      severity: 'success',
-      summary: t('success.created'),
-      detail: t('newTenantIssueDialog.successCreated'),
-      life: 4000,
-    });
+    appToast.success(t('newTenantIssueDialog.successCreated'), { summary: t('success.created') });
 
     // Emit event and close dialog
     visible.value = false;
     emit('issueCreated', newIssue);
   } catch (error) {
     console.error('Failed to create tenant issue:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('newTenantIssueDialog.errorCreated'),
-      life: 4000,
-    });
   }
 }
 </script>

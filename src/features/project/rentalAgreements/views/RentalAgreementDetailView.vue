@@ -12,7 +12,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import DangerZoneCard from "@/components/DangerZoneCard.vue";
-import {useToast} from "primevue/usetoast";
+import { useAppToast } from '@/composables/useAppToast';
 
 const props = defineProps<{
   projectId: string; agreementId: string;
@@ -20,7 +20,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const router = useRouter();
-const toast = useToast();
+const appToast = useAppToast();
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreementJson | null>(null);
@@ -78,21 +78,10 @@ function redirectToRentalAgreementList() {
 const deleteAgreement = async () => {
   try {
     await rentalAgreementService.deleteRentalAgreement(props.projectId, props.agreementId);
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('rentalAgreement.dangerZone.deleteSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('rentalAgreement.dangerZone.deleteSuccess'), { summary: t('success.saved') });
     redirectToRentalAgreementList();
   } catch (err) {
     console.error('Error deleting rental agreement:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentalAgreement.dangerZone.deleteError'),
-      life: 6000,
-    });
   }
 };
 

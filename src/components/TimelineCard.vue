@@ -35,7 +35,6 @@ const messagePlaceholder = t('tenantIssues.timeline.messagePlaceholder');
 const uploadButtonLabel = t('tenantIssues.timeline.uploadButton');
 const uploadEmptyText = t('tenantIssues.timeline.uploadEmpty');
 const sendButtonLabel = t('tenantIssues.timeline.sendMessage');
-const sendErrorMessage = t('tenantIssues.timeline.createError');
 
 const {
   loading,
@@ -55,7 +54,6 @@ const {
   watchSource: props.watchSource,
   loadErrorLogLabel: props.loadErrorLogLabel,
   sendErrorLogLabel: props.sendErrorLogLabel,
-  sendErrorMessage: () => sendErrorMessage,
 });
 </script>
 

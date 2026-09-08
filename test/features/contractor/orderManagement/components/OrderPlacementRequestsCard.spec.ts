@@ -113,7 +113,7 @@ describe('OrderPlacementRequestsCard', () => {
     expect(updateSpy).toHaveBeenCalledWith('op-1', 'REJECTED');
   });
 
-  it('shows error toast when updateOrderPlacementStatus fails', async () => {
+  it('logs and shows no toast when updateOrderPlacementStatus fails', async () => {
     vi.spyOn(orderPlacementService, 'updateOrderPlacementStatus').mockRejectedValue(new Error('fail'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
@@ -122,7 +122,8 @@ describe('OrderPlacementRequestsCard', () => {
       .find((b) => b.text().includes('Bestätigen'));
     await button!.trigger('click');
     await flushPromises();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 });

@@ -81,7 +81,7 @@ describe('RentalAgreementIssueCard', () => {
     ]);
   });
 
-  test('logs an error, shows a toast and keeps the issue list empty when loading fails', async () => {
+  test('logs an error, shows no toast and keeps the issue list empty when loading fails', async () => {
     (issueService.getIssues as Mock).mockRejectedValue(new Error('network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -89,7 +89,7 @@ describe('RentalAgreementIssueCard', () => {
     await flushPromises();
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to load issues:', expect.any(Error));
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastAddMock).not.toHaveBeenCalled();
     expect(wrapper.findComponent(IssueTableStub).props('issues')).toEqual([]);
     consoleSpy.mockRestore();
   });

@@ -94,8 +94,9 @@ describe('BillingAddressCard.vue', () => {
     expect((wrapper.find('input[name="province"]').element as HTMLInputElement).value).toBe('Hamburg');
   });
 
-  it('shows error toast when saving fails', async () => {
+  it('logs and shows no toast when saving fails', async () => {
     vi.spyOn(projectService, 'updateProject').mockRejectedValue(new Error('save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mountCard();
     await flushPromises();
@@ -104,7 +105,9 @@ describe('BillingAddressCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('rejects city values with digits (validation reconciled with AddressCard)', async () => {

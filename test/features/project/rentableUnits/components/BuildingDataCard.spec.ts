@@ -13,7 +13,6 @@ beforeAll(() => {
 
 import BuildingDataCard from '@/features/project/rentableUnits/components/BuildingDataCard.vue';
 import { buildingService, type BuildingJson } from '@/features/project/rentableUnits/services/BuildingService';
-import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -27,12 +26,6 @@ vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 // ─── Service Mock ─────────────────────────────────────────────────────────────
 const mockBuildingService = vi.hoisted(() => ({ getBuilding: vi.fn(), updateBuilding: vi.fn() }));
 vi.mock('@/features/project/rentableUnits/services/BuildingService', () => ({ buildingService: mockBuildingService }));
-
-// ─── viewHelper Mock ──────────────────────────────────────────────────────────
-vi.mock('@/helper/viewHelper', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/helper/viewHelper')>();
-  return {...actual, showSavingErrorToast: vi.fn()};
-});
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
 const mockBuilding = {
@@ -76,11 +69,14 @@ describe('BuildingDataCard.vue', () => {
     expect(buildingService.getBuilding).not.toHaveBeenCalled();
   });
 
-  it('shows error toast when getBuilding fails', async () => {
+  it('logs and shows no toast when getBuilding fails', async () => {
     vi.mocked(buildingService.getBuilding).mockRejectedValue(new Error('Network error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mount(BuildingDataCard, { props: defaultProps });
     await flushPromises();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled before any changes', async () => {
@@ -129,8 +125,9 @@ describe('BuildingDataCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('calls showSavingErrorToast when updateBuilding fails', async () => {
+  it('logs and shows no toast when updateBuilding fails', async () => {
     vi.mocked(buildingService.updateBuilding).mockRejectedValue(new Error('Save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mount(BuildingDataCard, { props: defaultProps });
     await flushPromises();
@@ -140,7 +137,9 @@ describe('BuildingDataCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(viewHelper.showSavingErrorToast).toHaveBeenCalled();
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled again after successful save', async () => {

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useRouter } from 'vue-router';
 import { projectService } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
@@ -11,29 +11,18 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const projectStore = useProjectStore();
 const router = useRouter();
 
 const deleteProject = async () => {
   try {
     await projectService.deleteProject(props.projectId);
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('projectSettings.deleteSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('projectSettings.deleteSuccess'), { summary: t('success.saved') });
     await projectStore.refreshProjectList();
     await router.push('/projects');
   } catch (err) {
     console.error('Error deleting project:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('projectSettings.deleteError'),
-      life: 6000,
-    });
   }
 };
 </script>

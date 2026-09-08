@@ -18,10 +18,7 @@ const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
 
 const defaultLabels = { title: 'Verlauf' };
 
-const i18nTexts = {
-  loadErrorText: 'Timeline-Einträge konnten nicht geladen werden.',
-  sendErrorMessage: 'Nachricht konnte nicht gesendet werden. Versuchen sie es später noch einmal.',
-};
+const i18nTexts = {loadErrorText: 'Timeline-Einträge konnten nicht geladen werden.',};
 
 const mountCard = (props: Partial<InstanceType<typeof TimelineCard>['$props']> = {}) =>
   mount(TimelineCard, {
@@ -193,8 +190,9 @@ describe('TimelineCard component', () => {
     await flushPromises();
   });
 
-  it('shows an error toast with the given message when send() fails', async () => {
+  it('logs and shows no toast when send() fails', async () => {
     const send = vi.fn().mockRejectedValue(new Error('boom'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard({ load: vi.fn().mockResolvedValue([]), send });
     await flushPromises();
 
@@ -202,8 +200,8 @@ describe('TimelineCard component', () => {
     await wrapper.get('[data-testid="timeline-message-submit"]').trigger('click');
     await flushPromises();
 
-    expect(toastAddMock).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: 'error', detail: i18nTexts.sendErrorMessage }),
-    );
+    expect(toastAddMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to create timeline entry', expect.any(Error));
+    consoleErrorSpy.mockRestore();
   });
 });

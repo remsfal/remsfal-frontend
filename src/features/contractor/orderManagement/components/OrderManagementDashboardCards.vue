@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
@@ -13,20 +12,10 @@ import type { OrderPlacementJson } from '@/features/contractor/orderManagement/s
 
 const { t, d } = useI18n();
 const router = useRouter();
-const toast = useToast();
 
 const isLoading = ref(true);
 const newQuotationRequests = ref<QuotationRequestJson[]>([]);
 const newOrders = ref<OrderPlacementJson[]>([]);
-
-function reportLoadError() {
-  toast.add({
-    severity: 'error',
-    summary: t('error.general'),
-    detail: t('orderManagement.dashboard.loadError'),
-    life: 6000,
-  });
-}
 
 function byNewest(a: { createdAt?: string }, b: { createdAt?: string }): number {
   return new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime();
@@ -36,8 +25,8 @@ async function loadQuotationRequests(): Promise<QuotationRequestJson[]> {
   try {
     const result = await quotationRequestService.getContractorQuotationRequests();
     return (result.items ?? []).filter((r) => r.status === 'REQUESTED').sort(byNewest).slice(0, 5);
-  } catch {
-    reportLoadError();
+  } catch (error) {
+    console.error('Failed to load quotation requests:', error);
     return [];
   }
 }
@@ -46,8 +35,8 @@ async function loadOrders(): Promise<OrderPlacementJson[]> {
   try {
     const result = await orderPlacementService.getOrderPlacements();
     return (result.items ?? []).filter((p) => p.status === 'PLACED').sort(byNewest).slice(0, 5);
-  } catch {
-    reportLoadError();
+  } catch (error) {
+    console.error('Failed to load orders:', error);
     return [];
   }
 }

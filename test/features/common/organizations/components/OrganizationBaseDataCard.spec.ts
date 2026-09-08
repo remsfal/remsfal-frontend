@@ -135,8 +135,9 @@ describe('OrganizationBaseDataCard', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('shows error toast when updateOrganization throws', async () => {
+  it('logs and shows no toast when updateOrganization throws', async () => {
     vi.spyOn(organizationService, 'updateOrganization').mockRejectedValue(new Error('Save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
     await flushPromises();
 
@@ -147,7 +148,9 @@ describe('OrganizationBaseDataCard', () => {
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('does not call updateOrganization when form is invalid', async () => {

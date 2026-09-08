@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import DangerZoneCard from '@/components/DangerZoneCard.vue';
 import { propertyService, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
@@ -19,7 +19,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const router = useRouter();
 const rentableUnitsStore = useRentableUnitsStore();
 
@@ -48,21 +48,13 @@ async function deleteUnit(): Promise<void> {
         break;
     }
     rentableUnitsStore.invalidate();
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('rentableUnits.dangerZone.deleteSuccess', { type: unitTypeLabel.value }),
-      life: 3000,
-    });
+    appToast.success(
+      t('rentableUnits.dangerZone.deleteSuccess', { type: unitTypeLabel.value }),
+      { summary: t('success.saved') },
+    );
     await router.push({ name: 'RentableUnits', params: { projectId: props.projectId } });
   } catch (err) {
     console.error('Error deleting unit:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentableUnits.dangerZone.deleteError', { type: unitTypeLabel.value }),
-      life: 6000,
-    });
   }
 }
 </script>

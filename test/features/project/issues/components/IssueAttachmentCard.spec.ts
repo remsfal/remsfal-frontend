@@ -84,18 +84,18 @@ describe('IssueAttachmentCard.vue', () => {
     expect(wrapper.emitted('saved')).toBeFalsy();
   });
 
-  test('shows error toast when upload fails', async () => {
+  test('logs and shows no toast when upload fails', async () => {
     vi.spyOn(issueService, 'uploadAttachments').mockRejectedValue(new Error('upload failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
 
     await wrapper.find('[data-test="upload"]').trigger('click');
     await flushPromises();
 
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
-      severity: 'error',
-      detail: 'issueDetails.attachmentsUploadError',
-    }));
+    expect(toastAddMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(wrapper.emitted('saved')).toBeFalsy();
+    consoleErrorSpy.mockRestore();
   });
 
   test('deletes attachment and emits saved', async () => {
@@ -126,13 +126,14 @@ describe('IssueAttachmentCard.vue', () => {
     expect(wrapper.emitted('saved')).toBeTruthy();
   });
 
-  test('shows error toast when delete fails', async () => {
+  test('logs and shows no toast when delete fails', async () => {
     vi.spyOn(issueService, 'deleteAttachment').mockRejectedValue(new Error('delete failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mount(IssueAttachmentCard, {
       props: {
         issueId: 'issue-1',
         attachments: [{
-          attachmentId: 'att-1', fileName: 'img.png', contentType: 'image/png' 
+          attachmentId: 'att-1', fileName: 'img.png', contentType: 'image/png'
         }],
       },
       global: {
@@ -147,11 +148,10 @@ describe('IssueAttachmentCard.vue', () => {
     await wrapper.find('[data-test="delete-button"]').trigger('click');
     await flushPromises();
 
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
-      severity: 'error',
-      detail: 'issueDetails.attachmentDeleteError',
-    }));
+    expect(toastAddMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(wrapper.emitted('saved')).toBeFalsy();
+    consoleErrorSpy.mockRestore();
   });
 
   test('renders indicator tiles for non-image attachments grouped by extension', async () => {

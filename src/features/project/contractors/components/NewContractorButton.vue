@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
@@ -18,7 +18,7 @@ const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newContractor', companyName: string) => void>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
@@ -74,20 +74,9 @@ const onSubmit = async (event: FormSubmitEvent) => {
     visible.value = false;
     resetForm();
     emit('newContractor', companyName);
-    toast.add({
-      severity: 'success',
-      summary: t('contractor.new.success'),
-      detail: t('contractor.new.successDetail', [companyName]),
-      life: 3000,
-    });
+    appToast.success(t('contractor.new.successDetail', [companyName]), { summary: t('contractor.new.success') });
   } catch (error) {
     console.error('Failed to create contractor:', error instanceof Error ? error.message : error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('contractor.new.error'),
-      life: 5000,
-    });
   }
 };
 </script>

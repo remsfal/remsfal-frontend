@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useI18n } from 'vue-i18n';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ saved: [] }>();
 
-const toast = useToast();
+const appToast = useAppToast();
 const { t } = useI18n();
 
 const loadingUpload = ref(false);
@@ -51,21 +51,10 @@ async function handleUpload(event: FileUploadUploaderEvent) {
   loadingUpload.value = true;
   try {
     await issueService.uploadAttachments(props.issueId, files as File[]);
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.attachmentsUploadSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.attachmentsUploadSuccess'), { summary: t('success.saved') });
     emit('saved');
   } catch (error) {
     console.error('Error uploading attachments:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.attachmentsUploadError'),
-      life: 3000,
-    });
   } finally {
     loadingUpload.value = false;
   }
@@ -77,21 +66,10 @@ async function handleDelete(attachment: IssueAttachmentJson) {
   deletingAttachmentId.value = attachment.attachmentId;
   try {
     await issueService.deleteAttachment(props.issueId, attachment.attachmentId);
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.attachmentDeleteSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.attachmentDeleteSuccess'), { summary: t('success.saved') });
     emit('saved');
   } catch (error) {
     console.error('Error deleting attachment:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.attachmentDeleteError'),
-      life: 3000,
-    });
   } finally {
     deletingAttachmentId.value = null;
   }

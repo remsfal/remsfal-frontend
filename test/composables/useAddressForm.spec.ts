@@ -112,18 +112,18 @@ describe('useAddressForm', () => {
     expect(wrapper.vm.isDirty).toBe(false);
   });
 
-  it('onSubmit shows an error toast and logs when save() rejects', async () => {
+  it('onSubmit logs and shows no toast when save() rejects', async () => {
     save = vi.fn<SaveFn>().mockRejectedValue(new Error('boom'));
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountForm({
-      load, save, errorLogLabel: 'custom save error' 
+      load, save, errorLogLabel: 'custom save error'
     });
     await flushPromises();
 
     await wrapper.vm.onSubmit(mockFormEvent(mockAddress));
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
     expect(consoleErrorSpy).toHaveBeenCalledWith('custom save error', expect.any(Error));
     consoleErrorSpy.mockRestore();
   });

@@ -213,15 +213,18 @@ describe('AddressCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('shows error toast when saveAddress rejects', async () => {
+  it('logs and shows no toast when saveAddress rejects', async () => {
     saveAddress = vi.fn<(addr: AddressJson) => Promise<void>>().mockRejectedValue(new Error('Network error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
     await flushPromises();
     await wrapper.find('input[name="street"]').setValue('Teststraße 1');
     await flushPromises();
     await wrapper.find('form').trigger('submit');
     await flushPromises();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('does not throw when loadAddress rejects', async () => {

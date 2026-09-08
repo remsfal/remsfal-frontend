@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
@@ -14,7 +13,6 @@ import { useUserSessionStore } from '@/stores/UserSession';
 const props = defineProps<{ projectId: string }>();
 const { t } = useI18n();
 const router = useRouter();
-const toast = useToast();
 const sessionStore = useUserSessionStore();
 
 const OPEN_STATUSES: IssueStatus[] = ['PENDING', 'OPEN', 'IN_PROGRESS'];
@@ -28,22 +26,13 @@ const isLoading = ref(true);
 const urgentIssues = ref<IssueItemJson[]>([]);
 const recentIssues = ref<IssueItemJson[]>([]);
 
-function reportLoadError() {
-  toast.add({
-    severity: 'error',
-    summary: t('error.general'),
-    detail: t('issueDashboard.loadError'),
-    life: 6000,
-  });
-}
-
 async function loadUrgentIssues(projectId: string, assigneeId?: string): Promise<IssueItemJson[]> {
   try {
     const page = await issueService.getIssues(projectId, OPEN_STATUSES, undefined, assigneeId);
     const open = (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
     return [...open].sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority)).slice(0, 5);
-  } catch {
-    reportLoadError();
+  } catch (error) {
+    console.error('Failed to load urgent issues:', error);
     return [];
   }
 }
@@ -54,8 +43,8 @@ async function loadRecentIssues(projectId: string): Promise<IssueItemJson[]> {
       projectId, 'PENDING', undefined, undefined, undefined, undefined, undefined, undefined, 5,
     );
     return (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
-  } catch {
-    reportLoadError();
+  } catch (error) {
+    console.error('Failed to load recent issues:', error);
     return [];
   }
 }
