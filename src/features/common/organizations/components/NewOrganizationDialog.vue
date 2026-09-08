@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useRoute, useRouter } from 'vue-router';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
@@ -21,7 +21,7 @@ const props = defineProps<{ visible: boolean }>();
 const emit = defineEmits<{ 'update:visible': [value: boolean] }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const route = useRoute();
 const router = useRouter();
 const organizationStore = useOrganizationStore();
@@ -73,11 +73,7 @@ async function onSubmit(event: FormSubmitEvent) {
       trade: event.states.trade?.value || undefined,
     });
     await organizationStore.fetchUserOrganization();
-    toast.add({
-      severity: 'success',
-      summary: t('organization.createSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('organization.createSuccess'));
     emit('update:visible', false);
     const newOrg = organizationStore.userOrganizations.find(o => !previousIds.has(o.id));
     const orgId = newOrg?.id;
@@ -86,12 +82,8 @@ async function onSubmit(event: FormSubmitEvent) {
     } else {
       router.push({ name: organizationsRouteName.value });
     }
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: t('organization.createError'),
-      life: 4000,
-    });
+  } catch (error) {
+    console.error('Failed to create organization:', error);
   } finally {
     submitting.value = false;
   }

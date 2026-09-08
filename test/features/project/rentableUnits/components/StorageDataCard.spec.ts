@@ -13,7 +13,6 @@ beforeAll(() => {
 
 import StorageDataCard from '@/features/project/rentableUnits/components/StorageDataCard.vue';
 import { storageService, type StorageJson } from '@/features/project/rentableUnits/services/StorageService';
-import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -27,12 +26,6 @@ vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 // ─── Service Mock ─────────────────────────────────────────────────────────────
 const mockStorageService = vi.hoisted(() => ({ getStorage: vi.fn(), updateStorage: vi.fn() }));
 vi.mock('@/features/project/rentableUnits/services/StorageService', () => ({ storageService: mockStorageService }));
-
-// ─── viewHelper Mock ──────────────────────────────────────────────────────────
-vi.mock('@/helper/viewHelper', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/helper/viewHelper')>();
-  return {...actual, showSavingErrorToast: vi.fn(),};
-});
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
 const mockStorage = {
@@ -73,11 +66,14 @@ describe('StorageDataCard.vue', () => {
     expect(storageService.getStorage).not.toHaveBeenCalled();
   });
 
-  it('shows error toast when getStorage fails', async () => {
+  it('logs and shows no toast when getStorage fails', async () => {
     vi.mocked(storageService.getStorage).mockRejectedValue(new Error('Network error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mount(StorageDataCard, { props: defaultProps });
     await flushPromises();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled before any changes', async () => {
@@ -181,8 +177,9 @@ describe('StorageDataCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('calls showSavingErrorToast when updateStorage fails', async () => {
+  it('logs and shows no toast when updateStorage fails', async () => {
     vi.mocked(storageService.updateStorage).mockRejectedValue(new Error('Save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mount(StorageDataCard, { props: defaultProps });
     await flushPromises();
@@ -192,7 +189,9 @@ describe('StorageDataCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(viewHelper.showSavingErrorToast).toHaveBeenCalled();
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('save button is disabled again after successful save (no new changes)', async () => {

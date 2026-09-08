@@ -207,7 +207,7 @@ describe('AdjustRentDialog', () => {
       expect(rentalAgreementService.addRent).not.toHaveBeenCalled();
     });
 
-    it('shows an error toast when adding fails with a non-Error rejection', async () => {
+    it('logs and shows no toast when adding fails with a non-Error rejection', async () => {
       vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
         properties: [{
           key: 'apt-2', data: {
@@ -230,7 +230,8 @@ describe('AdjustRentDialog', () => {
       await wrapper.findComponent(RentalDetailsForm).vm.$emit('submit', { billingCycle: 'MONTHLY' });
       await flushPromises();
 
-      expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+      expect(toastSpy).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
 
@@ -243,7 +244,7 @@ describe('AdjustRentDialog', () => {
       expect(wrapper.emitted('update:visible')?.[0]).toEqual([false]);
     });
 
-    it('shows an error toast when adding fails', async () => {
+    it('logs and shows no toast when adding fails', async () => {
       vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
         properties: [{
           key: 'apt-2', data: {
@@ -266,7 +267,8 @@ describe('AdjustRentDialog', () => {
       await wrapper.findComponent(RentalDetailsForm).vm.$emit('submit', { billingCycle: 'MONTHLY' });
       await flushPromises();
 
-      expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+      expect(toastSpy).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
   });
@@ -325,7 +327,7 @@ describe('AdjustRentDialog', () => {
       expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false]);
     });
 
-    it('shows an error toast when adjusting fails', async () => {
+    it('logs and shows no toast when adjusting fails', async () => {
       vi.mocked(rentalAgreementService.addRent).mockRejectedValue(new Error('network error'));
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -334,7 +336,8 @@ describe('AdjustRentDialog', () => {
       await wrapper.findComponent(RentalDetailsForm).vm.$emit('submit', { billingCycle: 'MONTHLY' });
       await flushPromises();
 
-      expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+      expect(toastSpy).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
 

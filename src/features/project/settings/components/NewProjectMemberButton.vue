@@ -8,7 +8,6 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import { type ProjectMemberWritableJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
 import BaseDialog from '@/components/BaseDialog.vue';
@@ -17,7 +16,6 @@ const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newMember', email: string) => void>();
 
 const { t } = useI18n();
-const toast = useToast();
 
 const visible = ref(false);
 
@@ -65,12 +63,6 @@ const addMember = async (email: string, role: MemberRole) => {
     resetForm();
   } catch (error) {
     console.error('Failed to add member:', error instanceof Error ? error.message : error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('projectSettings.newProjectMemberButton.errorAdd'),
-      life: 5000,
-    });
   }
 };
 </script>

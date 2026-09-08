@@ -111,10 +111,11 @@ describe("IssueView.vue", () => {
   });
   
   // ---- Error Handling Tests ----
-  test("shows error toast when API call fails", () => {
+  test("logs and shows no toast when API call fails", async () => {
     vi.spyOn(issueService, "getIssue").mockImplementation(() => {
       throw new Error("API error");
     });
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     mount(IssueView, {
       props: {
@@ -130,14 +131,11 @@ describe("IssueView.vue", () => {
         },
       },
     });
+    await flushPromises();
 
-    expect(toastAddMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        severity: "error",
-        summary: "error.general",
-        detail: "issueDetails.fetchError",
-      })
-    );
+    expect(toastAddMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   // ---- Refetch Behaviour Tests ----

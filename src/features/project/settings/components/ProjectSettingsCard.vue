@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import BaseCard from '@/components/BaseCard.vue';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
@@ -13,7 +13,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const projectStore = useProjectStore();
 
 const projectName = ref('');
@@ -45,20 +45,9 @@ const saveProjectName = async () => {
     originalProjectName.value = projectName.value.trim();
     projectStore.updateProjectName(props.projectId, projectName.value.trim());
 
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('projectSettings.saveSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('projectSettings.saveSuccess'), { summary: t('success.saved') });
   } catch (error) {
     console.error('Error saving project name:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('projectSettings.saveError'),
-      life: 3000,
-    });
   } finally {
     loading.value = false;
   }

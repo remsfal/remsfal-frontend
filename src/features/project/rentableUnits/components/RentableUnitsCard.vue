@@ -4,14 +4,14 @@ import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { type RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import BaseCard from '@/components/BaseCard.vue';
 import RentableUnitsTable from './RentableUnitsTable.vue';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{ projectId: string }>();
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const rentableUnitsStore = useRentableUnitsStore();
 const { rentableUnitTree, isLoading } = storeToRefs(rentableUnitsStore);
 
@@ -39,12 +39,7 @@ watch(rentableUnitTree, () => expandAll(), { immediate: true });
 
 function onNewRentableUnit(title: string) {
   rentableUnitsStore.invalidate();
-  toast.add({
-    severity: 'success',
-    summary: 'Neue Einheit hinzugefügt',
-    detail: `Eine neue Einheit mit dem Titel ${title} wurde erfolgreich hinzugefügt`,
-    life: 3000,
-  });
+  appToast.success(t('rentableUnits.newUnitAddedDetail', { title }), {summary: t('rentableUnits.newUnitAddedSummary'),});
 }
 
 // --- Expose for tests ---

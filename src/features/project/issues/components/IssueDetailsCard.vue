@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useI18n } from 'vue-i18n';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
@@ -52,7 +52,7 @@ const emit = defineEmits<{ saved: [] }>();
 /* =========================
      Services & Store
   ========================= */
-const toast = useToast();
+const appToast = useAppToast();
 const { t, locale } = useI18n();
 
 /* =========================
@@ -243,22 +243,11 @@ const handleSave = async () => {
     originalSelectedAgreement.value = selectedAgreement.value;
     originalCategory.value = category.value;
     originalPriority.value = priority.value;
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.saveSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.saveSuccess'), { summary: t('success.saved') });
 
     emit("saved");
   } catch (err) {
     console.error(err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.saveError'),
-      life: 3000,
-    });
   } finally {
     loadingSave.value = false;
   }

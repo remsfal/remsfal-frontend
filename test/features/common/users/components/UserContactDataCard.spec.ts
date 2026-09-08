@@ -329,7 +329,7 @@ describe('UserContactDataCard', () => {
     expect(userService.updateUser).not.toHaveBeenCalled();
   });
 
-  test('shows an error toast when saving fails', async () => {
+  test('logs and shows no toast when saving fails', async () => {
     await flushPromises();
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(userService.updateUser).mockRejectedValue(new Error('save failed'));
@@ -338,12 +338,13 @@ describe('UserContactDataCard', () => {
     await form.vm.$emit('submit', {
       valid: true,
       states: {
-        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' } 
+        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' }
       },
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     consoleErrorSpy.mockRestore();
   });
 

@@ -1,6 +1,4 @@
 import { ref, type Ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType }
   from '@/features/project/issues/services/IssueService';
 import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
@@ -16,9 +14,6 @@ export interface UseIssueListParams {
 }
 
 export function useIssueList() {
-  const { t } = useI18n();
-  const toast = useToast();
-
   const issues: Ref<IssueItemJson[]> = ref([]);
   const loading = ref(false);
 
@@ -56,12 +51,6 @@ export function useIssueList() {
     } catch (err) {
       console.error('Failed to load issues:', err);
       issues.value = [];
-      toast.add({
-        severity: 'error',
-        summary: t('error.general'),
-        detail: t('issueList.fetchError'),
-        life: 3000,
-      });
     } finally {
       loading.value = false;
     }

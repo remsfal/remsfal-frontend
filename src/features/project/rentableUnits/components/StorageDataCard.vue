@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 import InputNumber from 'primevue/inputnumber';
 import Fieldset from 'primevue/fieldset';
@@ -17,7 +17,6 @@ import {useRentableUnitForm,
   createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm';
 import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 import type { StorageJson } from '@/features/project/rentableUnits/services/StorageService';
-import { showSavingErrorToast } from '@/helper/viewHelper';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
@@ -26,7 +25,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const rentableUnitsStore = useRentableUnitsStore();
 
 const schema = z.object({
@@ -65,9 +64,7 @@ function onHeatedChange(checked: boolean) {
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({
-      severity: 'warn', summary: t('error.general'), detail: t('storage.noId'), life: 6000 
-    });
+    appToast.warn(t('storage.noId'));
     return;
   }
   try {
@@ -82,9 +79,6 @@ onMounted(async () => {
     });
   } catch (err) {
     console.error('Fehler beim Laden des Lagers:', err);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('storage.loadError'), life: 6000 
-    });
   }
 });
 
@@ -110,12 +104,9 @@ async function onSubmit(event: FormSubmitEvent) {
       heated: payload.heated,
     });
     rentableUnitsStore.invalidate();
-    toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('storage.saveSuccess'), life: 3000
-    });
+    appToast.success(t('storage.saveSuccess'), { summary: t('success.saved') });
   } catch (err) {
     console.error('Fehler beim Speichern des Lagers:', err);
-    showSavingErrorToast(toast, t('storage.saveError'));
   }
 }
 </script>

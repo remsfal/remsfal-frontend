@@ -44,6 +44,15 @@ beforeEach(() => {
   cy.intercept('POST', '/api/v1/authentication/refresh', { statusCode: 401 }).as('refreshToken');
 });
 
+// initTelemetry() (src/telemetry/otel.ts) only no-ops under Vitest (`MODE === 'test'`); the dev
+// and preview builds Cypress serves both read .env, which enables OTel against `/otlp`. With no
+// collector listening there locally, every batched span/log export fails and clutters the Cypress
+// command log with noisy failed-request entries. Stub both endpoints so exports succeed silently.
+beforeEach(() => {
+  cy.intercept('POST', '**/otlp/v1/traces', { statusCode: 200 }).as('otelTraces');
+  cy.intercept('POST', '**/otlp/v1/logs', { statusCode: 200 }).as('otelLogs');
+});
+
 // Enhanced error logging to get better stack traces
 Cypress.on('uncaught:exception', (err, runnable) => {
   console.error('=== UNCAUGHT EXCEPTION ===');

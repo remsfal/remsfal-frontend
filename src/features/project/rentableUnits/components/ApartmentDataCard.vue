@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 import InputNumber from 'primevue/inputnumber';
 import Fieldset from 'primevue/fieldset';
@@ -17,7 +17,6 @@ import {useRentableUnitForm,
   createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm';
 import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
 import type { ApartmentJson } from '@/features/project/rentableUnits/services/ApartmentService';
-import { showSavingErrorToast } from '@/helper/viewHelper';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
@@ -26,7 +25,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const rentableUnitsStore = useRentableUnitsStore();
 
 const schema = z.object({
@@ -84,9 +83,7 @@ watch(
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({
-      severity: 'warn', summary: t('error.general'), detail: t('apartment.noId'), life: 6000 
-    });
+    appToast.warn(t('apartment.noId'));
     return;
   }
   try {
@@ -103,9 +100,6 @@ onMounted(async () => {
       !data.heatingSpace || data.heatingSpace === (data.livingSpace ?? null);
   } catch (err) {
     console.error('Fehler beim Laden der Wohnung:', err);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('apartment.loadError'), life: 6000 
-    });
   }
 });
 
@@ -133,12 +127,9 @@ async function onSubmit(event: FormSubmitEvent) {
       heatingSpace: payload.heatingSpace ?? null,
     });
     rentableUnitsStore.invalidate();
-    toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('apartment.saveSuccess'), life: 3000
-    });
+    appToast.success(t('apartment.saveSuccess'), { summary: t('success.saved') });
   } catch (err) {
     console.error('Fehler beim Speichern der Wohnung:', err);
-    showSavingErrorToast(toast, t('apartment.saveError'));
   }
 }
 </script>

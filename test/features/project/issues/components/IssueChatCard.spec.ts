@@ -234,7 +234,7 @@ describe('IssueChatCard.vue', () => {
     expect(issueChatService.sendMessage).toHaveBeenCalledWith('issue-1', 'Enter msg');
   });
 
-  test('shows an error toast when sending a message fails', async () => {
+  test('preserves the message text when sending a message fails', async () => {
     (issueChatService.sendMessage as Mock).mockRejectedValueOnce(new Error('fail'));
 
     const wrapper = mountComponent();

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import BaseCard from '@/components/BaseCard.vue';
 import TenantCard from './TenantCard.vue';
 import TenantDeleteButton from './TenantDeleteButton.vue';
@@ -24,29 +24,14 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const router = useRouter();
-const toast = useToast();
+const appToast = useAppToast();
 
 const saving = ref(false);
 
 const tenants = computed(() => props.rentalAgreement.tenants ?? []);
 
 function showSuccessToast() {
-  toast.add({
-    severity: 'success',
-    summary: t('rentalAgreement.tenantListCard.success'),
-    detail: t('rentalAgreement.tenantListCard.successDetail'),
-    life: 3000,
-  });
-}
-
-function showErrorToast(error: unknown) {
-  console.error('Failed to save tenants:', error instanceof Error ? error.message : error);
-  toast.add({
-    severity: 'error',
-    summary: t('error.general'),
-    detail: t('rentalAgreement.tenantListCard.error'),
-    life: 5000,
-  });
+  appToast.success(t('rentalAgreement.tenantListCard.successDetail'), {summary: t('rentalAgreement.tenantListCard.success'),});
 }
 
 async function onNewTenant(tenant: TenantWritableJson) {
@@ -58,7 +43,7 @@ async function onNewTenant(tenant: TenantWritableJson) {
     emit('update:rentalAgreement', { ...props.rentalAgreement, tenants: [...tenants.value, created] });
     showSuccessToast();
   } catch (error) {
-    showErrorToast(error);
+    console.error('Failed to save tenants:', error instanceof Error ? error.message : error);
   } finally {
     saving.value = false;
   }
@@ -76,7 +61,7 @@ async function onDeleteTenant(tenantId?: string) {
     });
     showSuccessToast();
   } catch (error) {
-    showErrorToast(error);
+    console.error('Failed to save tenants:', error instanceof Error ? error.message : error);
   } finally {
     saving.value = false;
   }

@@ -7,6 +7,7 @@ import { useToast } from 'primevue/usetoast'
 import { useUserSessionStore } from '@/stores/UserSession'
 import { useEventBus } from '@/stores/EventStore'
 import { useI18n } from 'vue-i18n'
+import { TOAST_LIFE, type AppToastSeverity } from '@/composables/useAppToast'
 import ManagerLayout from '@/layouts/manager.vue'
 import ProjectLayout from '@/layouts/project.vue'
 import TenantLayout from '@/layouts/tenant.vue'
@@ -39,7 +40,7 @@ bus.on('toast:translate', ({ severity, summary, detail }) => {
 })
 bus.on('toast:show', ({ severity, summary, detail }) => {
   toast.add({
-    severity, summary, detail, life: 3000 
+    severity, summary, detail, life: TOAST_LIFE[severity as AppToastSeverity] ?? TOAST_LIFE.error
   })
 })
 bus.on('auth:session-expired', () => {

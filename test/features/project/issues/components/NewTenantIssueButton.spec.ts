@@ -173,4 +173,28 @@ describe('NewTenantIssueButton.vue', () => {
     const dialog = wrapper.find('[data-testid="dialog"]');
     expect(dialog.attributes('data-visible')).toBe('false');
   });
+
+  it('skips the API call and closes the dialog when offline', async () => {
+    const onLineSpy = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+
+    await wrapper.find('button').trigger('click');
+
+    const input = wrapper.find('input[name="issueTitle"]');
+    await input.setValue('Valid Issue Title');
+
+    const agreementSelect = wrapper.findComponent(RentalAgreementSelectStub);
+    await agreementSelect.vm.$emit('update:modelValue', mockAgreement);
+
+    const form = wrapper.findComponent(Form);
+    await form.trigger('submit');
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    await wrapper.vm.$nextTick();
+
+    expect(issueService.createProjectIssue).not.toHaveBeenCalled();
+    const dialog = wrapper.find('[data-testid="dialog"]');
+    expect(dialog.attributes('data-visible')).toBe('false');
+
+    onLineSpy.mockRestore();
+  });
 });

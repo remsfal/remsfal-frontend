@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import BaseCard from '@/components/BaseCard.vue';
@@ -21,7 +21,7 @@ const emit = defineEmits<{
 }>();
 
 const { t, d } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const saving = ref(false);
 
@@ -45,25 +45,6 @@ const outstandingKeys = computed<RentalAgreementKeysJson[]>(() =>
 
 const rows = computed(() => keys.value.map((k, i) => ({ ...k, _rowId: i })));
 
-function showSuccessToast() {
-  toast.add({
-    severity: 'success',
-    summary: t('rentalAgreementKeyCard.success'),
-    detail: t('rentalAgreementKeyCard.successDetail'),
-    life: 3000,
-  });
-}
-
-function showErrorToast(error: unknown) {
-  console.error('Failed to save keys:', error instanceof Error ? error.message : error);
-  toast.add({
-    severity: 'error',
-    summary: t('error.general'),
-    detail: t('rentalAgreementKeyCard.error'),
-    life: 5000,
-  });
-}
-
 async function persistKeys(newKeys: RentalAgreementKeysJson[]) {
   if (!props.rentalAgreement.id) return;
 
@@ -71,9 +52,9 @@ async function persistKeys(newKeys: RentalAgreementKeysJson[]) {
   try {
     await rentalAgreementService.updateRentalAgreement(props.projectId, props.rentalAgreement.id, {keys: newKeys,});
     emit('update:rentalAgreement', { ...props.rentalAgreement, keys: newKeys });
-    showSuccessToast();
+    appToast.success(t('rentalAgreementKeyCard.successDetail'), { summary: t('rentalAgreementKeyCard.success') });
   } catch (error) {
-    showErrorToast(error);
+    console.error('Failed to save keys:', error instanceof Error ? error.message : error);
   } finally {
     saving.value = false;
   }

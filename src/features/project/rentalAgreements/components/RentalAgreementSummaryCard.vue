@@ -7,7 +7,7 @@ import type { components } from '@/services/api/platform-schema';
 import { toISODateString } from '@/helper/dateHelper';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
 
@@ -33,7 +33,7 @@ const emit = defineEmits<{
 }>();
 
 const { t, d, n } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const terminateDialogVisible = ref(false);
 const endDateValue = ref<Date | null>(null);
@@ -141,21 +141,10 @@ async function confirmTerminate(): Promise<void> {
   try {
     await rentalAgreementService.updateRentalAgreement(props.projectId, props.rentalAgreement.id, {endOfRental,});
     emit('update:rentalAgreement', { ...props.rentalAgreement, endOfRental });
-    toast.add({
-      severity: 'success',
-      summary: t('rentalAgreement.terminate.success'),
-      detail: t('rentalAgreement.terminate.successDetail'),
-      life: 3000,
-    });
+    appToast.success(t('rentalAgreement.terminate.successDetail'), {summary: t('rentalAgreement.terminate.success'),});
     terminateDialogVisible.value = false;
   } catch (error) {
     console.error('Failed to terminate rental agreement:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentalAgreement.terminate.error'),
-      life: 5000,
-    });
   } finally {
     saving.value = false;
   }

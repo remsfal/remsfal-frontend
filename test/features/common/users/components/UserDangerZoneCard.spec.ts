@@ -68,8 +68,9 @@ describe('UserDangerZoneCard.vue', () => {
     expect(window.location.pathname).toBe('/api/v1/authentication/logout');
   });
 
-  test('shows error toast when account deletion fails', async () => {
+  test('logs and shows no toast when account deletion fails', async () => {
     vi.spyOn(userService, 'deleteUser').mockRejectedValue(new Error('Delete failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     findButtonByText('Konto löschen')!.click();
     await flushPromises();
@@ -80,7 +81,9 @@ describe('UserDangerZoneCard.vue', () => {
     await flushPromises();
 
     expect(userService.deleteUser).toHaveBeenCalled();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   test('closes delete dialog when cancel button is clicked', async () => {
