@@ -9,6 +9,7 @@ import type { paths as platformPaths, components as platformComponents } from '.
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';
 import { useEventBus } from '@/stores/EventStore';
 import { authService } from '@/services/AuthService';
+import { reportError } from '@/telemetry/otel';
 
 // Combine all OpenAPI paths
 export type ApiPaths = ticketingPaths & platformPaths & notificationPaths;
@@ -112,7 +113,7 @@ function requestHandler(config: InternalAxiosRequestConfig): InternalAxiosReques
 }
 
 export function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
-  console.error(`[request error] [${JSON.stringify(error)}]`);
+  reportError('[request error]', error, { 'http.method': error.config?.method ?? 'unknown' });
   emitToast('error', 'error.general', 'error.apiRequest');
   return Promise.reject(error);
 }
@@ -131,21 +132,21 @@ export function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
  * All other 2xx status codes (200, 203, 206, etc.) are expected to have a response body.
  * If they don't, it indicates a potential API error.
  */
-const NO_BODY_EXPECTED = [204]; // 204 No Content
-const BODY_OPTIONAL = [201, 202, 205]; // 201 Created, 202 Accepted, 205 Reset Content
+const NO_BODY_EXPECTED = new Set([204]); // 204 No Content
+const BODY_OPTIONAL = new Set([201, 202, 205]); // 201 Created, 202 Accepted, 205 Reset Content
 
 /**
  * Response interceptor for successful HTTP responses (2xx).
- * 
+ *
  * This interceptor validates that responses which should contain data actually have it.
  * It gracefully handles all 2xx status codes, differentiating between:
  * - Status codes that must not have a body (204)
  * - Status codes where body is optional (201, 202, 205)
  * - Status codes that should have a body (200, 203, 206, etc.)
- * 
+ *
  * Shows an error toast only when a response that should have data is empty or undefined.
  * Note: Empty arrays [], empty strings "", 0, and false are considered valid response data.
- * 
+ *
  * @param response - The Axios response object
  * @returns The unmodified response object
  */
@@ -153,8 +154,8 @@ function responseHandler(response: AxiosResponse): AxiosResponse {
   // Handle all 2xx responses gracefully
   if (response.status >= 200 && response.status < 300) {
     // Determine if this status code should have a response body
-    const shouldHaveBody = !NO_BODY_EXPECTED.includes(response.status) && 
-                          !BODY_OPTIONAL.includes(response.status);
+    const shouldHaveBody = !NO_BODY_EXPECTED.has(response.status) &&
+      !BODY_OPTIONAL.has(response.status);
     
     if (shouldHaveBody) {
       const data = response?.data;
@@ -216,7 +217,11 @@ function createAxiosInstance() {
       }
     }
 
-    console.error(`[response error] [${JSON.stringify(error)}]`);
+    reportError('[response error]', error, {
+      'http.method': error.config?.method ?? 'unknown',
+      'http.status_code': error.response?.status ?? 0,
+      'url.path': error.config?.url ?? 'unknown',
+    });
     emitToast('error', 'error.general', 'error.apiResponse');
     throw error;
   };
@@ -297,7 +302,7 @@ export type RequestOptions<P extends keyof ApiPaths, M extends HttpMethod> = {
  * Wraps the Axios instance with interceptors while providing compile-time type safety.
  */
 class ApiClient {
-  private instance: AxiosInstance;
+  private readonly instance: AxiosInstance;
 
   constructor() {
     this.instance = createAxiosInstance();

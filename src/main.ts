@@ -23,6 +23,7 @@ import '@/assets/tailwind.css';
 import { initDB } from '@/helper/indexeddb';
 import { addOnlineEventListener, registerServiceWorker } from '@/helper/service-worker-init';
 import i18n from '@/i18n/i18n';
+import { initTelemetry, reportError } from '@/telemetry/otel';
 
 // Add Font Awesome Icons to the Library (only icons actually used in the app)
 library.add(faLightbulb, faTriangleExclamation, faRocket, faScrewdriverWrench, faFileLines,
@@ -32,6 +33,17 @@ const pinia = createPinia();
 const app = createApp(App);
 // Install Pinia first (needed for stores)
 app.use(pinia);
+
+initTelemetry();
+app.config.errorHandler = (err, _instance, info) => {
+  reportError('[vue error handler]', err, { 'vue.info': info });
+};
+window.addEventListener('error', (event) => {
+  reportError('[window error]', event.error ?? event.message);
+});
+window.addEventListener('unhandledrejection', (event) => {
+  reportError('[unhandled rejection]', event.reason);
+});
 
 // Initialize session BEFORE installing the router.
 // Vue Router 4 triggers the initial navigation synchronously during app.use(router),

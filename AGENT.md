@@ -881,8 +881,13 @@ Use singular forms for type labels in selects/dropdowns.
 Key environment variables in `.env`:
 - `VITE_BASE_URL` - Base URL for application (default: http://localhost:5173)
 - `VITE_SERVICE_WORKER_ENABLED` - Enable service worker (default: false in dev)
+- `VITE_OTEL_ENABLED` - Enable browser OpenTelemetry (traces + error logs), set to `false` to disable
+- `VITE_OTEL_EXPORTER_OTLP_ENDPOINT` - Base URL the OTLP/HTTP exporters POST to (dev default: `/otlp`, proxied by Vite to the `otel-lgtm` collector on `localhost:4318`; unset in `.env.production` since prod routing to the collector is external to this repo — ops must set it at deploy time)
+- `VITE_OTEL_SERVICE_NAME` - `service.name` resource attribute reported to the collector (default: `remsfal-frontend`)
 
 **Service Worker**: Disabled by default in development. Set `VITE_SERVICE_WORKER_ENABLED=true` to enable for local testing.
+
+**OpenTelemetry**: See `src/telemetry/otel.ts`. Exports traces (XHR auto-instrumentation) and error logs (`reportError()`, used by `ApiClient.ts`'s interceptors and the global Vue/window error handlers in `main.ts`) via OTLP/HTTP to the same Grafana `otel-lgtm` stack the backend (`remsfal-backend`) already uses — no separate frontend error-tracking service.
 
 ## Code Quality Standards
 
