@@ -8,7 +8,6 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import { type MemberRole } from '@/services/ProjectMemberService';
@@ -19,7 +18,6 @@ const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newOrganization', organizationName: string) => void>();
 
 const { t } = useI18n();
-const toast = useToast();
 const organizationStore = useOrganizationStore();
 
 const visible = ref(false);
@@ -65,12 +63,6 @@ const addOrganization = async (organizationId: string, role: MemberRole) => {
     resetForm();
   } catch (error) {
     console.error('Failed to add organization:', error instanceof Error ? error.message : error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('projectSettings.newOrganizationMemberButton.errorAdd'),
-      life: 5000,
-    });
   }
 };
 

@@ -115,7 +115,7 @@ describe('NewOrganizationEmployeeButton', () => {
     expect(wrapper.emitted('newEmployee')![0]).toEqual(['new@test.de']);
   });
 
-  it('shows error toast when addEmployee throws', async () => {
+  it('logs and shows no toast when addEmployee throws', async () => {
     vi.spyOn(organizationService, 'addEmployee').mockRejectedValue(new Error('Server error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -127,7 +127,8 @@ describe('NewOrganizationEmployeeButton', () => {
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 

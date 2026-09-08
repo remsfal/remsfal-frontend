@@ -175,8 +175,9 @@ describe('ContractorBaseDataCard', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('shows error toast when updateContractor throws', async () => {
+  it('logs and shows no toast when updateContractor throws', async () => {
     vi.spyOn(projectContractorService, 'updateContractor').mockRejectedValue(new Error('Save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
     await flushPromises();
 
@@ -187,7 +188,9 @@ describe('ContractorBaseDataCard', () => {
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('does not call updateContractor when form is invalid', async () => {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
@@ -9,7 +9,7 @@ import { useUserSessionStore } from '@/stores/UserSession';
 const props = defineProps<{ issueId: string }>();
 const emit = defineEmits<{ accepted: [issue: IssueJson] }>();
 
-const toast = useToast();
+const appToast = useAppToast();
 const { t } = useI18n();
 const sessionStore = useUserSessionStore();
 const loading = ref(false);
@@ -19,12 +19,7 @@ async function handleAccept() {
 
   const currentUserId = sessionStore.user?.id;
   if (!currentUserId) {
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.acceptRequest.error'),
-      life: 3000,
-    });
+    appToast.error(t('issueDetails.acceptRequest.error'));
     return;
   }
 
@@ -35,21 +30,10 @@ async function handleAccept() {
       assigneeId: currentUserId,
     });
 
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.acceptRequest.success'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.acceptRequest.success'), { summary: t('success.saved') });
     emit('accepted', updated);
   } catch (err) {
     console.error(err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.acceptRequest.error'),
-      life: 3000,
-    });
   } finally {
     loading.value = false;
   }

@@ -72,8 +72,9 @@ describe('ProjectDangerZoneCard.vue', () => {
     expect(routerPushMock).toHaveBeenCalledWith('/projects');
   });
 
-  test('shows error toast when project deletion fails', async () => {
+  test('logs and shows no toast when project deletion fails', async () => {
     vi.spyOn(projectService, 'deleteProject').mockRejectedValue(new Error('Delete failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     findButtonByText('Liegenschaft löschen')!.click();
     await flushPromises();
@@ -84,7 +85,9 @@ describe('ProjectDangerZoneCard.vue', () => {
     await flushPromises();
 
     expect(projectService.deleteProject).toHaveBeenCalledWith('test-project-id');
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   test('closes delete dialog when cancel button is clicked', async () => {

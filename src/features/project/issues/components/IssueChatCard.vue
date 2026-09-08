@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
@@ -13,7 +12,6 @@ import { issueChatService, type ChatMessageJson } from '../services/IssueChatSer
 
 const props = defineProps<{ issueId: string }>();
 
-const toast = useToast();
 const { t } = useI18n();
 const sessionStore = useUserSessionStore();
 
@@ -58,9 +56,6 @@ const handleSend = async () => {
     messageText.value = '';
   } catch (error) {
     console.error('Error sending chat message:', error);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('issueDetails.chat.sendError'), life: 3000,
-    });
   } finally {
     sending.value = false;
   }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 import InputNumber from 'primevue/inputnumber';
 import Fieldset from 'primevue/fieldset';
@@ -18,7 +18,6 @@ import {useRentableUnitForm,
   createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm';
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
 import type { CommercialJson } from '@/features/project/rentableUnits/services/CommercialService';
-import { showSavingErrorToast } from '@/helper/viewHelper';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
@@ -27,7 +26,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const rentableUnitsStore = useRentableUnitsStore();
 
 const schema = z.object({
@@ -124,9 +123,7 @@ watch(heatingSpaceReferenceArea, (newValue) => {
 // ─── Load ─────────────────────────────────────────────────────────────────────
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({
-      severity: 'warn', summary: t('error.general'), detail: t('commercial.noId'), life: 6000 
-    });
+    appToast.warn(t('commercial.noId'));
     return;
   }
   try {
@@ -149,9 +146,6 @@ onMounted(async () => {
       !data.heatingSpace || (referenceValue != null && data.heatingSpace === referenceValue);
   } catch (err) {
     console.error('Fehler beim Laden der Gewerbeeinheit:', err);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('commercial.loadError'), life: 6000 
-    });
   }
 });
 
@@ -194,12 +188,9 @@ async function onSubmit(event: FormSubmitEvent) {
       heatingSpace: payload.heatingSpace ?? null,
     });
     rentableUnitsStore.invalidate();
-    toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('commercial.saveSuccess'), life: 3000
-    });
+    appToast.success(t('commercial.saveSuccess'), { summary: t('success.saved') });
   } catch (err) {
     console.error('Fehler beim Speichern der Gewerbeeinheit:', err);
-    showSavingErrorToast(toast, t('commercial.saveError'));
   }
 }
 </script>

@@ -172,7 +172,7 @@ describe('NewQuotationRequestDialog', () => {
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('false');
   });
 
-  it('shows error toast when createQuotationRequest fails', async () => {
+  it('logs and shows no toast when createQuotationRequest fails', async () => {
     vi.spyOn(quotationRequestService, 'createQuotationRequest').mockRejectedValue(new Error('API error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -187,7 +187,8 @@ describe('NewQuotationRequestDialog', () => {
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 

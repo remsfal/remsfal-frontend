@@ -76,16 +76,17 @@ describe('IssueAcceptButton.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('shows error toast and does not emit accepted on failure', async () => {
+  test('logs, shows no toast, and does not emit accepted on failure', async () => {
     vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await findAcceptButton(wrapper).trigger('click');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: 'error' }),
-    );
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(wrapper.emitted('accepted')).toBeFalsy();
+    consoleErrorSpy.mockRestore();
   });
 
   // ───────────────────────────────────────────────────────────────────────────

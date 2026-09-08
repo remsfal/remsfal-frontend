@@ -148,14 +148,17 @@ describe('OrderManagementDashboardCards', () => {
     expect(routerMocks.push).toHaveBeenCalledWith({ name: 'ContractorOrdersOpen' });
   });
 
-  it('shows an error toast and does not throw when a fetch fails', async () => {
+  it('logs and does not throw when a fetch fails', async () => {
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockRejectedValue(new Error('Network'));
     vi.spyOn(orderPlacementService, 'getOrderPlacements').mockRejectedValue(new Error('Network'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mountCard();
     await flushPromises();
 
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.findComponent(DataTable).exists()).toBe(false);
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 });

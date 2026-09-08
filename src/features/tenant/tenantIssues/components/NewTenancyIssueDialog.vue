@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 // PrimeVue Components
 import Dialog from 'primevue/dialog';
@@ -36,7 +36,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const userSessionStore = useUserSessionStore();
 
 // Stepper State
@@ -87,12 +87,6 @@ async function loadTenancies() {
     }
   } catch (error) {
     console.error('Error loading tenancies:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('error.apiRequest'),
-      life: 5000,
-    });
   } finally {
     loadingTenancies.value = false;
   }
@@ -234,24 +228,13 @@ async function handleSubmit() {
 
     let newIssue = await tenantIssueService.createIssueWithAttachment(issueData, formState.value.files);
 
-    toast.add({
-      severity: 'success',
-      summary: t('success.created'),
-      detail: t('tenantIssue.success'),
-      life: 4000,
-    });
+    appToast.success(t('tenantIssue.success'), { summary: t('success.created') });
 
     resetForm();
     emit('issueCreated', newIssue);
     emit('update:visible', false);
   } catch (error) {
     console.error('Failed to create issue:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('tenantIssue.error'),
-      life: 5000,
-    });
   } finally {
     isCreating.value = false;
   }

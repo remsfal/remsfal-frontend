@@ -12,7 +12,7 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 const props = defineProps<{
   projectId: string;
@@ -21,7 +21,7 @@ const props = defineProps<{
 const emit = defineEmits<(e: 'newUnit', title: string) => void>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const visible = ref<boolean>(false);
 const titleMatchesLocation = ref(true);
@@ -69,20 +69,9 @@ async function onSubmit(event: FormSubmitEvent) {
     formKey.value++;
     visible.value = false;
 
-    toast.add({
-      severity: 'success',
-      summary: t('success.created'),
-      detail: t('success.propertyCreated'),
-      life: 4000,
-    });
+    appToast.success(t('success.propertyCreated'), { summary: t('success.created') });
   } catch (err) {
     console.error('Failed to create property:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('error.createProperty'),
-      life: 5000,
-    });
   }
 }
 </script>

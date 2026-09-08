@@ -18,7 +18,7 @@ const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRe
 
 const mountView = (requestId = 'qr-1') => mount(QuotationRequestDetailView, {
   props: { requestId },
-  global: {stubs: {QuotationRequestDetailsCard: true, ContractorOrderTimelineCard: true},},
+  global: { stubs: { QuotationRequestDetailsCard: true, ContractorOrderTimelineCard: true } },
 });
 
 describe('QuotationRequestDetailView', () => {

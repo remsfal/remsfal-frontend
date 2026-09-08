@@ -106,6 +106,37 @@ describe('NewOrganizationDialog', () => {
     });
   });
 
+  describe('onSubmit', () => {
+    it('creates the organization and closes the dialog on success', async () => {
+      vi.spyOn(organizationService, 'createOrganization').mockResolvedValue(undefined);
+      const wrapper = mountDialog();
+
+      await wrapper.find('input[name="name"]').setValue('Test Organization');
+      await wrapper.find('form').trigger('submit');
+      await flushPromises();
+
+      expect(organizationService.createOrganization).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'Test Organization' }),
+      );
+      expect(wrapper.emitted('update:visible')).toBeTruthy();
+    });
+
+    it('logs and does not emit update:visible when createOrganization fails', async () => {
+      vi.spyOn(organizationService, 'createOrganization').mockRejectedValue(new Error('boom'));
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const wrapper = mountDialog();
+
+      await wrapper.find('input[name="name"]').setValue('Test Organization');
+      await wrapper.find('form').trigger('submit');
+      await flushPromises();
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to create organization:', expect.any(Error));
+      expect(wrapper.emitted('update:visible')).toBeFalsy();
+
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
   describe('onHide / cancel', () => {
     it('emits update:visible=false when dialog triggers close', async () => {
       const wrapper = mountDialog();

@@ -1,10 +1,10 @@
 import { reactive, ref, computed, onMounted } from 'vue';
 import type { Ref, ComputedRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { z } from 'zod';
 import { countryDisplayName } from '@/helper/countryHelper';
+import { useAppToast } from '@/composables/useAppToast';
 import AddressService from '@/services/AddressService';
 import type { AddressJson } from '@/services/AddressService';
 import { COUNTRIES } from '@/constants/countries';
@@ -75,7 +75,7 @@ export function useAddressForm<E extends Record<string, string> = Record<string,
   onSubmit: (event: FormSubmitEvent) => Promise<void>;
 } {
   const { t, locale } = useI18n();
-  const toast = useToast();
+  const appToast = useAppToast();
   const addressService = new AddressService();
 
   const extraDefaults = (options.extraFieldDefaults ?? {}) as E;
@@ -154,20 +154,9 @@ export function useAddressForm<E extends Record<string, string> = Record<string,
       Object.assign(currentValues, saved);
       initialValues.value = { ...saved };
       formKey.value++;
-      toast.add({
-        severity: 'success',
-        summary: t('success.saved'),
-        detail: t('address.saveSuccess'),
-        life: 3000,
-      });
+      appToast.success(t('address.saveSuccess'), { summary: t('success.saved') });
     } catch (error) {
       console.error(options.errorLogLabel ?? 'Failed to save address', error);
-      toast.add({
-        severity: 'error',
-        summary: t('error.general'),
-        detail: t('address.saveError'),
-        life: 4000,
-      });
     }
   }
 

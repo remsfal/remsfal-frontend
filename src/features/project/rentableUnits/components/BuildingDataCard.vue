@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 import InputNumber from 'primevue/inputnumber';
 import Fieldset from 'primevue/fieldset';
@@ -17,7 +17,6 @@ import {useRentableUnitForm,
   createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import type { BuildingJson } from '@/features/project/rentableUnits/services/BuildingService';
-import { showSavingErrorToast } from '@/helper/viewHelper';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
@@ -26,7 +25,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const rentableUnitsStore = useRentableUnitsStore();
 
 const schema = z.object({
@@ -107,9 +106,7 @@ watch(din277Mode, (newMode) => {
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({
-      severity: 'warn', summary: t('error.general'), detail: t('building.noId'), life: 6000 
-    });
+    appToast.warn(t('building.noId'));
     return;
   }
   try {
@@ -131,9 +128,6 @@ onMounted(async () => {
     }
   } catch (err) {
     console.error('Fehler beim Laden der Gebäudedaten:', err);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('building.loadError'), life: 6000 
-    });
   }
 });
 
@@ -175,12 +169,9 @@ async function onSubmit(event: FormSubmitEvent) {
       heatingSpace: payload.heatingSpace ?? null,
     });
     rentableUnitsStore.invalidate();
-    toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('building.saveSuccess'), life: 3000
-    });
+    appToast.success(t('building.saveSuccess'), { summary: t('success.saved') });
   } catch (err) {
     console.error('Fehler beim Speichern der Gebäudedaten:', err);
-    showSavingErrorToast(toast, t('building.saveError'));
   }
 }
 </script>

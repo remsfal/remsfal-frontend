@@ -1,5 +1,5 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import NewProjectButton from '@/features/manager/projects/components/NewProjectButton.vue';
 import { projectService } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
@@ -7,10 +7,12 @@ import { useRouter } from 'vue-router';
 import { Form } from '@primevue/forms';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
+import { saveProject } from '@/helper/indexeddb';
 
 vi.mock('@/services/ProjectService', { spy: true });
 vi.mock('@/stores/ProjectStore', () => ({useProjectStore: vi.fn(),}));
 vi.mock('vue-router', () => ({useRouter: vi.fn(),}));
+vi.mock('@/helper/indexeddb', () => ({ saveProject: vi.fn() }));
 
 describe('NewProjectButton.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof NewProjectButton>>;
@@ -132,6 +134,59 @@ describe('NewProjectButton.vue', () => {
       name: 'ProjectDashboard',
       params: { projectId: '1' },
     });
+  });
+
+  it('saves offline and closes the dialog when navigator is offline', async () => {
+    const onLineSpy = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+
+    await wrapper.find('button').trigger('click');
+    const input = wrapper.find('input[name="projectTitle"]');
+    await input.setValue('Offline Project');
+
+    const form = wrapper.findComponent(Form);
+    await form.trigger('submit');
+    await flushPromises();
+
+    expect(saveProject).toHaveBeenCalledWith('Offline Project');
+    expect(projectService.createProject).not.toHaveBeenCalled();
+    expect(wrapper.find('input[name="projectTitle"]').exists()).toBe(false);
+
+    onLineSpy.mockRestore();
+  });
+
+  it('saves offline and closes the dialog when the API response has no id', async () => {
+    vi.spyOn(projectService, 'createProject').mockResolvedValue({ id: undefined, title: 'No Id Project' });
+
+    await wrapper.find('button').trigger('click');
+    const input = wrapper.find('input[name="projectTitle"]');
+    await input.setValue('No Id Project');
+
+    const form = wrapper.findComponent(Form);
+    await form.trigger('submit');
+    await flushPromises();
+
+    expect(saveProject).toHaveBeenCalledWith('No Id Project');
+    expect(storeMock.addProjectToList).not.toHaveBeenCalled();
+    expect(wrapper.find('input[name="projectTitle"]').exists()).toBe(false);
+  });
+
+  it('logs, saves offline, and closes the dialog when createProject fails', async () => {
+    vi.spyOn(projectService, 'createProject').mockRejectedValue(new Error('network error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await wrapper.find('button').trigger('click');
+    const input = wrapper.find('input[name="projectTitle"]');
+    await input.setValue('Failed Project');
+
+    const form = wrapper.findComponent(Form);
+    await form.trigger('submit');
+    await flushPromises();
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to create project online:', expect.any(Error));
+    expect(saveProject).toHaveBeenCalledWith('Failed Project');
+    expect(wrapper.find('input[name="projectTitle"]').exists()).toBe(false);
+
+    consoleErrorSpy.mockRestore();
   });
 
   it('closes the dialog on abort', async () => {

@@ -78,7 +78,7 @@ describe('QuoteTable', () => {
     consoleSpy.mockRestore();
   });
 
-  it('shows error toast when placeOrder fails', async () => {
+  it('logs and shows no toast when placeOrder fails', async () => {
     vi.spyOn(orderPlacementService, 'placeOrder').mockRejectedValue(new Error('fail'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountTable();
@@ -87,7 +87,8 @@ describe('QuoteTable', () => {
       .find((b) => b.text().includes('Auftrag erteilen'));
     await button!.trigger('click');
     await flushPromises();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 });

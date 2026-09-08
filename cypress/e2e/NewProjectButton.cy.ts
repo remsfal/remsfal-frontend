@@ -1,5 +1,6 @@
 describe('NewProjectButton E2E Tests', () => {
   const projectId = 'test-project-123';
+  const newProjectId = 'df3d6629-257b-46dc-bbbe-7d3605dd4e03';
   const longTitle = String("a").repeat(101);
 
   beforeEach(() => {
@@ -58,11 +59,22 @@ describe('NewProjectButton E2E Tests', () => {
     cy.intercept('POST', '/api/v1/projects', {
       statusCode: 201,
       body: {
-            id: 'df3d6629-257b-46dc-bbbe-7d3605dd4e03',
+            id: newProjectId,
             name: 'Trimmed Project',
             memberRole: 'MANAGER'
       },
     }).as('createProject');
+
+    // Mock the data ProjectDashboard's cards fetch after a successful creation navigates there
+    cy.intercept('GET', `/api/v1/projects/${newProjectId}/properties`, {
+      statusCode: 200,
+      body: { properties: [] },
+    }).as('getPropertyTree');
+
+    cy.intercept('GET', '/ticketing/v1/issues**', {
+      statusCode: 200,
+      body: { size: 0, issues: [] },
+    }).as('getIssues');
 
     // Visit the manager projects page and open dialog via "+" button
     cy.visit('/manager/projects');

@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import TenantIssueTimelineCard from '../components/TenantIssueTimelineCard.vue';
@@ -14,7 +14,7 @@ import TenantIssueSummaryCard from '../components/TenantIssueSummaryCard.vue';
 const props = defineProps<{ issueId: string }>();
 
 const router = useRouter();
-const toast = useToast();
+const appToast = useAppToast();
 const { t } = useI18n();
 
 const loading = ref(false);
@@ -32,12 +32,6 @@ const fetchIssue = async () => {
   } catch (fetchError) {
     console.error('Error fetching tenant issue:', fetchError);
     error.value = t('tenantIssues.detail.loadError');
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('tenantIssues.detail.loadError'),
-      life: 3000,
-    });
   } finally {
     loading.value = false;
   }
@@ -52,21 +46,10 @@ const cancelIssue = async () => {
 
   try {
     await tenantIssueService.closeIssue(issue.value?.id || props.issueId);
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('tenantIssues.detail.cancelSuccess'),
-      life: 4000,
-    });
+    appToast.success(t('tenantIssues.detail.cancelSuccess'), { summary: t('success.saved') });
     await router.push({ name: 'TenantIssues' });
   } catch (deleteError) {
     console.error('Error deleting tenant issue:', deleteError);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('tenantIssues.detail.cancelError'),
-      life: 5000,
-    });
   } finally {
     deletingIssue.value = false;
   }
