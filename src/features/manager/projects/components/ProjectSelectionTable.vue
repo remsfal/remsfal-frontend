@@ -47,6 +47,9 @@ function translateRole(role: MemberRole): string {
     @rowClick="onRowClick"
     @page="onPageChange"
   >
+    <template #empty>
+      <span class="text-muted-color">{{ t('projectTable.empty') }}</span>
+    </template>
     <Column field="name" :header="t('projectTable.title')" style="min-width: 200px" />
     <Column :header="t('projectTable.role')" style="min-width: 200px">
       <template #body="slotProps">
