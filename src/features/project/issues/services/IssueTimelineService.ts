@@ -6,7 +6,7 @@ export type TimelineListJson = Readable<ApiComponents['schemas']['TenantTimeline
 class IssueTimelineService {
   async getTimelineEntries(issueId: string): Promise<TimelineListJson> {
     const result = await apiClient.get(
-      '/ticketing/v1/issues/{issueId}/timeline',
+      '/ticketing/v1/issues/{issueId}/tenant-timeline',
       { pathParams: { issueId } },
     ) as Partial<TimelineListJson>;
     return { timelines: result.timelines ?? [] };
@@ -24,9 +24,11 @@ class IssueTimelineService {
       formData.append('attachment', file);
     });
 
-    const path = '/ticketing/v1/issues/{issueId}/tenant-timeline';
-    // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
-    return apiClient.post(path, formData as never, { pathParams: { issueId } }) as Promise<TimelineJson>;
+    await apiClient.post(
+      '/ticketing/v1/issues/{issueId}/tenant-timeline',
+      formData as never,
+      { pathParams: { issueId } },
+    );
   }
 }
 

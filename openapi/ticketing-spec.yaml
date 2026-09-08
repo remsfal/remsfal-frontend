@@ -2,6 +2,113 @@
 openapi: 3.1.0
 components:
   schemas:
+    ActivityFeedJson:
+      description: An entry of the caller's activity feed
+      type: object
+      properties:
+        id:
+          description: Unique identifier of this activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        projectId:
+          description: Unique identifier of the related project
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        issueId:
+          description: Unique identifier of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        activityType:
+          description: Type of activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueEventType"
+        title:
+          type: string
+          description: Title of the related issue
+          readOnly: true
+        description:
+          type: string
+          description: "Description of the activity, e.g. a message text"
+          readOnly: true
+        link:
+          type: string
+          description: Link to the frontend issue page
+          readOnly: true
+        actorId:
+          description: Unique identifier of the user who triggered this activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        actorName:
+          type: string
+          description: Name of the user who triggered this activity
+          readOnly: true
+        issueType:
+          description: Type of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueType"
+        status:
+          description: Status of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueStatus"
+        agreementId:
+          description: Unique identifier of the related rental agreement
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        organizationId:
+          description: "Unique identifier of the contractor organization involved,\
+            \ if any"
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        contractorId:
+          description: "Unique identifier of the contractor involved, if any"
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        assigneeId:
+          description: Unique identifier of the assignee of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        read:
+          type: boolean
+          description: Whether the caller has already read this activity
+          readOnly: true
+        createdAt:
+          description: Timestamp this activity was recorded at
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+    ActivityFeedListJson:
+      description: A cursor-paginated list of activities
+      type: object
+      properties:
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
+          readOnly: true
+        size:
+          type: integer
+          format: int32
+          maximum: 500
+          minimum: 0
+          description: Number of elements in this page
+          readOnly: true
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityFeedJson"
+      required:
+      - size
     AddressJson:
       description: "The address of a customer, a building or a site"
       type: object
@@ -365,50 +472,6 @@ components:
       - OWNER
       - MANAGER
       - STAFF
-    InboxMessage:
-      description: Represents an enriched issue event stored in a user's inbox
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier of this inbox message
-        userId:
-          type: string
-          description: User who received this notification
-        eventType:
-          type: string
-          description: "Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED"
-        issueId:
-          type: string
-          description: Related issue ID
-        title:
-          type: string
-          description: Issue title
-        description:
-          type: string
-          description: Issue description
-        issueType:
-          type: string
-          description: "Issue type: DEFECT, TASK, APPLICATION, ..."
-        status:
-          type: string
-          description: Current status of the issue
-        link:
-          type: string
-          description: Link to the frontend issue page
-        read:
-          type: boolean
-          description: Whether the message has been read
-        createdAt:
-          description: Timestamp when the notification was created
-          type: string
-          $ref: "#/components/schemas/OffsetDateTime"
-        actorEmail:
-          type: string
-          description: Email of the actor who triggered the event
-        ownerEmail:
-          type: string
-          description: Email of the owner assigned to the issue
     Instant:
       type: string
       format: date-time
@@ -460,6 +523,20 @@ components:
       - SNOW_REMOVAL_MAINTENANCE
       - TREE_CARE_MAINTENANCE
       - GENERAL
+    IssueEventType:
+      type: string
+      enum:
+      - ISSUE_CREATED
+      - ISSUE_UPDATED
+      - ISSUE_ASSIGNED
+      - ISSUE_MENTIONED
+      - TIMELINE_ENTRY_CREATED
+      - CHAT_MESSAGE_CREATED
+      - QUOTATION_REQUEST_CREATED
+      - QUOTATION_REQUEST_STATUS_CHANGED
+      - QUOTATION_CREATED
+      - ORDER_PLACED
+      - ORDER_PLACEMENT_STATUS_CHANGED
     IssueItemJson:
       description: An issue item with basic information
       type: object
@@ -687,11 +764,6 @@ components:
       - APPOINTMENT_REQUESTED
       - APPOINTMENT_SCHEDULED
       - STATUS_CHANGED
-    OffsetDateTime:
-      type: string
-      format: date-time
-      examples:
-      - 2022-03-10T12:15:50-04:00
     OrderAttachmentJson:
       type: object
       description: "An attachment associated with a quotation request, quotation,\
@@ -1930,61 +2002,104 @@ components:
       bearerFormat: JWT
       description: Authentication
 paths:
-  /api/v1/inbox:
+  /api/v1/activities:
     get:
-      summary: Retrieve inbox messages for the authenticated user
+      summary: Retrieve the caller's activity feed.
+      description: "Aggregates issue lifecycle events, tenant communication, chat\
+        \ messages, and quotation/order placement activity for issues the caller is\
+        \ assigned to, newest first."
       parameters:
-      - description: "Filter by read status (true = read, false = unread)"
-        name: read
+      - description: Filter to return only activities of a specific rental agreement
+        name: agreementId
         in: query
         schema:
-          type: boolean
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only activities of issues assigned to a specific
+          user
+        name: assigneeId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only activities involving a specific contractor
+        name: contractorId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Opaque cursor returned by a previous call to fetch the next page
+        name: cursor
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only activities of a specific issue
+        name: issueId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Maximum number of activities to return
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          maximum: 500
+          exclusiveMinimum: 0
+          default: "50"
+        required: true
+      - description: Filter to return only activities involving a specific contractor
+          organization
+        name: organizationId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only activities of a specific project
+        name: projectId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
-          description: List of inbox messages belonging to the authenticated user
+          description: Activities retrieved successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/InboxMessage"
+                $ref: "#/components/schemas/ActivityFeedListJson"
         "401":
-          description: Not Authorized
+          description: No user authentication provided via session cookie
         "403":
           description: Not Allowed
       security:
       - SecurityScheme: []
-  /api/v1/inbox/{messageId}:
+  /api/v1/activities/{activityId}:
     delete:
-      summary: Delete an inbox message for the authenticated user
+      summary: Delete an activity for the authenticated user
       parameters:
-      - description: Message ID
+      - description: Activity ID
         required: true
-        name: messageId
+        name: activityId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
-          description: Message deleted
+          description: Activity deleted
         "404":
-          description: Message not found for this user
+          description: Activity not found for this user
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
       security:
       - SecurityScheme: []
-  /api/v1/inbox/{messageId}/status:
+  /api/v1/activities/{activityId}/status:
     patch:
-      summary: Update the read/unread status of an inbox message
+      summary: Update the read/unread status of an activity
       parameters:
-      - description: Message ID
+      - description: Activity ID
         required: true
-        name: messageId
+        name: activityId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       - description: "New read flag: true = read, false = unread"
         required: true
         name: read
@@ -1993,13 +2108,13 @@ paths:
           type: boolean
       responses:
         "200":
-          description: Message status updated
+          description: Activity status updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InboxMessage"
+                $ref: "#/components/schemas/ActivityFeedJson"
         "404":
-          description: Message not found for this user
+          description: Activity not found for this user
         "401":
           description: Not Authorized
         "403":
