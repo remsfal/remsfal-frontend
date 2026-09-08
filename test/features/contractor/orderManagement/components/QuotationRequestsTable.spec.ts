@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import DataTable from 'primevue/datatable';
 import QuotationRequestsTable from '@/features/contractor/orderManagement/components/QuotationRequestsTable.vue';
-import type { QuotationRequestJson } from '@/services/QuotationRequestService';
+import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
 const mockRequests: QuotationRequestJson[] = [
   {

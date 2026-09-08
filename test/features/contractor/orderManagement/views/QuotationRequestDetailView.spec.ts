@@ -3,7 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import QuotationRequestDetailView from '@/features/contractor/orderManagement/views/QuotationRequestDetailView.vue';
 import QuotationRequestDetailsCard from
   '@/features/contractor/orderManagement/components/QuotationRequestDetailsCard.vue';
-import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
+import { quotationRequestService, type QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
 const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRequestJson => ({
   id: 'qr-1',
