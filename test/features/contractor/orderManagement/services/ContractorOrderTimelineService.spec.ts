@@ -59,4 +59,25 @@ describe('ContractorOrderTimelineService', () => {
     );
     expect(formData.getAll('attachment')).toHaveLength(2);
   });
+
+  test('createTimelineEntryWithAttachments includes messageToTenant in the timeline JSON part when set', async () => {
+    vi.spyOn(apiClient, 'post').mockResolvedValueOnce(undefined);
+
+    await contractorOrderTimelineService.createTimelineEntryWithAttachments(
+      'issue-1',
+      {
+        purpose: 'MESSAGE_SENT', message: 'Hallo Mieter', messageToTenant: true 
+      },
+      [],
+    );
+
+    const postSpy = vi.mocked(apiClient.post);
+    const formData = postSpy.mock.calls[0][1] as FormData;
+    const timelinePart = formData.get('timeline');
+    expect(await (timelinePart as Blob).text()).toBe(
+      JSON.stringify({
+        purpose: 'MESSAGE_SENT', message: 'Hallo Mieter', messageToTenant: true 
+      }),
+    );
+  });
 });

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import TimelineCard from '@/components/TimelineCard.vue';
 import ContractorOrderTimelineItemCard from './ContractorOrderTimelineItemCard.vue';
 import { contractorOrderTimelineService, type ContractorTimelineJson }
@@ -9,6 +10,8 @@ const props = defineProps<{
   requestId: string;
   title: string;
 }>();
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -17,10 +20,14 @@ const props = defineProps<{
     :send="(payload, files) =>
       contractorOrderTimelineService.createTimelineEntryWithAttachments(
         issueId,
-        { purpose: payload.purpose, message: payload.message ?? '' },
+        { purpose: payload.purpose, message: payload.message ?? '', messageToTenant: payload.recipient === 'TENANT' },
         files,
       )"
     :watchSource="() => props.issueId"
+    :recipientOptions="[
+      { value: 'TENANT', label: t('orderManagement.timeline.recipientTenant') },
+      { value: 'MANAGER', label: t('orderManagement.timeline.recipientManager') },
+    ]"
     :title="title"
     loadErrorLogLabel="Error fetching order timeline:"
     sendErrorLogLabel="Error creating order timeline entry:"

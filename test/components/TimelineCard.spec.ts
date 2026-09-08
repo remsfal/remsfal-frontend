@@ -204,4 +204,63 @@ describe('TimelineCard component', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to create timeline entry', expect.any(Error));
     consoleErrorSpy.mockRestore();
   });
+
+  describe('recipientOptions', () => {
+    const recipientOptions = [
+      { value: 'TENANT', label: 'Nachricht an Mieter' },
+      { value: 'MANAGER', label: 'Nachricht an Verwalter' },
+    ];
+
+    it('hides the composer and shows recipient buttons when recipientOptions is set', async () => {
+      const wrapper = mountCard({ load: vi.fn().mockResolvedValue([]), recipientOptions });
+      await flushPromises();
+
+      expect(wrapper.find('[data-testid="timeline-message-input"]').exists()).toBe(false);
+      expect(wrapper.find('[data-testid="timeline-recipient-tenant"]').exists()).toBe(true);
+      expect(wrapper.find('[data-testid="timeline-recipient-manager"]').exists()).toBe(true);
+    });
+
+    it('reveals the composer after a recipient button is clicked', async () => {
+      const wrapper = mountCard({ load: vi.fn().mockResolvedValue([]), recipientOptions });
+      await flushPromises();
+
+      await wrapper.get('[data-testid="timeline-recipient-tenant"]').trigger('click');
+
+      expect(wrapper.find('[data-testid="timeline-message-input"]').exists()).toBe(true);
+      expect(wrapper.find('[data-testid="timeline-recipient-tenant"]').exists()).toBe(false);
+    });
+
+    it('includes the selected recipient in the send payload', async () => {
+      const send = vi.fn().mockResolvedValue(undefined);
+      const wrapper = mountCard({
+        load: vi.fn().mockResolvedValue([]), send, recipientOptions 
+      });
+      await flushPromises();
+
+      await wrapper.get('[data-testid="timeline-recipient-tenant"]').trigger('click');
+      await wrapper.get('[data-testid="timeline-message-input"]').setValue('Hallo');
+      await wrapper.get('[data-testid="timeline-message-submit"]').trigger('click');
+      await flushPromises();
+
+      expect(send).toHaveBeenCalledWith({
+        purpose: 'MESSAGE_SENT', message: 'Hallo', recipient: 'TENANT' 
+      }, []);
+    });
+
+    it('hides the composer again and shows the recipient buttons after a successful send', async () => {
+      const send = vi.fn().mockResolvedValue(undefined);
+      const wrapper = mountCard({
+        load: vi.fn().mockResolvedValue([]), send, recipientOptions 
+      });
+      await flushPromises();
+
+      await wrapper.get('[data-testid="timeline-recipient-manager"]').trigger('click');
+      await wrapper.get('[data-testid="timeline-message-input"]').setValue('Hallo');
+      await wrapper.get('[data-testid="timeline-message-submit"]').trigger('click');
+      await flushPromises();
+
+      expect(wrapper.find('[data-testid="timeline-message-input"]').exists()).toBe(false);
+      expect(wrapper.find('[data-testid="timeline-recipient-manager"]').exists()).toBe(true);
+    });
+  });
 });

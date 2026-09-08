@@ -69,7 +69,9 @@ describe('ContractorOrderTimelineCard component', () => {
 
     expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
       'issue-1',
-      { purpose: 'MESSAGE_SENT', message: 'Hallo' },
+      {
+        purpose: 'MESSAGE_SENT', message: 'Hallo', messageToTenant: false 
+      },
       files,
     );
   });
@@ -84,9 +86,39 @@ describe('ContractorOrderTimelineCard component', () => {
 
     expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
       'issue-1',
-      { purpose: 'MESSAGE_SENT', message: '' },
+      {
+        purpose: 'MESSAGE_SENT', message: '', messageToTenant: false 
+      },
       files,
     );
+  });
+
+  it('sets messageToTenant to true when the recipient is TENANT', async () => {
+    vi.mocked(contractorOrderTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
+
+    const wrapper = await mountCardShallow();
+    const send = wrapper.getComponent(TimelineCard).props('send');
+    await send({
+      purpose: 'MESSAGE_SENT', message: 'Hallo', recipient: 'TENANT' 
+    }, []);
+
+    expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
+      'issue-1',
+      {
+        purpose: 'MESSAGE_SENT', message: 'Hallo', messageToTenant: true 
+      },
+      [],
+    );
+  });
+
+  it('passes recipient button options with the expected labels', async () => {
+    const wrapper = await mountCardShallow();
+    const recipientOptions = wrapper.getComponent(TimelineCard).props('recipientOptions');
+
+    expect(recipientOptions).toEqual([
+      { value: 'TENANT', label: 'Nachricht an Mieter' },
+      { value: 'MANAGER', label: 'Nachricht an Verwalter' },
+    ]);
   });
 
   it('does not render a FileUpload composer of its own (reuses the base TimelineCard one)', async () => {
@@ -97,6 +129,8 @@ describe('ContractorOrderTimelineCard component', () => {
     );
     const wrapper = mount(ContractorOrderTimelineCard, { props: defaultProps });
     await flushPromises();
+
+    await wrapper.get('[data-testid="timeline-recipient-tenant"]').trigger('click');
 
     expect(wrapper.findAllComponents(FileUpload)).toHaveLength(1);
   });

@@ -8,6 +8,7 @@ export type MessagePurpose = ApiComponents['schemas']['MessagePurpose'];
 export interface CreateContractorTimelineEntry {
   purpose: MessagePurpose;
   message: string;
+  messageToTenant?: boolean;
 }
 
 const TIMELINE_PATH = '/ticketing/v1/order-management/{issueId}/timeline';

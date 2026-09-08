@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 import Message from 'primevue/message';
@@ -6,7 +7,8 @@ import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/BaseCard.vue';
 import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
-import { useTimeline, type UseTimelineOptions, type TimelineJson } from '@/composables/useTimeline';
+import { useTimeline, type UseTimelineOptions, type TimelineJson, type TimelineRecipientOption }
+  from '@/composables/useTimeline';
 import { useI18n } from 'vue-i18n';
 
 interface Props {
@@ -16,6 +18,7 @@ interface Props {
   isBlocked?: UseTimelineOptions['isBlocked'];
   sendPurpose?: UseTimelineOptions['sendPurpose'];
   watchSource?: UseTimelineOptions['watchSource'];
+  recipientOptions?: TimelineRecipientOption[];
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
 }
@@ -37,6 +40,8 @@ const uploadEmptyText = t('timeline.uploadEmpty');
 const sendButtonLabel = t('timeline.sendMessage');
 const sendErrorMessage = t('timeline.createError');
 
+const hasRecipientOptions = computed(() => (props.recipientOptions?.length ?? 0) > 0);
+
 const {
   loading,
   error,
@@ -45,6 +50,8 @@ const {
   fileUploadKey,
   sending,
   canSubmit,
+  selectedRecipient,
+  selectRecipient,
   onFilesSelected,
   submit,
 } = useTimeline({
@@ -53,6 +60,7 @@ const {
   isBlocked: props.isBlocked,
   sendPurpose: props.sendPurpose,
   watchSource: props.watchSource,
+  requireRecipient: hasRecipientOptions.value,
   loadErrorLogLabel: props.loadErrorLogLabel,
   sendErrorLogLabel: props.sendErrorLogLabel,
   sendErrorMessage: () => sendErrorMessage,
@@ -100,7 +108,17 @@ const {
           <slot name="item" :item="slotProps.item" />
         </template>
       </Timeline>
-      <div class="mb-4 flex flex-col gap-2">
+      <div v-if="hasRecipientOptions && !selectedRecipient" class="mb-4 flex flex-wrap gap-2">
+        <Button
+          v-for="option in props.recipientOptions"
+          :key="option.value"
+          :data-testid="`${testIdPrefix}-recipient-${option.value.toLowerCase()}`"
+          :label="option.label"
+          severity="secondary"
+          @click="selectRecipient(option.value)"
+        />
+      </div>
+      <div v-if="!hasRecipientOptions || selectedRecipient" class="mb-4 flex flex-col gap-2">
         <label :for="`${testIdPrefix}-message`" class="sr-only">{{ messagePlaceholder }}</label>
         <Textarea
           :id="`${testIdPrefix}-message`"
