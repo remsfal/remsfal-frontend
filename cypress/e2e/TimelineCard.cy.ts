@@ -1,7 +1,8 @@
 interface Scenario {
   name: string;
   testIdPrefix: string;
-  timelinePath: string;
+  timelineBase: string;
+  timelineSegment: string;
   attachmentBase: string;
   visitPath: () => string;
   setupIntercepts: () => void;
@@ -47,7 +48,8 @@ const scenarios: Scenario[] = [
   {
     name: 'tenant issue timeline',
     testIdPrefix: 'timeline',
-    timelinePath: `/ticketing/v1/tenant-relations/issues/${issueId}/timeline`,
+    timelineBase: `/ticketing/v1/tenant-relations/issues/${issueId}`,
+    timelineSegment: 'timeline',
     attachmentBase: `/ticketing/v1/tenant-relations/issues/${issueId}/attachments`,
     visitPath: () => `/tenant/issues/${issueId}`,
     setupIntercepts: () => {
@@ -66,7 +68,8 @@ const scenarios: Scenario[] = [
   {
     name: 'manager issue timeline',
     testIdPrefix: 'timeline',
-    timelinePath: `/ticketing/v1/issues/${issueId}/tenant-timeline`,
+    timelineBase: `/ticketing/v1/issues/${issueId}`,
+    timelineSegment: 'tenant-timeline',
     attachmentBase: `/ticketing/v1/issues/${issueId}/attachments`,
     visitPath: () => `/projects/${projectId}/issues/${issueId}`,
     setupIntercepts: () => {
@@ -110,7 +113,7 @@ scenarios.forEach((scenario) => {
       nextTimelineResponse: object = firstTimelineResponse,
     ) {
       let timelineRequestCount = 0;
-      cy.intercept('GET', scenario.timelinePath, (req) => {
+      cy.intercept('GET', `${scenario.timelineBase}/${scenario.timelineSegment}`, (req) => {
         timelineRequestCount += 1;
         req.reply({
           statusCode: 200,
@@ -150,7 +153,11 @@ scenarios.forEach((scenario) => {
           ],
         },
       );
-      cy.intercept('POST', scenario.timelinePath, { statusCode: 201, body: {} }).as('createTimeline');
+      cy.intercept(
+        'POST',
+        `${scenario.timelineBase}/${scenario.timelineSegment}`,
+        { statusCode: 201, body: {} },
+      ).as('createTimeline');
 
       cy.visit(scenario.visitPath());
       cy.wait('@getIssueDetail', { timeout: 10000 });
@@ -176,7 +183,11 @@ scenarios.forEach((scenario) => {
     });
 
     it('shows error state when timeline request fails', () => {
-      cy.intercept('GET', scenario.timelinePath, { statusCode: 500, body: {} }).as('getTimelineError');
+      cy.intercept(
+        'GET',
+        `${scenario.timelineBase}/${scenario.timelineSegment}`,
+        { statusCode: 500, body: {} },
+      ).as('getTimelineError');
 
       cy.visit(scenario.visitPath());
       cy.wait('@getIssueDetail');

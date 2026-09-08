@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
 import QuotationRequestDetailsCard from
   '@/features/contractor/orderManagement/components/QuotationRequestDetailsCard.vue';
-import type { QuotationRequestJson } from '@/services/QuotationRequestService';
+import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
 const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRequestJson => ({
   id: 'quotation-req-77',

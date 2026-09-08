@@ -15,10 +15,6 @@ class QuotationRequestService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await apiClient.post('/ticketing/v1/issues/{issueId}/quotation-request', data as any, {pathParams: { issueId },});
   }
-
-  async getContractorQuotationRequests(): Promise<QuotationRequestListJson> {
-    return apiClient.get('/ticketing/v1/order-management/quotation-requests');
-  }
 }
 
 export const quotationRequestService = new QuotationRequestService();

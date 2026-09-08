@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import QuotationRequestTable from '@/features/project/issues/components/QuotationRequestTable.vue';
-import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
+import { quotationRequestService, type QuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
 
 const mockRequests: QuotationRequestJson[] = [
   {

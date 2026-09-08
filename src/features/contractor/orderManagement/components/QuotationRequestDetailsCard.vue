@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/BaseCard.vue';
-import type { QuotationRequestJson } from '@/services/QuotationRequestService';
+import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
 const props = defineProps<{ request: QuotationRequestJson }>();
 

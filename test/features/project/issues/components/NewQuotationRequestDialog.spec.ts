@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import NewQuotationRequestDialog from '@/features/project/issues/components/NewQuotationRequestDialog.vue';
-import { quotationRequestService } from '@/services/QuotationRequestService';
+import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 import { projectContractorService } from '@/services/ProjectContractorService';
 import { projectService } from '@/services/ProjectService';
 

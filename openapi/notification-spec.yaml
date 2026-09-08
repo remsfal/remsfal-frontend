@@ -2,6 +2,113 @@
 openapi: 3.1.0
 components:
   schemas:
+    ActivityFeedJson:
+      description: An entry of the caller's activity feed
+      type: object
+      properties:
+        id:
+          description: Unique identifier of this activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        projectId:
+          description: Unique identifier of the related project
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        issueId:
+          description: Unique identifier of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        activityType:
+          description: Type of activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueEventType"
+        title:
+          type: string
+          description: Title of the related issue
+          readOnly: true
+        description:
+          type: string
+          description: "Description of the activity, e.g. a message text"
+          readOnly: true
+        link:
+          type: string
+          description: Link to the frontend issue page
+          readOnly: true
+        actorId:
+          description: Unique identifier of the user who triggered this activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        actorName:
+          type: string
+          description: Name of the user who triggered this activity
+          readOnly: true
+        issueType:
+          description: Type of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueType"
+        status:
+          description: Status of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueStatus"
+        agreementId:
+          description: Unique identifier of the related rental agreement
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        organizationId:
+          description: "Unique identifier of the contractor organization involved,\
+            \ if any"
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        contractorId:
+          description: "Unique identifier of the contractor involved, if any"
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        assigneeId:
+          description: Unique identifier of the assignee of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        read:
+          type: boolean
+          description: Whether the caller has already read this activity
+          readOnly: true
+        createdAt:
+          description: Timestamp this activity was recorded at
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+    ActivityFeedListJson:
+      description: A cursor-paginated list of activities
+      type: object
+      properties:
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
+          readOnly: true
+        size:
+          type: integer
+          format: int32
+          maximum: 500
+          minimum: 0
+          description: Number of elements in this page
+          readOnly: true
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityFeedJson"
+      required:
+      - size
     AddressJson:
       description: "The address of a customer, a building or a site"
       type: object
@@ -290,14 +397,6 @@ components:
           $ref: "#/components/schemas/Instant"
         modifiedAt:
           $ref: "#/components/schemas/Instant"
-        requestId:
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/UUID"
-        contractorId:
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/UUID"
         organizationId:
           readOnly: true
           type: string
@@ -305,7 +404,7 @@ components:
         senderRole:
           readOnly: true
           type: string
-          $ref: "#/components/schemas/ParticipantRole"
+          $ref: "#/components/schemas/UserContext"
         attachments:
           type: array
           items:
@@ -373,50 +472,6 @@ components:
       - OWNER
       - MANAGER
       - STAFF
-    InboxMessage:
-      description: Represents an enriched issue event stored in a user's inbox
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier of this inbox message
-        userId:
-          type: string
-          description: User who received this notification
-        eventType:
-          type: string
-          description: "Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED"
-        issueId:
-          type: string
-          description: Related issue ID
-        title:
-          type: string
-          description: Issue title
-        description:
-          type: string
-          description: Issue description
-        issueType:
-          type: string
-          description: "Issue type: DEFECT, TASK, APPLICATION, ..."
-        status:
-          type: string
-          description: Current status of the issue
-        link:
-          type: string
-          description: Link to the frontend issue page
-        read:
-          type: boolean
-          description: Whether the message has been read
-        createdAt:
-          description: Timestamp when the notification was created
-          type: string
-          $ref: "#/components/schemas/OffsetDateTime"
-        actorEmail:
-          type: string
-          description: Email of the actor who triggered the event
-        ownerEmail:
-          type: string
-          description: Email of the owner assigned to the issue
     Instant:
       type: string
       format: date-time
@@ -468,6 +523,20 @@ components:
       - SNOW_REMOVAL_MAINTENANCE
       - TREE_CARE_MAINTENANCE
       - GENERAL
+    IssueEventType:
+      type: string
+      enum:
+      - ISSUE_CREATED
+      - ISSUE_UPDATED
+      - ISSUE_ASSIGNED
+      - ISSUE_MENTIONED
+      - TIMELINE_ENTRY_CREATED
+      - CHAT_MESSAGE_CREATED
+      - QUOTATION_REQUEST_CREATED
+      - QUOTATION_REQUEST_STATUS_CHANGED
+      - QUOTATION_CREATED
+      - ORDER_PLACED
+      - ORDER_PLACEMENT_STATUS_CHANGED
     IssueItemJson:
       description: An issue item with basic information
       type: object
@@ -695,11 +764,6 @@ components:
       - APPOINTMENT_REQUESTED
       - APPOINTMENT_SCHEDULED
       - STATUS_CHANGED
-    OffsetDateTime:
-      type: string
-      format: date-time
-      examples:
-      - 2022-03-10T12:15:50-04:00
     OrderAttachmentJson:
       type: object
       description: "An attachment associated with a quotation request, quotation,\
@@ -914,12 +978,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OrganizationMemberJson"
-    ParticipantRole:
-      type: string
-      enum:
-      - CONTRACTOR
-      - MANAGER
-      - TENANT
     ProjectItemJson:
       description: A project item with the user's member role only
       type: object
@@ -1859,9 +1917,9 @@ components:
     UserContext:
       type: string
       enum:
+      - CONTRACTOR
       - MANAGER
       - TENANT
-      - CONTRACTOR
     UserJson:
       description: User information globally
       type: object

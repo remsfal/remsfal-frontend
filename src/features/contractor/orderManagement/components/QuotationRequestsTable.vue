@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import type { QuotationRequestJson } from '@/services/QuotationRequestService';
+import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
 const props = defineProps<{ requests: QuotationRequestJson[] }>();
 
