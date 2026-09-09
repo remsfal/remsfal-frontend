@@ -1,7 +1,7 @@
 import { ref, type Ref } from 'vue';
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType }
   from '@/features/project/issues/services/IssueService';
-import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
+import type { UnitType } from '@/features/project/rentableUnits';
 
 export interface UseIssueListParams {
   projectId: string;

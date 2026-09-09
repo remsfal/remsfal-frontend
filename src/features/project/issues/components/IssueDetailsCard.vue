@@ -9,13 +9,11 @@ import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import BaseCard from '@/components/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
-import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
 import { issueService, type IssueJson, type IssueWritableJson, type IssueStatus, type IssueType, type IssuePriority }
   from '@/features/project/issues/services/IssueService';
-import { type RentalAgreementItemJson }
-  from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import { RentalAgreementSelect, type RentalAgreementItemJson } from '@/features/project/rentalAgreements';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
 import { formatDateTime } from '@/helper/dateHelper';
 import {getDefectCategories,
