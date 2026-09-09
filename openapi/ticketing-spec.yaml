@@ -2010,7 +2010,7 @@ components:
       bearerFormat: JWT
       description: Authentication
 paths:
-  /api/v1/activities:
+  /ticketing/v1/activities:
     get:
       summary: Retrieve the caller's activity feed.
       description: "Aggregates issue lifecycle events, tenant communication, chat\
@@ -2077,7 +2077,7 @@ paths:
           description: Not Allowed
       security:
       - SecurityScheme: []
-  /api/v1/activities/{activityId}:
+  /ticketing/v1/activities/{activityId}:
     delete:
       summary: Delete an activity for the authenticated user
       parameters:
@@ -2098,7 +2098,7 @@ paths:
           description: Not Allowed
       security:
       - SecurityScheme: []
-  /api/v1/activities/{activityId}/status:
+  /ticketing/v1/activities/{activityId}/status:
     patch:
       summary: Update the read/unread status of an activity
       parameters:
