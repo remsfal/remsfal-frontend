@@ -10,12 +10,6 @@ export type TimelineEntry = TimelineJson | ContractorTimelineJson;
 export interface TimelineSendPayload {
   purpose: TimelinePurpose;
   message?: string;
-  recipient?: string;
-}
-
-export interface TimelineRecipientOption {
-  value: string;
-  label: string;
 }
 
 export interface UseTimelineOptions {
@@ -24,7 +18,6 @@ export interface UseTimelineOptions {
   watchSource?: WatchSource;
   sendPurpose?: TimelinePurpose;
   isBlocked?: (items: TimelineEntry[]) => boolean;
-  requireRecipient?: boolean;
   sendErrorMessage: () => string;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
@@ -38,19 +31,13 @@ export function useTimeline(options: UseTimelineOptions) {
   const selectedFiles = ref<File[]>([]);
   const fileUploadKey = ref(0);
   const sending = ref(false);
-  const selectedRecipient = ref<string | null>(null);
 
   const canSubmit = computed(
     () =>
       (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) &&
       !sending.value &&
-      !(options.isBlocked?.(items.value) ?? false) &&
-      !(options.requireRecipient && !selectedRecipient.value),
+      !(options.isBlocked?.(items.value) ?? false),
   );
-
-  const selectRecipient = (value: string) => {
-    selectedRecipient.value = value;
-  };
 
   let fetchSequence = 0;
 
@@ -87,6 +74,16 @@ export function useTimeline(options: UseTimelineOptions) {
     selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files as File[]);
   };
 
+  const resetComposer = () => {
+    messageText.value = '';
+    selectedFiles.value = [];
+    fileUploadKey.value += 1;
+  };
+
+  const cancel = () => {
+    resetComposer();
+  };
+
   const submit = async () => {
     if (!canSubmit.value) return;
     const trimmedMessage = messageText.value.trim();
@@ -96,14 +93,10 @@ export function useTimeline(options: UseTimelineOptions) {
         {
           purpose: options.sendPurpose ?? 'MESSAGE_SENT',
           ...(trimmedMessage ? { message: trimmedMessage } : {}),
-          ...(selectedRecipient.value ? { recipient: selectedRecipient.value } : {}),
         },
         selectedFiles.value,
       );
-      messageText.value = '';
-      selectedFiles.value = [];
-      fileUploadKey.value += 1;
-      selectedRecipient.value = null;
+      resetComposer();
       await fetchItems();
     } catch (sendError) {
       console.error(options.sendErrorLogLabel ?? 'Failed to create timeline entry', sendError);
@@ -125,9 +118,8 @@ export function useTimeline(options: UseTimelineOptions) {
     fileUploadKey,
     sending,
     canSubmit,
-    selectedRecipient,
-    selectRecipient,
     onFilesSelected,
     submit,
+    cancel,
   };
 }

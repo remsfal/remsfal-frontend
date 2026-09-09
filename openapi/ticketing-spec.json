@@ -520,6 +520,10 @@
               "$ref" : "#/components/schemas/OrderAttachmentJson"
             },
             "readOnly" : true
+          },
+          "messageToTenant" : {
+            "type" : "boolean",
+            "description" : "If true, the message is also copied into the tenant timeline of the issue"
           }
         },
         "required" : [ "purpose", "message" ]
@@ -534,6 +538,11 @@
               "$ref" : "#/components/schemas/ContractorTimelineJson"
             },
             "description" : "Timeline entries",
+            "readOnly" : true
+          },
+          "visibleToTenant" : {
+            "type" : "boolean",
+            "description" : "Whether a new timeline entry can be sent to the tenant",
             "readOnly" : true
           }
         }
@@ -3190,6 +3199,10 @@
                           "$ref" : "#/components/schemas/OrderAttachmentJson"
                         },
                         "readOnly" : true
+                      },
+                      "messageToTenant" : {
+                        "type" : "boolean",
+                        "description" : "If true, the message is also copied into the tenant timeline of the issue"
                       }
                     },
                     "required" : [ "purpose", "message" ]
@@ -5258,6 +5271,10 @@
                           "$ref" : "#/components/schemas/OrderAttachmentJson"
                         },
                         "readOnly" : true
+                      },
+                      "messageToTenant" : {
+                        "type" : "boolean",
+                        "description" : "If true, the message is also copied into the tenant timeline of the issue"
                       }
                     },
                     "required" : [ "purpose", "message" ]

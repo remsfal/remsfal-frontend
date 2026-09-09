@@ -22,15 +22,23 @@ describe('ContractorOrderTimelineService', () => {
       '/ticketing/v1/order-management/{issueId}/timeline',
       { pathParams: { issueId: 'issue-1' } },
     );
-    expect(result).toEqual(timelineList);
+    expect(result).toEqual({ ...timelineList, visibleToTenant: false });
   });
 
-  test('getTimelineEntries returns fallback empty list when timelines are missing', async () => {
+  test('getTimelineEntries returns fallback empty list and visibleToTenant when missing', async () => {
     vi.spyOn(apiClient, 'get').mockResolvedValueOnce({});
 
     const result = await contractorOrderTimelineService.getTimelineEntries('issue-1');
 
-    expect(result).toEqual({ timelines: [] });
+    expect(result).toEqual({ timelines: [], visibleToTenant: false });
+  });
+
+  test('getTimelineEntries passes through visibleToTenant from the response', async () => {
+    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({ timelines: [], visibleToTenant: true });
+
+    const result = await contractorOrderTimelineService.getTimelineEntries('issue-1');
+
+    expect(result).toEqual({ timelines: [], visibleToTenant: true });
   });
 
   test('createTimelineEntryWithAttachments sends multipart form data', async () => {

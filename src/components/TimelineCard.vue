@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 import Message from 'primevue/message';
@@ -7,8 +6,7 @@ import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/BaseCard.vue';
 import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
-import { useTimeline, type UseTimelineOptions, type TimelineJson, type TimelineRecipientOption }
-  from '@/composables/useTimeline';
+import { useTimeline, type UseTimelineOptions, type TimelineJson } from '@/composables/useTimeline';
 import { useI18n } from 'vue-i18n';
 
 interface Props {
@@ -18,7 +16,10 @@ interface Props {
   isBlocked?: UseTimelineOptions['isBlocked'];
   sendPurpose?: UseTimelineOptions['sendPurpose'];
   watchSource?: UseTimelineOptions['watchSource'];
-  recipientOptions?: TimelineRecipientOption[];
+  // Lets a consumer replace the built-in composer with its own flow (e.g. picking a recipient
+  // first) while still reusing this card's loading/error/list rendering and the composer itself
+  // for every other case. Unused by consumers that don't need it.
+  hideComposer?: boolean;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
 }
@@ -28,6 +29,16 @@ const props = defineProps<Props>();
 defineSlots<{
   item(props: { item: TimelineJson }): unknown;
   title?(): unknown;
+  'before-composer'?(): unknown;
+  // Scoped slot for the composer's action row. Exposes only plain state/functions — no UI or
+  // domain concepts — so a consumer can render its own buttons on top of the same composer state
+  // (e.g. cancel, or a submit button styled after an earlier choice) without this card knowing why.
+  'composer-actions'?(props: {
+    submit: () => void;
+    cancel: () => void;
+    canSubmit: boolean;
+    sending: boolean;
+  }): unknown;
 }>();
 
 const testIdPrefix = 'timeline';
@@ -40,8 +51,6 @@ const uploadEmptyText = t('timeline.uploadEmpty');
 const sendButtonLabel = t('timeline.sendMessage');
 const sendErrorMessage = t('timeline.createError');
 
-const hasRecipientOptions = computed(() => (props.recipientOptions?.length ?? 0) > 0);
-
 const {
   loading,
   error,
@@ -50,17 +59,15 @@ const {
   fileUploadKey,
   sending,
   canSubmit,
-  selectedRecipient,
-  selectRecipient,
   onFilesSelected,
   submit,
+  cancel,
 } = useTimeline({
   load: props.load,
   send: props.send,
   isBlocked: props.isBlocked,
   sendPurpose: props.sendPurpose,
   watchSource: props.watchSource,
-  requireRecipient: hasRecipientOptions.value,
   loadErrorLogLabel: props.loadErrorLogLabel,
   sendErrorLogLabel: props.sendErrorLogLabel,
   sendErrorMessage: () => sendErrorMessage,
@@ -108,17 +115,8 @@ const {
           <slot name="item" :item="slotProps.item" />
         </template>
       </Timeline>
-      <div v-if="hasRecipientOptions && !selectedRecipient" class="mb-4 flex flex-wrap gap-2">
-        <Button
-          v-for="option in props.recipientOptions"
-          :key="option.value"
-          :data-testid="`${testIdPrefix}-recipient-${option.value.toLowerCase()}`"
-          :label="option.label"
-          severity="secondary"
-          @click="selectRecipient(option.value)"
-        />
-      </div>
-      <div v-if="!hasRecipientOptions || selectedRecipient" class="mb-4 flex flex-col gap-2">
+      <slot name="before-composer" />
+      <div v-if="!hideComposer" class="mb-4 flex flex-col gap-2">
         <label :for="`${testIdPrefix}-message`" class="sr-only">{{ messagePlaceholder }}</label>
         <Textarea
           :id="`${testIdPrefix}-message`"
@@ -148,16 +146,24 @@ const {
             </template>
           </FileUpload>
         </div>
-        <div class="flex justify-end">
-          <Button
-            :data-testid="`${testIdPrefix}-message-submit`"
-            :label="sendButtonLabel"
-            icon="pi pi-send"
-            :loading="sending"
-            :disabled="!canSubmit"
-            @click="submit"
-          />
-        </div>
+        <slot
+          name="composer-actions"
+          :submit="submit"
+          :cancel="cancel"
+          :canSubmit="canSubmit"
+          :sending="sending"
+        >
+          <div class="flex justify-end">
+            <Button
+              :data-testid="`${testIdPrefix}-message-submit`"
+              :label="sendButtonLabel"
+              icon="pi pi-send"
+              :loading="sending"
+              :disabled="!canSubmit"
+              @click="submit"
+            />
+          </div>
+        </slot>
       </div>
     </template>
   </BaseCard>
