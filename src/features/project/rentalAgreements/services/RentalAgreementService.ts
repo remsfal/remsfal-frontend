@@ -1,5 +1,5 @@
 import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
-import { type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
+import { type UnitType } from '@/features/project/rentableUnits';
 
 export type RentalAgreementJson = Readable<ApiComponents['schemas']['RentalAgreementJson']>;
 export type RentalAgreementWritableJson = Writable<ApiComponents['schemas']['RentalAgreementJson']>;

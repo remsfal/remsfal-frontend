@@ -12,9 +12,7 @@ import { z } from 'zod';
 import BaseDialog from '@/components/BaseDialog.vue';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 import type { CreateQuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
-import ContractorMultiSelect from '@/features/project/contractors/components/ContractorMultiSelect.vue';
-import NewContractorButton from '@/features/project/contractors/components/NewContractorButton.vue';
-import { type ContractorJson } from '@/features/project/contractors/services/ContractorService';
+import { type ContractorJson, ContractorMultiSelect, NewContractorButton } from '@/features/project/contractors';
 import { projectService } from '@/services/ProjectService';
 import type { AddressJson } from '@/services/AddressService';
 

@@ -5,7 +5,7 @@ import AppRoleLayout from '@/layouts/components/AppRoleLayout.vue'
 import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue'
 import ProjectMenu from '@/layouts/components/ProjectMenu.vue'
 import ProjectMobileBar from '@/layouts/components/ProjectMobileBar.vue'
-import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore'
+import { useRentableUnitsStore } from '@/features/project/rentableUnits'
 
 const route = useRoute()
 const rentableUnitsStore = useRentableUnitsStore()
