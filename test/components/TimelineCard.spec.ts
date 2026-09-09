@@ -125,7 +125,7 @@ describe('TimelineCard component', () => {
     expect((wrapper.get('#timeline-message').element as HTMLTextAreaElement).value).toBe('');
   });
 
-  it('omits the message field when sending attachments only', async () => {
+  it('sends an empty message when sending attachments only', async () => {
     const send = vi.fn().mockResolvedValue(undefined);
     const wrapper = mountCard({ load: vi.fn().mockResolvedValue([]), send });
     await flushPromises();
@@ -137,7 +137,7 @@ describe('TimelineCard component', () => {
     await wrapper.get('[data-testid="timeline-message-submit"]').trigger('click');
     await flushPromises();
 
-    expect(send.mock.calls[0][0]).not.toHaveProperty('message');
+    expect(send.mock.calls[0][0]).toEqual({ purpose: 'MESSAGE_SENT', message: '' });
   });
 
   it('deduplicates files with the same name/size/lastModified before submit', async () => {
@@ -190,7 +190,7 @@ describe('TimelineCard component', () => {
     await flushPromises();
   });
 
-  it('logs and shows no toast when send() fails', async () => {
+  it('logs and shows an error toast when send() fails', async () => {
     const send = vi.fn().mockRejectedValue(new Error('boom'));
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard({ load: vi.fn().mockResolvedValue([]), send });
@@ -200,7 +200,12 @@ describe('TimelineCard component', () => {
     await wrapper.get('[data-testid="timeline-message-submit"]').trigger('click');
     await flushPromises();
 
-    expect(toastAddMock).not.toHaveBeenCalled();
+    expect(toastAddMock).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Fehler',
+      detail: 'Nachricht konnte nicht gesendet werden. Versuchen sie es später noch einmal.',
+      life: 4000,
+    });
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to create timeline entry', expect.any(Error));
     consoleErrorSpy.mockRestore();
   });

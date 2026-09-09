@@ -11,12 +11,14 @@ export interface CreateContractorTimelineEntry {
   messageToTenant?: boolean;
 }
 
-const TIMELINE_PATH = '/ticketing/v1/order-management/{issueId}/timeline';
-
 class ContractorOrderTimelineService {
   async getTimelineEntries(issueId: string): Promise<Required<ContractorTimelineListJson>> {
-    const options = { pathParams: { issueId } } as unknown as RequestOptions<typeof TIMELINE_PATH, 'get'>;
-    const result = await apiClient.get(TIMELINE_PATH, options) as Partial<ContractorTimelineListJson>;
+    const options = { pathParams: { issueId } } as unknown as
+      RequestOptions<'/ticketing/v1/order-management/{issueId}/timeline', 'get'>;
+    const result = await apiClient.get(
+      '/ticketing/v1/order-management/{issueId}/timeline',
+      options,
+    ) as Partial<ContractorTimelineListJson>;
     return { timelines: result.timelines ?? [], visibleToTenant: result.visibleToTenant ?? false };
   }
 
@@ -32,9 +34,11 @@ class ContractorOrderTimelineService {
       formData.append('attachment', file);
     });
 
-    const body = formData as unknown as Parameters<typeof apiClient.post<typeof TIMELINE_PATH>>[1];
-    const options = { pathParams: { issueId } } as unknown as RequestOptions<typeof TIMELINE_PATH, 'post'>;
-    await apiClient.post(TIMELINE_PATH, body, options);
+    const body = formData as unknown as
+      Parameters<typeof apiClient.post<'/ticketing/v1/order-management/{issueId}/timeline'>>[1];
+    const options = { pathParams: { issueId } } as unknown as
+      RequestOptions<'/ticketing/v1/order-management/{issueId}/timeline', 'post'>;
+    await apiClient.post('/ticketing/v1/order-management/{issueId}/timeline', body, options);
   }
 }
 

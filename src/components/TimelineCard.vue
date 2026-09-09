@@ -32,6 +32,7 @@ defineSlots<{
     cancel: () => void;
     canSubmit: boolean;
     sending: boolean;
+    loading: boolean;
   }): unknown;
 }>();
 
@@ -146,6 +147,7 @@ const {
           :cancel="cancel"
           :canSubmit="canSubmit"
           :sending="sending"
+          :loading="loading"
         >
           <div class="flex justify-end">
             <Button

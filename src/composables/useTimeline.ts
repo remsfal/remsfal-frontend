@@ -1,6 +1,7 @@
 import { computed, onMounted, ref, watch, type Ref, type WatchSource } from 'vue';
 import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import type { components as ticketingComponents, Readable } from '@/services/api/ticketing-schema';
+import { useAppToast } from '@/composables/useAppToast';
 
 export type TimelineJson = Readable<ticketingComponents['schemas']['TenantTimelineJson']>;
 export type ContractorTimelineJson = Readable<ticketingComponents['schemas']['ContractorTimelineJson']>;
@@ -9,7 +10,7 @@ export type TimelineEntry = TimelineJson | ContractorTimelineJson;
 
 export interface TimelineSendPayload {
   purpose: TimelinePurpose;
-  message?: string;
+  message: string;
 }
 
 export interface UseTimelineOptions {
@@ -24,6 +25,7 @@ export interface UseTimelineOptions {
 }
 
 export function useTimeline(options: UseTimelineOptions) {
+  const appToast = useAppToast();
   const loading = ref(false);
   const error = ref(false);
   const items = ref([]) as Ref<TimelineEntry[]>;
@@ -92,7 +94,7 @@ export function useTimeline(options: UseTimelineOptions) {
       await options.send(
         {
           purpose: options.sendPurpose ?? 'MESSAGE_SENT',
-          ...(trimmedMessage ? { message: trimmedMessage } : {}),
+          message: trimmedMessage,
         },
         selectedFiles.value,
       );
@@ -100,6 +102,7 @@ export function useTimeline(options: UseTimelineOptions) {
       await fetchItems();
     } catch (sendError) {
       console.error(options.sendErrorLogLabel ?? 'Failed to create timeline entry', sendError);
+      appToast.error(options.sendErrorMessage());
     } finally {
       sending.value = false;
     }

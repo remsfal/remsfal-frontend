@@ -39,10 +39,18 @@ const recipientOptions = computed<RecipientOption[]>(() => {
 
 const hasRecipientChoice = computed(() => recipientOptions.value.length > 1);
 
-const loadTimelineEntries = () => contractorOrderTimelineService.getTimelineEntries(props.issueId).then((r) => {
-  visibleToTenant.value = r.visibleToTenant;
-  return r.timelines ?? [];
-});
+const submitButtonLabel = computed(() =>
+  selectedOption.value?.label ?? t('orderManagement.timeline.recipientManager'),
+);
+
+const loadTimelineEntries = () => {
+  visibleToTenant.value = false;
+  selectedOption.value = null;
+  return contractorOrderTimelineService.getTimelineEntries(props.issueId).then((r) => {
+    visibleToTenant.value = r.visibleToTenant;
+    return r.timelines ?? [];
+  });
+};
 
 const sendTimelineEntry: UseTimelineOptions['send'] = async (payload, files) => {
   await contractorOrderTimelineService.createTimelineEntryWithAttachments(
@@ -79,9 +87,10 @@ const sendTimelineEntry: UseTimelineOptions['send'] = async (payload, files) => 
         />
       </div>
     </template>
-    <template #composer-actions="{ submit, cancel, canSubmit, sending }">
-      <div class="flex justify-between">
+    <template #composer-actions="{ submit, cancel, canSubmit, sending, loading }">
+      <div :class="hasRecipientChoice ? 'flex justify-between' : 'flex justify-end'">
         <Button
+          v-if="hasRecipientChoice"
           data-testid="timeline-message-cancel"
           :label="t('button.cancel')"
           severity="secondary"
@@ -90,11 +99,11 @@ const sendTimelineEntry: UseTimelineOptions['send'] = async (payload, files) => 
         />
         <Button
           data-testid="timeline-message-submit"
-          :label="selectedOption?.label ?? t('timeline.sendMessage')"
+          :label="submitButtonLabel"
           :severity="selectedOption?.severity"
           icon="pi pi-send"
           :loading="sending"
-          :disabled="!canSubmit"
+          :disabled="!canSubmit || loading"
           @click="submit"
         />
       </div>
