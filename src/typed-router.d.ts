@@ -304,6 +304,13 @@ declare module 'vue-router/auto-routes' {
       { issueId: ParamValue<false> },
       | never
     >,
+    'VerifyAdditionalEmail': RouteRecordInfo<
+      'VerifyAdditionalEmail',
+      '/verify-additional-email',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -628,6 +635,14 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | 'issueId'
+    }
+    'src/pages/verify-additional-email.vue': {
+      routes:
+        | 'VerifyAdditionalEmail'
+      views:
+        | never
+      pathParamNames:
+        | never
     }
   }
 

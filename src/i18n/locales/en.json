@@ -1128,5 +1128,10 @@
   "orderPlacement.rejectSuccess": "Order rejected successfully",
   "orderPlacement.actionError": "Error updating the order",
   "customerView.title": "Overview of all customers",
-  "customerView.notAvailable": "Customer overview is not yet available."
+  "customerView.notAvailable": "Customer overview is not yet available.",
+  "emailVerification.title": "Email Verification",
+  "emailVerification.loading": "Verifying your email address …",
+  "emailVerification.successMessage": "Your additional email address has been verified successfully.",
+  "emailVerification.errorMessage": "The email address could not be verified. The verification link is invalid or has expired.",
+  "emailVerification.backToSettings": "Go to my settings"
 }
