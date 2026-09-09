@@ -45,6 +45,12 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
 })
 bus.on('auth:session-expired', () => {
   sessionStore.user = null
+  // An anonymous visit to a public page (e.g. an unawaited background fetch failing
+  // at boot) also triggers this event, but there's no active session to lose there —
+  // only bounce the user out when they were actually on a page that requires auth.
+  if (!router.currentRoute.value.meta.requiresAuth) {
+    return
+  }
   bus.emit('toast:translate', {
     severity: 'warn',
     summary: 'auth.sessionExpiredSummary',

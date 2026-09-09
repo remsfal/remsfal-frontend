@@ -1,23 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import PublicLayout from '@/layouts/public.vue'
-import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue'
+import AppSimpleTopbar from '@/layouts/components/AppSimpleTopbar.vue'
 import AppFooter from '@/layouts/components/AppFooter.vue'
 
 const mocks = vi.hoisted(() => ({ setFullscreen: vi.fn() }))
 
 vi.mock('@/layouts/composables/layout', () => ({useLayout: () => ({setFullscreen: mocks.setFullscreen,}),}))
 
-vi.mock('@/layouts/components/ManagerTopbar.vue', () => ({ default: { template: '<div data-test="manager-topbar" />' } }))
+vi.mock('@/layouts/components/AppSimpleTopbar.vue', () => ({ default: { template: '<div data-test="app-simple-topbar" />' } }))
 vi.mock('@/layouts/components/AppFooter.vue', () => ({ default: { template: '<div data-test="app-footer" />' } }))
 
 describe('layouts/public.vue', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('renders ManagerTopbar', async () => {
+  it('renders AppSimpleTopbar', async () => {
     const wrapper = mount(PublicLayout)
     await flushPromises()
-    expect(wrapper.findComponent(ManagerTopbar).exists()).toBe(true)
+    expect(wrapper.findComponent(AppSimpleTopbar).exists()).toBe(true)
   })
 
   it('renders AppFooter', async () => {
