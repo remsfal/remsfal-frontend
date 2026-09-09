@@ -53,7 +53,7 @@ describe('ManagerTopbar.vue', () => {
 
     it.each([
       ['home button (Projekte)', 'Projekte'],
-      ['inbox button', 'Posteingang'],
+      ['activity feed button', 'Aktivitäten'],
     ])('should show %s when logged in', async (_, expectedText) => {
       const { wrapper } = mountComponent(createMockUser());
       await flushPromises();

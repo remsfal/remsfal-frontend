@@ -57,7 +57,7 @@ describe('ManagerMobileBar.vue', () => {
     const { wrapper } = mountComponent();
     const navItems = wrapper.findAll('a.nav-item');
     expect(navItems[0].text()).toContain('Meine Übersicht');
-    expect(navItems[1].text()).toContain('Meine Nachrichten');
+    expect(navItems[1].text()).toContain('Aktivitäten');
     expect(navItems[2].text()).toContain('Meine Liegenschaften');
     expect(navItems[3].text()).toContain('Meine Auftragnehmer');
   });
@@ -75,9 +75,9 @@ describe('ManagerMobileBar.vue', () => {
     expect(navItems[3].classes()).not.toContain('active');
   });
 
-  it('highlights Meine Nachrichten when on Inbox route', async () => {
+  it('highlights Aktivitäten when on ActivityFeeds route', async () => {
     const { wrapper } = mountComponent({
-      path: '/manager/inbox', name: 'Inbox', params: {}, query: {}
+      path: '/manager/activity-feeds', name: 'ActivityFeeds', params: {}, query: {}
     });
     await wrapper.vm.$nextTick();
 
