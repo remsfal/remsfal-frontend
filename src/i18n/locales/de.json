@@ -1132,7 +1132,6 @@
   "orderManagement.quotationRequestDetails.fields.modifiedAt": "Zuletzt geändert:",
   "orderManagement.quotationRequestDetails.fields.initiatedBy": "Angefragt von:",
   "orderManagement.quotationRequestDetails.fields.status": "Status:",
-  "orderManagement.quotationRequestDetails.title": "Auftragsdetails",
   "orderManagement.timeline.attachmentsLabel": "Anhänge",
   "orderManagement.timeline.downloadAttachmentLabel": "Anhang herunterladen",
   "orderManagement.timeline.messageTitle": "Nachricht von {senderName}",
