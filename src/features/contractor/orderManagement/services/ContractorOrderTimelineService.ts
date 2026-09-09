@@ -15,10 +15,6 @@ const TIMELINE_PATH = '/ticketing/v1/order-management/{issueId}/timeline';
 
 class ContractorOrderTimelineService {
   async getTimelineEntries(issueId: string): Promise<Required<ContractorTimelineListJson>> {
-    // The backend mounts this endpoint's shared interface under two different path templates
-    // (contractor: {issueId}/timeline, manager: {issueId}/contractor-timeline), so it deliberately
-    // declares no @PathParam on the shared GET method — the OpenAPI spec therefore has no documented
-    // path parameter here, even though {issueId} must still be supplied at runtime.
     const options = { pathParams: { issueId } } as unknown as RequestOptions<typeof TIMELINE_PATH, 'get'>;
     const result = await apiClient.get(TIMELINE_PATH, options) as Partial<ContractorTimelineListJson>;
     return { timelines: result.timelines ?? [], visibleToTenant: result.visibleToTenant ?? false };

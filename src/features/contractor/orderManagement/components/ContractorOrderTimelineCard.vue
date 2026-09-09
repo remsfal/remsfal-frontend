@@ -37,8 +37,6 @@ const recipientOptions = computed<RecipientOption[]>(() => {
   return options;
 });
 
-// A single recipient option means there is nothing to actually choose between, so the composer
-// opens right away instead of making the user click through a one-button picker step.
 const hasRecipientChoice = computed(() => recipientOptions.value.length > 1);
 
 const loadTimelineEntries = () => contractorOrderTimelineService.getTimelineEntries(props.issueId).then((r) => {

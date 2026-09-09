@@ -16,9 +16,6 @@ interface Props {
   isBlocked?: UseTimelineOptions['isBlocked'];
   sendPurpose?: UseTimelineOptions['sendPurpose'];
   watchSource?: UseTimelineOptions['watchSource'];
-  // Lets a consumer replace the built-in composer with its own flow (e.g. picking a recipient
-  // first) while still reusing this card's loading/error/list rendering and the composer itself
-  // for every other case. Unused by consumers that don't need it.
   hideComposer?: boolean;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
@@ -30,9 +27,6 @@ defineSlots<{
   item(props: { item: TimelineJson }): unknown;
   title?(): unknown;
   'before-composer'?(): unknown;
-  // Scoped slot for the composer's action row. Exposes only plain state/functions — no UI or
-  // domain concepts — so a consumer can render its own buttons on top of the same composer state
-  // (e.g. cancel, or a submit button styled after an earlier choice) without this card knowing why.
   'composer-actions'?(props: {
     submit: () => void;
     cancel: () => void;
