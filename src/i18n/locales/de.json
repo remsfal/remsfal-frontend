@@ -130,6 +130,7 @@
   "newProjectForm.successCreated": "Das Projekt wurde erfolgreich erstellt",
   "projectTable.title": "Bezeichnung",
   "projectTable.role": "Meine Rolle",
+  "projectTable.empty": "Keine Liegenschaften gefunden.",
   "toolbar.newProject": "Neues Projekt",
   "toolbar.logout": "Abmelden",
   "toolbar.login": "Anmelden",
