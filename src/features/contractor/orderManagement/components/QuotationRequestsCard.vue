@@ -30,8 +30,8 @@ async function fetchRequests() {
 }
 
 function onRequestSelect(request: QuotationRequestJson) {
-  if (!request.id) return;
-  router.push({ name: 'ContractorOrderDetails', params: { requestId: request.id } });
+  if (!request.issueId) return;
+  router.push({ name: 'ContractorOrderDetails', params: { issueId: request.issueId } });
 }
 
 onMounted(() => {

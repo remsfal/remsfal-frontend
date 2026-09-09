@@ -5402,6 +5402,8 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       senderRole?: $Read<components["schemas"]["UserContext"]>;
       attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+      /** @description If true, the message is also copied into the tenant timeline of the issue */
+      messageToTenant?: boolean;
     };
     /** @description A list of contractor timelines */
     ContractorTimelineListJson: {

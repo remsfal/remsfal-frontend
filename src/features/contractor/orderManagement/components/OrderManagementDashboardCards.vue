@@ -54,8 +54,8 @@ function goToOpenOrders() {
 }
 
 function goToQuotationRequestDetails(event: { data: QuotationRequestJson }) {
-  if (!event.data.id) return;
-  router.push({ name: 'ContractorOrderDetails', params: { requestId: event.data.id } });
+  if (!event.data.issueId) return;
+  router.push({ name: 'ContractorOrderDetails', params: { issueId: event.data.issueId } });
 }
 
 onMounted(() => loadData());

@@ -4,24 +4,24 @@ import { reactive } from 'vue'
 import { routeLocationKey } from 'vue-router'
 import router from '@/router'
 import { config } from '@vue/test-utils'
-import ContractorOrderDetailsPage from '@/pages/contractor/orders/[requestId].vue'
+import ContractorOrderDetailsPage from '@/pages/contractor/orders/[issueId].vue'
 
 config.global.plugins = config.global.plugins.filter((p) => p !== router)
 
 vi.mock('@/features/contractor/orderManagement', () => ({
-  QuotationRequestDetailView: {
-    name: 'QuotationRequestDetailView',
+  OrderManagementDetailsView: {
+    name: 'OrderManagementDetailsView',
     template: '<div data-test="quotation-request-detail-view" />',
-    props: ['requestId'],
+    props: ['issueId'],
   },
 }))
 
-describe('contractor/orders/[requestId].vue', () => {
-  const mountPage = (requestId = 'request-123') => {
+describe('contractor/orders/[issueId].vue', () => {
+  const mountPage = (issueId = 'issue-123') => {
     const route = reactive({
-      path: `/contractor/orders/${requestId}`,
+      path: `/contractor/orders/${issueId}`,
       name: 'ContractorOrderDetails',
-      params: { requestId },
+      params: { issueId },
       query: {},
     })
     return mount(ContractorOrderDetailsPage, { global: { provide: { [routeLocationKey as symbol]: route } } })
@@ -32,15 +32,15 @@ describe('contractor/orders/[requestId].vue', () => {
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('renders QuotationRequestDetailView', () => {
+  it('renders OrderManagementDetailsView', () => {
     const wrapper = mountPage()
     expect(wrapper.find('[data-test="quotation-request-detail-view"]').exists()).toBe(true)
   })
 
-  it('passes requestId prop to QuotationRequestDetailView', async () => {
-    const wrapper = mountPage('request-456')
+  it('passes issueId prop to OrderManagementDetailsView', async () => {
+    const wrapper = mountPage('issue-456')
     await wrapper.vm.$nextTick()
-    const view = wrapper.findComponent({ name: 'QuotationRequestDetailView' })
-    expect(view.props('requestId')).toBe('request-456')
+    const view = wrapper.findComponent({ name: 'OrderManagementDetailsView' })
+    expect(view.props('issueId')).toBe('issue-456')
   })
 })

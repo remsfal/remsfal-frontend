@@ -1,12 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
-import QuotationRequestDetailView from '@/features/contractor/orderManagement/views/QuotationRequestDetailView.vue';
+import OrderManagementDetailsView from '@/features/contractor/orderManagement/views/OrderManagementDetailsView.vue';
 import QuotationRequestDetailsCard from
   '@/features/contractor/orderManagement/components/QuotationRequestDetailsCard.vue';
 import { quotationRequestService, type QuotationRequestJson } from
   '@/features/contractor/orderManagement/services/QuotationRequestService';
-import ContractorOrderTimelineCard from
-  '@/features/contractor/orderManagement/components/ContractorOrderTimelineCard.vue';
 
 const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRequestJson => ({
   id: 'qr-1',
@@ -16,28 +14,28 @@ const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRe
   ...overrides,
 });
 
-const mountView = (requestId = 'qr-1') => mount(QuotationRequestDetailView, {
-  props: { requestId },
-  global: { stubs: { QuotationRequestDetailsCard: true, ContractorOrderTimelineCard: true } },
+const mountView = (issueId = 'issue-1') => mount(OrderManagementDetailsView, {
+  props: { issueId },
+  global: { stubs: { QuotationRequestDetailsCard: true } },
 });
 
-describe('QuotationRequestDetailView', () => {
-  it('finds the matching request from the contractor request list by id', async () => {
+describe('OrderManagementDetailsView', () => {
+  it('finds the matching request from the contractor request list by issueId', async () => {
     const request = makeRequest();
-    const items = [makeRequest({ id: 'other' }), request];
+    const items = [makeRequest({ id: 'other', issueId: 'other-issue' }), request];
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValueOnce({ items });
 
-    const wrapper = mountView('qr-1');
+    const wrapper = mountView('issue-1');
     await flushPromises();
 
     expect(wrapper.getComponent(QuotationRequestDetailsCard).props('request')).toEqual(request);
   });
 
-  it('shows a not-found message when no item matches the requestId', async () => {
-    const items = [makeRequest({ id: 'other' })];
+  it('shows a not-found message when no item matches the issueId', async () => {
+    const items = [makeRequest({ id: 'other', issueId: 'other-issue' })];
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValueOnce({ items });
 
-    const wrapper = mountView('qr-1');
+    const wrapper = mountView('issue-1');
     await flushPromises();
 
     expect(wrapper.find('.p-message').exists()).toBe(true);
@@ -48,23 +46,10 @@ describe('QuotationRequestDetailView', () => {
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockRejectedValueOnce(new Error('network'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const wrapper = mountView('qr-1');
+    const wrapper = mountView('issue-1');
     await flushPromises();
 
     expect(wrapper.find('.p-message').exists()).toBe(true);
     consoleSpy.mockRestore();
-  });
-
-  it('passes the issueId and requestId to the timeline panel', async () => {
-    const request = makeRequest();
-    vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValueOnce({ items: [request] });
-
-    const wrapper = mountView('qr-1');
-    await flushPromises();
-
-    const timelineCards = wrapper.findAllComponents(ContractorOrderTimelineCard);
-    expect(timelineCards).toHaveLength(1);
-    expect(timelineCards[0].props('issueId')).toBe('issue-1');
-    expect(timelineCards[0].props('requestId')).toBe('qr-1');
   });
 });

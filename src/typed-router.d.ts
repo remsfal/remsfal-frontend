@@ -61,9 +61,9 @@ declare module 'vue-router/auto-routes' {
     >,
     'ContractorOrderDetails': RouteRecordInfo<
       'ContractorOrderDetails',
-      '/contractor/orders/:requestId',
-      { requestId: ParamValue<true> },
-      { requestId: ParamValue<false> },
+      '/contractor/orders/:issueId',
+      { issueId: ParamValue<true> },
+      { issueId: ParamValue<false> },
       | never
     >,
     'ContractorOrdersClosed': RouteRecordInfo<
@@ -311,6 +311,13 @@ declare module 'vue-router/auto-routes' {
       { issueId: ParamValue<false> },
       | never
     >,
+    'VerifyAdditionalEmail': RouteRecordInfo<
+      'VerifyAdditionalEmail',
+      '/verify-additional-email',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -356,13 +363,13 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
-    'src/pages/contractor/orders/[requestId].vue': {
+    'src/pages/contractor/orders/[issueId].vue': {
       routes:
         | 'ContractorOrderDetails'
       views:
         | never
       pathParamNames:
-        | 'requestId'
+        | 'issueId'
     }
     'src/pages/contractor/orders/closed.vue': {
       routes:
@@ -643,6 +650,14 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | 'issueId'
+    }
+    'src/pages/verify-additional-email.vue': {
+      routes:
+        | 'VerifyAdditionalEmail'
+      views:
+        | never
+      pathParamNames:
+        | never
     }
   }
 
