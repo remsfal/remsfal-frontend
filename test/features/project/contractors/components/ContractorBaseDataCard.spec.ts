@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import ContractorBaseDataCard from '@/features/project/contractors/components/ContractorBaseDataCard.vue';
-import { projectContractorService } from '@/services/ProjectContractorService';
+import { contractorService } from '@/features/project/contractors/services/ContractorService';
 
 const mockContractor = {
   id: 'c-1',
@@ -20,8 +20,8 @@ vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 describe('ContractorBaseDataCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue(mockContractor);
-    vi.spyOn(projectContractorService, 'updateContractor').mockResolvedValue(mockContractor);
+    vi.spyOn(contractorService, 'getContractor').mockResolvedValue(mockContractor);
+    vi.spyOn(contractorService, 'updateContractor').mockResolvedValue(mockContractor);
   });
 
   const mountCard = () =>
@@ -33,7 +33,7 @@ describe('ContractorBaseDataCard', () => {
   it('calls getContractor with correct ids on mount', async () => {
     mountCard();
     await flushPromises();
-    expect(projectContractorService.getContractor).toHaveBeenCalledWith('proj-1', 'c-1');
+    expect(contractorService.getContractor).toHaveBeenCalledWith('proj-1', 'c-1');
   });
 
   it('renders the card title', async () => {
@@ -98,7 +98,7 @@ describe('ContractorBaseDataCard', () => {
   });
 
   it('does not throw when getContractor rejects', async () => {
-    vi.spyOn(projectContractorService, 'getContractor').mockRejectedValue(new Error('Not found'));
+    vi.spyOn(contractorService, 'getContractor').mockRejectedValue(new Error('Not found'));
     const wrapper = mountCard();
     await expect(flushPromises()).resolves.not.toThrow();
     expect(wrapper.exists()).toBe(true);
@@ -171,12 +171,12 @@ describe('ContractorBaseDataCard', () => {
     });
     await flushPromises();
 
-    expect(projectContractorService.updateContractor).toHaveBeenCalled();
+    expect(contractorService.updateContractor).toHaveBeenCalled();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
   it('logs and shows no toast when updateContractor throws', async () => {
-    vi.spyOn(projectContractorService, 'updateContractor').mockRejectedValue(new Error('Save failed'));
+    vi.spyOn(contractorService, 'updateContractor').mockRejectedValue(new Error('Save failed'));
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
     await flushPromises();
@@ -201,7 +201,7 @@ describe('ContractorBaseDataCard', () => {
     await form.vm.$emit('submit', { valid: false, states: {} });
     await flushPromises();
 
-    expect(projectContractorService.updateContractor).not.toHaveBeenCalled();
+    expect(contractorService.updateContractor).not.toHaveBeenCalled();
   });
 
   it('does not call updateContractor when phoneError is set', async () => {
@@ -219,11 +219,11 @@ describe('ContractorBaseDataCard', () => {
     });
     await flushPromises();
 
-    expect(projectContractorService.updateContractor).not.toHaveBeenCalled();
+    expect(contractorService.updateContractor).not.toHaveBeenCalled();
   });
 
   it('falls back to empty values when the loaded contractor has no fields', async () => {
-    vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue({ id: 'c-1' });
+    vi.spyOn(contractorService, 'getContractor').mockResolvedValue({ id: 'c-1' });
     const wrapper = mountCard();
     await flushPromises();
 
@@ -242,13 +242,13 @@ describe('ContractorBaseDataCard', () => {
     });
     await flushPromises();
 
-    expect(projectContractorService.updateContractor).toHaveBeenCalledWith(
+    expect(contractorService.updateContractor).toHaveBeenCalledWith(
       'proj-1', 'c-1', expect.objectContaining({ name: undefined }),
     );
   });
 
   it('sends the optional fields as undefined when they are all empty', async () => {
-    vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue({ id: 'c-1' });
+    vi.spyOn(contractorService, 'getContractor').mockResolvedValue({ id: 'c-1' });
     const wrapper = mountCard();
     await flushPromises();
 
@@ -259,7 +259,7 @@ describe('ContractorBaseDataCard', () => {
     });
     await flushPromises();
 
-    expect(projectContractorService.updateContractor).toHaveBeenCalledWith('proj-1', 'c-1', {
+    expect(contractorService.updateContractor).toHaveBeenCalledWith('proj-1', 'c-1', {
       name: 'Some GmbH',
       email: undefined,
       phone: undefined,
@@ -270,7 +270,7 @@ describe('ContractorBaseDataCard', () => {
   });
 
   it('falls back to empty values when updateContractor response has no fields', async () => {
-    vi.spyOn(projectContractorService, 'updateContractor').mockResolvedValue({ id: 'c-1' });
+    vi.spyOn(contractorService, 'updateContractor').mockResolvedValue({ id: 'c-1' });
     const wrapper = mountCard();
     await flushPromises();
 

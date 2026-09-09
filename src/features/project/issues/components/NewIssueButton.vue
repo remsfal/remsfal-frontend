@@ -21,8 +21,7 @@ import { z } from 'zod';
 // Services & Types
 import { issueService, type IssueJson, type IssueType, type IssuePriority }
   from '@/features/project/issues/services/IssueService';
-import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
-import type { RentalAgreementItemJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import { RentalAgreementSelect, type RentalAgreementItemJson } from '@/features/project/rentalAgreements';
 
 // Props & Emits
 const props = defineProps<{

@@ -6,8 +6,7 @@ import TenantContactButtons from './TenantContactButtons.vue';
 import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';
-import { getIconForUnitType } from '@/features/project/rentableUnits';
-import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
+import { getIconForUnitType, type UnitType } from '@/features/project/rentableUnits';
 
 const props = withDefaults(
   defineProps<{

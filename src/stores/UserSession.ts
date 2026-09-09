@@ -1,4 +1,7 @@
 import { defineStore } from 'pinia';
+// NOTE: imports the service module directly, not the `@/features/common/users` barrel —
+// this store is loaded eagerly at app boot (see main.ts), and the barrel also re-exports
+// route-level view components, which would otherwise stay in their own lazy chunks.
 import { userService, type UserJson } from '@/features/common/users/services/UserService';
 import i18n from '@/i18n/i18n';
 

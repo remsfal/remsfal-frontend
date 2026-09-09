@@ -11,3 +11,5 @@ export { default as TenantAddressCard } from './components/TenantAddressCard.vue
 export { default as RentalAgreementKpiCards } from './components/RentalAgreementKpiCards.vue';
 export { default as RentalAgreementListCard } from './components/RentalAgreementListCard.vue';
 export { default as TenantListCard } from './components/TenantListCard.vue';
+export { default as RentalAgreementSelect } from './components/RentalAgreementSelect.vue';
+export type { RentalAgreementItemJson, RentJson } from './services/RentalAgreementService';

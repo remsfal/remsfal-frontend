@@ -7,11 +7,11 @@ import Button from 'primevue/button';
 import type { TreeNode } from 'primevue/treenode';
 
 // Services & Types
-import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
+import type { UnitType } from '@/features/project/rentableUnits';
 import type { RentJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Components
-import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
+import { RentableUnitSelect } from '@/features/project/rentableUnits';
 import RentalDetailsForm, { type RentalDetails } from './RentalDetailsForm.vue';
 
 // Extend RentJson with additional UI-specific fields

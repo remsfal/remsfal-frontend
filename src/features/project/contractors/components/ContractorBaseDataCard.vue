@@ -12,7 +12,7 @@ import Message from 'primevue/message';
 import Button from 'primevue/button';
 import BaseCard from '@/components/BaseCard.vue';
 import PhoneInput from '@/components/PhoneInput.vue';
-import { projectContractorService } from '@/services/ProjectContractorService';
+import { contractorService } from '@/features/project/contractors/services/ContractorService';
 
 const props = defineProps<{ projectId: string; contractorId: string }>();
 
@@ -61,7 +61,7 @@ const phoneError = computed(() => {
 
 onMounted(async () => {
   try {
-    const c = await projectContractorService.getContractor(props.projectId, props.contractorId);
+    const c = await contractorService.getContractor(props.projectId, props.contractorId);
     const loaded = {
       companyName: c.name ?? '',
       email: c.email ?? '',
@@ -93,7 +93,7 @@ async function onSubmit(event: FormSubmitEvent) {
     remarks: currentValues.remarks || undefined,
   };
   try {
-    const updated = await projectContractorService.updateContractor(props.projectId, props.contractorId, payload);
+    const updated = await contractorService.updateContractor(props.projectId, props.contractorId, payload);
     const saved = {
       companyName: updated.name ?? '',
       email: updated.email ?? '',

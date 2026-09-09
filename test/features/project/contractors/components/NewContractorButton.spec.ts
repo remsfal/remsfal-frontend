@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import NewContractorButton from '@/features/project/contractors/components/NewContractorButton.vue';
-import { projectContractorService } from '@/services/ProjectContractorService';
+import { contractorService } from '@/features/project/contractors/services/ContractorService';
 
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
@@ -14,10 +14,12 @@ const BaseDialogStub = {
   template: '<div data-testid="dialog" :data-visible="String($attrs.visible)"><slot /></div>',
 };
 
+const mockCreatedContractor = { id: 'c-new', name: 'Test GmbH' };
+
 describe('NewContractorButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(projectContractorService, 'createContractor').mockResolvedValue(undefined);
+    vi.spyOn(contractorService, 'createContractor').mockResolvedValue(mockCreatedContractor);
   });
 
   const mountButton = (projectId = 'proj-1') =>
@@ -130,10 +132,10 @@ describe('NewContractorButton', () => {
     });
     await flushPromises();
 
-    expect(projectContractorService.createContractor).toHaveBeenCalledWith(
+    expect(contractorService.createContractor).toHaveBeenCalledWith(
       'proj-1', expect.objectContaining({ name: 'Test GmbH', remarks: 'Handles roofing jobs' }),
     );
-    expect(wrapper.emitted('newContractor')).toBeTruthy();
+    expect(wrapper.emitted('newContractor')?.[0]).toEqual([mockCreatedContractor]);
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
@@ -153,7 +155,7 @@ describe('NewContractorButton', () => {
     });
     await flushPromises();
 
-    expect(projectContractorService.createContractor).toHaveBeenCalledWith('proj-1', {
+    expect(contractorService.createContractor).toHaveBeenCalledWith('proj-1', {
       name: 'Minimal GmbH',
       email: undefined,
       phone: undefined,
@@ -164,7 +166,7 @@ describe('NewContractorButton', () => {
   });
 
   it('logs and shows no toast when createContractor fails', async () => {
-    vi.spyOn(projectContractorService, 'createContractor').mockRejectedValue(new Error('API error'));
+    vi.spyOn(contractorService, 'createContractor').mockRejectedValue(new Error('API error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mountButton();
@@ -189,7 +191,7 @@ describe('NewContractorButton', () => {
     await form.vm.$emit('submit', { valid: false, states: {} });
     await flushPromises();
 
-    expect(projectContractorService.createContractor).not.toHaveBeenCalled();
+    expect(contractorService.createContractor).not.toHaveBeenCalled();
   });
 
   it('resets form when dialog emits hide', async () => {
