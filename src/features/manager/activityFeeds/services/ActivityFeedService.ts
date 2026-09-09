@@ -12,19 +12,19 @@ export interface FetchActivitiesParams {
 class ActivityFeedService {
 
   async fetchActivities(params: FetchActivitiesParams): Promise<ActivityFeedListJson> {
-    return await apiClient.get('/api/v1/activities', { params }) as ActivityFeedListJson;
+    return await apiClient.get('/ticketing/v1/activities', { params }) as ActivityFeedListJson;
   }
 
   async setReadStatus(activityId: string, read: boolean): Promise<ActivityFeedJson> {
     return await apiClient.patch(
-      '/api/v1/activities/{activityId}/status',
+      '/ticketing/v1/activities/{activityId}/status',
       {} as never,
       { pathParams: { activityId }, params: { read } },
     ) as ActivityFeedJson;
   }
 
   async deleteActivity(activityId: string): Promise<void> {
-    await apiClient.delete('/api/v1/activities/{activityId}', { pathParams: { activityId } });
+    await apiClient.delete('/ticketing/v1/activities/{activityId}', { pathParams: { activityId } });
   }
 }
 

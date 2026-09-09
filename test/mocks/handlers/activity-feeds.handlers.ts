@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw';
 
 export const activityFeedHandlers = [
   // GET activities
-  http.get('/api/v1/activities', () => {
+  http.get('/ticketing/v1/activities', () => {
     return HttpResponse.json({
       size: 3,
       nextCursor: null,
@@ -42,12 +42,12 @@ export const activityFeedHandlers = [
   }),
 
   // PATCH update activity read status
-  http.patch('/api/v1/activities/:activityId/status', () => {
+  http.patch('/ticketing/v1/activities/:activityId/status', () => {
     return HttpResponse.json({});
   }),
 
   // DELETE activity
-  http.delete('/api/v1/activities/:activityId', () => {
+  http.delete('/ticketing/v1/activities/:activityId', () => {
     return new HttpResponse(null, { status: 204 });
   }),
 ];

@@ -22,12 +22,12 @@ const ContractorMultiSelectStub = defineComponent({
   name: 'ContractorMultiSelect',
   props: ['projectId', 'modelValue', 'invalid', 'inputId'],
   emits: ['update:modelValue', 'blur'],
-  template: '<div data-testid="contractor-select" />',
   methods: {
     addContractor(contractor: unknown) {
       this.$emit('update:modelValue', [...(this.modelValue ?? []), contractor]);
     },
   },
+  template: '<div data-testid="contractor-select" />',
 });
 
 const NewContractorButtonStub = {

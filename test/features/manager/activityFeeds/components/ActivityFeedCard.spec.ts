@@ -48,7 +48,7 @@ describe('ActivityFeedCard.vue', () => {
     store = useActivityFeedStore();
 
     server.use(
-      http.get('/api/v1/activities', () => {
+      http.get('/ticketing/v1/activities', () => {
         return HttpResponse.json({
           size: mockEntries.length,
           nextCursor: null,
@@ -125,7 +125,7 @@ describe('ActivityFeedCard.vue', () => {
     const toolbar = wrapper.findComponent(ActivityFeedToolbar);
 
     server.use(
-      http.patch('/api/v1/activities/:activityId/status', () => {
+      http.patch('/ticketing/v1/activities/:activityId/status', () => {
         return HttpResponse.json({});
       }),
     );
@@ -144,7 +144,7 @@ describe('ActivityFeedCard.vue', () => {
     const toolbar = wrapper.findComponent(ActivityFeedToolbar);
 
     server.use(
-      http.delete('/api/v1/activities/:activityId', () => {
+      http.delete('/ticketing/v1/activities/:activityId', () => {
         return new HttpResponse(null, { status: 204 });
       }),
     );

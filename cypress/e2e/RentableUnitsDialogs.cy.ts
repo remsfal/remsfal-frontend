@@ -68,7 +68,7 @@ describe('RentableUnitsDialogs E2E Tests', () => {
       },
     }).as('getProject');
 
-    cy.intercept('GET', '/api/v1/activities*', {
+    cy.intercept('GET', '/ticketing/v1/activities*', {
       statusCode: 200,
       body: { size: 0, nextCursor: null, activities: [] },
     }).as('getActivityFeeds');

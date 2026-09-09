@@ -74,17 +74,17 @@ describe('ActivityFeedStore', () => {
     ];
 
     server.use(
-      http.get('/api/v1/activities', () => {
+      http.get('/ticketing/v1/activities', () => {
         return HttpResponse.json({
           size: mockEntries.length,
           nextCursor: null,
           activities: mockEntries.map(toRawActivity),
         });
       }),
-      http.patch('/api/v1/activities/:activityId/status', () => {
+      http.patch('/ticketing/v1/activities/:activityId/status', () => {
         return HttpResponse.json({});
       }),
-      http.delete('/api/v1/activities/:activityId', () => {
+      http.delete('/ticketing/v1/activities/:activityId', () => {
         return new HttpResponse(null, { status: 204 });
       }),
     );
@@ -103,7 +103,7 @@ describe('ActivityFeedStore', () => {
 
     it('sets hasMore based on nextCursor', async () => {
       server.use(
-        http.get('/api/v1/activities', () => {
+        http.get('/ticketing/v1/activities', () => {
           return HttpResponse.json({
             size: 1,
             nextCursor: 'cursor-1',
@@ -158,7 +158,7 @@ describe('ActivityFeedStore', () => {
 
     it('drops structurally incomplete entries', async () => {
       server.use(
-        http.get('/api/v1/activities', () => {
+        http.get('/ticketing/v1/activities', () => {
           return HttpResponse.json({
             size: 2,
             nextCursor: null,
@@ -180,7 +180,7 @@ describe('ActivityFeedStore', () => {
   describe('loadMoreActivities', () => {
     it('appends the next page and updates the cursor', async () => {
       server.use(
-        http.get('/api/v1/activities', ({ request }) => {
+        http.get('/ticketing/v1/activities', ({ request }) => {
           const url = new URL(request.url);
           if (url.searchParams.get('cursor')) {
             return HttpResponse.json({
@@ -243,7 +243,7 @@ describe('ActivityFeedStore', () => {
     it('handles errors gracefully', async () => {
       store.entries = mockEntries.map(entry => ({ ...entry }));
       server.use(
-        http.patch('/api/v1/activities/:activityId/status', () => {
+        http.patch('/ticketing/v1/activities/:activityId/status', () => {
           return HttpResponse.json({ error: 'Not found' }, { status: 404 });
         }),
       );
@@ -290,7 +290,7 @@ describe('ActivityFeedStore', () => {
     it('reverts optimistic updates when the API call fails', async () => {
       const originalStates = store.entries.map(e => e.read);
       server.use(
-        http.patch('/api/v1/activities/:activityId/status', () => {
+        http.patch('/ticketing/v1/activities/:activityId/status', () => {
           return HttpResponse.json({ error: 'Not found' }, { status: 404 });
         }),
       );
@@ -325,7 +325,7 @@ describe('ActivityFeedStore', () => {
       const initialLength = store.entries.length;
 
       server.use(
-        http.delete('/api/v1/activities/:activityId', () => {
+        http.delete('/ticketing/v1/activities/:activityId', () => {
           return HttpResponse.json({ error: 'Not found' }, { status: 404 });
         }),
       );

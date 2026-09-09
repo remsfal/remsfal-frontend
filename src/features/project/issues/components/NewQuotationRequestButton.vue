@@ -146,10 +146,10 @@ const onSubmit = async (event: FormSubmitEvent) => {
           <div class="flex items-start gap-2">
             <ContractorMultiSelect
               ref="contractorSelectRef"
+              v-model="selectedContractors"
               class="flex-1"
               inputId="contractors"
               :projectId="props.projectId"
-              v-model="selectedContractors"
               :invalid="contractorsInvalid"
               @blur="contractorsTouched = true"
             />

@@ -39,7 +39,7 @@ const mockActivities: ActivityFeedJson[] = [
 describe('ActivityFeedService', () => {
   beforeEach(() => {
     server.use(
-      http.get('/api/v1/activities', () => {
+      http.get('/ticketing/v1/activities', () => {
         return HttpResponse.json({
           size: mockActivities.length, nextCursor: null, activities: mockActivities 
         });
@@ -61,7 +61,7 @@ describe('ActivityFeedService', () => {
     let receivedLimit: string | null = null;
     let receivedCursor: string | null = null;
     server.use(
-      http.get('/api/v1/activities', ({ request }) => {
+      http.get('/ticketing/v1/activities', ({ request }) => {
         const url = new URL(request.url);
         receivedLimit = url.searchParams.get('limit');
         receivedCursor = url.searchParams.get('cursor');
@@ -81,7 +81,7 @@ describe('ActivityFeedService', () => {
     let statusCalled = false;
     let receivedRead: string | null = null;
     server.use(
-      http.patch('/api/v1/activities/:activityId/status', ({ params, request }) => {
+      http.patch('/ticketing/v1/activities/:activityId/status', ({ params, request }) => {
         statusCalled = true;
         expect(params.activityId).toBe('1');
         receivedRead = new URL(request.url).searchParams.get('read');
@@ -98,7 +98,7 @@ describe('ActivityFeedService', () => {
   it('should delete an activity via the API', async () => {
     let deleteCalled = false;
     server.use(
-      http.delete('/api/v1/activities/:activityId', ({ params }) => {
+      http.delete('/ticketing/v1/activities/:activityId', ({ params }) => {
         deleteCalled = true;
         expect(params.activityId).toBe('2');
         return new HttpResponse(null, { status: 204 });
