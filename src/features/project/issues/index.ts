@@ -11,4 +11,4 @@ export { default as IssueOrderManagementCard } from './components/IssueOrderMana
 export { default as QuotationRequestTable } from './components/QuotationRequestTable.vue';
 export { default as QuoteTable } from './components/QuoteTable.vue';
 export { default as OrderTable } from './components/OrderTable.vue';
-export { default as NewQuotationRequestDialog } from './components/NewQuotationRequestDialog.vue';
+export { default as NewQuotationRequestButton } from './components/NewQuotationRequestButton.vue';

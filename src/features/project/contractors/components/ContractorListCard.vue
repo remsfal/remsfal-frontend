@@ -6,7 +6,7 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import BaseCard from '@/components/BaseCard.vue';
 import NewContractorButton from '@/features/project/contractors/components/NewContractorButton.vue';
-import { type ContractorJson, projectContractorService } from '@/services/ProjectContractorService';
+import { type ContractorJson, contractorService } from '@/features/project/contractors/services/ContractorService';
 
 const props = defineProps<{ projectId: string }>();
 
@@ -25,7 +25,7 @@ const sortedContractors = computed(() =>
 const fetchContractors = async () => {
   isLoading.value = true;
   try {
-    const result = await projectContractorService.getContractors(props.projectId);
+    const result = await contractorService.getContractors(props.projectId);
     contractors.value = result.contractors ?? [];
   } catch (error) {
     console.error('Failed to fetch contractors', error);

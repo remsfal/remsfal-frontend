@@ -2,17 +2,17 @@
 import { ContractorBaseDataCard } from '@/features/project/contractors';
 import AddressCard from '@/components/AddressCard.vue';
 import type { AddressJson } from '@/services/AddressService';
-import { projectContractorService } from '@/services/ProjectContractorService';
+import { contractorService } from '@/features/project/contractors/services/ContractorService';
 
 const props = defineProps<{ projectId: string; contractorId: string }>();
 
 async function loadAddress(): Promise<AddressJson | undefined> {
-  const c = await projectContractorService.getContractor(props.projectId, props.contractorId);
+  const c = await contractorService.getContractor(props.projectId, props.contractorId);
   return c.address as AddressJson | undefined;
 }
 
 async function saveAddress(addr: AddressJson): Promise<void> {
-  await projectContractorService.updateContractor(props.projectId, props.contractorId, { address: addr });
+  await contractorService.updateContractor(props.projectId, props.contractorId, { address: addr });
 }
 </script>
 
