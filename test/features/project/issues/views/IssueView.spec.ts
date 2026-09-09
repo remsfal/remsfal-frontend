@@ -12,8 +12,8 @@ vi.mock(
   () => ({quotationRequestService: {getQuotationRequests: vi.fn().mockResolvedValue({ items: [] }),},})
 );
 vi.mock(
-  "@/services/ProjectContractorService",
-  () => ({projectContractorService: {getContractors: vi.fn().mockResolvedValue({ contractors: [] }),},})
+  "@/features/project/contractors/services/ContractorService",
+  () => ({contractorService: {getContractors: vi.fn().mockResolvedValue({ contractors: [] }),},})
 );
 
 vi.mock("primevue/usetoast", () => ({useToast: () => ({add: toastAddMock,}),}));

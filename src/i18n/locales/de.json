@@ -770,6 +770,8 @@
   "rentalAgreementSelect.placeholder": "Mietverhältnis suchen...",
   "rentalAgreementSelect.empty": "Keine Mietverhältnisse gefunden",
   "rentalAgreementSelect.unknownTenant": "Unbekannter Mieter",
+  "contractorMultiSelect.placeholder": "Auftragnehmer auswählen",
+  "contractorMultiSelect.noneAvailable": "Für diese Liegenschaft wurde noch kein Auftragnehmer angelegt",
   "rentalAgreement.step3.email": "E-Mail",
   "rentalAgreement.step3.mobilePhone": "Mobiltelefon",
   "rentalAgreement.step3.businessPhone": "Geschäftstelefon",

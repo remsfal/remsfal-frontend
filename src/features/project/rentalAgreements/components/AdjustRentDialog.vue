@@ -5,8 +5,7 @@ import { useAppToast } from '@/composables/useAppToast';
 import Button from 'primevue/button';
 import type { TreeNode } from 'primevue/treenode';
 import BaseDialog from '@/components/BaseDialog.vue';
-import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
-import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
+import { RentableUnitSelect, type UnitType } from '@/features/project/rentableUnits';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import RentalDetailsForm, { type RentalDetails } from './RentalDetailsForm.vue';

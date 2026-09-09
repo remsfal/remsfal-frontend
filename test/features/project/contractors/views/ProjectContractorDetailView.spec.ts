@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ProjectContractorDetailView from '@/features/project/contractors/views/ProjectContractorDetailView.vue';
-import { projectContractorService } from '@/services/ProjectContractorService';
+import { contractorService } from '@/features/project/contractors/services/ContractorService';
 
 vi.mock('@/features/project/contractors', () => ({
   ContractorBaseDataCard: {
@@ -19,14 +19,14 @@ vi.mock('@/components/AddressCard.vue', () => ({
 
 describe('ProjectContractorDetailView', () => {
   beforeEach(() => {
-    vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue({
+    vi.spyOn(contractorService, 'getContractor').mockResolvedValue({
       id: 'c-1',
       name: 'Test GmbH',
       address: {
         street: 'Teststr. 1', zip: '10115', city: 'Berlin', province: 'Berlin', countryCode: 'DE'
       },
     });
-    vi.spyOn(projectContractorService, 'updateContractor').mockResolvedValue({ id: 'c-1', name: 'Test GmbH' });
+    vi.spyOn(contractorService, 'updateContractor').mockResolvedValue({ id: 'c-1', name: 'Test GmbH' });
   });
 
   const mountView = () =>
@@ -60,7 +60,7 @@ describe('ProjectContractorDetailView', () => {
     const { loadAddress } = addressCard.props();
 
     const result = await loadAddress();
-    expect(projectContractorService.getContractor).toHaveBeenCalledWith('proj-1', 'c-1');
+    expect(contractorService.getContractor).toHaveBeenCalledWith('proj-1', 'c-1');
     expect(result).toEqual({
       street: 'Teststr. 1', zip: '10115', city: 'Berlin', province: 'Berlin', countryCode: 'DE'
     });
@@ -75,11 +75,11 @@ describe('ProjectContractorDetailView', () => {
       street: 'New St.', zip: '20000', city: 'Hamburg', countryCode: 'DE' 
     };
     await saveAddress(addr);
-    expect(projectContractorService.updateContractor).toHaveBeenCalledWith('proj-1', 'c-1', { address: addr });
+    expect(contractorService.updateContractor).toHaveBeenCalledWith('proj-1', 'c-1', { address: addr });
   });
 
   it('loadAddress returns undefined when contractor has no address', async () => {
-    vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue({ id: 'c-1', name: 'Test GmbH' });
+    vi.spyOn(contractorService, 'getContractor').mockResolvedValue({ id: 'c-1', name: 'Test GmbH' });
     const wrapper = mountView();
     const addressCard = wrapper.findComponent({ name: 'AddressCard' });
     const { loadAddress } = addressCard.props();

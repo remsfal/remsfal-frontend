@@ -36,7 +36,7 @@ export type Writable<T> =
             }
           : T;
 export interface paths {
-  "/api/v1/activities": {
+  "/ticketing/v1/activities": {
     parameters: {
       query?: never;
       header?: never;
@@ -106,7 +106,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/activities/{activityId}": {
+  "/ticketing/v1/activities/{activityId}": {
     parameters: {
       query?: never;
       header?: never;
@@ -164,7 +164,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/activities/{activityId}/status": {
+  "/ticketing/v1/activities/{activityId}/status": {
     parameters: {
       query?: never;
       header?: never;

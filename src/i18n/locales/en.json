@@ -768,6 +768,8 @@
   "rentalAgreementSelect.placeholder": "Search tenancy...",
   "rentalAgreementSelect.empty": "No tenancies found",
   "rentalAgreementSelect.unknownTenant": "Unknown tenant",
+  "contractorMultiSelect.placeholder": "Select contractors",
+  "contractorMultiSelect.noneAvailable": "No contractor has been added for this property yet",
   "rentalAgreement.step3.email": "Email",
   "rentalAgreement.step3.mobilePhone": "Mobile Phone",
   "rentalAgreement.step3.businessPhone": "Business Phone",

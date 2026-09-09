@@ -1,7 +1,7 @@
 export { default as IssueListView } from './views/IssueListView.vue';
 export { default as IssueView } from './views/IssueView.vue';
 export { default as NewIssueButton } from './components/NewIssueButton.vue';
-export { default as IssueTable } from './components/IssueTable.vue';
+export { default as IssueTable, type IssueColumn } from './components/IssueTable.vue';
 export { default as IssueDashboardCards } from './components/IssueDashboardCards.vue';
 export { default as IssueDetailsCard } from './components/IssueDetailsCard.vue';
 export { default as IssueDescriptionCard } from './components/IssueDescriptionCard.vue';
@@ -11,4 +11,6 @@ export { default as IssueOrderManagementCard } from './components/IssueOrderMana
 export { default as QuotationRequestTable } from './components/QuotationRequestTable.vue';
 export { default as QuoteTable } from './components/QuoteTable.vue';
 export { default as OrderTable } from './components/OrderTable.vue';
-export { default as NewQuotationRequestDialog } from './components/NewQuotationRequestDialog.vue';
+export { default as NewQuotationRequestButton } from './components/NewQuotationRequestButton.vue';
+export type { IssueItemJson, IssueStatus, IssueType } from './services/IssueService';
+export { useIssueList } from './composables/useIssueList';

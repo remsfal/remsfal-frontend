@@ -2441,7 +2441,7 @@
     }
   },
   "paths" : {
-    "/api/v1/activities" : {
+    "/ticketing/v1/activities" : {
       "get" : {
         "summary" : "Retrieve the caller's activity feed.",
         "description" : "Aggregates issue lifecycle events, tenant communication, chat messages, and quotation/order placement activity for issues the caller is assigned to, newest first.",
@@ -2530,7 +2530,7 @@
         } ]
       }
     },
-    "/api/v1/activities/{activityId}" : {
+    "/ticketing/v1/activities/{activityId}" : {
       "delete" : {
         "summary" : "Delete an activity for the authenticated user",
         "parameters" : [ {
@@ -2561,7 +2561,7 @@
         } ]
       }
     },
-    "/api/v1/activities/{activityId}/status" : {
+    "/ticketing/v1/activities/{activityId}/status" : {
       "patch" : {
         "summary" : "Update the read/unread status of an activity",
         "parameters" : [ {
