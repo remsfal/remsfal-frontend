@@ -19,16 +19,20 @@ vi.mock('vue-router', async (importOriginal) => {
 
 const quotationRequests: QuotationRequestJson[] = [
   {
-    id: 'qr-1', status: 'REQUESTED', scopeOfWork: 'Dachrinne reparieren', createdAt: '2026-01-01T10:00:00Z'
+    id: 'qr-1', issueId: 'issue-1', status: 'REQUESTED', scopeOfWork: 'Dachrinne reparieren',
+    createdAt: '2026-01-01T10:00:00Z'
   },
   {
-    id: 'qr-2', status: 'REQUESTED', scopeOfWork: 'Dach reparieren', createdAt: '2026-01-03T10:00:00Z'
+    id: 'qr-2', issueId: 'issue-2', status: 'REQUESTED', scopeOfWork: 'Dach reparieren',
+    createdAt: '2026-01-03T10:00:00Z'
   },
   {
-    id: 'qr-3', status: 'REQUESTED', scopeOfWork: 'Heizung prüfen', createdAt: '2026-01-02T10:00:00Z'
+    id: 'qr-3', issueId: 'issue-3', status: 'REQUESTED', scopeOfWork: 'Heizung prüfen',
+    createdAt: '2026-01-02T10:00:00Z'
   },
   {
-    id: 'qr-4', status: 'VIEWING_REQUIRED', scopeOfWork: 'Fenster prüfen', createdAt: '2026-01-04T10:00:00Z'
+    id: 'qr-4', issueId: 'issue-4', status: 'VIEWING_REQUIRED', scopeOfWork: 'Fenster prüfen',
+    createdAt: '2026-01-04T10:00:00Z'
   },
 ];
 
@@ -119,7 +123,7 @@ describe('OrderManagementDashboardCards', () => {
     expect(wrapper.findComponent(DataTable).exists()).toBe(false);
   });
 
-  it('navigates to the open orders page when a quotation request row is selected', async () => {
+  it('navigates to the quotation request details page when a quotation request row is selected', async () => {
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({ items: quotationRequests });
     vi.spyOn(orderPlacementService, 'getOrderPlacements').mockResolvedValue({ items: [] });
 
@@ -129,7 +133,10 @@ describe('OrderManagementDashboardCards', () => {
     const table = wrapper.findAllComponents(DataTable)[0]!;
     await table.vm.$emit('row-select', { data: quotationRequests[0] });
 
-    expect(routerMocks.push).toHaveBeenCalledWith({ name: 'ContractorOrdersOpen' });
+    expect(routerMocks.push).toHaveBeenCalledWith({
+      name: 'ContractorOrderDetails',
+      params: { issueId: 'issue-1' },
+    });
   });
 
   it('navigates to the open orders page when an order row is selected', async () => {
