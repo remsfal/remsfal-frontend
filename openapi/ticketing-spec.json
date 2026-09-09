@@ -539,11 +539,6 @@
             },
             "description" : "Timeline entries",
             "readOnly" : true
-          },
-          "visibleToTenant" : {
-            "type" : "boolean",
-            "description" : "Whether a new timeline entry can be sent to the tenant",
-            "readOnly" : true
           }
         }
       },
