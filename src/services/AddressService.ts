@@ -1,6 +1,6 @@
-import { apiClient, type ApiComponents} from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type AddressJson = ApiComponents['schemas']['AddressJson'];
+export type AddressJson = Readable<ApiComponents['schemas']['AddressJson']>;
 
 export default class AddressService {
 

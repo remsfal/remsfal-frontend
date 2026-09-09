@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 // PrimeVue Components
 import Dialog from 'primevue/dialog';
@@ -14,7 +14,7 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 
 // Services & Types
-import type { IssueCategory, IssueType } from '@/services/IssueService';
+import type { IssueCategory, IssueType } from '@/features/project/issues/services/IssueService';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -36,7 +36,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const userSessionStore = useUserSessionStore();
 
 // Stepper State
@@ -87,12 +87,6 @@ async function loadTenancies() {
     }
   } catch (error) {
     console.error('Error loading tenancies:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('error.apiRequest'),
-      life: 5000,
-    });
   } finally {
     loadingTenancies.value = false;
   }
@@ -137,7 +131,8 @@ function editStep(stepValue: string) {
 const reporterName = computed(() => {
   const firstName = userSessionStore.user?.firstName || '';
   const lastName = userSessionStore.user?.lastName || '';
-  return `${firstName} ${lastName}`.trim() || 'Unbekannt';
+  const fullName = `${firstName} ${lastName}`.trim();
+  return fullName || userSessionStore.user?.email || '';
 });
 
 // Generate Issue Title
@@ -233,24 +228,13 @@ async function handleSubmit() {
 
     let newIssue = await tenantIssueService.createIssueWithAttachment(issueData, formState.value.files);
 
-    toast.add({
-      severity: 'success',
-      summary: t('success.created'),
-      detail: t('tenantIssue.success'),
-      life: 4000,
-    });
+    appToast.success(t('tenantIssue.success'), { summary: t('success.created') });
 
     resetForm();
     emit('issueCreated', newIssue);
     emit('update:visible', false);
   } catch (error) {
     console.error('Failed to create issue:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('tenantIssue.error'),
-      life: 5000,
-    });
   } finally {
     isCreating.value = false;
   }

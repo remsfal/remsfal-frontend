@@ -7,7 +7,7 @@ meta:
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import ProjectDashboard from '@/views/project/ProjectDashboard.vue'
+import ProjectDashboard from '@/views/ProjectDashboard.vue'
 import { RentableUnitsKpiCards, type RentalUnitTreeNodeJson } from "@/features/project/rentableUnits";
 import { RentalAgreementKpiCards } from "@/features/project/rentalAgreements";
 import { IssueDashboardCards } from "@/features/project/issues";

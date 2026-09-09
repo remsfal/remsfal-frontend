@@ -6,7 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ProjectDashboard from '@/views/project/ProjectDashboard.vue'
+import ProjectDashboard from '@/views/ProjectDashboard.vue'
 </script>
 
 <template>

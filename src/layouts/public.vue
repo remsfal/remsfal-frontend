@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onBeforeUpdate, onMounted } from 'vue'
 import { useLayout } from '@/layouts/composables/layout'
-import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue'
 import AppFooter from '@/layouts/components/AppFooter.vue'
+import AppSimpleTopbar from '@/layouts/components/AppSimpleTopbar.vue'
 
 const { setFullscreen } = useLayout()
 onMounted(() => setFullscreen(true))
@@ -11,7 +11,7 @@ onBeforeUpdate(() => setFullscreen(true))
 
 <template>
   <div class="layout-wrapper">
-    <ManagerTopbar />
+    <AppSimpleTopbar />
     <div class="layout-main-container">
       <main>
         <div class="layout-main">

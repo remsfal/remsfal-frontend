@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import IssueTable, { type IssueColumn } from '../../issues/components/IssueTable.vue';
-import { issueService, type IssueItemJson } from '@/services/IssueService';
+import type { IssueItemJson } from '@/features/project/issues/services/IssueService';
+import { useIssueList } from '../../issues/composables/useIssueList';
 
 const props = defineProps<{
   projectId: string; agreementId: string;
@@ -12,32 +13,17 @@ const props = defineProps<{
 const router = useRouter();
 const { t } = useI18n();
 
-// Reactive state
-const issues = ref<IssueItemJson[]>([]);
-
-// --- Filters (status, type, assigneeId, agreementId) are applied server-side ---
-const loadIssues = async () => {
-  try {
-    const issueList = await issueService.getIssues(
-      props.projectId, undefined, undefined, undefined, props.agreementId,
-    );
-    issues.value = issueList?.issues ?? [];
-  } catch (err) {
-    console.error(err);
-  }
-};
+const { issues, loadIssues } = useIssueList();
 
 const columns = computed<IssueColumn[]>(() =>
   ['issueNumber', 'title', 'type', 'status', 'assignee', 'modifiedAt']
 );
 
-// --- Handle row selection ---
 const onIssueSelect = (issue: IssueItemJson) => {
   router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: issue.id ?? '' } });
 };
 
-// --- Initialize on mount ---
-onMounted(loadIssues);
+onMounted(() => loadIssues({ projectId: props.projectId, agreementId: props.agreementId }));
 </script>
 
 <template>
@@ -46,7 +32,6 @@ onMounted(loadIssues);
       {{ t('rentalAgreement.issue.heading.tasks') }}
     </template>
     <template #content>
-      <!-- Issues Table -->
       <IssueTable
         :issues="issues"
         :projectId="props.projectId"

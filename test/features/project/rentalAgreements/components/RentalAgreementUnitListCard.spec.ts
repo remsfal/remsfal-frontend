@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { mount, flushPromises } from '@vue/test-utils';
+import { mount, flushPromises, type VueWrapper } from '@vue/test-utils';
 import RentalAgreementUnitListCard from '@/features/project/rentalAgreements/components/RentalAgreementUnitListCard.vue';
 import AdjustRentDialog from '@/features/project/rentalAgreements/components/AdjustRentDialog.vue';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
@@ -12,6 +12,7 @@ import { apartmentService } from '@/features/project/rentableUnits/services/Apar
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
 import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const push = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }));
@@ -81,11 +82,15 @@ const UNIT_TYPE_CASES: Array<{ unitId: string; type: UnitType; view: string; tit
 ];
 
 describe('RentalAgreementUnitListCard', () => {
-  const mountCard = (agreement: RentalAgreementJson = baseAgreement) =>
-    mount(RentalAgreementUnitListCard, {
+  let mountedWrapper: VueWrapper | undefined;
+
+  const mountCard = (agreement: RentalAgreementJson = baseAgreement) => {
+    mountedWrapper = mount(RentalAgreementUnitListCard, {
       props: { projectId: 'proj-1', rentalAgreement: agreement },
       attachTo: document.body,
     });
+    return mountedWrapper;
+  };
 
   // Group header row for a unit renders its title inside a role="button" element
   // alongside its "Miete anpassen"/"Einheit löschen" buttons in the same table row.
@@ -97,10 +102,10 @@ describe('RentalAgreementUnitListCard', () => {
   };
 
   beforeEach(() => {
+    useRentableUnitsStore().$reset();
     vi.mocked(propertyService.getProperty).mockResolvedValue({
       id: 'prop-1', title: 'Haupthaus', type: 'PROPERTY'
     });
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({ properties: [] });
     vi.mocked(siteService.getSite).mockResolvedValue({
       id: 'site-1', title: 'Garten', type: 'SITE'
     });
@@ -121,6 +126,8 @@ describe('RentalAgreementUnitListCard', () => {
   });
 
   afterEach(() => {
+    mountedWrapper?.unmount();
+    mountedWrapper = undefined;
     document.body.innerHTML = '';
   });
 
@@ -273,7 +280,7 @@ describe('RentalAgreementUnitListCard', () => {
     expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('shows an error toast when removing a unit fails and still closes the dialog', async () => {
+  it('logs, shows no toast, and still closes the dialog when removing a unit fails', async () => {
     vi.mocked(rentalAgreementService.removeRentalUnit).mockRejectedValue(new Error('network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -288,7 +295,8 @@ describe('RentalAgreementUnitListCard', () => {
     confirmDeleteBtn.click();
     await flushPromises();
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     expect(document.querySelector('.p-dialog')).toBeNull();
     consoleSpy.mockRestore();
   });
@@ -442,7 +450,7 @@ describe('RentalAgreementUnitListCard', () => {
     expect(wrapper.text()).toContain('300,00');
   });
 
-  it('shows an error toast with a non-Error rejection when removing a unit fails', async () => {
+  it('logs and shows no toast with a non-Error rejection when removing a unit fails', async () => {
     vi.mocked(rentalAgreementService.removeRentalUnit).mockRejectedValue('boom');
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -457,7 +465,8 @@ describe('RentalAgreementUnitListCard', () => {
     confirmDeleteBtn.click();
     await flushPromises();
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 

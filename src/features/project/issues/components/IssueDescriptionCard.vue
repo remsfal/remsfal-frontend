@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useI18n } from 'vue-i18n';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueWritableJson } from '@/features/project/issues/services/IssueService';
 
 const props = defineProps<{
   projectId: string;
@@ -15,7 +15,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ saved: [] }>();
 
-const toast = useToast();
+const appToast = useAppToast();
 const { t } = useI18n();
 
 /* Local reactive state */
@@ -40,7 +40,7 @@ const handleSave = async () => {
 
   loadingSave.value = true;
   try {
-    const payload: Partial<IssueJson> = { description: description.value };
+    const payload: IssueWritableJson = { description: description.value };
 
     // Call backend API
     await issueService.updateIssue(props.issueId, payload);
@@ -48,17 +48,12 @@ const handleSave = async () => {
     // Update reference state after successful save
     originalDescription.value = description.value;
 
-    toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('issueDetails.descriptionSaveSuccess'), life: 3000
-    });
+    appToast.success(t('issueDetails.descriptionSaveSuccess'), { summary: t('success.saved') });
 
     // Emit saved event to parent
     emit('saved');
   } catch (error) {
     console.error('Error saving description:', error);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('issueDetails.descriptionSaveError'), life: 3000
-    });
   } finally {
     loadingSave.value = false;
   }

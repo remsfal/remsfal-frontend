@@ -3,8 +3,8 @@ import { mount, flushPromises } from '@vue/test-utils';
 import ProjectContractorDetailPage from '@/pages/projects/[projectId]/contractors/[contractorId].vue';
 import router from '@/router';
 
-vi.mock('@/views/project/ProjectContractorDetailView.vue', () => ({
-  default: {
+vi.mock('@/features/project/contractors', () => ({
+  ProjectContractorDetailView: {
     name: 'ProjectContractorDetailView',
     template: '<div data-test="project-contractor-detail-view" />',
     props: ['projectId', 'contractorId'],

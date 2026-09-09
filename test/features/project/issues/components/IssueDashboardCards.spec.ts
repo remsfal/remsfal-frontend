@@ -1,7 +1,7 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import IssueDashboardCards from '@/features/project/issues/components/IssueDashboardCards.vue';
-import { issueService, type IssueItemJson } from '@/services/IssueService';
+import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const addMock = vi.fn();
@@ -12,8 +12,10 @@ vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }));
 
 vi.mock('vue-i18n', () => ({useI18n: () => ({ t: (key: string) => key }),}));
 
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>('@/services/IssueService');
+vi.mock('@/features/project/issues/services/IssueService', async () => {
+  const actual = await vi.importActual<
+    typeof import('@/features/project/issues/services/IssueService')
+      >('@/features/project/issues/services/IssueService');
   return {
     ...actual,
     issueService: { getIssues: vi.fn() },
@@ -134,8 +136,9 @@ describe('IssueDashboardCards', () => {
     expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(true);
   });
 
-  it('shows a toast and an empty urgent card when only the urgent fetch fails, without affecting the recent card',
+  it('logs and shows no toast, with an empty urgent card, when only the urgent fetch fails, without affecting the recent card',
     async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, status) => {
         if (!Array.isArray(status)) return { size: 1, issues: [issue({ id: 'mine' })] };
         throw new Error('fail');
@@ -144,9 +147,29 @@ describe('IssueDashboardCards', () => {
       wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
       await flushPromises();
 
-      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+      expect(addMock).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalled();
       expect(wrapper.findAll('[data-testid="issue-dashboard-urgent-row"]')).toHaveLength(0);
       expect(wrapper.findAll('[data-testid="issue-dashboard-recent-row"]')).toHaveLength(1);
+      consoleErrorSpy.mockRestore();
+    });
+
+  it('logs and shows no toast, with an empty recent card, when only the recent fetch fails, without affecting the urgent card',
+    async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, status) => {
+        if (Array.isArray(status)) return { size: 1, issues: [issue({ id: 'mine' })] };
+        throw new Error('fail');
+      });
+
+      wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
+      await flushPromises();
+
+      expect(addMock).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(wrapper.findAll('[data-testid="issue-dashboard-urgent-row"]')).toHaveLength(1);
+      expect(wrapper.findAll('[data-testid="issue-dashboard-recent-row"]')).toHaveLength(0);
+      consoleErrorSpy.mockRestore();
     });
 
   it('renders fewer than 5 rows when fewer active issues exist', async () => {

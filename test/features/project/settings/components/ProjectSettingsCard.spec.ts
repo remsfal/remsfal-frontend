@@ -87,21 +87,18 @@ describe('ProjectSettingsCard.vue', () => {
     expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {title: 'Updated Project',});
   });
 
-  test('shows error toast on update failure', async () => {
+  test('logs and shows no toast on update failure', async () => {
     vi.spyOn(projectService, 'updateProject').mockRejectedValue(new Error('fail'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await wrapper.find('#name').setValue('Broken Project');
 
     await wrapper.find('button').trigger('click');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        severity: 'error',
-        summary: expect.any(String),
-        detail: expect.any(String),
-      }),
-    );
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   test('shows loading state during save', async () => {

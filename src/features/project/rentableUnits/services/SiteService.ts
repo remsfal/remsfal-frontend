@@ -1,6 +1,6 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type SiteJson = ApiComponents['schemas']['SiteJson'];
+export type SiteJson = Readable<ApiComponents['schemas']['SiteJson']>;
 
 export default class SiteService {
   // Create a new site

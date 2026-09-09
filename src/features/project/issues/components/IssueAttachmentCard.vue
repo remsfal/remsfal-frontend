@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useI18n } from 'vue-i18n';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 import type { FileUploadUploaderEvent } from 'primevue/fileupload';
 import Image from 'primevue/image';
-import { issueService, type IssueAttachmentJson } from '@/services/IssueService';
+import { issueService, type IssueAttachmentJson } from '@/features/project/issues/services/IssueService';
+import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';
 
 const props = defineProps<{
   issueId: string;
@@ -16,21 +17,19 @@ const props = defineProps<{
 
 const emit = defineEmits<{ saved: [] }>();
 
-const toast = useToast();
+const appToast = useAppToast();
 const { t } = useI18n();
 
 const loadingUpload = ref(false);
 const deletingAttachmentId = ref<string | null>(null);
 
-const imageAttachments = computed(() => props.attachments.filter(
-  attachment => attachment.contentType?.startsWith('image/')
-));
+const imageAttachments = computed(() => props.attachments.filter(isImageAttachment));
 
 const nonImageAttachmentGroups = computed(() => {
   const groups = new Map<string, number>();
   for (const attachment of props.attachments) {
-    if (attachment.contentType?.startsWith('image/')) continue;
-    const ext = attachment.fileName?.split('.').pop()?.toUpperCase() ?? '?';
+    if (isImageAttachment(attachment)) continue;
+    const ext = getAttachmentTypeLabel(attachment);
     groups.set(ext, (groups.get(ext) ?? 0) + 1);
   }
   return Array.from(groups.entries()).map(([ext, count]) => ({ ext, count }));
@@ -52,21 +51,10 @@ async function handleUpload(event: FileUploadUploaderEvent) {
   loadingUpload.value = true;
   try {
     await issueService.uploadAttachments(props.issueId, files as File[]);
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.attachmentsUploadSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.attachmentsUploadSuccess'), { summary: t('success.saved') });
     emit('saved');
   } catch (error) {
     console.error('Error uploading attachments:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.attachmentsUploadError'),
-      life: 3000,
-    });
   } finally {
     loadingUpload.value = false;
   }
@@ -78,21 +66,10 @@ async function handleDelete(attachment: IssueAttachmentJson) {
   deletingAttachmentId.value = attachment.attachmentId;
   try {
     await issueService.deleteAttachment(props.issueId, attachment.attachmentId);
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.attachmentDeleteSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.attachmentDeleteSuccess'), { summary: t('success.saved') });
     emit('saved');
   } catch (error) {
     console.error('Error deleting attachment:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.attachmentDeleteError'),
-      life: 3000,
-    });
   } finally {
     deletingAttachmentId.value = null;
   }

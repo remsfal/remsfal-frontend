@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import NewOrganizationDialog from '@/features/common/organizations/components/NewOrganizationDialog.vue';
-import PhoneInputComponent from '@/components/common/PhoneInput.vue';
+import PhoneInputComponent from '@/components/PhoneInput.vue';
 import { organizationService } from '@/services/OrganizationService';
 
 const DialogStub = {
@@ -103,6 +103,37 @@ describe('NewOrganizationDialog', () => {
       await flushPromises();
 
       expect(organizationService.createOrganization).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onSubmit', () => {
+    it('creates the organization and closes the dialog on success', async () => {
+      vi.spyOn(organizationService, 'createOrganization').mockResolvedValue(undefined);
+      const wrapper = mountDialog();
+
+      await wrapper.find('input[name="name"]').setValue('Test Organization');
+      await wrapper.find('form').trigger('submit');
+      await flushPromises();
+
+      expect(organizationService.createOrganization).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'Test Organization' }),
+      );
+      expect(wrapper.emitted('update:visible')).toBeTruthy();
+    });
+
+    it('logs and does not emit update:visible when createOrganization fails', async () => {
+      vi.spyOn(organizationService, 'createOrganization').mockRejectedValue(new Error('boom'));
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const wrapper = mountDialog();
+
+      await wrapper.find('input[name="name"]').setValue('Test Organization');
+      await wrapper.find('form').trigger('submit');
+      await flushPromises();
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to create organization:', expect.any(Error));
+      expect(wrapper.emitted('update:visible')).toBeFalsy();
+
+      consoleErrorSpy.mockRestore();
     });
   });
 

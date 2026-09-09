@@ -1,6 +1,6 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type BuildingJson = ApiComponents['schemas']['BuildingJson'];
+export type BuildingJson = Readable<ApiComponents['schemas']['BuildingJson']>;
 
 export default class BuildingService {
   // Create a new building

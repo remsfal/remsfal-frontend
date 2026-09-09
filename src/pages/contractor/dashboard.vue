@@ -6,9 +6,14 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ContractorDashboard from '@/views/contractor/ContractorDashboard.vue'
+import { OrderManagementDashboardCards } from '@/features/contractor/orderManagement'
+import { OrganizationDashboardCards } from '@/features/contractor/organizations'
+import { useOrganizationStore } from '@/stores/OrganizationStore'
+
+const organizationStore = useOrganizationStore()
 </script>
 
 <template>
-  <ContractorDashboard />
+  <OrganizationDashboardCards />
+  <OrderManagementDashboardCards v-if="organizationStore.userEmployments.length > 0" />
 </template>

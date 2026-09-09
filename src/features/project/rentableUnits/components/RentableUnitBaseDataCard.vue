@@ -10,7 +10,7 @@ import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent, FormProps } from '@primevue/forms';
 
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 
 defineProps<{
   cardTitle: string;

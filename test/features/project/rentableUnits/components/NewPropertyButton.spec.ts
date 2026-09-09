@@ -149,7 +149,7 @@ describe('NewPropertyButton.vue', () => {
     });
   });
 
-  it('shows an error toast and logs when creation fails', async () => {
+  it('logs and shows no toast when creation fails', async () => {
     vi.mocked(propertyService.createProperty).mockRejectedValue(new Error('network error'));
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -159,7 +159,7 @@ describe('NewPropertyButton.vue', () => {
     await flushPromises();
 
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to create property:', expect.any(Error));
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
     expect(wrapper.emitted('newUnit')).toBeFalsy();
 
     consoleErrorSpy.mockRestore();

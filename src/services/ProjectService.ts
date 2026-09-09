@@ -1,8 +1,9 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 
-export type ProjectListJson = ApiComponents['schemas']['ProjectListJson'];
+export type ProjectListJson = Readable<ApiComponents['schemas']['ProjectListJson']>;
 export type ProjectItem = NonNullable<ProjectListJson['projects']>[number];
-export type ProjectJson = ApiComponents['schemas']['ProjectJson'];
+export type ProjectJson = Readable<ApiComponents['schemas']['ProjectJson']>;
+export type ProjectWritableJson = Writable<ApiComponents['schemas']['ProjectJson']>;
 
 export default class ProjectService {
   // Get projects with pagination
@@ -41,7 +42,7 @@ export default class ProjectService {
   }
 
   // Update a project
-  async updateProject(projectId: string, data: ProjectJson): Promise<ProjectJson> {
+  async updateProject(projectId: string, data: ProjectWritableJson): Promise<ProjectJson> {
     const updated = await apiClient.patch('/api/v1/projects/{projectId}', data, {pathParams: { projectId },}) as ProjectJson;
     console.log('PATCH update project:', updated);
     return updated;

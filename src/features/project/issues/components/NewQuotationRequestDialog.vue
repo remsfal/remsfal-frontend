@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
@@ -10,8 +10,9 @@ import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
-import BaseDialog from '@/components/common/BaseDialog.vue';
-import { quotationRequestService, type CreateQuotationRequestJson } from '@/services/QuotationRequestService';
+import BaseDialog from '@/components/BaseDialog.vue';
+import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
+import type { CreateQuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
 import { type ContractorJson, projectContractorService } from '@/services/ProjectContractorService';
 import { projectService } from '@/services/ProjectService';
 import type { AddressJson } from '@/services/AddressService';
@@ -20,7 +21,7 @@ const props = defineProps<{ projectId: string; issueId: string }>();
 const emit = defineEmits<(e: 'created') => void>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const visible = ref(false);
 const contractors = ref<ContractorJson[]>([]);
@@ -90,19 +91,9 @@ const onSubmit = async (event: FormSubmitEvent) => {
     visible.value = false;
     resetForm();
     emit('created');
-    toast.add({
-      severity: 'success',
-      summary: t('quotationRequest.createSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('quotationRequest.createSuccess'));
   } catch (error) {
     console.error('Failed to create quotation request:', error instanceof Error ? error.message : error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('quotationRequest.createError'),
-      life: 5000,
-    });
   }
 };
 </script>

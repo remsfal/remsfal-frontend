@@ -6,23 +6,21 @@ import RentalAgreementUnitListCard from '../components/RentalAgreementUnitListCa
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import Button from 'primevue/button';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
-import DangerZoneCard from "@/components/common/DangerZoneCard.vue";
-import {useToast} from "primevue/usetoast";
+import DangerZoneCard from "@/components/DangerZoneCard.vue";
+import { useAppToast } from '@/composables/useAppToast';
 
 const props = defineProps<{
-  projectId: string; agreementId: string; status?: IssueStatus; type?: IssueType; assigneeId?: string;
+  projectId: string; agreementId: string;
 }>();
 
 const { t } = useI18n();
 const router = useRouter();
-const issues = ref<IssueItemJson[]>([]);
-const toast = useToast();
+const appToast = useAppToast();
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreementJson | null>(null);
@@ -77,35 +75,13 @@ function redirectToRentalAgreementList() {
   router.push({ name: 'RentalAgreementView', params: { projectId: props.projectId } });
 }
 
-const loadIssues = async () => {
-  try {
-    const issueList = await issueService.getIssues(props.projectId, props.status, props.type, props.assigneeId);
-    issues.value = issueList?.issues ?? [];
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-onMounted(loadIssues);
-
 const deleteAgreement = async () => {
   try {
     await rentalAgreementService.deleteRentalAgreement(props.projectId, props.agreementId);
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('rentalAgreement.dangerZone.deleteSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('rentalAgreement.dangerZone.deleteSuccess'), { summary: t('success.saved') });
     redirectToRentalAgreementList();
   } catch (err) {
     console.error('Error deleting rental agreement:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentalAgreement.dangerZone.deleteError'),
-      life: 6000,
-    });
   }
 };
 

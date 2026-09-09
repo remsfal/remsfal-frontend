@@ -1,27 +1,27 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
-import BaseCard from '@/components/common/BaseCard.vue';
-import PhoneInput from '@/components/common/PhoneInput.vue';
+import BaseCard from '@/components/BaseCard.vue';
+import PhoneInput from '@/components/PhoneInput.vue';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
 import Skeleton from 'primevue/skeleton';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import { userService } from '@/features/common/users/services/UserService';
 import { type Locale } from '@/i18n/i18n';
-import { toISODateString } from '@/helper/dataHelper';
+import { toISODateString } from '@/helper/dateHelper';
 
 const { t } = useI18n();
 const i18n = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const nameRegex = /^[A-Za-zÄÖÜäöüß\s]+$/;
 const phoneRegex = /^\+[1-9]\d{4,14}$/;
@@ -223,22 +223,11 @@ async function onSubmit(event: FormSubmitEvent) {
     altEmailSuccess.value = true;
     altEmailError.value = false;
 
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('accountSettings.userProfile.saveSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('accountSettings.userProfile.saveSuccess'), { summary: t('success.saved') });
   } catch (error) {
     console.error('Failed to update user profile', error);
     altEmailSuccess.value = false;
     altEmailError.value = true;
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('accountSettings.userProfile.saveError'),
-      life: 4000,
-    });
   }
 }
 </script>

@@ -21,7 +21,6 @@ const mockPropertyTree: PropertyListJson = {
   properties: [
     {
       key: 'property-1',
-      id: 'property-1',
       data: {
         title: 'Main Property',
         type: EntityType.Property,

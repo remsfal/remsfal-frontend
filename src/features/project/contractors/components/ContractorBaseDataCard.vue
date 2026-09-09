@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -10,14 +10,14 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
-import BaseCard from '@/components/common/BaseCard.vue';
-import PhoneInput from '@/components/common/PhoneInput.vue';
+import BaseCard from '@/components/BaseCard.vue';
+import PhoneInput from '@/components/PhoneInput.vue';
 import { projectContractorService } from '@/services/ProjectContractorService';
 
 const props = defineProps<{ projectId: string; contractorId: string }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
@@ -63,7 +63,7 @@ onMounted(async () => {
   try {
     const c = await projectContractorService.getContractor(props.projectId, props.contractorId);
     const loaded = {
-      companyName: c.companyName ?? '',
+      companyName: c.name ?? '',
       email: c.email ?? '',
       phone: c.phone ?? '',
       contactPerson: c.contactPerson ?? '',
@@ -85,7 +85,7 @@ async function onSubmit(event: FormSubmitEvent) {
   if (!event.valid || phoneError.value) return;
   const s = event.states;
   const payload = {
-    companyName: s.companyName?.value || undefined,
+    name: s.companyName?.value || undefined,
     email: currentValues.email || undefined,
     phone: currentValues.phone || undefined,
     contactPerson: currentValues.contactPerson || undefined,
@@ -95,7 +95,7 @@ async function onSubmit(event: FormSubmitEvent) {
   try {
     const updated = await projectContractorService.updateContractor(props.projectId, props.contractorId, payload);
     const saved = {
-      companyName: updated.companyName ?? '',
+      companyName: updated.name ?? '',
       email: updated.email ?? '',
       phone: updated.phone ?? '',
       contactPerson: updated.contactPerson ?? '',
@@ -106,13 +106,9 @@ async function onSubmit(event: FormSubmitEvent) {
     Object.assign(currentValues, saved);
     initialValues.value = { ...saved };
     formKey.value++;
-    toast.add({
-      severity: 'success', summary: t('contractor.detail.saveSuccess'), life: 3000 
-    });
-  } catch {
-    toast.add({
-      severity: 'error', summary: t('contractor.detail.saveError'), life: 4000 
-    });
+    appToast.success(t('contractor.detail.saveSuccess'));
+  } catch (error) {
+    console.error('Failed to save contractor:', error);
   }
 }
 </script>

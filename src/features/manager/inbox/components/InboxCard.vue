@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import { useInboxStore } from '../stores/InboxStore';
 import type { InboxMessage } from '../services/InboxService';
 import InboxSidebar, { type CustomFilter } from './InboxSidebar.vue';

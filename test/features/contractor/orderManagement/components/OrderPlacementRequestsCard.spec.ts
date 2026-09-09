@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import OrderPlacementRequestsCard from '@/features/contractor/orderManagement/components/OrderPlacementRequestsCard.vue';
-import { orderPlacementService, type OrderPlacementJson } from '@/services/OrderPlacementService';
+import { orderPlacementService } from '@/features/contractor/orderManagement/services/OrderPlacementService';
+import type { OrderPlacementJson } from '@/features/contractor/orderManagement/services/OrderPlacementService';
 
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
@@ -112,7 +113,7 @@ describe('OrderPlacementRequestsCard', () => {
     expect(updateSpy).toHaveBeenCalledWith('op-1', 'REJECTED');
   });
 
-  it('shows error toast when updateOrderPlacementStatus fails', async () => {
+  it('logs and shows no toast when updateOrderPlacementStatus fails', async () => {
     vi.spyOn(orderPlacementService, 'updateOrderPlacementStatus').mockRejectedValue(new Error('fail'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
@@ -121,7 +122,8 @@ describe('OrderPlacementRequestsCard', () => {
       .find((b) => b.text().includes('Bestätigen'));
     await button!.trigger('click');
     await flushPromises();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 });

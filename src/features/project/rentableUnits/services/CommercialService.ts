@@ -1,6 +1,6 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type CommercialJson = ApiComponents['schemas']['CommercialJson'];
+export type CommercialJson = Readable<ApiComponents['schemas']['CommercialJson']>;
 
 export default class CommercialService {
   // Create a new commercial unit

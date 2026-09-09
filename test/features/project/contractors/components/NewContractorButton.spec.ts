@@ -131,7 +131,7 @@ describe('NewContractorButton', () => {
     await flushPromises();
 
     expect(projectContractorService.createContractor).toHaveBeenCalledWith(
-      'proj-1', expect.objectContaining({ companyName: 'Test GmbH', remarks: 'Handles roofing jobs' }),
+      'proj-1', expect.objectContaining({ name: 'Test GmbH', remarks: 'Handles roofing jobs' }),
     );
     expect(wrapper.emitted('newContractor')).toBeTruthy();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
@@ -154,7 +154,7 @@ describe('NewContractorButton', () => {
     await flushPromises();
 
     expect(projectContractorService.createContractor).toHaveBeenCalledWith('proj-1', {
-      companyName: 'Minimal GmbH',
+      name: 'Minimal GmbH',
       email: undefined,
       phone: undefined,
       contactPerson: undefined,
@@ -163,7 +163,7 @@ describe('NewContractorButton', () => {
     });
   });
 
-  it('shows error toast when createContractor fails', async () => {
+  it('logs and shows no toast when createContractor fails', async () => {
     vi.spyOn(projectContractorService, 'createContractor').mockRejectedValue(new Error('API error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -172,12 +172,13 @@ describe('NewContractorButton', () => {
     await form.vm.$emit('submit', {
       valid: true,
       states: {
-        companyName: { value: 'Test GmbH' }, email: { value: '' }, contactPerson: { value: '' }, trade: { value: '' } 
+        companyName: { value: 'Test GmbH' }, email: { value: '' }, contactPerson: { value: '' }, trade: { value: '' }
       },
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 

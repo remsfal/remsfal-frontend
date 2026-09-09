@@ -5,7 +5,7 @@ const API_BASE = '/api/v1';
 export const mockContractor = {
   id: 'contractor-1',
   projectId: 'project-1',
-  companyName: 'Mustermann Bau GmbH',
+  name: 'Mustermann Bau GmbH',
   email: 'info@mustermann-bau.de',
   phone: '+4930123456',
   trade: 'Bauarbeiten',

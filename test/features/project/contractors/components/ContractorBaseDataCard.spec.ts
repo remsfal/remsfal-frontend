@@ -6,7 +6,7 @@ import { projectContractorService } from '@/services/ProjectContractorService';
 
 const mockContractor = {
   id: 'c-1',
-  companyName: 'Test GmbH',
+  name: 'Test GmbH',
   email: 'test@test.de',
   phone: '+4930123456',
   contactPerson: 'Max Muster',
@@ -175,8 +175,9 @@ describe('ContractorBaseDataCard', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('shows error toast when updateContractor throws', async () => {
+  it('logs and shows no toast when updateContractor throws', async () => {
     vi.spyOn(projectContractorService, 'updateContractor').mockRejectedValue(new Error('Save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
     await flushPromises();
 
@@ -187,7 +188,9 @@ describe('ContractorBaseDataCard', () => {
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('does not call updateContractor when form is invalid', async () => {
@@ -217,5 +220,68 @@ describe('ContractorBaseDataCard', () => {
     await flushPromises();
 
     expect(projectContractorService.updateContractor).not.toHaveBeenCalled();
+  });
+
+  it('falls back to empty values when the loaded contractor has no fields', async () => {
+    vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue({ id: 'c-1' });
+    const wrapper = mountCard();
+    await flushPromises();
+
+    expect((wrapper.find('input[name="companyName"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="email"]').element as HTMLInputElement).value).toBe('');
+  });
+
+  it('sends name as undefined when the companyName field is cleared', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: { companyName: { value: '' } },
+    });
+    await flushPromises();
+
+    expect(projectContractorService.updateContractor).toHaveBeenCalledWith(
+      'proj-1', 'c-1', expect.objectContaining({ name: undefined }),
+    );
+  });
+
+  it('sends the optional fields as undefined when they are all empty', async () => {
+    vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue({ id: 'c-1' });
+    const wrapper = mountCard();
+    await flushPromises();
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: { companyName: { value: 'Some GmbH' } },
+    });
+    await flushPromises();
+
+    expect(projectContractorService.updateContractor).toHaveBeenCalledWith('proj-1', 'c-1', {
+      name: 'Some GmbH',
+      email: undefined,
+      phone: undefined,
+      contactPerson: undefined,
+      trade: undefined,
+      remarks: undefined,
+    });
+  });
+
+  it('falls back to empty values when updateContractor response has no fields', async () => {
+    vi.spyOn(projectContractorService, 'updateContractor').mockResolvedValue({ id: 'c-1' });
+    const wrapper = mountCard();
+    await flushPromises();
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: { companyName: { value: 'Updated GmbH' } },
+    });
+    await flushPromises();
+
+    expect((wrapper.find('input[name="companyName"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="email"]').element as HTMLInputElement).value).toBe('');
   });
 });

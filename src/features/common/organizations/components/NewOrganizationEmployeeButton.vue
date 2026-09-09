@@ -8,16 +8,14 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
-import { type OrganizationEmployeeJson, type EmployeeRole, organizationService } from '@/services/OrganizationService';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import { type OrganizationEmployeeWritableJson, type EmployeeRole, organizationService } from '@/services/OrganizationService';
+import BaseDialog from '@/components/BaseDialog.vue';
 
 const props = defineProps<{ organizationId: string }>();
 const emit = defineEmits<(e: 'newEmployee', email: string) => void>();
 
 const { t } = useI18n();
-const toast = useToast();
 
 const visible = ref(false);
 
@@ -53,7 +51,7 @@ const onSubmit = (event: FormSubmitEvent) => {
 const addEmployee = async (email: string, employeeRole: EmployeeRole) => {
   visible.value = false;
 
-  const employee: OrganizationEmployeeJson = {
+  const employee: OrganizationEmployeeWritableJson = {
     email,
     employeeRole,
   };
@@ -64,12 +62,6 @@ const addEmployee = async (email: string, employeeRole: EmployeeRole) => {
     resetForm();
   } catch (error) {
     console.error('Failed to add employee:', error instanceof Error ? error.message : error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('organization.newEmployeeButton.errorAdd'),
-      life: 5000,
-    });
   }
 };
 </script>

@@ -17,6 +17,7 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 const mockProfile = {
+  id: 'user-1',
   email: 'primary@example.com',
   firstName: 'Max',
   lastName: 'Mustermann',
@@ -91,7 +92,8 @@ describe('UserContactDataCard', () => {
 
   test('falls back to empty defaults when optional profile fields are missing', async () => {
     vi.mocked(userService.getUser).mockResolvedValue({
-      email: undefined,
+      id: 'user-1',
+      email: '',
       firstName: '',
       lastName: '',
       placeOfBirth: '',
@@ -241,7 +243,8 @@ describe('UserContactDataCard', () => {
     wrapper = mountCard();
     await flushPromises();
     vi.mocked(userService.updateUser).mockResolvedValue({
-      email: undefined,
+      id: 'user-1',
+      email: '',
       firstName: '',
       lastName: '',
       placeOfBirth: undefined,
@@ -326,7 +329,7 @@ describe('UserContactDataCard', () => {
     expect(userService.updateUser).not.toHaveBeenCalled();
   });
 
-  test('shows an error toast when saving fails', async () => {
+  test('logs and shows no toast when saving fails', async () => {
     await flushPromises();
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(userService.updateUser).mockRejectedValue(new Error('save failed'));
@@ -335,12 +338,13 @@ describe('UserContactDataCard', () => {
     await form.vm.$emit('submit', {
       valid: true,
       states: {
-        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' } 
+        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' }
       },
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     consoleErrorSpy.mockRestore();
   });
 

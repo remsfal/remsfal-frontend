@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import { quotationService, type QuotationJson } from '@/features/project/issues/services/QuotationService';
-import { orderPlacementService } from '@/services/OrderPlacementService';
+import { orderPlacementService } from '@/features/project/issues/services/OrderPlacementService';
 
 const props = defineProps<{ issueId: string }>();
 
 const { t, d } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const quotations = ref<QuotationJson[]>([]);
 
@@ -28,20 +28,10 @@ async function placeOrder(quotation: QuotationJson) {
   if (!quotation.id) return;
   try {
     await orderPlacementService.placeOrder(props.issueId, quotation.id);
-    toast.add({
-      severity: 'success',
-      summary: t('quotation.placeOrderSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('quotation.placeOrderSuccess'));
     await fetchQuotations();
   } catch (error) {
     console.error('Failed to place order:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('quotation.placeOrderError'),
-      life: 5000,
-    });
   }
 }
 

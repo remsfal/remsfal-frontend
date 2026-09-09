@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 // PrimeVue Components
 import Dialog from 'primevue/dialog';
@@ -13,9 +13,9 @@ import StepPanel from 'primevue/steppanel';
 
 // Services & Types
 import {rentalAgreementService,
-  type RentalAgreementJson,
-  type TenantJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import type { ApiComponents } from '@/services/ApiClient';
+  type RentalAgreementWritableJson,
+  type TenantWritableJson,
+  type RentJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import type { SelectedUnit } from './Step2UnitsForm.vue';
 
 // Step Components
@@ -23,9 +23,6 @@ import Step1DatesForm from './Step1DatesForm.vue';
 import Step2UnitsForm from './Step2UnitsForm.vue';
 import Step3TenantsForm from './Step3TenantsForm.vue';
 import Step4Summary from './Step4Summary.vue';
-
-// Extract RentJson type from API
-type RentJson = ApiComponents['schemas']['RentJson'];
 
 // Props & Emits
 const props = defineProps<{
@@ -39,7 +36,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 // Stepper State
 const currentStep = ref<string>('1');
@@ -49,7 +46,7 @@ const formState = ref<{
   startOfRental: string | null;
   endOfRental: string | null;
   selectedUnits: SelectedUnit[];
-  tenants: TenantJson[];
+  tenants: TenantWritableJson[];
 }>({
   startOfRental: null,
   endOfRental: null,
@@ -89,7 +86,7 @@ function toRentJson(unit: SelectedUnit, state: typeof formState.value): RentJson
 // Transform Form Data to RentalAgreement API Schema
 function transformFormDataToRentalAgreement(
   state: typeof formState.value,
-): RentalAgreementJson {
+): RentalAgreementWritableJson {
   // Group units by type
   const propertyRents: RentJson[] = [];
   const siteRents: RentJson[] = [];
@@ -124,7 +121,7 @@ function transformFormDataToRentalAgreement(
   });
 
   // Transform tenants
-  const tenants: TenantJson[] = state.tenants.map((tenant) => ({
+  const tenants: TenantWritableJson[] = state.tenants.map((tenant) => ({
     firstName: tenant.firstName.trim(),
     lastName: tenant.lastName.trim(),
     email: tenant.email?.trim() || undefined,
@@ -162,12 +159,7 @@ async function handleSubmit() {
     await rentalAgreementService.createRentalAgreement(props.projectId, rentalAgreement);
 
     // Success feedback
-    toast.add({
-      severity: 'success',
-      summary: t('success.created'),
-      detail: t('rentalAgreement.successCreated'),
-      life: 4000,
-    });
+    appToast.success(t('rentalAgreement.successCreated'), { summary: t('success.created') });
 
     // Reset form and close dialog
     resetForm();
@@ -175,12 +167,6 @@ async function handleSubmit() {
     emit('update:visible', false);
   } catch (error) {
     console.error('Failed to create rental agreement:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentalAgreement.errorCreated'),
-      life: 4000,
-    });
   } finally {
     isCreating.value = false;
   }

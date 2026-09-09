@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useI18n } from 'vue-i18n';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
-import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssuePriority }
-  from '@/services/IssueService';
+import { issueService, type IssueJson, type IssueWritableJson, type IssueStatus, type IssueType, type IssuePriority }
+  from '@/features/project/issues/services/IssueService';
 import { type RentalAgreementItemJson }
   from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
+import { formatDateTime } from '@/helper/dateHelper';
 import {getDefectCategories,
   getInquiryCategories,
   getMaintenanceCategories,
@@ -51,7 +52,7 @@ const emit = defineEmits<{ saved: [] }>();
 /* =========================
      Services & Store
   ========================= */
-const toast = useToast();
+const appToast = useAppToast();
 const { t, locale } = useI18n();
 
 /* =========================
@@ -142,12 +143,7 @@ const reporterName = computed(() => reportedBy.value || t('issueDetails.fields.n
 const issueNumber = computed(() => issueId.value?.split('-').pop() || issueId.value || '—');
 
 // Formatted "assigned on" date + time, derived from the read-only modifiedAt field
-const modifiedAtLabel = computed(() => {
-  if (!modifiedAt.value) return '—';
-  const date = new Date(modifiedAt.value);
-  if (Number.isNaN(date.getTime())) return modifiedAt.value;
-  return date.toLocaleString(locale.value);
-});
+const modifiedAtLabel = computed(() => formatDateTime(modifiedAt.value, locale.value) ?? '—');
 
 // Fixed at creation, so this is a display-only tag next to the title, not a form field.
 const visibilityTag = computed(() => (visibleToTenants.value
@@ -221,7 +217,7 @@ const handleSave = async () => {
   loadingSave.value = true;
 
   try {
-    const payload: Partial<IssueJson> = {};
+    const payload: IssueWritableJson = {};
     if (title.value !== originalTitle.value) payload.title = title.value;
     if (status.value !== originalStatus.value)
       payload.status = status.value as IssueJson["status"];
@@ -247,22 +243,11 @@ const handleSave = async () => {
     originalSelectedAgreement.value = selectedAgreement.value;
     originalCategory.value = category.value;
     originalPriority.value = priority.value;
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.saveSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.saveSuccess'), { summary: t('success.saved') });
 
     emit("saved");
   } catch (err) {
     console.error(err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.saveError'),
-      life: 3000,
-    });
   } finally {
     loadingSave.value = false;
   }

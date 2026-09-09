@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import NewQuotationRequestDialog from '@/features/project/issues/components/NewQuotationRequestDialog.vue';
-import { quotationRequestService } from '@/services/QuotationRequestService';
+import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 import { projectContractorService } from '@/services/ProjectContractorService';
 import { projectService } from '@/services/ProjectService';
 
@@ -16,8 +16,8 @@ const BaseDialogStub = {
 };
 
 const mockContractors = [
-  { id: 'c-1', companyName: 'Alpha Bau GmbH' },
-  { id: 'c-2', companyName: 'Beta Elektro GmbH' },
+  { id: 'c-1', name: 'Alpha Bau GmbH' },
+  { id: 'c-2', name: 'Beta Elektro GmbH' },
 ];
 const mockProject = {
   title: 'Projekt 1',
@@ -101,7 +101,7 @@ describe('NewQuotationRequestDialog', () => {
 
   it('calls createQuotationRequest with correct payload on valid submit', async () => {
     const wrapper = mountDialog();
-    const selectedContractors = [{ id: 'c-1', companyName: 'Alpha Bau GmbH' }];
+    const selectedContractors = [{ id: 'c-1', name: 'Alpha Bau GmbH' }];
 
     const form = wrapper.findComponent(Form);
     await form.vm.$emit('submit', {
@@ -132,7 +132,7 @@ describe('NewQuotationRequestDialog', () => {
       valid: true,
       states: {
         scopeOfWork: { value: 'Reparatur' },
-        contractors: { value: [{ id: 'c-1', companyName: 'Alpha Bau GmbH' }] },
+        contractors: { value: [{ id: 'c-1', name: 'Alpha Bau GmbH' }] },
       },
     });
     await flushPromises();
@@ -172,7 +172,7 @@ describe('NewQuotationRequestDialog', () => {
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('false');
   });
 
-  it('shows error toast when createQuotationRequest fails', async () => {
+  it('logs and shows no toast when createQuotationRequest fails', async () => {
     vi.spyOn(quotationRequestService, 'createQuotationRequest').mockRejectedValue(new Error('API error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -187,7 +187,8 @@ describe('NewQuotationRequestDialog', () => {
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 

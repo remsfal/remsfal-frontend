@@ -2,14 +2,15 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
-import DangerZoneCard from '@/components/common/DangerZoneCard.vue';
+import { useAppToast } from '@/composables/useAppToast';
+import DangerZoneCard from '@/components/DangerZoneCard.vue';
 import { propertyService, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
 import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -18,8 +19,9 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 const router = useRouter();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const unitTypeLabel = computed(() => t(`unitTypes.${props.unitType.toLowerCase()}`));
 
@@ -45,21 +47,14 @@ async function deleteUnit(): Promise<void> {
         await siteService.deleteSite(props.projectId, props.unitId);
         break;
     }
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('rentableUnits.dangerZone.deleteSuccess', { type: unitTypeLabel.value }),
-      life: 3000,
-    });
+    rentableUnitsStore.invalidate();
+    appToast.success(
+      t('rentableUnits.dangerZone.deleteSuccess', { type: unitTypeLabel.value }),
+      { summary: t('success.saved') },
+    );
     await router.push({ name: 'RentableUnits', params: { projectId: props.projectId } });
   } catch (err) {
     console.error('Error deleting unit:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentableUnits.dangerZone.deleteError', { type: unitTypeLabel.value }),
-      life: 6000,
-    });
   }
 }
 </script>

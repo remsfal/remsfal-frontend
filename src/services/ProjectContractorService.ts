@@ -1,7 +1,8 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 
-export type ContractorJson = ApiComponents['schemas']['ContractorJson'];
-export type ContractorListJson = ApiComponents['schemas']['ContractorListJson'];
+export type ContractorJson = Readable<ApiComponents['schemas']['ContractorJson']>;
+export type ContractorWritableJson = Writable<ApiComponents['schemas']['ContractorJson']>;
+export type ContractorListJson = Readable<ApiComponents['schemas']['ContractorListJson']>;
 
 class ProjectContractorService {
   async getContractors(projectId: string, limit = 100, offset = 0): Promise<ContractorListJson> {
@@ -11,7 +12,7 @@ class ProjectContractorService {
     });
   }
 
-  async createContractor(projectId: string, data: ContractorJson): Promise<void> {
+  async createContractor(projectId: string, data: ContractorWritableJson): Promise<void> {
     await apiClient.post('/api/v1/projects/{projectId}/contractors', data, {pathParams: { projectId },});
   }
 
@@ -22,7 +23,7 @@ class ProjectContractorService {
   async updateContractor(
     projectId: string,
     contractorId: string,
-    data: ContractorJson,
+    data: ContractorWritableJson,
   ): Promise<ContractorJson> {
     return apiClient.patch(
       '/api/v1/projects/{projectId}/contractors/{contractorId}',

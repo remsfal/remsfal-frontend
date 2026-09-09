@@ -1,30 +1,19 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { userService } from '@/features/common/users/services/UserService';
-import DangerZoneCard from '@/components/common/DangerZoneCard.vue';
+import DangerZoneCard from '@/components/DangerZoneCard.vue';
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const deleteUser = async () => {
   try {
     await userService.deleteUser();
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('accountSettings.dangerZone.deleteSuccess'),
-      life: 3000,
-    });
+    appToast.success(t('accountSettings.dangerZone.deleteSuccess'), { summary: t('success.saved') });
     window.location.pathname = '/api/v1/authentication/logout';
   } catch (err) {
     console.error('Error deleting user account:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('accountSettings.dangerZone.deleteError'),
-      life: 6000,
-    });
   }
 };
 </script>

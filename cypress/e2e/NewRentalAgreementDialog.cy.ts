@@ -91,15 +91,15 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
       body: { rentalAgreements: [] },
     }).as('getRentalAgreements');
 
-    // Mock available units (for Step 2) — RentableUnitSelect consumes the property tree shape
     cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
       statusCode: 200,
       body: {
         properties: [
-          {
-            key: 'apt-101',
-            data: { id: 'apt-101', type: 'APARTMENT', title: 'Apartment 101' },
-          },
+          { key: 'apt-101', data: { id: 'apt-101', type: 'APARTMENT', title: 'Apartment 101' } },
+          { key: 'site-1', data: { id: 'site-1', type: 'SITE', title: 'Site 1' } },
+          { key: 'bldg-1', data: { id: 'bldg-1', type: 'BUILDING', title: 'Building 1' } },
+          { key: 'comm-1', data: { id: 'comm-1', type: 'COMMERCIAL', title: 'Commercial 1' } },
+          { key: 'storage-1', data: { id: 'storage-1', type: 'STORAGE', title: 'Storage 1' } },
         ],
       },
     }).as('getProperties');
@@ -383,19 +383,6 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
   it('groups selected units into the correct rent arrays for every reachable unit type', () => {
     // PROPERTY nodes are intentionally not selectable in RentableUnitSelect (a property
     // is a container, not a rentable unit itself), so only the other five types are reachable.
-    cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
-      statusCode: 200,
-      body: {
-        properties: [
-          { key: 'apt-101', data: { id: 'apt-101', type: 'APARTMENT', title: 'Apartment 101' } },
-          { key: 'site-1', data: { id: 'site-1', type: 'SITE', title: 'Site 1' } },
-          { key: 'bldg-1', data: { id: 'bldg-1', type: 'BUILDING', title: 'Building 1' } },
-          { key: 'comm-1', data: { id: 'comm-1', type: 'COMMERCIAL', title: 'Commercial 1' } },
-          { key: 'storage-1', data: { id: 'storage-1', type: 'STORAGE', title: 'Storage 1' } },
-        ],
-      },
-    }).as('getPropertiesAllTypes');
-
     cy.intercept('POST', `/api/v1/projects/${projectId}/rental-agreements`, {
       statusCode: 201,
     }).as('createRentalAgreement');
@@ -403,7 +390,6 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     openDialog();
     completeStep1();
 
-    cy.wait('@getPropertiesAllTypes');
     addUnit('Apartment 101');
     addUnit('Site 1');
     addUnit('Building 1');

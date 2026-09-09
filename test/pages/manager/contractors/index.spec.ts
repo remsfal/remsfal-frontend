@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ManagerContractorListPage from '@/pages/manager/contractors/index.vue';
 
-vi.mock('@/views/ManagerContractorListView.vue',
-  () => ({default: { template: '<div data-test="manager-contractor-list-view" />' }}));
+vi.mock('@/features/manager/contractors',
+  () => ({ ManagerContractorListView: { template: '<div data-test="manager-contractor-list-view" />' } }));
 
 describe('Manager Contractors Index Page', () => {
   it('renders without errors', () => {

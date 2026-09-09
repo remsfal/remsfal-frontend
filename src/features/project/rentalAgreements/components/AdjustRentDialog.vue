@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import Button from 'primevue/button';
 import type { TreeNode } from 'primevue/treenode';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import {rentalAgreementService,
@@ -35,7 +35,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const saving = ref(false);
 const selectedNodeKey = ref<string | null>(null);
@@ -87,29 +87,21 @@ async function confirmSubmit(details: RentalDetails) {
       { ...details, rentalUnitId: unit.unitId },
     );
     emit('update:rentalAgreement', updated);
-    toast.add({
-      severity: 'success',
-      summary: t(
-        isAddMode.value ? 'rentalAgreement.unitsCard.success' : 'rentalAgreement.unitsCard.adjustRentSuccess',
-      ),
-      detail: t(
+    appToast.success(
+      t(
         isAddMode.value
           ? 'rentalAgreement.unitsCard.successDetail'
           : 'rentalAgreement.unitsCard.adjustRentSuccessDetail',
       ),
-      life: 3000,
-    });
+      {
+        summary: t(
+          isAddMode.value ? 'rentalAgreement.unitsCard.success' : 'rentalAgreement.unitsCard.adjustRentSuccess',
+        ),
+      },
+    );
     closeDialog();
   } catch (error) {
     console.error('Failed to save rent:', error instanceof Error ? error.message : error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t(
-        isAddMode.value ? 'rentalAgreement.unitsCard.error' : 'rentalAgreement.unitsCard.adjustRentError',
-      ),
-      life: 5000,
-    });
   } finally {
     saving.value = false;
   }
@@ -131,7 +123,6 @@ async function confirmSubmit(details: RentalDetails) {
         </label>
         <RentableUnitSelect
           v-model="selectedNodeKey"
-          :projectId="projectId"
           :excludeUnitIds="excludeUnitIds ?? []"
           leafNodeSelectionOnly
           inputId="rentalAgreementUnitSelect"

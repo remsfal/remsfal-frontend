@@ -154,16 +154,15 @@ describe('NewTenancyIssueDialog', () => {
     expect(wrapper.findComponent(Step1Stub).exists()).toBe(false);
   });
 
-  it('shows an error toast when loading tenancies fails', async () => {
+  it('logs and shows no toast when loading tenancies fails', async () => {
     vi.mocked(tenancyService.getTenancies).mockRejectedValue(new Error('network error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mountDialog();
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
-      severity: 'error',
-      summary: i18n.global.t('error.general'),
-      detail: i18n.global.t('error.apiRequest'),
-    }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('reloads tenancies the next time the dialog is reopened after a failed load', async () => {
@@ -305,8 +304,9 @@ describe('NewTenancyIssueDialog', () => {
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false]);
   });
 
-  it('shows an error toast and keeps the dialog open when submission fails', async () => {
+  it('logs, shows no toast, and keeps the dialog open when submission fails', async () => {
     vi.mocked(tenantIssueService.createIssueWithAttachment).mockRejectedValue(new Error('server error'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountDialog();
     await flushPromises();
     await fillDefectForm(wrapper);
@@ -314,13 +314,11 @@ describe('NewTenancyIssueDialog', () => {
     await wrapper.findComponent(Step4Stub).vm.$emit('submit');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
-      severity: 'error',
-      summary: i18n.global.t('error.general'),
-      detail: i18n.global.t('tenantIssue.error'),
-    }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(wrapper.emitted('issueCreated')).toBeFalsy();
     expect(wrapper.emitted('update:visible')).toBeFalsy();
+    consoleErrorSpy.mockRestore();
   });
 
   it('resets the form state after a successful submit', async () => {

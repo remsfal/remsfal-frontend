@@ -1,8 +1,8 @@
-import { apiClient, type ApiComponents, type ApiPaths } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 
-export type UserJson = ApiComponents['schemas']['UserJson'];
-export type AddressJson = ApiComponents['schemas']['AddressJson'];
-export type UserUpdateRequest = ApiPaths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
+export type UserJson = Readable<ApiComponents['schemas']['UserJson']>;
+export type AddressJson = Readable<ApiComponents['schemas']['AddressJson']>;
+export type UserUpdateRequest = Writable<ApiComponents['schemas']['UserJson']>;
 
 export default class UserService {
   // Get current user data
@@ -15,10 +15,14 @@ export default class UserService {
     return apiClient.patch('/api/v1/user', updatedUser);
   }
 
+  // Update address
+  async updateAddress(updatedAddress: AddressJson): Promise<UserJson> {
+    return apiClient.patch('/api/v1/user', { address: updatedAddress });
+  }
+
   // Delete user
   async deleteUser(): Promise<void> {
     await apiClient.delete('/api/v1/user');
-    console.log('DELETE user');
   }
 }
 

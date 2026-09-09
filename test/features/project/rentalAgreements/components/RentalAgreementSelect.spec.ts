@@ -13,13 +13,17 @@ describe('RentalAgreementSelect.vue', () => {
     {
       id: 'agreement-1',
       startOfRental: '2024-01-01',
-      tenants: [{ firstName: 'Max', lastName: 'Mustermann' }],
+      tenants: [{
+        id: 'tenant-1', firstName: 'Max', lastName: 'Mustermann' 
+      }],
       rentalUnits: [{ id: 'unit-1', title: 'Wohnung 1A' }],
     },
     {
       id: 'agreement-2',
       startOfRental: '2024-01-01',
-      tenants: [{ firstName: 'Erika', lastName: 'Musterfrau' }],
+      tenants: [{
+        id: 'tenant-2', firstName: 'Erika', lastName: 'Musterfrau' 
+      }],
       rentalUnits: [{ id: 'unit-2', location: 'Keller' }],
     },
   ];

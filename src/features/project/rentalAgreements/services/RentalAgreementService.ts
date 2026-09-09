@@ -1,12 +1,14 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 import { type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 
-export type RentalAgreementJson = ApiComponents['schemas']['RentalAgreementJson'];
-export type RentalAgreementListJson = ApiComponents['schemas']['RentalAgreementListJson'];
-export type RentalAgreementItemJson = ApiComponents['schemas']['RentalAgreementItemJson'];
-export type TenantJson = ApiComponents['schemas']['TenantJson'];
-export type RentalAgreementKeysJson = ApiComponents['schemas']['RentalAgreementKeysJson'];
-export type RentJson = ApiComponents['schemas']['RentJson'];
+export type RentalAgreementJson = Readable<ApiComponents['schemas']['RentalAgreementJson']>;
+export type RentalAgreementWritableJson = Writable<ApiComponents['schemas']['RentalAgreementJson']>;
+export type RentalAgreementListJson = Readable<ApiComponents['schemas']['RentalAgreementListJson']>;
+export type RentalAgreementItemJson = Readable<ApiComponents['schemas']['RentalAgreementItemJson']>;
+export type TenantJson = Readable<ApiComponents['schemas']['TenantJson']>;
+export type TenantWritableJson = Writable<ApiComponents['schemas']['TenantJson']>;
+export type RentalAgreementKeysJson = Readable<ApiComponents['schemas']['RentalAgreementKeysJson']>;
+export type RentJson = Readable<ApiComponents['schemas']['RentJson']>;
 
 /**
  * Service for managing rental agreements in the manager/property owner context.
@@ -42,7 +44,7 @@ export default class RentalAgreementService {
   /**
    * Create a new rental agreement
    */
-  async createRentalAgreement(projectId: string, agreement: RentalAgreementJson): Promise<void> {
+  async createRentalAgreement(projectId: string, agreement: RentalAgreementWritableJson): Promise<void> {
     await apiClient.post(
       '/api/v1/projects/{projectId}/rental-agreements',
       agreement,
@@ -56,7 +58,7 @@ export default class RentalAgreementService {
   async updateRentalAgreement(
     projectId: string,
     agreementId: string,
-    agreement: RentalAgreementJson
+    agreement: RentalAgreementWritableJson
   ): Promise<void> {
     await apiClient.patch(
       '/api/v1/projects/{projectId}/rental-agreements/{agreementId}',
@@ -76,7 +78,7 @@ export default class RentalAgreementService {
   /**
    * Add a tenant to an existing rental agreement
    */
-  async addTenant(projectId: string, agreementId: string, tenant: TenantJson): Promise<TenantJson> {
+  async addTenant(projectId: string, agreementId: string, tenant: TenantWritableJson): Promise<TenantJson> {
     return apiClient.post(
       '/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants',
       tenant,

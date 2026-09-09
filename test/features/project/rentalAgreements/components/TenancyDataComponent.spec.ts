@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import { mount } from '@vue/test-utils';
 import TenancyDataComponent from '@/features/project/rentalAgreements/components/TenancyDataComponent.vue';
-import { toISODateString } from "../../../../../src/helper/dataHelper";
+import { toISODateString } from "@/helper/dateHelper";
 
 describe('TenancyDataComponent', () => {
   const today = new Date();

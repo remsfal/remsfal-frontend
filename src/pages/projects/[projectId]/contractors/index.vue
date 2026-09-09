@@ -6,7 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ProjectContractorListView from '@/views/project/ProjectContractorListView.vue'
+import { ProjectContractorListView } from '@/features/project/contractors'
 import { useRoute } from 'vue-router'
 const route = useRoute('ProjectContractorList')
 </script>

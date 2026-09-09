@@ -1,20 +1,16 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useI18n } from 'vue-i18n';
 import IssueDetailsCard from '../components/IssueDetailsCard.vue';
 import IssueDescriptionCard from '../components/IssueDescriptionCard.vue';
+import IssueChatCard from '../components/IssueChatCard.vue';
 import IssueAttachmentCard from '../components/IssueAttachmentCard.vue';
+import IssueTimelineCard from '../components/IssueTimelineCard.vue';
 import IssueRelationshipsCard from '../components/IssueRelationshipsCard.vue';
 import IssueOrderManagementCard from '../components/IssueOrderManagementCard.vue';
-import { issueService, type IssueAttachmentJson, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueAttachmentJson, type IssueJson } from '@/features/project/issues/services/IssueService';
 
 /* Props */
 const props = defineProps<{ projectId: string; issueId: string }>();
-
-/* Toast & i18n */
-const toast = useToast();
-const { t } = useI18n();
 
 /* UI-friendly Issue type */
 type IssueUI = {
@@ -85,9 +81,6 @@ const fetchIssue = async () => {
     };
   } catch (error) {
     console.error('Error fetching issue:', error);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('issueDetails.fetchError'), life: 3000
-    });
   } finally {
     loadingFetch.value = false;
   }
@@ -103,7 +96,7 @@ const handleDescriptionSaved = () => {
 };
 
 const handleAttachmentsSaved = () => {
-  fetchIssue(); // refresh after attachment changes
+  fetchIssue(); // refresh after attachment upload/delete
 };
 
 const handleRelationshipsSaved = () => {
@@ -141,11 +134,21 @@ watch(
     @saved="handleDescriptionSaved"
   />
 
+  <!-- Issue Chat Card -->
+  <IssueChatCard :issueId="issueId" />
+
   <!-- Issue Attachment Card -->
   <IssueAttachmentCard
-    :attachments="attachments"
     :issueId="issueId"
+    :attachments="attachments"
     @saved="handleAttachmentsSaved"
+  />
+
+  <!-- Issue Timeline Card -->
+  <IssueTimelineCard
+    v-if="issueDetailsData?.visibleToTenants"
+    :issueId="issueId"
+    :visibleToTenants="issueDetailsData.visibleToTenants"
   />
 
   <!-- Issue Relationships Card -->

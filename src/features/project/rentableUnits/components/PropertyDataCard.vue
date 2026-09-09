@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 import Select from 'primevue/select';
 import Message from 'primevue/message';
@@ -17,7 +17,7 @@ import {useRentableUnitForm,
   createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 import type { PropertyJson } from '@/features/project/rentableUnits/services/PropertyService';
-import { showSavingErrorToast } from '@/helper/viewHelper';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -25,7 +25,8 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const usageOptions = [
   { label: 'Keine Auswahl', value: null },
@@ -129,9 +130,7 @@ const isDirty = computed(() =>
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({
-      severity: 'warn', summary: t('error.general'), detail: t('property.noId'), life: 6000 
-    });
+    appToast.warn(t('property.noId'));
     return;
   }
   try {
@@ -151,9 +150,6 @@ onMounted(async () => {
     });
   } catch (err) {
     console.error('Fehler beim Laden der Grundstücksdaten:', err);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('property.loadError'), life: 6000 
-    });
   }
 });
 
@@ -188,12 +184,10 @@ async function onSubmit(event: FormSubmitEvent) {
       location: payload.location || '',
       plotArea: payload.plotArea ?? null,
     });
-    toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('property.saveSuccess'), life: 3000 
-    });
+    rentableUnitsStore.invalidate();
+    appToast.success(t('property.saveSuccess'), { summary: t('success.saved') });
   } catch (err) {
     console.error('Fehler beim Speichern der Grundstücksdaten:', err);
-    showSavingErrorToast(toast, t('property.saveError'));
   }
 }
 </script>

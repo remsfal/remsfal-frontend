@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import NewIssueButton from '@/features/project/issues/components/NewIssueButton.vue';
-import { issueService } from '@/services/IssueService';
+import { issueService } from '@/features/project/issues/services/IssueService';
 import { Form } from '@primevue/forms';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
@@ -9,7 +9,7 @@ import Select from 'primevue/select';
 import Message from 'primevue/message';
 import Checkbox from 'primevue/checkbox';
 
-vi.mock('@/services/IssueService', { spy: true });
+vi.mock('@/features/project/issues/services/IssueService', { spy: true });
 
 const mockAgreement = {
   id: 'agreement-1',
@@ -239,5 +239,26 @@ describe('NewIssueButton.vue', () => {
     expect(wrapper.emitted('issueCreated')).toBeTruthy();
     const dialog = wrapper.find('[data-testid="dialog"]');
     expect(dialog.attributes('data-visible')).toBe('false');
+  });
+
+  it('skips the API call and closes the dialog when offline', async () => {
+    const onLineSpy = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+
+    await wrapper.find('button').trigger('click');
+
+    const input = wrapper.find('input[name="issueTitle"]');
+    await input.setValue('Valid Issue');
+
+    const form = wrapper.findComponent(Form);
+    await form.trigger('submit');
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    await wrapper.vm.$nextTick();
+
+    expect(issueService.createProjectIssue).not.toHaveBeenCalled();
+    const dialog = wrapper.find('[data-testid="dialog"]');
+    expect(dialog.attributes('data-visible')).toBe('false');
+
+    onLineSpy.mockRestore();
   });
 });

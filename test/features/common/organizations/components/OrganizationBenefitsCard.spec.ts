@@ -16,10 +16,11 @@ describe('OrganizationBenefitsCard', () => {
     expect(wrapper.text()).toContain('Organisation');
   });
 
-  it('renders both benefit feature items', () => {
+  it('renders all three benefit feature items, including the contractor benefit', () => {
     const wrapper = mountCard();
     expect(wrapper.text()).toContain('Zentrale Benutzerverwaltung');
     expect(wrapper.text()).toContain('Hausverwaltungen');
+    expect(wrapper.text()).toContain('Auftragsanfragen als Auftragnehmer');
   });
 
   it('renders the create button', () => {

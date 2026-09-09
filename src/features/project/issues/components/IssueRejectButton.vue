@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
-import BaseDialog from '@/components/common/BaseDialog.vue';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import BaseDialog from '@/components/BaseDialog.vue';
+import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 import { issueTimelineService } from '@/features/project/issues/services/IssueTimelineService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ issueId: string }>();
 const emit = defineEmits<{ rejected: [issue: IssueJson] }>();
 
-const toast = useToast();
+const appToast = useAppToast();
 const { t } = useI18n();
 const sessionStore = useUserSessionStore();
 
@@ -30,12 +30,7 @@ async function handleConfirm() {
 
   const currentUserId = sessionStore.user?.id;
   if (!currentUserId) {
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.rejectRequest.error'),
-      life: 3000,
-    });
+    appToast.error(t('issueDetails.rejectRequest.error'));
     return;
   }
 
@@ -48,25 +43,18 @@ async function handleConfirm() {
 
     const trimmedReason = reason.value.trim();
     if (trimmedReason) {
-      await issueTimelineService.createTimelineEntry(props.issueId, 'STATUS_CHANGED', trimmedReason);
+      await issueTimelineService.createTimelineEntryWithAttachments(
+        props.issueId,
+        { purpose: 'STATUS_CHANGED', message: trimmedReason },
+        [],
+      );
     }
 
     showDialog.value = false;
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('issueDetails.rejectRequest.success'),
-      life: 3000,
-    });
+    appToast.success(t('issueDetails.rejectRequest.success'), { summary: t('success.saved') });
     emit('rejected', updated);
   } catch (err) {
     console.error(err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.rejectRequest.error'),
-      life: 3000,
-    });
   } finally {
     loading.value = false;
   }

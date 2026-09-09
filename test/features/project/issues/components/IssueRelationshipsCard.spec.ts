@@ -1,11 +1,11 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import IssueRelationshipsCard from '@/features/project/issues/components/IssueRelationshipsCard.vue';
-import { issueService, type IssueItemJson } from '@/services/IssueService';
+import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
 
 const toastAddMock = vi.fn();
 
-vi.mock('@/services/IssueService', () => ({
+vi.mock('@/features/project/issues/services/IssueService', () => ({
   issueService: {
     getIssues: vi.fn(),
     getIssue: vi.fn(),
@@ -103,7 +103,7 @@ describe('IssueRelationshipsCard.vue', () => {
     expect(wrapper.emitted('saved')).toBeTruthy();
   });
 
-  test('shows error toast when removing a relation fails', async () => {
+  test('logs and shows no toast when removing a relation fails', async () => {
     vi.spyOn(issueService, 'deleteIssueRelation').mockRejectedValue(new Error('boom'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard({ blocks: ['blocker-1'] });
@@ -113,7 +113,8 @@ describe('IssueRelationshipsCard.vue', () => {
     await deleteButton?.trigger('click');
     await flushPromises();
 
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastAddMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     expect(wrapper.emitted('saved')).toBeFalsy();
     consoleSpy.mockRestore();
   });

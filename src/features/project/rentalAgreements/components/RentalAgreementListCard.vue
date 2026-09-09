@@ -7,7 +7,7 @@ import type { UnitType } from '@/features/project/rentableUnits';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import NewRentalAgreementDialog from './NewRentalAgreementDialog.vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';

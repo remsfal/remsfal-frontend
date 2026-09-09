@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import IssueRejectButton from '@/features/project/issues/components/IssueRejectButton.vue';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 import { issueTimelineService } from '@/features/project/issues/services/IssueTimelineService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
@@ -11,8 +11,10 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mocks ───────────────────────────────────────────────────────────
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>('@/services/IssueService');
+vi.mock('@/features/project/issues/services/IssueService', async () => {
+  const actual = await vi.importActual<
+    typeof import('@/features/project/issues/services/IssueService')
+      >('@/features/project/issues/services/IssueService');
   return {
     ...actual,
     issueService: { updateIssue: vi.fn() },
@@ -25,7 +27,7 @@ vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
   );
   return {
     ...actual,
-    issueTimelineService: { createTimelineEntry: vi.fn() },
+    issueTimelineService: { createTimelineEntryWithAttachments: vi.fn() },
   };
 });
 
@@ -99,16 +101,16 @@ describe('IssueRejectButton.vue', () => {
 
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('false');
     expect(issueService.updateIssue).not.toHaveBeenCalled();
-    expect(issueTimelineService.createTimelineEntry).not.toHaveBeenCalled();
+    expect(issueTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('submit with a reason updates the issue and creates a timeline entry', async () => {
     const updatedIssue = {
-      id: 'issue-1', status: 'REJECTED', assigneeId: 'user-1' 
+      id: 'issue-1', status: 'REJECTED', assigneeId: 'user-1'
     } as IssueJson;
     vi.spyOn(issueService, 'updateIssue').mockResolvedValue(updatedIssue);
-    vi.spyOn(issueTimelineService, 'createTimelineEntry').mockResolvedValue({} as never);
+    vi.spyOn(issueTimelineService, 'createTimelineEntryWithAttachments').mockResolvedValue(undefined);
 
     await findRejectButton(wrapper).trigger('click');
     await wrapper.vm.$nextTick();
@@ -121,8 +123,10 @@ describe('IssueRejectButton.vue', () => {
       status: 'REJECTED',
       assigneeId: 'user-1',
     });
-    expect(issueTimelineService.createTimelineEntry).toHaveBeenCalledWith(
-      'issue-1', 'STATUS_CHANGED', 'Not applicable to this unit',
+    expect(issueTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
+      'issue-1',
+      { purpose: 'STATUS_CHANGED', message: 'Not applicable to this unit' },
+      [],
     );
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('false');
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
@@ -144,7 +148,7 @@ describe('IssueRejectButton.vue', () => {
       status: 'REJECTED',
       assigneeId: 'user-1',
     });
-    expect(issueTimelineService.createTimelineEntry).not.toHaveBeenCalled();
+    expect(issueTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
     expect(wrapper.emitted('rejected')).toBeTruthy();
   });
 
@@ -159,12 +163,13 @@ describe('IssueRejectButton.vue', () => {
     await findSubmitButton(wrapper).trigger('click');
     await flushPromises();
 
-    expect(issueTimelineService.createTimelineEntry).not.toHaveBeenCalled();
+    expect(issueTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('error during updateIssue shows an error toast and keeps the dialog open', async () => {
+  test('error during updateIssue logs, shows no toast, and keeps the dialog open', async () => {
     vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await findRejectButton(wrapper).trigger('click');
     await wrapper.vm.$nextTick();
@@ -172,15 +177,18 @@ describe('IssueRejectButton.vue', () => {
     await findSubmitButton(wrapper).trigger('click');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('true');
     expect(wrapper.emitted('rejected')).toBeFalsy();
+    consoleErrorSpy.mockRestore();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('error during createTimelineEntry shows an error toast and keeps the dialog open', async () => {
+  test('error during createTimelineEntry logs, shows no toast, and keeps the dialog open', async () => {
     vi.spyOn(issueService, 'updateIssue').mockResolvedValue({} as IssueJson);
-    vi.spyOn(issueTimelineService, 'createTimelineEntry').mockRejectedValue(new Error('fail'));
+    vi.spyOn(issueTimelineService, 'createTimelineEntryWithAttachments').mockRejectedValue(new Error('fail'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await findRejectButton(wrapper).trigger('click');
     await wrapper.vm.$nextTick();
@@ -189,9 +197,11 @@ describe('IssueRejectButton.vue', () => {
     await findSubmitButton(wrapper).trigger('click');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('true');
     expect(wrapper.emitted('rejected')).toBeFalsy();
+    consoleErrorSpy.mockRestore();
   });
 
   // ───────────────────────────────────────────────────────────────────────────

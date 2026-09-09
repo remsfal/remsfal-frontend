@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 
 import InputNumber from 'primevue/inputnumber';
 import Message from 'primevue/message';
@@ -15,7 +15,7 @@ import {useRentableUnitForm,
   createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 import type { SiteJson } from '@/features/project/rentableUnits/services/SiteService';
-import { showSavingErrorToast } from '@/helper/viewHelper';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -23,7 +23,8 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const schema = z.object({
   ...createBaseRentableUnitSchema(t),
@@ -51,9 +52,7 @@ const isDirty = computed(() =>
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({
-      severity: 'warn', summary: t('error.general'), detail: t('site.noId'), life: 6000 
-    });
+    appToast.warn(t('site.noId'));
     return;
   }
   try {
@@ -66,9 +65,6 @@ onMounted(async () => {
     });
   } catch (err) {
     console.error('Fehler beim Laden der Außenanlage:', err);
-    toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('site.loadError'), life: 6000 
-    });
   }
 });
 
@@ -89,12 +85,10 @@ async function onSubmit(event: FormSubmitEvent) {
       location: payload.location || '',
       outdoorArea: payload.outdoorArea ?? null,
     });
-    toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('site.saveSuccess'), life: 3000 
-    });
+    rentableUnitsStore.invalidate();
+    appToast.success(t('site.saveSuccess'), { summary: t('success.saved') });
   } catch (err) {
     console.error('Fehler beim Speichern der Außenanlage:', err);
-    showSavingErrorToast(toast, t('site.saveError'));
   }
 }
 </script>

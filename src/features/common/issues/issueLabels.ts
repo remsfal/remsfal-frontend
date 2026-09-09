@@ -1,5 +1,5 @@
 import type { ComposerTranslation } from 'vue-i18n';
-import type { IssueCategory, IssuePriority, IssueStatus, IssueType } from '@/services/IssueService';
+import type { IssueCategory, IssuePriority, IssueStatus, IssueType } from '@/features/project/issues/services/IssueService';
 import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import type { HintedString } from "@primevue/core";
 

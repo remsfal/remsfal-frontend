@@ -5,18 +5,18 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
-import BaseDialog from '@/components/common/BaseDialog.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { projectService } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import { saveProject } from '@/helper/indexeddb';
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -51,12 +51,7 @@ async function createProject(title: string) {
   try {
     if (!navigator.onLine) {
       await saveProject(title);
-      toast.add({
-        severity: 'warn',
-        summary: t('success.savedOffline'),
-        detail: t('newProjectForm.offlineSaved'),
-        life: 4000,
-      });
+      appToast.warn(t('newProjectForm.offlineSaved'), { summary: t('success.savedOffline') });
       visible.value = false;
       return;
     }
@@ -65,12 +60,7 @@ async function createProject(title: string) {
 
     if (!newProject.id) {
       await saveProject(title);
-      toast.add({
-        severity: 'warn',
-        summary: t('success.savedOffline'),
-        detail: t('newProjectForm.offlineSaved'),
-        life: 4000,
-      });
+      appToast.warn(t('newProjectForm.offlineSaved'), { summary: t('success.savedOffline') });
       visible.value = false;
       return;
     }
@@ -85,22 +75,12 @@ async function createProject(title: string) {
 
     await router.push({ name: 'ProjectDashboard', params: { projectId: newProject.id } });
 
-    toast.add({
-      severity: 'success',
-      summary: t('success.created'),
-      detail: t('newProjectForm.successCreated'),
-      life: 4000,
-    });
+    appToast.success(t('newProjectForm.successCreated'), { summary: t('success.created') });
     visible.value = false;
   } catch (error) {
     console.error('Failed to create project online:', error);
     await saveProject(title);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('newProjectForm.offlineSaved'),
-      life: 4000,
-    });
+    appToast.warn(t('newProjectForm.offlineSaved'), { summary: t('success.savedOffline') });
     visible.value = false;
   }
 }

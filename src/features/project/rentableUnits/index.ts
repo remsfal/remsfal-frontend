@@ -11,3 +11,4 @@ export { default as StorageDataCard } from './components/StorageDataCard.vue';
 export { default as FacilityAddressCard } from './components/FacilityAddressCard.vue';
 export { getIconForUnitType, UNIT_TYPE_ICONS } from './unitTypeIcons';
 export type { UnitType, RentalUnitTreeNodeJson } from './services/PropertyService';
+export { useRentableUnitsStore } from './stores/RentableUnitsStore';

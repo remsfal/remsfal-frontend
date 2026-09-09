@@ -1,7 +1,7 @@
 /* eslint-disable object-curly-newline */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { projectService, type ProjectJson, type ProjectListJson } from '@/services/ProjectService';
+import { projectService, type ProjectJson, type ProjectListJson, type ProjectWritableJson } from '@/services/ProjectService';
 import { server } from '../mocks/server';
 import { testErrorHandling } from '../utils/testHelpers';
 
@@ -173,7 +173,7 @@ describe('ProjectService', () => {
         ...mockProject,
         title: 'Updated Title',
         description: 'Updated description',
-      } as unknown as ProjectJson;
+      } as unknown as ProjectWritableJson;
       const result = await projectService.updateProject('project-1', updates) as ProjectJson & { description: string };
       expect(result.title).toBe('Updated Title');
       expect(result.description).toBe('Updated description');
@@ -181,7 +181,7 @@ describe('ProjectService', () => {
 
     it('should handle update errors', async () => {
       await testErrorHandling(server, '/api/v1/projects/:projectId', 'patch', 403, () =>
-        projectService.updateProject('project-1', mockProject),
+        projectService.updateProject('project-1', mockProject as unknown as ProjectWritableJson),
       );
     });
   });

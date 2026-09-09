@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import NewProjectMemberButton from '@/features/project/settings/components/NewProjectMemberButton.vue';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -15,7 +15,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const members = ref<ProjectMemberJson[]>([]);
 const isLoading = ref(true);
@@ -40,12 +40,7 @@ const updateMemberRole = async (member: ProjectMemberJson) => {
     }
 
     await projectMemberService.updateMemberRole(props.projectId, member.id, { role: member.role });
-    toast.add({
-      severity: 'success',
-      summary: t('projectSettings.updateRoleSuccess'),
-      detail: t('projectSettings.updateRoleDetail', [member.name]),
-      life: 3000,
-    });
+    appToast.success(t('projectSettings.updateRoleDetail', [member.name]), {summary: t('projectSettings.updateRoleSuccess'),});
   } catch (error) {
     const err = error as { response?: { data: ProjectMemberJson }; message: string };
     console.error('Failed to update member role:', err.response?.data || err.message);
@@ -74,12 +69,7 @@ onMounted(() => {
 
 function onNewMember(email: string) {
   fetchMembers();
-  toast.add({
-    severity: 'success',
-    summary: t('projectSettings.newMemberAdded'),
-    detail: t('projectSettings.newMemberAddedDetail', [email]),
-    life: 3000,
-  });
+  appToast.success(t('projectSettings.newMemberAddedDetail', [email]), {summary: t('projectSettings.newMemberAdded'),});
 }
 </script>
 

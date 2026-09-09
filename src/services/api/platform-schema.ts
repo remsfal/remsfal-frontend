@@ -3,6 +3,38 @@
  * Do not make direct changes to the file.
  */
 
+export type $Read<T> = {
+  readonly $read: T;
+};
+export type $Write<T> = {
+  readonly $write: T;
+};
+export type Readable<T> =
+  T extends $Write<any>
+    ? never
+    : T extends $Read<infer U>
+      ? Readable<U>
+      : T extends (infer E)[]
+        ? Readable<E>[]
+        : T extends object
+          ? {
+              [K in keyof T as NonNullable<T[K]> extends $Write<any> ? never : K]: Readable<T[K]>;
+            }
+          : T;
+export type Writable<T> =
+  T extends $Read<any>
+    ? never
+    : T extends $Write<infer U>
+      ? Writable<U>
+      : T extends (infer E)[]
+        ? Writable<E>[]
+        : T extends object
+          ? {
+              [K in keyof T as NonNullable<T[K]> extends $Read<any> ? never : K]: Writable<T[K]>;
+            } & {
+              [K in keyof T as NonNullable<T[K]> extends $Read<any> ? K : never]?: never;
+            }
+          : T;
 export interface paths {
   "/api/v1/address": {
     parameters: {
@@ -5185,6 +5217,54 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** @description An entry of the caller's activity feed */
+    ActivityFeedJson: {
+      /** @description Unique identifier of this activity */
+      id?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the related project */
+      projectId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the related issue */
+      issueId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Type of activity */
+      activityType?: $Read<components["schemas"]["IssueEventType"]>;
+      /** @description Title of the related issue */
+      title?: $Read<string>;
+      /** @description Description of the activity, e.g. a message text */
+      description?: $Read<string>;
+      /** @description Link to the frontend issue page */
+      link?: $Read<string>;
+      /** @description Unique identifier of the user who triggered this activity */
+      actorId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Name of the user who triggered this activity */
+      actorName?: $Read<string>;
+      /** @description Type of the related issue */
+      issueType?: $Read<components["schemas"]["IssueType"]>;
+      /** @description Status of the related issue */
+      status?: $Read<components["schemas"]["IssueStatus"]>;
+      /** @description Unique identifier of the related rental agreement */
+      agreementId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the contractor organization involved, if any */
+      organizationId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the contractor involved, if any */
+      contractorId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Unique identifier of the assignee of the related issue */
+      assigneeId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Whether the caller has already read this activity */
+      read?: $Read<boolean>;
+      /** @description Timestamp this activity was recorded at */
+      createdAt?: $Read<components["schemas"]["Instant"]>;
+    };
+    /** @description A cursor-paginated list of activities */
+    ActivityFeedListJson: {
+      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+      nextCursor?: $Read<string>;
+      /**
+       * Format: int32
+       * @description Number of elements in this page
+       */
+      size: $Read<number>;
+      activities?: components["schemas"]["ActivityFeedJson"][];
+    };
     /** @description The address of a customer, a building or a site */
     AddressJson: {
       street: string;
@@ -5236,44 +5316,27 @@ export interface components {
       /** Format: float */
       space?: number;
     };
-    /** @description A single chat message */
+    /** @description An internal chat message between project members for an issue */
     ChatMessageJson: {
-      messageId?: components["schemas"]["UUID"];
-      sessionId?: components["schemas"]["UUID"];
-      senderId?: components["schemas"]["UUID"];
-      contentType?: string;
-      content?: string;
-      url?: string;
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
+      issueId?: $Read<components["schemas"]["UUID"]>;
+      messageId?: $Read<components["schemas"]["UUID"]>;
+      senderId?: $Read<components["schemas"]["UUID"]>;
+      senderName?: $Read<string>;
+      message: string;
+      createdAt?: $Read<components["schemas"]["Instant"]>;
+      modifiedAt?: $Read<components["schemas"]["Instant"]>;
     };
-    /** @description A list of chat messages */
+    /** @description A list of internal issue chat messages */
     ChatMessageListJson: {
-      messages?: components["schemas"]["ChatMessageJson"][];
-    };
-    /** @description A chat session */
-    ChatSessionJson: {
-      sessionId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      issueId?: components["schemas"]["UUID"];
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-    };
-    /** @description A list of chat sessions */
-    ChatSessionListJson: {
-      /**
-       * Format: int32
-       * @description Number of chat sessions in the list
-       */
-      size: number;
-      chatSessions?: components["schemas"]["ChatSessionJson"][];
+      /** @description Chat messages */
+      messages?: $Read<components["schemas"]["ChatMessageJson"][]>;
     };
     /** @description Tenant information in a rental agreement */
     CoTenantJson: {
-      readonly id?: components["schemas"]["UUID"];
-      readonly firstName?: string;
-      readonly lastName?: string;
-      readonly userId?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
+      firstName?: $Read<string>;
+      lastName?: $Read<string>;
+      userId?: $Read<components["schemas"]["UUID"]>;
     };
     /** @description An commercial inside a building */
     CommercialJson: {
@@ -5295,24 +5358,15 @@ export interface components {
       /** Format: float */
       space?: number;
     };
-    /** @description A contractor employee */
-    ContractorEmployeeJson: {
-      contractorId?: components["schemas"]["UUID"];
-      userId?: components["schemas"]["UUID"];
-      responsibility?: string;
-      email?: string;
-      name?: string;
-      active?: boolean;
-      user?: components["schemas"]["UserModel"];
-    };
     /** @description A contractor */
     ContractorJson: {
-      organizationId?: components["schemas"]["UUID"];
       /** @description Unique identifier of the organization (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       /** @description ID of the project this contractor belongs to */
-      readonly projectId?: components["schemas"]["UUID"];
-      companyName?: string;
+      projectId?: $Read<components["schemas"]["UUID"]>;
+      /** @description ID of the organization this contractor is linked to (derived by the server from a matching email; cannot be set by the client) */
+      organizationId?: $Read<components["schemas"]["UUID"]>;
+      name?: string;
       phone?: string;
       email?: string;
       trade?: string;
@@ -5327,13 +5381,34 @@ export interface components {
        * Format: int32
        * @description Index of the first element
        */
-      readonly offset?: number;
+      offset?: $Read<number>;
       /**
        * Format: int64
        * @description Total number of available contractors
        */
-      readonly total?: number;
+      total?: $Read<number>;
       contractors?: components["schemas"]["ContractorJson"][];
+    };
+    /** @description A contractor timeline entry */
+    ContractorTimelineJson: {
+      issueId?: components["schemas"]["UUID"];
+      timelineId?: components["schemas"]["UUID"];
+      senderId?: components["schemas"]["UUID"];
+      senderName?: string;
+      purpose: components["schemas"]["MessagePurpose"];
+      message: string;
+      createdAt?: components["schemas"]["Instant"];
+      modifiedAt?: components["schemas"]["Instant"];
+      organizationId?: $Read<components["schemas"]["UUID"]>;
+      senderRole?: $Read<components["schemas"]["UserContext"]>;
+      attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+      /** @description If true, the message is also copied into the tenant timeline of the issue */
+      messageToTenant?: boolean;
+    };
+    /** @description A list of contractor timelines */
+    ContractorTimelineListJson: {
+      /** @description Timeline entries */
+      timelines?: $Read<components["schemas"]["ContractorTimelineJson"][]>;
     };
     Cookie: {
       name?: string;
@@ -5362,35 +5437,6 @@ export interface components {
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
-    /** @description Represents an enriched issue event stored in a user's inbox */
-    InboxMessage: {
-      /** @description Unique identifier of this inbox message */
-      id?: string;
-      /** @description User who received this notification */
-      userId?: string;
-      /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
-      eventType?: string;
-      /** @description Related issue ID */
-      issueId?: string;
-      /** @description Issue title */
-      title?: string;
-      /** @description Issue description */
-      description?: string;
-      /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
-      issueType?: string;
-      /** @description Current status of the issue */
-      status?: string;
-      /** @description Link to the frontend issue page */
-      link?: string;
-      /** @description Whether the message has been read */
-      read?: boolean;
-      /** @description Timestamp when the notification was created */
-      createdAt?: components["schemas"]["OffsetDateTime"];
-      /** @description Email of the actor who triggered the event */
-      actorEmail?: string;
-      /** @description Email of the owner assigned to the issue */
-      ownerEmail?: string;
-    };
     /**
      * Format: date-time
      * @example 2022-03-10T16:15:50Z
@@ -5398,7 +5444,6 @@ export interface components {
     Instant: string;
     /** @description An issue attachment */
     IssueAttachmentJson: {
-      issueId?: components["schemas"]["UUID"];
       attachmentId?: components["schemas"]["UUID"];
       fileName?: string;
       contentType?: string;
@@ -5406,6 +5451,7 @@ export interface components {
       uploaderId?: components["schemas"]["UUID"];
       uploadedBy?: string;
       createdAt?: components["schemas"]["Instant"];
+      issueId?: components["schemas"]["UUID"];
     };
     /** @enum {string} */
     IssueCategory:
@@ -5432,43 +5478,56 @@ export interface components {
       | "SNOW_REMOVAL_MAINTENANCE"
       | "TREE_CARE_MAINTENANCE"
       | "GENERAL";
+    /** @enum {string} */
+    IssueEventType:
+      | "ISSUE_CREATED"
+      | "ISSUE_UPDATED"
+      | "ISSUE_ASSIGNED"
+      | "ISSUE_MENTIONED"
+      | "TIMELINE_ENTRY_CREATED"
+      | "CHAT_MESSAGE_CREATED"
+      | "QUOTATION_REQUEST_CREATED"
+      | "QUOTATION_REQUEST_STATUS_CHANGED"
+      | "QUOTATION_CREATED"
+      | "ORDER_PLACED"
+      | "ORDER_PLACEMENT_STATUS_CHANGED";
     /** @description An issue item with basic information */
     IssueItemJson: {
       /** @description Unique identifier of the issue */
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       /** @description Unique identifier of the project this issue belongs to */
-      readonly projectId?: components["schemas"]["UUID"];
+      projectId?: $Read<components["schemas"]["UUID"]>;
       /** @description Last modification timestamp of the issue */
-      readonly modifiedAt?: components["schemas"]["Instant"];
+      modifiedAt?: $Read<components["schemas"]["Instant"]>;
       /** @description Title of the issue */
-      readonly name?: string;
+      name?: $Read<string>;
       /** @description Title of the issue */
-      readonly title?: string;
+      title?: $Read<string>;
       /** @description Type of the issue */
-      readonly type?: components["schemas"]["IssueType"];
+      type?: $Read<components["schemas"]["IssueType"]>;
       /** @description Status of the issue */
-      readonly status?: components["schemas"]["IssueStatus"];
+      status?: $Read<components["schemas"]["IssueStatus"]>;
       /** @description Priority of the issue */
-      readonly priority?: components["schemas"]["IssuePriority"];
+      priority?: $Read<components["schemas"]["IssuePriority"]>;
       /** @description Unique identifier of the assignee of the issue */
-      readonly assigneeId?: components["schemas"]["UUID"];
+      assigneeId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who reported this issue */
-      readonly reportedBy?: string;
+      reportedBy?: $Read<string>;
     };
     /** @description An issue, as visible to the project manager with full access to all fields and relations */
     IssueJson: {
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       projectId?: components["schemas"]["UUID"];
-      readonly modifiedAt?: components["schemas"]["Instant"];
+      modifiedAt?: $Read<components["schemas"]["Instant"]>;
       title?: string;
       type?: components["schemas"]["IssueType"];
       category?: components["schemas"]["IssueCategory"];
       status?: components["schemas"]["IssueStatus"];
       priority?: components["schemas"]["IssuePriority"];
       /** @description ID of the user who reported this issue */
-      readonly reporterId?: components["schemas"]["UUID"];
+      reporterId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who reported this issue */
-      readonly reportedBy?: string;
+      reportedBy?: $Read<string>;
       agreementId?: components["schemas"]["UUID"];
       visibleToTenants?: boolean;
       rentalUnitId?: components["schemas"]["UUID"];
@@ -5484,17 +5543,19 @@ export interface components {
       blocks?: string[];
       /** @description Proposed data change submitted via self-service, for manager review */
       tenantUpdate?: components["schemas"]["TenantJson"];
+      /** @description Proposed contractor data change derived from a linked organization update, for manager review */
+      contractorUpdate?: components["schemas"]["ContractorJson"];
       attachments?: components["schemas"]["IssueAttachmentJson"][];
     };
     /** @description A cursor-paginated list of issues */
     IssueListJson: {
       /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
-      readonly nextCursor?: string;
+      nextCursor?: $Read<string>;
       /**
        * Format: int32
        * @description Number of elements in this page
        */
-      readonly size: number;
+      size: $Read<number>;
       issues?: components["schemas"]["IssueItemJson"][];
     };
     /** @enum {string} */
@@ -5518,15 +5579,8 @@ export interface components {
     /** @enum {string} */
     MessagePurpose:
       "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
-    /**
-     * Format: date-time
-     * @example 2022-03-10T12:15:50-04:00
-     */
-    OffsetDateTime: string;
     /** @description An attachment associated with a quotation request, quotation, or order placement */
     OrderAttachmentJson: {
-      processPhase?: components["schemas"]["OrderProcessPhase"];
-      processId?: components["schemas"]["UUID"];
       attachmentId?: components["schemas"]["UUID"];
       fileName?: string;
       contentType?: string;
@@ -5534,6 +5588,8 @@ export interface components {
       uploaderId?: components["schemas"]["UUID"];
       uploadedBy?: string;
       createdAt?: components["schemas"]["Instant"];
+      processPhase?: components["schemas"]["OrderProcessPhase"];
+      processId?: components["schemas"]["UUID"];
     };
     /** @description An order placement created by a manager based on a quotation */
     OrderPlacementJson: {
@@ -5552,17 +5608,17 @@ export interface components {
       modifiedAt?: components["schemas"]["Instant"];
       attachments?: components["schemas"]["OrderAttachmentJson"][];
       /** @description ID of the quotation this order is based on */
-      readonly quotationId?: components["schemas"]["UUID"];
+      quotationId?: $Read<components["schemas"]["UUID"]>;
       /** @description ID of the user who placed the order */
-      readonly ordererId?: components["schemas"]["UUID"];
+      ordererId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who placed the order */
-      readonly orderedBy?: string;
+      orderedBy?: $Read<string>;
       /** @description Status of the order placement: PLACED, CONFIRMED, REJECTED, WITHDRAWN */
       status?: components["schemas"]["OrderPlacementStatus"];
       /** @description ID of the user who confirmed or rejected the order */
-      readonly confirmorId?: components["schemas"]["UUID"];
+      confirmorId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who confirmed or rejected the order */
-      readonly confirmedBy?: string;
+      confirmedBy?: $Read<string>;
     };
     /** @description A list of order placements */
     OrderPlacementListJson: {
@@ -5575,11 +5631,11 @@ export interface components {
     /** @description Employee information in context of an organization */
     OrganizationEmployeeJson: {
       /** @description Unique identifier of the employee (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
-      readonly organizationId?: components["schemas"]["UUID"];
-      readonly organizationName?: string;
+      id?: $Read<components["schemas"]["UUID"]>;
+      organizationId?: $Read<components["schemas"]["UUID"]>;
+      organizationName?: $Read<string>;
       /** @description Full name of the employee (retrieved from user profile) */
-      readonly name?: string;
+      name?: $Read<string>;
       email?: string;
       active?: boolean;
       employeeRole: components["schemas"]["EmployeeRole"];
@@ -5591,7 +5647,7 @@ export interface components {
     /** @description An organization */
     OrganizationJson: {
       /** @description Unique identifier of the organization (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       name?: string;
       phone?: string;
       email?: string;
@@ -5613,7 +5669,7 @@ export interface components {
       organizationName?: string;
       role: components["schemas"]["MemberRole"];
       /** @description Members of the organization together with their derived role in this project */
-      readonly members?: components["schemas"]["ProjectMemberJson"][];
+      members?: $Read<components["schemas"]["ProjectMemberJson"][]>;
     };
     /** @description List of organizations assigned to a project */
     OrganizationMemberListJson: {
@@ -5621,20 +5677,20 @@ export interface components {
     };
     /** @description A project item with the user's member role only */
     ProjectItemJson: {
-      readonly id: components["schemas"]["UUID"];
+      id: $Read<components["schemas"]["UUID"]>;
       name: string;
       memberRole: components["schemas"]["MemberRole"];
     };
     /** @description A project */
     ProjectJson: {
       /** @description Unique identifier of the project (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       title: string;
       owner?: string;
       careOf?: string;
       billingAddress?: components["schemas"]["AddressJson"];
       /** @description Project members (managed separately via members endpoint) */
-      readonly members?: components["schemas"]["ProjectMemberJson"][];
+      members?: $Read<components["schemas"]["ProjectMemberJson"][]>;
     };
     /** @description A list of projects */
     ProjectListJson: {
@@ -5643,30 +5699,30 @@ export interface components {
        * @description Index of the first element in projects list of total available entries, starting at 1
        * @example 1
        */
-      readonly first: number;
+      first: $Read<number>;
       /**
        * Format: int32
        * @description Number of elements in projects list
        * @default 10
        */
-      readonly size: number;
+      size: $Read<number>;
       /**
        * Format: int64
        * @description Total number of available projects
        */
-      readonly total: number;
+      total: $Read<number>;
       projects?: components["schemas"]["ProjectItemJson"][];
     };
     /** @description Project member information in context of a project */
     ProjectMemberJson: {
       privileged?: boolean;
       /** @description Unique identifier of the project member (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       /** @description Full name of the project member (retrieved from user profile) */
-      readonly name?: string;
+      name?: $Read<string>;
       email?: string;
       /** @description Active status of the project member (managed by server) */
-      readonly active?: boolean;
+      active?: $Read<boolean>;
       role: components["schemas"]["MemberRole"];
     };
     /** @description A list of project members */
@@ -5695,7 +5751,7 @@ export interface components {
     };
     /** @description A list of properties */
     PropertyListJson: {
-      readonly properties?: components["schemas"]["RentalUnitTreeNodeJson"][];
+      properties?: $Read<components["schemas"]["RentalUnitTreeNodeJson"][]>;
     };
     /** @description A quotation response submitted by a contractor */
     QuotationJson: {
@@ -5714,11 +5770,11 @@ export interface components {
       modifiedAt?: components["schemas"]["Instant"];
       attachments?: components["schemas"]["OrderAttachmentJson"][];
       /** @description ID of the quotation request this quotation responds to */
-      readonly requestId?: components["schemas"]["UUID"];
+      requestId?: $Read<components["schemas"]["UUID"]>;
       /** @description ID of the user who submitted this quotation */
-      readonly offererId?: components["schemas"]["UUID"];
+      offererId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who submitted this quotation */
-      readonly offeredBy?: string;
+      offeredBy?: $Read<string>;
       /** @description Status of the quotation: VALID, INVALID, ACCEPTED, REJECTED */
       status?: components["schemas"]["QuotationStatus"];
       /** @description Timestamp until which the quotation is valid */
@@ -5745,9 +5801,9 @@ export interface components {
       modifiedAt?: components["schemas"]["Instant"];
       attachments?: components["schemas"]["OrderAttachmentJson"][];
       /** @description ID of the user who initiated this request */
-      readonly initiatorId?: components["schemas"]["UUID"];
+      initiatorId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who initiated this request */
-      readonly initiatedBy?: string;
+      initiatedBy?: $Read<string>;
       /** @description Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED */
       status?: components["schemas"]["RequestStatus"];
       /** @description Scope of work description for the contractor */
@@ -5775,37 +5831,37 @@ export interface components {
     /** @description A rental agreement item with aggregated rent information for list views */
     RentalAgreementItemJson: {
       /** @description Unique identifier of the rental agreement */
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       /** @description List of tenants in this rental agreement */
-      readonly tenants?: components["schemas"]["TenantJson"][];
+      tenants?: $Read<components["schemas"]["TenantJson"][]>;
       /** @description Start date of the rental period */
-      readonly startOfRental: components["schemas"]["LocalDate"];
+      startOfRental: $Read<components["schemas"]["LocalDate"]>;
       /** @description End date of the rental period */
-      readonly endOfRental?: components["schemas"]["LocalDate"];
+      endOfRental?: $Read<components["schemas"]["LocalDate"]>;
       /** @description List of rental units in this agreement */
-      readonly rentalUnits?: components["schemas"]["RentalUnitJson"][];
+      rentalUnits?: $Read<components["schemas"]["RentalUnitJson"][]>;
       /** @description The currently valid rent for each rental unit in this agreement */
-      readonly currentRents?: components["schemas"]["RentJson"][];
+      currentRents?: $Read<components["schemas"]["RentJson"][]>;
       /**
        * Format: float
        * @description Sum of basic rent from the currently valid rent of each rental unit
        */
-      readonly basicRent?: number;
+      basicRent?: $Read<number>;
       /**
        * Format: float
        * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
        */
-      readonly operatingCostsPrepayment?: number;
+      operatingCostsPrepayment?: $Read<number>;
       /**
        * Format: float
        * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
        */
-      readonly heatingCostsPrepayment?: number;
+      heatingCostsPrepayment?: $Read<number>;
     };
     /** @description A rental agreement for rentable units */
     RentalAgreementJson: {
       projectId?: components["schemas"]["UUID"];
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       tenants?: components["schemas"]["TenantJson"][];
       startOfRental?: components["schemas"]["LocalDate"];
       endOfRental?: components["schemas"]["LocalDate"];
@@ -5827,17 +5883,17 @@ export interface components {
        * Format: float
        * @description Sum of basic rent from the currently valid rent of each rental unit
        */
-      readonly basicRent?: number;
+      basicRent?: $Read<number>;
       /**
        * Format: float
        * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
        */
-      readonly operatingCostsPrepayment?: number;
+      operatingCostsPrepayment?: $Read<number>;
       /**
        * Format: float
        * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
        */
-      readonly heatingCostsPrepayment?: number;
+      heatingCostsPrepayment?: $Read<number>;
     };
     /** @description A key handover record for a rental agreement */
     RentalAgreementKeysJson: {
@@ -5862,10 +5918,10 @@ export interface components {
       type?: components["schemas"]["UnitType"];
       location?: string;
       description?: string;
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       title?: string;
       /** Format: float */
-      readonly space?: number;
+      space?: $Read<number>;
     };
     /** @description Encapsulated data of a project tree node */
     RentalUnitNodeDataJson: {
@@ -5874,37 +5930,37 @@ export interface components {
        * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
        * @example PROPERTY
        */
-      readonly type: components["schemas"]["UnitType"];
+      type: $Read<components["schemas"]["UnitType"]>;
       /**
        * @description Title of the node
        * @example Main Building
        */
-      readonly title: string;
+      title: $Read<string>;
       /**
        * @description Location of the rental unit
        * @example first floor left
        */
-      readonly location?: string;
+      location?: $Read<string>;
       /**
        * @description Description of the rental unit
        * @example A multi-story office building
        */
-      readonly description?: string;
+      description?: $Read<string>;
       /**
        * Format: float
        * @description Usable space in square meters
        * @example 350.5
        */
-      readonly space?: number;
+      space?: $Read<number>;
     };
     /** @description A tree node representing a project entity */
     RentalUnitTreeNodeJson: {
       /** @description Key of the node */
-      readonly key: components["schemas"]["UUID"];
+      key: $Read<components["schemas"]["UUID"]>;
       /** @description Data encapsulating node attributes */
-      readonly data: components["schemas"]["RentalUnitNodeDataJson"];
+      data: $Read<components["schemas"]["RentalUnitNodeDataJson"]>;
       /** @description Children nodes */
-      readonly children?: components["schemas"]["RentalUnitTreeNodeJson"][];
+      children?: $Read<components["schemas"]["RentalUnitTreeNodeJson"][]>;
     };
     /** @enum {string} */
     RequestStatus: "REQUESTED" | "WITHDRAWN" | "VIEWING_REQUIRED" | "CONSULTATION_REQUIRED" | "REJECTED" | "SUBMITTED";
@@ -5939,34 +5995,34 @@ export interface components {
     /** @description A read-only rental agreement of a rentable unit from a tenant's perspective */
     TenancyJson: {
       /** @description Unique identifier of the rental agreement */
-      readonly agreementId?: components["schemas"]["UUID"];
+      agreementId?: $Read<components["schemas"]["UUID"]>;
       /** @description Title of the project this rental agreement belongs to */
-      readonly projectTitle?: string;
+      projectTitle?: $Read<string>;
       /** @description Address of the building this rental agreement belongs to */
-      readonly address?: components["schemas"]["AddressJson"];
+      address?: $Read<components["schemas"]["AddressJson"]>;
       /** @description List of tenants in this rental agreement */
-      readonly tenants?: components["schemas"]["CoTenantJson"][];
+      tenants?: $Read<components["schemas"]["CoTenantJson"][]>;
       /** @description Start date of the rental period */
-      readonly startOfRental?: components["schemas"]["LocalDate"];
+      startOfRental?: $Read<components["schemas"]["LocalDate"]>;
       /** @description End date of the rental period */
-      readonly endOfRental?: components["schemas"]["LocalDate"];
+      endOfRental?: $Read<components["schemas"]["LocalDate"]>;
       /** @description List of rental units in this agreement */
-      readonly rentalUnits?: components["schemas"]["RentalUnitJson"][];
+      rentalUnits?: $Read<components["schemas"]["RentalUnitJson"][]>;
       /**
        * Format: float
        * @description Sum of basic rent from the currently valid rent of each rental unit
        */
-      readonly basicRent?: number;
+      basicRent?: $Read<number>;
       /**
        * Format: float
        * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
        */
-      readonly operatingCostsPrepayment?: number;
+      operatingCostsPrepayment?: $Read<number>;
       /**
        * Format: float
        * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
        */
-      readonly heatingCostsPrepayment?: number;
+      heatingCostsPrepayment?: $Read<number>;
     };
     /** @description A list of rental agreements from a tenant's perspective */
     TenancyListJson: {
@@ -5974,16 +6030,16 @@ export interface components {
     };
     /** @description An issue, as visible to the tenant who reported it or is affected by it */
     TenantIssueJson: {
-      readonly id?: components["schemas"]["UUID"];
-      readonly modifiedAt?: components["schemas"]["Instant"];
+      id?: $Read<components["schemas"]["UUID"]>;
+      modifiedAt?: $Read<components["schemas"]["Instant"]>;
       title: string;
       type: components["schemas"]["IssueType"];
       category?: components["schemas"]["IssueCategory"];
-      readonly status?: components["schemas"]["IssueStatus"];
+      status?: $Read<components["schemas"]["IssueStatus"]>;
       /** @description ID of the user who reported this issue */
-      readonly reporterId?: components["schemas"]["UUID"];
+      reporterId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who reported this issue */
-      readonly reportedBy?: string;
+      reportedBy?: $Read<string>;
       agreementId: components["schemas"]["UUID"];
       rentalUnitId?: components["schemas"]["UUID"];
       rentalUnitType?: components["schemas"]["UnitType"];
@@ -5993,19 +6049,19 @@ export interface components {
     /** @description A cursor-paginated list of issues visible to a tenant */
     TenantIssueListJson: {
       /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
-      readonly nextCursor?: string;
+      nextCursor?: $Read<string>;
       /**
        * Format: int32
        * @description Number of elements in this page
        */
-      readonly size?: number;
+      size?: $Read<number>;
       /** @description The issues in this page */
-      readonly issues?: components["schemas"]["TenantIssueJson"][];
+      issues?: $Read<components["schemas"]["TenantIssueJson"][]>;
     };
     /** @description A tenant item with rental units and active status for list views */
     TenantItemJson: {
       /** @description Unique identifier of the tenant */
-      readonly id?: components["schemas"]["UUID"];
+      id?: $Read<components["schemas"]["UUID"]>;
       /** @description First name of the tenant */
       firstName: string;
       /** @description Last name of the tenant */
@@ -6025,7 +6081,7 @@ export interface components {
     };
     /** @description Tenant information in a rental agreement */
     TenantJson: {
-      readonly id?: components["schemas"]["UUID"];
+      id: $Read<components["schemas"]["UUID"]>;
       /** @example Max */
       firstName: string;
       /** @example Mustermann */
@@ -6043,43 +6099,44 @@ export interface components {
       placeOfBirth?: string;
       /** @example 1990-01-01 */
       dateOfBirth?: components["schemas"]["LocalDate"];
-      readonly userId?: components["schemas"]["UUID"];
+      userId?: $Read<components["schemas"]["UUID"]>;
     };
     /** @description A list of tenants for a project */
     TenantListJson: {
       tenants?: components["schemas"]["TenantItemJson"][];
     };
     /** @description An issue timeline entry */
-    TimelineJson: {
-      readonly issueId?: components["schemas"]["UUID"];
-      readonly tenancyId?: components["schemas"]["UUID"];
-      readonly timelineId?: components["schemas"]["UUID"];
-      readonly attachments?: components["schemas"]["IssueAttachmentJson"][];
-      readonly senderId?: components["schemas"]["UUID"];
-      readonly senderName?: string;
+    TenantTimelineJson: {
+      issueId?: $Read<components["schemas"]["UUID"]>;
+      tenancyId?: $Read<components["schemas"]["UUID"]>;
+      timelineId?: $Read<components["schemas"]["UUID"]>;
+      senderId?: $Read<components["schemas"]["UUID"]>;
+      senderName?: $Read<string>;
       purpose: components["schemas"]["MessagePurpose"];
       message: string;
-      readonly createdAt?: components["schemas"]["Instant"];
-      readonly modifiedAt?: components["schemas"]["Instant"];
+      createdAt?: $Read<components["schemas"]["Instant"]>;
+      modifiedAt?: $Read<components["schemas"]["Instant"]>;
+      attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
     };
     /** @description A list of issue timelines */
-    TimelineListJson: {
+    TenantTimelineListJson: {
       /** @description Timeline entries */
-      readonly timelines?: components["schemas"]["TimelineJson"][];
+      timelines?: $Read<components["schemas"]["TenantTimelineJson"][]>;
     };
     /** Format: uuid */
     UUID: string;
     /** @enum {string} */
     UnitType: "PROPERTY" | "SITE" | "BUILDING" | "APARTMENT" | "STORAGE" | "COMMERCIAL";
     /** @enum {string} */
-    UserContext: "MANAGER" | "TENANT" | "CONTRACTOR";
+    UserContext: "CONTRACTOR" | "MANAGER" | "TENANT";
     /** @description User information globally */
     UserJson: {
+      name?: string;
       active?: boolean;
-      readonly id?: components["schemas"]["UUID"];
-      readonly userContexts?: components["schemas"]["UserContext"][];
+      id: $Read<components["schemas"]["UUID"]>;
+      userContexts?: $Read<components["schemas"]["UserContext"][]>;
       /** @example user@example.com */
-      readonly email?: string;
+      email: $Read<string>;
       firstName?: string;
       lastName?: string;
       address?: components["schemas"]["AddressJson"];
@@ -6098,14 +6155,8 @@ export interface components {
        *     ]
        */
       additionalEmails?: string[];
-      readonly registeredDate?: components["schemas"]["LocalDate"];
-      readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
-    };
-    UserModel: {
-      id?: components["schemas"]["UUID"];
-      email?: string;
-      name?: string;
-      active?: boolean;
+      registeredDate?: $Read<components["schemas"]["LocalDate"]>;
+      lastLoginDate?: $Read<components["schemas"]["LocalDateTime"]>;
     };
   };
   responses: never;

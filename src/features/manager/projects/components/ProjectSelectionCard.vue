@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import ProjectSelectionTable from './ProjectSelectionTable.vue';
 import NewProjectButton from './NewProjectButton.vue';
 

@@ -22,8 +22,18 @@ async function loadAddress(): Promise<AddressJson | undefined> {
 
 async function saveAddress(addr: AddressJson): Promise<void> {
   if (!loadedTenant.value) return;
+  const tenant = loadedTenant.value;
+  // id/userId are server-assigned (readOnly) and must not be sent in the update body —
+  // the tenant is already identified by props.tenantId in the request path.
   loadedTenant.value = await tenantService.updateTenant(props.projectId, props.tenantId, {
-    ...loadedTenant.value,
+    firstName: tenant.firstName,
+    lastName: tenant.lastName,
+    email: tenant.email,
+    mobilePhoneNumber: tenant.mobilePhoneNumber,
+    businessPhoneNumber: tenant.businessPhoneNumber,
+    privatePhoneNumber: tenant.privatePhoneNumber,
+    placeOfBirth: tenant.placeOfBirth,
+    dateOfBirth: tenant.dateOfBirth,
     address: addr,
   });
 }

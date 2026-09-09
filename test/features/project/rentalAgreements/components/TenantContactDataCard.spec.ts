@@ -29,7 +29,7 @@ const mockTenant = {
   businessPhoneNumber: '',
   privatePhoneNumber: '',
   address: {
-    street: 'Musterstraße 1', zip: '12345', city: 'Berlin', province: 'Berlin', countryCode: 'DE' 
+    street: 'Musterstraße 1', zip: '12345', city: 'Berlin', province: 'Berlin', countryCode: 'DE'
   },
 };
 
@@ -71,14 +71,17 @@ describe('TenantContactDataCard', () => {
     expect(wrapper.text()).toContain('Kontaktdaten von Max Mustermann');
   });
 
-  test('redirects to the tenant list when loading fails', async () => {
+  test('logs, shows no toast, and redirects to the tenant list when loading fails', async () => {
     vi.mocked(tenantService.getTenant).mockRejectedValue(new Error('not found'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     wrapper = mountCard();
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(push).toHaveBeenCalledWith({ name: 'TenantList', params: { projectId: 'project-1' } });
+    consoleErrorSpy.mockRestore();
   });
 
   test('submits updated contact data and preserves the previously loaded address', async () => {
@@ -134,9 +137,10 @@ describe('TenantContactDataCard', () => {
     expect(tenantService.updateTenant).not.toHaveBeenCalled();
   });
 
-  test('shows an error toast when saving fails', async () => {
+  test('logs and shows no toast when saving fails', async () => {
     await flushPromises();
     vi.mocked(tenantService.updateTenant).mockRejectedValue(new Error('save failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const form = wrapper.findComponent(Form);
     await form.vm.$emit('submit', {
@@ -145,7 +149,9 @@ describe('TenantContactDataCard', () => {
     });
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   test('shows a validation error for missing first name', async () => {

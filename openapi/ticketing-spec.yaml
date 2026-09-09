@@ -2,6 +2,113 @@
 openapi: 3.1.0
 components:
   schemas:
+    ActivityFeedJson:
+      description: An entry of the caller's activity feed
+      type: object
+      properties:
+        id:
+          description: Unique identifier of this activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        projectId:
+          description: Unique identifier of the related project
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        issueId:
+          description: Unique identifier of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        activityType:
+          description: Type of activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueEventType"
+        title:
+          type: string
+          description: Title of the related issue
+          readOnly: true
+        description:
+          type: string
+          description: "Description of the activity, e.g. a message text"
+          readOnly: true
+        link:
+          type: string
+          description: Link to the frontend issue page
+          readOnly: true
+        actorId:
+          description: Unique identifier of the user who triggered this activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        actorName:
+          type: string
+          description: Name of the user who triggered this activity
+          readOnly: true
+        issueType:
+          description: Type of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueType"
+        status:
+          description: Status of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueStatus"
+        agreementId:
+          description: Unique identifier of the related rental agreement
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        organizationId:
+          description: "Unique identifier of the contractor organization involved,\
+            \ if any"
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        contractorId:
+          description: "Unique identifier of the contractor involved, if any"
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        assigneeId:
+          description: Unique identifier of the assignee of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        read:
+          type: boolean
+          description: Whether the caller has already read this activity
+          readOnly: true
+        createdAt:
+          description: Timestamp this activity was recorded at
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+    ActivityFeedListJson:
+      description: A cursor-paginated list of activities
+      type: object
+      properties:
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
+          readOnly: true
+        size:
+          type: integer
+          format: int32
+          maximum: 500
+          minimum: 0
+          description: Number of elements in this page
+          readOnly: true
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityFeedJson"
+      required:
+      - size
     AddressJson:
       description: "The address of a customer, a building or a site"
       type: object
@@ -113,61 +220,46 @@ components:
           type: number
           format: float
     ChatMessageJson:
-      description: A single chat message
+      description: An internal chat message between project members for an issue
       type: object
       properties:
-        messageId:
+        issueId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
-        sessionId:
+        messageId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         senderId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
-        contentType:
+        senderName:
           type: string
-        content:
-          type: string
-        url:
+          readOnly: true
+        message:
           type: string
         createdAt:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/Instant"
         modifiedAt:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/Instant"
+      required:
+      - message
     ChatMessageListJson:
-      description: A list of chat messages
+      description: A list of internal issue chat messages
       type: object
       properties:
         messages:
           type: array
           items:
             $ref: "#/components/schemas/ChatMessageJson"
-    ChatSessionJson:
-      description: A chat session
-      type: object
-      properties:
-        sessionId:
-          $ref: "#/components/schemas/UUID"
-        projectId:
-          $ref: "#/components/schemas/UUID"
-        issueId:
-          $ref: "#/components/schemas/UUID"
-        createdAt:
-          $ref: "#/components/schemas/Instant"
-        modifiedAt:
-          $ref: "#/components/schemas/Instant"
-    ChatSessionListJson:
-      description: A list of chat sessions
-      type: object
-      required:
-      - size
-      properties:
-        size:
-          type: integer
-          format: int32
-          description: Number of chat sessions in the list
-        chatSessions:
-          type: array
-          items:
-            $ref: "#/components/schemas/ChatSessionJson"
+          description: Chat messages
+          readOnly: true
     CoTenantJson:
       description: Tenant information in a rental agreement
       type: object
@@ -224,32 +316,10 @@ components:
         space:
           type: number
           format: float
-    ContractorEmployeeJson:
-      description: A contractor employee
-      type: object
-      properties:
-        contractorId:
-          $ref: "#/components/schemas/UUID"
-        userId:
-          $ref: "#/components/schemas/UUID"
-        responsibility:
-          type: string
-          maxLength: 255
-        email:
-          type: string
-          maxLength: 255
-        name:
-          type: string
-        active:
-          type: boolean
-        user:
-          $ref: "#/components/schemas/UserModel"
     ContractorJson:
       description: A contractor
       type: object
       properties:
-        organizationId:
-          $ref: "#/components/schemas/UUID"
         id:
           description: Unique identifier of the organization (generated by server)
           readOnly: true
@@ -260,7 +330,13 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
-        companyName:
+        organizationId:
+          description: ID of the organization this contractor is linked to (derived
+            by the server from a matching email; cannot be set by the client)
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        name:
           type: string
           maxLength: 255
         phone:
@@ -301,6 +377,56 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ContractorJson"
+    ContractorTimelineJson:
+      description: A contractor timeline entry
+      type: object
+      properties:
+        issueId:
+          $ref: "#/components/schemas/UUID"
+        timelineId:
+          $ref: "#/components/schemas/UUID"
+        senderId:
+          $ref: "#/components/schemas/UUID"
+        senderName:
+          type: string
+        purpose:
+          $ref: "#/components/schemas/MessagePurpose"
+        message:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        modifiedAt:
+          $ref: "#/components/schemas/Instant"
+        organizationId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        senderRole:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UserContext"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderAttachmentJson"
+          readOnly: true
+        messageToTenant:
+          type: boolean
+          description: "If true, the message is also copied into the tenant timeline\
+            \ of the issue"
+      required:
+      - purpose
+      - message
+    ContractorTimelineListJson:
+      description: A list of contractor timelines
+      type: object
+      properties:
+        timelines:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContractorTimelineJson"
+          description: Timeline entries
+          readOnly: true
     CountryItemJson:
       description: A country item of a list
       type: object
@@ -350,50 +476,6 @@ components:
       - OWNER
       - MANAGER
       - STAFF
-    InboxMessage:
-      description: Represents an enriched issue event stored in a user's inbox
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier of this inbox message
-        userId:
-          type: string
-          description: User who received this notification
-        eventType:
-          type: string
-          description: "Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED"
-        issueId:
-          type: string
-          description: Related issue ID
-        title:
-          type: string
-          description: Issue title
-        description:
-          type: string
-          description: Issue description
-        issueType:
-          type: string
-          description: "Issue type: DEFECT, TASK, APPLICATION, ..."
-        status:
-          type: string
-          description: Current status of the issue
-        link:
-          type: string
-          description: Link to the frontend issue page
-        read:
-          type: boolean
-          description: Whether the message has been read
-        createdAt:
-          description: Timestamp when the notification was created
-          type: string
-          $ref: "#/components/schemas/OffsetDateTime"
-        actorEmail:
-          type: string
-          description: Email of the actor who triggered the event
-        ownerEmail:
-          type: string
-          description: Email of the owner assigned to the issue
     Instant:
       type: string
       format: date-time
@@ -403,8 +485,6 @@ components:
       description: An issue attachment
       type: object
       properties:
-        issueId:
-          $ref: "#/components/schemas/UUID"
         attachmentId:
           $ref: "#/components/schemas/UUID"
         fileName:
@@ -419,6 +499,8 @@ components:
           type: string
         createdAt:
           $ref: "#/components/schemas/Instant"
+        issueId:
+          $ref: "#/components/schemas/UUID"
     IssueCategory:
       type: string
       enum:
@@ -445,6 +527,20 @@ components:
       - SNOW_REMOVAL_MAINTENANCE
       - TREE_CARE_MAINTENANCE
       - GENERAL
+    IssueEventType:
+      type: string
+      enum:
+      - ISSUE_CREATED
+      - ISSUE_UPDATED
+      - ISSUE_ASSIGNED
+      - ISSUE_MENTIONED
+      - TIMELINE_ENTRY_CREATED
+      - CHAT_MESSAGE_CREATED
+      - QUOTATION_REQUEST_CREATED
+      - QUOTATION_REQUEST_STATUS_CHANGED
+      - QUOTATION_CREATED
+      - ORDER_PLACED
+      - ORDER_PLACEMENT_STATUS_CHANGED
     IssueItemJson:
       description: An issue item with basic information
       type: object
@@ -589,6 +685,11 @@ components:
             \ review"
           type: object
           $ref: "#/components/schemas/TenantJson"
+        contractorUpdate:
+          description: "Proposed contractor data change derived from a linked organization\
+            \ update, for manager review"
+          type: object
+          $ref: "#/components/schemas/ContractorJson"
         attachments:
           type: array
           items:
@@ -667,20 +768,11 @@ components:
       - APPOINTMENT_REQUESTED
       - APPOINTMENT_SCHEDULED
       - STATUS_CHANGED
-    OffsetDateTime:
-      type: string
-      format: date-time
-      examples:
-      - 2022-03-10T12:15:50-04:00
     OrderAttachmentJson:
+      type: object
       description: "An attachment associated with a quotation request, quotation,\
         \ or order placement"
-      type: object
       properties:
-        processPhase:
-          $ref: "#/components/schemas/OrderProcessPhase"
-        processId:
-          $ref: "#/components/schemas/UUID"
         attachmentId:
           $ref: "#/components/schemas/UUID"
         fileName:
@@ -695,6 +787,10 @@ components:
           type: string
         createdAt:
           $ref: "#/components/schemas/Instant"
+        processPhase:
+          $ref: "#/components/schemas/OrderProcessPhase"
+        processId:
+          $ref: "#/components/schemas/UUID"
     OrderPlacementJson:
       description: An order placement created by a manager based on a quotation
       type: object
@@ -1691,6 +1787,10 @@ components:
     TenantJson:
       type: object
       description: Tenant information in a rental agreement
+      required:
+      - id
+      - firstName
+      - lastName
       properties:
         id:
           readOnly: true
@@ -1744,9 +1844,6 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
-      required:
-      - firstName
-      - lastName
     TenantListJson:
       description: A list of tenants for a project
       type: object
@@ -1755,7 +1852,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenantItemJson"
-    TimelineJson:
+    TenantTimelineJson:
       description: An issue timeline entry
       type: object
       properties:
@@ -1771,11 +1868,6 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
-        attachments:
-          type: array
-          items:
-            $ref: "#/components/schemas/IssueAttachmentJson"
-          readOnly: true
         senderId:
           readOnly: true
           type: string
@@ -1795,17 +1887,22 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/Instant"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueAttachmentJson"
+          readOnly: true
       required:
       - purpose
       - message
-    TimelineListJson:
+    TenantTimelineListJson:
       description: A list of issue timelines
       type: object
       properties:
         timelines:
           type: array
           items:
-            $ref: "#/components/schemas/TimelineJson"
+            $ref: "#/components/schemas/TenantTimelineJson"
           description: Timeline entries
           readOnly: true
     UUID:
@@ -1824,13 +1921,15 @@ components:
     UserContext:
       type: string
       enum:
+      - CONTRACTOR
       - MANAGER
       - TENANT
-      - CONTRACTOR
     UserJson:
       description: User information globally
       type: object
       properties:
+        name:
+          type: string
         active:
           type: boolean
         id:
@@ -1897,17 +1996,9 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/LocalDateTime"
-    UserModel:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        email:
-          type: string
-        name:
-          type: string
-        active:
-          type: boolean
+      required:
+      - id
+      - email
   securitySchemes:
     SecurityScheme:
       type: http
@@ -1915,61 +2006,104 @@ components:
       bearerFormat: JWT
       description: Authentication
 paths:
-  /api/v1/inbox:
+  /api/v1/activities:
     get:
-      summary: Retrieve inbox messages for the authenticated user
+      summary: Retrieve the caller's activity feed.
+      description: "Aggregates issue lifecycle events, tenant communication, chat\
+        \ messages, and quotation/order placement activity for issues the caller is\
+        \ assigned to, newest first."
       parameters:
-      - description: "Filter by read status (true = read, false = unread)"
-        name: read
+      - description: Filter to return only activities of a specific rental agreement
+        name: agreementId
         in: query
         schema:
-          type: boolean
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only activities of issues assigned to a specific
+          user
+        name: assigneeId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only activities involving a specific contractor
+        name: contractorId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Opaque cursor returned by a previous call to fetch the next page
+        name: cursor
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only activities of a specific issue
+        name: issueId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Maximum number of activities to return
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          maximum: 500
+          exclusiveMinimum: 0
+          default: "50"
+        required: true
+      - description: Filter to return only activities involving a specific contractor
+          organization
+        name: organizationId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only activities of a specific project
+        name: projectId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
-          description: List of inbox messages belonging to the authenticated user
+          description: Activities retrieved successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/InboxMessage"
+                $ref: "#/components/schemas/ActivityFeedListJson"
         "401":
-          description: Not Authorized
+          description: No user authentication provided via session cookie
         "403":
           description: Not Allowed
       security:
       - SecurityScheme: []
-  /api/v1/inbox/{messageId}:
+  /api/v1/activities/{activityId}:
     delete:
-      summary: Delete an inbox message for the authenticated user
+      summary: Delete an activity for the authenticated user
       parameters:
-      - description: Message ID
+      - description: Activity ID
         required: true
-        name: messageId
+        name: activityId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
-          description: Message deleted
+          description: Activity deleted
         "404":
-          description: Message not found for this user
+          description: Activity not found for this user
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
       security:
       - SecurityScheme: []
-  /api/v1/inbox/{messageId}/status:
+  /api/v1/activities/{activityId}/status:
     patch:
-      summary: Update the read/unread status of an inbox message
+      summary: Update the read/unread status of an activity
       parameters:
-      - description: Message ID
+      - description: Activity ID
         required: true
-        name: messageId
+        name: activityId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       - description: "New read flag: true = read, false = unread"
         required: true
         name: read
@@ -1978,13 +2112,13 @@ paths:
           type: boolean
       responses:
         "200":
-          description: Message status updated
+          description: Activity status updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InboxMessage"
+                $ref: "#/components/schemas/ActivityFeedJson"
         "404":
-          description: Message not found for this user
+          description: Activity not found for this user
         "401":
           description: Not Authorized
         "403":
@@ -2282,170 +2416,13 @@ paths:
           description: Attachment not found
       security:
       - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats:
+  /ticketing/v1/issues/{issueId}/chat:
     get:
-      summary: Get all chat sessions for an issue
+      summary: Get all internal chat messages for an issue
       parameters:
-      - description: ID of the task
+      - description: ID of the issue
         required: true
         name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Chat sessions retrieved
-          content:
-            application/json:
-              schema: {}
-        "404":
-          description: Project or task not found
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-    post:
-      summary: Create a new chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "201":
-          description: Chat session created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ChatSessionJson"
-        "400":
-          description: Invalid input
-        "404":
-          description: Project or task not found
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}:
-    get:
-      summary: Get chat session details
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Chat session details retrieved
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, or chat session not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-    delete:
-      summary: Delete chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Chat session deleted
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, or chat session not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}/messages:
-    post:
-      summary: Send a chat message in a chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ChatMessageJson"
-        required: true
-      responses:
-        "201":
-          description: Chat message sent
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ChatMessageJson"
-        "400":
-          description: Invalid input
-        "403":
-          description: Chat session is closed or archived
-        "404":
-          description: "Project, task, or chat session not found"
-        "401":
-          description: No user authentication provided via session cookie
-      security:
-      - SecurityScheme: []
-    get:
-      summary: Get chat logs in a chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
@@ -2454,95 +2431,22 @@ paths:
           description: Chat messages retrieved
           content:
             application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, or chat session not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/upload:
-    post:
-      summary: Send a file in a chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              required:
-              - file
-              type: object
-              properties:
-                file:
-                  description: One or more files to send in the chat session
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-        required: true
-      responses:
-        "201":
-          description: File sent
-          content:
-            application/json:
               schema:
-                type: object
-                properties:
-                  fileId:
-                    $ref: "#/components/schemas/UUID"
-                  fileUrl:
-                    type: string
-                  sessionId:
-                    $ref: "#/components/schemas/UUID"
-                  createdAt:
-                    $ref: "#/components/schemas/Instant"
-                  sender:
-                    $ref: "#/components/schemas/UUID"
-        "400":
-          description: Invalid input
-        "403":
-          description: Chat session is closed or archived
-        "404":
-          description: "Project, task, or chat session not found"
+                $ref: "#/components/schemas/ChatMessageListJson"
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this issue's chat
+        "404":
+          description: Issue not found
       security:
       - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/{messageId}:
-    put:
-      summary: Update a chat message in a chat session
+    post:
+      summary: Create a new internal chat message for an issue
       parameters:
-      - description: ID of the task
+      - description: ID of the issue
         required: true
         name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: The chat message ID
-        required: true
-        name: messageId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
@@ -2553,94 +2457,125 @@ paths:
               $ref: "#/components/schemas/ChatMessageJson"
         required: true
       responses:
-        "200":
-          description: Chat message updated
+        "201":
+          description: Chat message created
+          headers:
+            Location:
+              description: URL of the new chat message
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/ChatMessageJson"
         "400":
           description: Invalid input
-        "403":
-          description: Chat session is closed or archived
-        "404":
-          description: "Project, task, chat session, or chat message not found"
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this issue's chat
+        "404":
+          description: Issue not found
       security:
       - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/contractor-timeline:
     get:
-      summary: Get a chat message in a chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: The chat message ID
-        required: true
-        name: messageId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
+      summary: Retrieve the timeline entries for a contractor's communication about
+        an issue.
       responses:
         "200":
-          description: Chat message retrieved
+          description: Timeline entries retrieved successfully
           content:
             application/json:
-              schema: {}
-            application/octet-stream: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, chat session, or chat message not found"
+              schema:
+                $ref: "#/components/schemas/ContractorTimelineListJson"
         "401":
           description: No user authentication provided via session cookie
         "403":
-          description: Not Allowed
+          description: User does not have permission to access this request
+        "404":
+          description: The quotation request does not exist
       security:
       - SecurityScheme: []
-    delete:
-      summary: Delete a chat message in a chat session
+    post:
+      summary: Create a new timeline entry with attachments for a contractor's communication
+        about an issue.
       parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
+      - description: "ID of the contractor organization to address; required only\
+          \ when creating via the issue-level combined view, ignored by the contractor's\
+          \ own mount which already knows its own organization"
+        name: organizationId
+        in: query
         schema:
           $ref: "#/components/schemas/UUID"
-      - description: The chat message ID to delete
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - timeline
+              type: object
+              properties:
+                timeline:
+                  description: Timeline entry information as JSON
+                  type: object
+                  properties:
+                    issueId:
+                      $ref: "#/components/schemas/UUID"
+                    timelineId:
+                      $ref: "#/components/schemas/UUID"
+                    senderId:
+                      $ref: "#/components/schemas/UUID"
+                    senderName:
+                      type: string
+                    purpose:
+                      $ref: "#/components/schemas/MessagePurpose"
+                    message:
+                      type: string
+                    createdAt:
+                      $ref: "#/components/schemas/Instant"
+                    modifiedAt:
+                      $ref: "#/components/schemas/Instant"
+                    organizationId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    senderRole:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UserContext"
+                    attachments:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/OrderAttachmentJson"
+                      readOnly: true
+                    messageToTenant:
+                      type: boolean
+                      description: "If true, the message is also copied into the tenant\
+                        \ timeline of the issue"
+                  required:
+                  - purpose
+                  - message
+                attachment:
+                  description: One or more files to attach to the timeline entry
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
-        name: messageId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
       responses:
-        "200":
-          description: Chat message deleted
+        "201":
+          description: Timeline entry created successfully
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/ContractorTimelineJson"
         "400":
           description: Invalid input
-        "403":
-          description: Chat session is closed or archived
-        "404":
-          description: "Project, task, chat session, or chat message not found"
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this request
+        "404":
+          description: The quotation request does not exist
       security:
       - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/orders:
@@ -3279,7 +3214,7 @@ paths:
           description: The issue or quotation does not exist
       security:
       - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/timeline:
+  /ticketing/v1/issues/{issueId}/tenant-timeline:
     get:
       summary: Get all timeline entries for an issue
       parameters:
@@ -3295,7 +3230,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TimelineListJson"
+                $ref: "#/components/schemas/TenantTimelineListJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3337,11 +3272,6 @@ paths:
                       readOnly: true
                       type: string
                       $ref: "#/components/schemas/UUID"
-                    attachments:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/IssueAttachmentJson"
-                      readOnly: true
                     senderId:
                       readOnly: true
                       type: string
@@ -3361,6 +3291,11 @@ paths:
                       readOnly: true
                       type: string
                       $ref: "#/components/schemas/Instant"
+                    attachments:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/IssueAttachmentJson"
+                      readOnly: true
                   required:
                   - purpose
                   - message
@@ -3377,7 +3312,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TimelineJson"
+                $ref: "#/components/schemas/TenantTimelineJson"
         "400":
           description: Invalid input
         "401":
@@ -3980,6 +3915,108 @@ paths:
           description: Quotation not found
       security:
       - SecurityScheme: []
+  /ticketing/v1/order-management/{issueId}/timeline:
+    get:
+      summary: Retrieve the timeline entries for a contractor's communication about
+        an issue.
+      responses:
+        "200":
+          description: Timeline entries retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractorTimelineListJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this request
+        "404":
+          description: The quotation request does not exist
+      security:
+      - SecurityScheme: []
+    post:
+      summary: Create a new timeline entry with attachments for a contractor's communication
+        about an issue.
+      parameters:
+      - description: "ID of the contractor organization to address; required only\
+          \ when creating via the issue-level combined view, ignored by the contractor's\
+          \ own mount which already knows its own organization"
+        name: organizationId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - timeline
+              type: object
+              properties:
+                timeline:
+                  description: Timeline entry information as JSON
+                  type: object
+                  properties:
+                    issueId:
+                      $ref: "#/components/schemas/UUID"
+                    timelineId:
+                      $ref: "#/components/schemas/UUID"
+                    senderId:
+                      $ref: "#/components/schemas/UUID"
+                    senderName:
+                      type: string
+                    purpose:
+                      $ref: "#/components/schemas/MessagePurpose"
+                    message:
+                      type: string
+                    createdAt:
+                      $ref: "#/components/schemas/Instant"
+                    modifiedAt:
+                      $ref: "#/components/schemas/Instant"
+                    organizationId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    senderRole:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UserContext"
+                    attachments:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/OrderAttachmentJson"
+                      readOnly: true
+                    messageToTenant:
+                      type: boolean
+                      description: "If true, the message is also copied into the tenant\
+                        \ timeline of the issue"
+                  required:
+                  - purpose
+                  - message
+                attachment:
+                  description: One or more files to attach to the timeline entry
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+        required: true
+      responses:
+        "201":
+          description: Timeline entry created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractorTimelineJson"
+        "400":
+          description: Invalid input
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this request
+        "404":
+          description: The quotation request does not exist
+      security:
+      - SecurityScheme: []
   /ticketing/v1/tenant-relations/issues:
     get:
       summary: Retrieve information for all issues of the calling tenant.
@@ -4197,7 +4234,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TimelineListJson"
+                $ref: "#/components/schemas/TenantTimelineListJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -4239,11 +4276,6 @@ paths:
                       readOnly: true
                       type: string
                       $ref: "#/components/schemas/UUID"
-                    attachments:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/IssueAttachmentJson"
-                      readOnly: true
                     senderId:
                       readOnly: true
                       type: string
@@ -4263,6 +4295,11 @@ paths:
                       readOnly: true
                       type: string
                       $ref: "#/components/schemas/Instant"
+                    attachments:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/IssueAttachmentJson"
+                      readOnly: true
                   required:
                   - purpose
                   - message
@@ -4279,7 +4316,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TimelineJson"
+                $ref: "#/components/schemas/TenantTimelineJson"
         "400":
           description: Invalid input
         "401":

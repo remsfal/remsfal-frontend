@@ -2,7 +2,7 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Message from 'primevue/message';
 import RentalAgreementKpiCards from '@/features/project/rentalAgreements/components/RentalAgreementKpiCards.vue';
-import KpiCard from '@/components/common/KpiCard.vue';
+import KpiCard from '@/components/KpiCard.vue';
 import {rentalAgreementService,
   type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 

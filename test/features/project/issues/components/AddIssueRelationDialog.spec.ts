@@ -1,11 +1,11 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import AddIssueRelationDialog from '@/features/project/issues/components/AddIssueRelationDialog.vue';
-import { issueService, type IssueItemJson } from '@/services/IssueService';
+import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
 
 const toastAddMock = vi.fn();
 
-vi.mock('@/services/IssueService', () => ({
+vi.mock('@/features/project/issues/services/IssueService', () => ({
   issueService: {
     createIssueRelation: vi.fn(),
     setParentIssue: vi.fn(),
@@ -141,7 +141,7 @@ describe('AddIssueRelationDialog.vue', () => {
     expect(wrapper.emitted('created')).toBeTruthy();
   });
 
-  test('shows error toast and does not emit created on failure', async () => {
+  test('logs, shows no toast, and does not emit created on failure', async () => {
     vi.spyOn(issueService, 'createIssueRelation').mockRejectedValue(new Error('boom'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountDialog();
@@ -151,7 +151,8 @@ describe('AddIssueRelationDialog.vue', () => {
     await addButton?.trigger('click');
     await flushPromises();
 
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastAddMock).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
     expect(wrapper.emitted('created')).toBeFalsy();
     consoleSpy.mockRestore();
   });

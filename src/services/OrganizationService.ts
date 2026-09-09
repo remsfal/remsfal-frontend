@@ -1,9 +1,11 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 
-export type OrganizationJson = ApiComponents['schemas']['OrganizationJson'];
-export type OrganizationListJson = ApiComponents['schemas']['OrganizationListJson'];
-export type OrganizationEmployeeJson = ApiComponents['schemas']['OrganizationEmployeeJson'];
-export type OrganizationEmployeeListJson = ApiComponents['schemas']['OrganizationEmployeeListJson'];
+export type OrganizationJson = Readable<ApiComponents['schemas']['OrganizationJson']>;
+export type OrganizationWritableJson = Writable<ApiComponents['schemas']['OrganizationJson']>;
+export type OrganizationListJson = Readable<ApiComponents['schemas']['OrganizationListJson']>;
+export type OrganizationEmployeeJson = Readable<ApiComponents['schemas']['OrganizationEmployeeJson']>;
+export type OrganizationEmployeeWritableJson = Writable<ApiComponents['schemas']['OrganizationEmployeeJson']>;
+export type OrganizationEmployeeListJson = Readable<ApiComponents['schemas']['OrganizationEmployeeListJson']>;
 export type EmployeeRole = ApiComponents['schemas']['EmployeeRole'];
 
 export class OrganizationService {
@@ -19,7 +21,7 @@ export class OrganizationService {
     return apiClient.get('/api/v1/organizations/contractors', {params: { limit, offset },});
   }
 
-  async createOrganization(data: OrganizationJson): Promise<void> {
+  async createOrganization(data: OrganizationWritableJson): Promise<void> {
     await apiClient.post('/api/v1/organizations', data);
   }
 
@@ -27,7 +29,7 @@ export class OrganizationService {
     return apiClient.get('/api/v1/organizations/{organizationId}', { pathParams: { organizationId: id } });
   }
 
-  async updateOrganization(id: string, data: OrganizationJson): Promise<OrganizationJson> {
+  async updateOrganization(id: string, data: OrganizationWritableJson): Promise<OrganizationJson> {
     return apiClient.patch('/api/v1/organizations/{organizationId}', data, { pathParams: { organizationId: id } });
   }
 
@@ -35,7 +37,7 @@ export class OrganizationService {
     return apiClient.get('/api/v1/organizations/{organizationId}/employees', {pathParams: { organizationId },});
   }
 
-  async addEmployee(organizationId: string, data: OrganizationEmployeeJson): Promise<OrganizationEmployeeJson> {
+  async addEmployee(organizationId: string, data: OrganizationEmployeeWritableJson): Promise<OrganizationEmployeeJson> {
     return apiClient.post('/api/v1/organizations/{organizationId}/employees', data, {pathParams: { organizationId },});
   }
 

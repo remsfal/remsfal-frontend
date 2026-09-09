@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import IssueAcceptButton from '@/features/project/issues/components/IssueAcceptButton.vue';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
@@ -10,8 +10,10 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ────────────────────────────────────────────────────────────
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>('@/services/IssueService');
+vi.mock('@/features/project/issues/services/IssueService', async () => {
+  const actual = await vi.importActual<
+    typeof import('@/features/project/issues/services/IssueService')
+      >('@/features/project/issues/services/IssueService');
   return {
     ...actual,
     issueService: { updateIssue: vi.fn() },
@@ -74,16 +76,17 @@ describe('IssueAcceptButton.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('shows error toast and does not emit accepted on failure', async () => {
+  test('logs, shows no toast, and does not emit accepted on failure', async () => {
     vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await findAcceptButton(wrapper).trigger('click');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: 'error' }),
-    );
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
     expect(wrapper.emitted('accepted')).toBeFalsy();
+    consoleErrorSpy.mockRestore();
   });
 
   // ───────────────────────────────────────────────────────────────────────────

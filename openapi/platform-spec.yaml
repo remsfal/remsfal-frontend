@@ -2,6 +2,113 @@
 openapi: 3.1.0
 components:
   schemas:
+    ActivityFeedJson:
+      description: An entry of the caller's activity feed
+      type: object
+      properties:
+        id:
+          description: Unique identifier of this activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        projectId:
+          description: Unique identifier of the related project
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        issueId:
+          description: Unique identifier of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        activityType:
+          description: Type of activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueEventType"
+        title:
+          type: string
+          description: Title of the related issue
+          readOnly: true
+        description:
+          type: string
+          description: "Description of the activity, e.g. a message text"
+          readOnly: true
+        link:
+          type: string
+          description: Link to the frontend issue page
+          readOnly: true
+        actorId:
+          description: Unique identifier of the user who triggered this activity
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        actorName:
+          type: string
+          description: Name of the user who triggered this activity
+          readOnly: true
+        issueType:
+          description: Type of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueType"
+        status:
+          description: Status of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueStatus"
+        agreementId:
+          description: Unique identifier of the related rental agreement
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        organizationId:
+          description: "Unique identifier of the contractor organization involved,\
+            \ if any"
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        contractorId:
+          description: "Unique identifier of the contractor involved, if any"
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        assigneeId:
+          description: Unique identifier of the assignee of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        read:
+          type: boolean
+          description: Whether the caller has already read this activity
+          readOnly: true
+        createdAt:
+          description: Timestamp this activity was recorded at
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+    ActivityFeedListJson:
+      description: A cursor-paginated list of activities
+      type: object
+      properties:
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
+          readOnly: true
+        size:
+          type: integer
+          format: int32
+          maximum: 500
+          minimum: 0
+          description: Number of elements in this page
+          readOnly: true
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityFeedJson"
+      required:
+      - size
     AddressJson:
       description: "The address of a customer, a building or a site"
       type: object
@@ -113,61 +220,46 @@ components:
           type: number
           format: float
     ChatMessageJson:
-      description: A single chat message
+      description: An internal chat message between project members for an issue
       type: object
       properties:
-        messageId:
+        issueId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
-        sessionId:
+        messageId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         senderId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
-        contentType:
+        senderName:
           type: string
-        content:
-          type: string
-        url:
+          readOnly: true
+        message:
           type: string
         createdAt:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/Instant"
         modifiedAt:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/Instant"
+      required:
+      - message
     ChatMessageListJson:
-      description: A list of chat messages
+      description: A list of internal issue chat messages
       type: object
       properties:
         messages:
           type: array
           items:
             $ref: "#/components/schemas/ChatMessageJson"
-    ChatSessionJson:
-      description: A chat session
-      type: object
-      properties:
-        sessionId:
-          $ref: "#/components/schemas/UUID"
-        projectId:
-          $ref: "#/components/schemas/UUID"
-        issueId:
-          $ref: "#/components/schemas/UUID"
-        createdAt:
-          $ref: "#/components/schemas/Instant"
-        modifiedAt:
-          $ref: "#/components/schemas/Instant"
-    ChatSessionListJson:
-      description: A list of chat sessions
-      type: object
-      required:
-      - size
-      properties:
-        size:
-          type: integer
-          format: int32
-          description: Number of chat sessions in the list
-        chatSessions:
-          type: array
-          items:
-            $ref: "#/components/schemas/ChatSessionJson"
+          description: Chat messages
+          readOnly: true
     CoTenantJson:
       description: Tenant information in a rental agreement
       type: object
@@ -224,32 +316,10 @@ components:
         space:
           type: number
           format: float
-    ContractorEmployeeJson:
-      description: A contractor employee
-      type: object
-      properties:
-        contractorId:
-          $ref: "#/components/schemas/UUID"
-        userId:
-          $ref: "#/components/schemas/UUID"
-        responsibility:
-          type: string
-          maxLength: 255
-        email:
-          type: string
-          maxLength: 255
-        name:
-          type: string
-        active:
-          type: boolean
-        user:
-          $ref: "#/components/schemas/UserModel"
     ContractorJson:
       description: A contractor
       type: object
       properties:
-        organizationId:
-          $ref: "#/components/schemas/UUID"
         id:
           description: Unique identifier of the organization (generated by server)
           readOnly: true
@@ -260,7 +330,13 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
-        companyName:
+        organizationId:
+          description: ID of the organization this contractor is linked to (derived
+            by the server from a matching email; cannot be set by the client)
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        name:
           type: string
           maxLength: 255
         phone:
@@ -301,6 +377,56 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ContractorJson"
+    ContractorTimelineJson:
+      description: A contractor timeline entry
+      type: object
+      properties:
+        issueId:
+          $ref: "#/components/schemas/UUID"
+        timelineId:
+          $ref: "#/components/schemas/UUID"
+        senderId:
+          $ref: "#/components/schemas/UUID"
+        senderName:
+          type: string
+        purpose:
+          $ref: "#/components/schemas/MessagePurpose"
+        message:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        modifiedAt:
+          $ref: "#/components/schemas/Instant"
+        organizationId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        senderRole:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UserContext"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderAttachmentJson"
+          readOnly: true
+        messageToTenant:
+          type: boolean
+          description: "If true, the message is also copied into the tenant timeline\
+            \ of the issue"
+      required:
+      - purpose
+      - message
+    ContractorTimelineListJson:
+      description: A list of contractor timelines
+      type: object
+      properties:
+        timelines:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContractorTimelineJson"
+          description: Timeline entries
+          readOnly: true
     Cookie:
       type: object
       properties:
@@ -364,50 +490,6 @@ components:
       - OWNER
       - MANAGER
       - STAFF
-    InboxMessage:
-      description: Represents an enriched issue event stored in a user's inbox
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier of this inbox message
-        userId:
-          type: string
-          description: User who received this notification
-        eventType:
-          type: string
-          description: "Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED"
-        issueId:
-          type: string
-          description: Related issue ID
-        title:
-          type: string
-          description: Issue title
-        description:
-          type: string
-          description: Issue description
-        issueType:
-          type: string
-          description: "Issue type: DEFECT, TASK, APPLICATION, ..."
-        status:
-          type: string
-          description: Current status of the issue
-        link:
-          type: string
-          description: Link to the frontend issue page
-        read:
-          type: boolean
-          description: Whether the message has been read
-        createdAt:
-          description: Timestamp when the notification was created
-          type: string
-          $ref: "#/components/schemas/OffsetDateTime"
-        actorEmail:
-          type: string
-          description: Email of the actor who triggered the event
-        ownerEmail:
-          type: string
-          description: Email of the owner assigned to the issue
     Instant:
       type: string
       format: date-time
@@ -417,8 +499,6 @@ components:
       description: An issue attachment
       type: object
       properties:
-        issueId:
-          $ref: "#/components/schemas/UUID"
         attachmentId:
           $ref: "#/components/schemas/UUID"
         fileName:
@@ -433,6 +513,8 @@ components:
           type: string
         createdAt:
           $ref: "#/components/schemas/Instant"
+        issueId:
+          $ref: "#/components/schemas/UUID"
     IssueCategory:
       type: string
       enum:
@@ -459,6 +541,20 @@ components:
       - SNOW_REMOVAL_MAINTENANCE
       - TREE_CARE_MAINTENANCE
       - GENERAL
+    IssueEventType:
+      type: string
+      enum:
+      - ISSUE_CREATED
+      - ISSUE_UPDATED
+      - ISSUE_ASSIGNED
+      - ISSUE_MENTIONED
+      - TIMELINE_ENTRY_CREATED
+      - CHAT_MESSAGE_CREATED
+      - QUOTATION_REQUEST_CREATED
+      - QUOTATION_REQUEST_STATUS_CHANGED
+      - QUOTATION_CREATED
+      - ORDER_PLACED
+      - ORDER_PLACEMENT_STATUS_CHANGED
     IssueItemJson:
       description: An issue item with basic information
       type: object
@@ -603,6 +699,11 @@ components:
             \ review"
           type: object
           $ref: "#/components/schemas/TenantJson"
+        contractorUpdate:
+          description: "Proposed contractor data change derived from a linked organization\
+            \ update, for manager review"
+          type: object
+          $ref: "#/components/schemas/ContractorJson"
         attachments:
           type: array
           items:
@@ -681,20 +782,11 @@ components:
       - APPOINTMENT_REQUESTED
       - APPOINTMENT_SCHEDULED
       - STATUS_CHANGED
-    OffsetDateTime:
-      type: string
-      format: date-time
-      examples:
-      - 2022-03-10T12:15:50-04:00
     OrderAttachmentJson:
+      type: object
       description: "An attachment associated with a quotation request, quotation,\
         \ or order placement"
-      type: object
       properties:
-        processPhase:
-          $ref: "#/components/schemas/OrderProcessPhase"
-        processId:
-          $ref: "#/components/schemas/UUID"
         attachmentId:
           $ref: "#/components/schemas/UUID"
         fileName:
@@ -709,6 +801,10 @@ components:
           type: string
         createdAt:
           $ref: "#/components/schemas/Instant"
+        processPhase:
+          $ref: "#/components/schemas/OrderProcessPhase"
+        processId:
+          $ref: "#/components/schemas/UUID"
     OrderPlacementJson:
       description: An order placement created by a manager based on a quotation
       type: object
@@ -1705,6 +1801,10 @@ components:
     TenantJson:
       type: object
       description: Tenant information in a rental agreement
+      required:
+      - id
+      - firstName
+      - lastName
       properties:
         id:
           readOnly: true
@@ -1758,9 +1858,6 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
-      required:
-      - firstName
-      - lastName
     TenantListJson:
       description: A list of tenants for a project
       type: object
@@ -1769,7 +1866,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenantItemJson"
-    TimelineJson:
+    TenantTimelineJson:
       description: An issue timeline entry
       type: object
       properties:
@@ -1785,11 +1882,6 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
-        attachments:
-          type: array
-          items:
-            $ref: "#/components/schemas/IssueAttachmentJson"
-          readOnly: true
         senderId:
           readOnly: true
           type: string
@@ -1809,17 +1901,22 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/Instant"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueAttachmentJson"
+          readOnly: true
       required:
       - purpose
       - message
-    TimelineListJson:
+    TenantTimelineListJson:
       description: A list of issue timelines
       type: object
       properties:
         timelines:
           type: array
           items:
-            $ref: "#/components/schemas/TimelineJson"
+            $ref: "#/components/schemas/TenantTimelineJson"
           description: Timeline entries
           readOnly: true
     UUID:
@@ -1838,13 +1935,15 @@ components:
     UserContext:
       type: string
       enum:
+      - CONTRACTOR
       - MANAGER
       - TENANT
-      - CONTRACTOR
     UserJson:
       description: User information globally
       type: object
       properties:
+        name:
+          type: string
         active:
           type: boolean
         id:
@@ -1911,17 +2010,9 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/LocalDateTime"
-    UserModel:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        email:
-          type: string
-        name:
-          type: string
-        active:
-          type: boolean
+      required:
+      - id
+      - email
   securitySchemes:
     SecurityScheme:
       type: http

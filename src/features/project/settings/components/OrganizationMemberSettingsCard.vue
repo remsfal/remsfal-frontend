@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import NewOrganizationMemberButton from '@/features/project/settings/components/NewOrganizationMemberButton.vue';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -19,7 +19,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const organizations = ref<OrganizationMemberJson[]>([]);
 const isLoading = ref(true);
@@ -67,12 +67,10 @@ const updateOrganizationRole = async (org: OrganizationMemberJson) => {
       organizations.value[index] = updatedOrganization;
     }
 
-    toast.add({
-      severity: 'success',
-      summary: t('projectSettings.updateOrganizationRoleSuccess'),
-      detail: t('projectSettings.updateRoleDetail', [org.organizationName]),
-      life: 3000,
-    });
+    appToast.success(
+      t('projectSettings.updateRoleDetail', [org.organizationName]),
+      { summary: t('projectSettings.updateOrganizationRoleSuccess') },
+    );
   } catch (error) {
     const err = error as { response?: { data: OrganizationMemberJson }; message: string };
     console.error('Failed to update organization role:', err.response?.data || err.message);
@@ -101,12 +99,10 @@ onMounted(() => {
 
 function onNewOrganization(organizationName: string) {
   fetchOrganizations();
-  toast.add({
-    severity: 'success',
-    summary: t('projectSettings.newOrganizationAdded'),
-    detail: t('projectSettings.newOrganizationAddedDetail', [organizationName]),
-    life: 3000,
-  });
+  appToast.success(
+    t('projectSettings.newOrganizationAddedDetail', [organizationName]),
+    { summary: t('projectSettings.newOrganizationAdded') },
+  );
 }
 </script>
 

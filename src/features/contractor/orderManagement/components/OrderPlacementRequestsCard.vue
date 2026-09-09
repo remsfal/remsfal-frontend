@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-import BaseCard from '@/components/common/BaseCard.vue';
-import { orderPlacementService, type OrderPlacementJson } from '@/services/OrderPlacementService';
+import BaseCard from '@/components/BaseCard.vue';
+import { orderPlacementService } from '@/features/contractor/orderManagement/services/OrderPlacementService';
+import type { OrderPlacementJson } from '@/features/contractor/orderManagement/services/OrderPlacementService';
 
 const { t, d } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const placements = ref<OrderPlacementJson[]>([]);
 const isLoading = ref(true);
@@ -34,20 +35,10 @@ async function updateStatus(placement: OrderPlacementJson, status: 'CONFIRMED' |
   if (!placement.id) return;
   try {
     await orderPlacementService.updateOrderPlacementStatus(placement.id, status);
-    toast.add({
-      severity: 'success',
-      summary: t(status === 'CONFIRMED' ? 'orderPlacement.confirmSuccess' : 'orderPlacement.rejectSuccess'),
-      life: 3000,
-    });
+    appToast.success(t(status === 'CONFIRMED' ? 'orderPlacement.confirmSuccess' : 'orderPlacement.rejectSuccess'));
     await fetchOrderPlacements();
   } catch (error) {
     console.error('Failed to update order placement status:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('orderPlacement.actionError'),
-      life: 5000,
-    });
   }
 }
 

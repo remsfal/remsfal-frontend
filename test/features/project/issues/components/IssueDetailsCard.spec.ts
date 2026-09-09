@@ -7,7 +7,7 @@ import IssueRejectButton from '@/features/project/issues/components/IssueRejectB
 import Select from 'primevue/select';
 import AutoComplete from 'primevue/autocomplete';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
 import { organizationMemberService, type OrganizationMemberListJson } from '@/services/OrganizationMemberService';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -18,8 +18,10 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({useToast: () => ({add: addMock,}),}));
 
 // ─── Service Mock ────────────────────────────────────────────────────────────
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>('@/services/IssueService');
+vi.mock('@/features/project/issues/services/IssueService', async () => {
+  const actual = await vi.importActual<
+    typeof import('@/features/project/issues/services/IssueService')
+      >('@/features/project/issues/services/IssueService');
   return {
     ...actual,
     issueService: {updateIssue: vi.fn(),},
@@ -33,7 +35,7 @@ vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
   );
   return {
     ...actual,
-    issueTimelineService: {createTimelineEntry: vi.fn(),},
+    issueTimelineService: {createTimelineEntryWithAttachments: vi.fn(),},
   };
 });
 
@@ -165,7 +167,7 @@ describe('IssueDetailsCard.vue', () => {
   // ───────────────────────────────────────────────────────────────────────────
   test('shows "internal issue" tag with info severity when visibleToTenants is false', () => {
     const tag = wrapper.findComponent({ name: 'Tag' });
-    expect(tag.props('value')).toBe('Interner Vorgang');
+    expect(tag.props('value')).toBe('Nur für Verwalter sichtbar');
     expect(tag.props('severity')).toBe('info');
   });
 
@@ -217,21 +219,18 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('shows error toast when API call fails', async () => {
+  test('logs and shows no toast when API call fails', async () => {
     vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await wrapper.find('#issue-title').setValue('Broken title');
 
     await findSaveButton(wrapper).trigger('click');
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        severity: 'error',
-        summary: 'Fehler',
-        detail: 'Fehler beim Speichern der Aufgabendetails',
-      }),
-    );
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   // ───────────────────────────────────────────────────────────────────────────

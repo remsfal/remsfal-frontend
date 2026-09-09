@@ -5,8 +5,12 @@ import { mount, VueWrapper, flushPromises } from "@vue/test-utils";
 const pushMock = vi.fn();
 vi.mock("vue-router", () => ({useRouter: () => ({ push: pushMock }),}));
 
+// ---- MOCK TOAST ----
+const toastAddMock = vi.fn();
+vi.mock("primevue/usetoast", () => ({useToast: () => ({ add: toastAddMock }),}));
+
 // ---- MOCK IssueService MODULE ----
-vi.mock("@/services/IssueService", () => {
+vi.mock("@/features/project/issues/services/IssueService", () => {
   const getIssuesMock = vi.fn().mockResolvedValue({ issues: [] });
 
   const instanceMethods = {getIssues: getIssuesMock,};
@@ -21,8 +25,8 @@ vi.mock("@/services/IssueService", () => {
 import IssueListView from "@/features/project/issues/views/IssueListView.vue";
 import IssueTable from "@/features/project/issues/components/IssueTable.vue";
 import NewIssueButton from "@/features/project/issues/components/NewIssueButton.vue";
-import { issueService } from "@/services/IssueService";
-import type { IssueStatus, IssueType } from "@/services/IssueService";
+import { issueService } from "@/features/project/issues/services/IssueService";
+import type { IssueStatus, IssueType } from "@/features/project/issues/services/IssueService";
 
 const getIssuesMock = vi.mocked(issueService.getIssues);
 
@@ -55,7 +59,9 @@ describe("IssueListView.vue", () => {
   test("fetches issues once on mount with status, type and assigneeId forwarded to the backend", async () => {
     await flushPromises();
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "TASK", "user1");
+    expect(getIssuesMock).toHaveBeenCalledWith(
+      "proj-1", undefined, "TASK", "user1", undefined, undefined, undefined,
+    );
   });
 
   test("re-fetches when status changes", async () => {
@@ -66,7 +72,9 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", "OPEN", "TASK", "user1");
+    expect(getIssuesMock).toHaveBeenCalledWith(
+      "proj-1", "OPEN", "TASK", "user1", undefined, undefined, undefined,
+    );
   });
 
   test("re-fetches when type changes (server-side filter)", async () => {
@@ -77,7 +85,9 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "DEFECT", "user1");
+    expect(getIssuesMock).toHaveBeenCalledWith(
+      "proj-1", undefined, "DEFECT", "user1", undefined, undefined, undefined,
+    );
   });
 
   test("forwards array-valued status/type filters to getIssues untouched", async () => {
@@ -95,6 +105,9 @@ describe("IssueListView.vue", () => {
       ['OPEN', 'IN_PROGRESS'],
       ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'],
       "user1",
+      undefined,
+      undefined,
+      undefined,
     );
   });
 
@@ -118,7 +131,9 @@ describe("IssueListView.vue", () => {
     });
     await flushPromises();
 
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "TASK", undefined);
+    expect(getIssuesMock).toHaveBeenCalledWith(
+      "proj-1", undefined, "TASK", undefined, undefined, undefined, undefined,
+    );
     const issues = localWrapper.findComponent(IssueTable).props("issues");
     expect(issues).toHaveLength(1);
     expect(issues[0].id).toBe("1");
@@ -178,7 +193,9 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(getIssuesMock).toHaveBeenCalledTimes(2);
-    expect(getIssuesMock).toHaveBeenNthCalledWith(1, "proj-1", undefined, undefined, undefined);
+    expect(getIssuesMock).toHaveBeenNthCalledWith(
+      1, "proj-1", undefined, undefined, undefined, undefined, undefined, undefined,
+    );
     expect(getIssuesMock).toHaveBeenNthCalledWith(
       2, "proj-1", undefined, undefined, undefined, undefined, undefined, undefined, "cursor-abc",
     );
@@ -298,6 +315,7 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(consoleErrorSpy).toHaveBeenCalled();
+    expect(toastAddMock).not.toHaveBeenCalled();
     expect(localWrapper.exists()).toBe(true);
 
     consoleErrorSpy.mockRestore();
@@ -386,7 +404,9 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "TASK", undefined);
+    expect(getIssuesMock).toHaveBeenCalledWith(
+      "proj-1", undefined, "TASK", undefined, undefined, undefined, undefined,
+    );
     expect(localWrapper.findComponent(IssueTable).props("issues")).toHaveLength(0);
   });
 });

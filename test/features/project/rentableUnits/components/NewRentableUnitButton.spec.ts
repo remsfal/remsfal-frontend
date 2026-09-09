@@ -131,13 +131,16 @@ describe('NewRentableUnitButton.vue', () => {
       consoleErrorSpy.mockRestore();
     });
 
-    it('shows an error toast when creation fails', async () => {
+    it('logs and shows no toast when creation fails', async () => {
       vi.mocked(propertyService.createProperty).mockRejectedValue(new Error('network error'));
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       await clickTrigger(wrapper);
       await fillAndSubmit('Neues Grundstück');
 
-      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+      expect(addMock).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalled();
       expect(wrapper.emitted('newUnit')).toBeFalsy();
+      consoleErrorSpy.mockRestore();
     });
   });
 
@@ -280,14 +283,17 @@ describe('NewRentableUnitButton.vue', () => {
       expect(apartmentService.createApartment).not.toHaveBeenCalled();
     });
 
-    it('shows an error toast when creation fails', async () => {
+    it('logs and shows no toast when creation fails', async () => {
       vi.mocked(apartmentService.createApartment).mockRejectedValue(new Error('network error'));
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       await clickTrigger(wrapper);
       await selectOption('Wohnung');
       await fillAndSubmit('Wohnung 1');
 
-      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+      expect(addMock).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalled();
       expect(wrapper.emitted('newUnit')).toBeFalsy();
+      consoleErrorSpy.mockRestore();
     });
   });
 

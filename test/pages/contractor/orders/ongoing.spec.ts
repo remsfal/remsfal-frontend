@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import ContractorOrdersOngoingPage from '@/pages/contractor/orders/ongoing.vue';
 
-vi.mock('@/views/contractor/CustomerView.vue', () => ({
+vi.mock('@/features/contractor/customers/views/CustomerView.vue', () => ({
   default: {
     name: 'CustomerView',
     template: '<div data-test="customer-view-stub" />',

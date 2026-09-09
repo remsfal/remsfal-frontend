@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/useAppToast';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
 import NewOrganizationEmployeeButton from '@/features/common/organizations/components/NewOrganizationEmployeeButton.vue';
 import { type OrganizationEmployeeJson, organizationService } from '@/services/OrganizationService';
@@ -13,7 +13,7 @@ import { type OrganizationEmployeeJson, organizationService } from '@/services/O
 const props = defineProps<{ organizationId: string }>();
 
 const { t } = useI18n();
-const toast = useToast();
+const appToast = useAppToast();
 
 const employees = ref<OrganizationEmployeeJson[]>([]);
 const isLoading = ref(true);
@@ -38,12 +38,10 @@ const updateEmployeeRole = async (employee: OrganizationEmployeeJson) => {
     }
 
     await organizationService.updateEmployeeRole(props.organizationId, employee.id, employee.employeeRole);
-    toast.add({
-      severity: 'success',
-      summary: t('organization.employees.updateRoleSuccess'),
-      detail: t('organization.employees.updateRoleDetail', [employee.email]),
-      life: 3000,
-    });
+    appToast.success(
+      t('organization.employees.updateRoleDetail', [employee.email]),
+      { summary: t('organization.employees.updateRoleSuccess') },
+    );
   } catch (error) {
     const err = error as { response?: { data: OrganizationEmployeeJson }; message: string };
     console.error('Failed to update employee role:', err.response?.data || err.message);
@@ -72,12 +70,7 @@ onMounted(() => {
 
 function onNewEmployee(email: string) {
   fetchEmployees();
-  toast.add({
-    severity: 'success',
-    summary: t('organization.employees.addSuccess'),
-    detail: t('organization.employees.addSuccessDetail', [email]),
-    life: 3000,
-  });
+  appToast.success(t('organization.employees.addSuccessDetail', [email]), {summary: t('organization.employees.addSuccess'),});
 }
 </script>
 

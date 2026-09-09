@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { organizationMemberService, type OrganizationMemberJson } from '@/services/OrganizationMemberService';
+import { organizationMemberService, type OrganizationMemberWritableJson } from '@/services/OrganizationMemberService';
 import { server } from '../mocks/server';
 import { testErrorHandling } from '../utils/testHelpers';
 
 describe('organizationMemberService (MSW)', () => {
   const projectId = 'project123';
-  const org: OrganizationMemberJson = {
+  const org: OrganizationMemberWritableJson = {
     organizationId: '11111111-1111-1111-1111-111111111111',
     role: 'MANAGER',
   };

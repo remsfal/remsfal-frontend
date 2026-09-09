@@ -1,10 +1,10 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type TenancyJson = ApiComponents['schemas']['TenancyJson'];
+export type TenancyJson = Readable<ApiComponents['schemas']['TenancyJson']>;
 export type UnitType = ApiComponents['schemas']['UnitType'];
-export type TenancyListJson = ApiComponents['schemas']['TenancyListJson'];
-export type RentalUnitJson = ApiComponents['schemas']['RentalUnitJson'];
-export type AddressJson = ApiComponents['schemas']['AddressJson'];
+export type TenancyListJson = Readable<ApiComponents['schemas']['TenancyListJson']>;
+export type RentalUnitJson = Readable<ApiComponents['schemas']['RentalUnitJson']>;
+export type AddressJson = Readable<ApiComponents['schemas']['AddressJson']>;
 
 export function formatTenancyLabel(tenancy: TenancyJson): string {
   const addr = tenancy.address;

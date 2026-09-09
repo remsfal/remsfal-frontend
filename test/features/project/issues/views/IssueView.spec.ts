@@ -1,14 +1,14 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { mount, flushPromises, VueWrapper } from "@vue/test-utils";
 import IssueView from "@/features/project/issues/views/IssueView.vue";
-import { issueService } from "@/services/IssueService";
+import { issueService } from "@/features/project/issues/services/IssueService";
 
 // ---- Mocks ----
 const toastAddMock = vi.fn();
 
-vi.mock("@/services/IssueService", () => ({issueService: { getIssue: vi.fn() },}));
+vi.mock("@/features/project/issues/services/IssueService", () => ({issueService: { getIssue: vi.fn() },}));
 vi.mock(
-  "@/services/QuotationRequestService",
+  "@/features/project/issues/services/QuotationRequestService",
   () => ({quotationRequestService: {getQuotationRequests: vi.fn().mockResolvedValue({ items: [] }),},})
 );
 vi.mock(
@@ -30,6 +30,7 @@ const mockIssue = {
   tenancyId: "tenant-1",
   type: "BUG",
   description: "Test description",
+  visibleToTenants: true,
   attachments: [
     {
       attachmentId: "att-1",
@@ -62,9 +63,14 @@ describe("IssueView.vue", () => {
             template:
               '<div data-test="description" @click="$emit(\'saved\')" />',
           },
+          IssueTimelineCard: {template: '<div data-test="timeline" />',},
           IssueAttachmentCard: {
             template:
               '<div data-test="attachments" @click="$emit(\'saved\')" />',
+          },
+          IssueRelationshipsCard: {
+            template:
+              '<div data-test="relationships" @click="$emit(\'saved\')" />',
           },
           IssueOrderManagementCard: true,
         },
@@ -79,10 +85,10 @@ describe("IssueView.vue", () => {
     expect(issueService.getIssue).toHaveBeenCalledWith("ISSUE-1");
   });
 
-  test("renders IssueDetailsCard, IssueDescriptionCard and IssueAttachmentCard", () => {
+  test("renders IssueDetailsCard, IssueDescriptionCard and IssueTimelineCard", () => {
     expect(wrapper.find('[data-test="details"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="description"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="attachments"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="timeline"]').exists()).toBe(true);
   });
 
   // ---- Loader Tests ----
@@ -96,19 +102,20 @@ describe("IssueView.vue", () => {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
-          IssueDetailsCard: true, IssueDescriptionCard: true, IssueAttachmentCard: true, IssueOrderManagementCard: true 
-        } 
+          IssueDetailsCard: true, IssueDescriptionCard: true, IssueTimelineCard: true, IssueOrderManagementCard: true
+        }
       },
     });
-  
+
     expect(issueService.getIssue).toHaveBeenCalled();
   });
   
   // ---- Error Handling Tests ----
-  test("shows error toast when API call fails", () => {
+  test("logs and shows no toast when API call fails", async () => {
     vi.spyOn(issueService, "getIssue").mockImplementation(() => {
       throw new Error("API error");
     });
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     mount(IssueView, {
       props: {
@@ -119,19 +126,16 @@ describe("IssueView.vue", () => {
         stubs: {
           IssueDetailsCard: true,
           IssueDescriptionCard: true,
-          IssueAttachmentCard: true,
+          IssueTimelineCard: true,
           IssueOrderManagementCard: true,
         },
       },
     });
+    await flushPromises();
 
-    expect(toastAddMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        severity: "error",
-        summary: "error.general",
-        detail: "issueDetails.fetchError",
-      })
-    );
+    expect(toastAddMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   // ---- Refetch Behaviour Tests ----
@@ -160,7 +164,7 @@ describe("IssueView.vue", () => {
             template:
               '<div data-test="description">{{ initialDescription }}</div>',
           },
-          IssueAttachmentCard: true,
+          IssueTimelineCard: true,
           IssueOrderManagementCard: true,
         },
       },
@@ -183,11 +187,11 @@ describe("IssueView.vue", () => {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
-          IssueDetailsCard: true, IssueDescriptionCard: true, IssueAttachmentCard: true, IssueOrderManagementCard: true 
-        } 
+          IssueDetailsCard: true, IssueDescriptionCard: true, IssueTimelineCard: true, IssueOrderManagementCard: true
+        }
       },
     });
-  
+
     // Wait for next tick so loadingFetch is set to true
     await tempWrapper.vm.$nextTick();
   
@@ -205,6 +209,13 @@ describe("IssueView.vue", () => {
 
   test("refetches issue when attachment card emits saved", async () => {
     await wrapper.find('[data-test="attachments"]').trigger("click");
+    await flushPromises();
+
+    expect(issueService.getIssue).toHaveBeenCalledTimes(2);
+  });
+
+  test("refetches issue when relationships card emits saved", async () => {
+    await wrapper.find('[data-test="relationships"]').trigger("click");
     await flushPromises();
 
     expect(issueService.getIssue).toHaveBeenCalledTimes(2);

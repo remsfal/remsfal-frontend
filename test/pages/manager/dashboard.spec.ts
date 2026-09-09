@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ManagerDashboardPage from '@/pages/manager/dashboard.vue';
 
-vi.mock('@/views/project/ProjectDashboard.vue', () => ({
+vi.mock('@/views/ProjectDashboard.vue', () => ({
   default: {
     name: 'ProjectDashboard',
     template: '<div data-test="project-dashboard-stub" />',

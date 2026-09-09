@@ -6,7 +6,7 @@ import DataView from 'primevue/dataview';
 import { tenantService, type TenantItemJson } from '../services/TenantService';
 import TenantCard from './TenantCard.vue';
 import TenantToolbar from './TenantToolbar.vue';
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 
 const props = defineProps<{
   projectId: string;

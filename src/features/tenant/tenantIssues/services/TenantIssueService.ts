@@ -1,7 +1,7 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type TenantIssueJson = ApiComponents['schemas']['TenantIssueJson'];
-export type TenantIssueListJson = ApiComponents['schemas']['TenantIssueListJson'];
+export type TenantIssueJson = Readable<ApiComponents['schemas']['TenantIssueJson']>;
+export type TenantIssueListJson = Readable<ApiComponents['schemas']['TenantIssueListJson']>;
 
 class TenantIssueService {
   async getIssues(cursor?: string, limit = 100): Promise<TenantIssueListJson> {

@@ -127,18 +127,17 @@ describe('TenantIssueDetailView', () => {
     expect(tenantIssueService.getIssue).toHaveBeenNthCalledWith(2, 'issue-2');
   });
 
-  it('shows translated load error message and error toast when fetch fails', async () => {
+  it('shows translated load error message and no toast when fetch fails', async () => {
     vi.mocked(tenantIssueService.getIssue).mockRejectedValueOnce(new Error('fetch failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mountDetails();
     await flushPromises();
 
     expect(wrapper.text()).toContain('Meldungsdetails konnten nicht geladen werden.');
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
-      severity: 'error',
-      summary: 'Fehler',
-      detail: 'Meldungsdetails konnten nicht geladen werden.',
-    }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
   it('closes issue after confirmation and navigates back to list', async () => {
@@ -159,8 +158,9 @@ describe('TenantIssueDetailView', () => {
     }));
   });
 
-  it('shows error toast and does not navigate when cancel fails', async () => {
+  it('logs and shows no toast, and does not navigate, when cancel fails', async () => {
     vi.mocked(tenantIssueService.closeIssue).mockRejectedValueOnce(new Error('close failed'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mountDetails();
     await flushPromises();
@@ -171,9 +171,8 @@ describe('TenantIssueDetailView', () => {
 
     expect(tenantIssueService.closeIssue).toHaveBeenCalledWith('issue-1');
     expect(pushMock).not.toHaveBeenCalled();
-    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
-      severity: 'error',
-      detail: 'Vorgang konnte nicht abgebrochen werden.',
-    }));
+    expect(addMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 });
