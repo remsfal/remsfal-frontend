@@ -7,4 +7,9 @@ export const authHandlers = [
   http.post(`${API_BASE}/authentication/refresh`, () => {
     return new HttpResponse(null, { status: 204 });
   }),
+
+  // GET verify additional email
+  http.get(`${API_BASE}/authentication/verify-additional-email`, () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
 ];

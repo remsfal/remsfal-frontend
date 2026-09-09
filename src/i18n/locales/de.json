@@ -130,6 +130,7 @@
   "newProjectForm.successCreated": "Das Projekt wurde erfolgreich erstellt",
   "projectTable.title": "Bezeichnung",
   "projectTable.role": "Meine Rolle",
+  "projectTable.empty": "Keine Liegenschaften gefunden.",
   "toolbar.newProject": "Neues Projekt",
   "toolbar.logout": "Abmelden",
   "toolbar.login": "Anmelden",
@@ -1143,5 +1144,10 @@
   "orderPlacement.rejectSuccess": "Auftrag erfolgreich abgelehnt",
   "orderPlacement.actionError": "Fehler beim Aktualisieren des Auftrags",
   "customerView.title": "Übersicht aller Auftraggeber",
-  "customerView.notAvailable": "Die Auftraggeberübersicht ist noch nicht verfügbar."
+  "customerView.notAvailable": "Die Auftraggeberübersicht ist noch nicht verfügbar.",
+  "emailVerification.title": "E-Mail-Bestätigung",
+  "emailVerification.loading": "Deine E-Mail-Adresse wird bestätigt …",
+  "emailVerification.successMessage": "Deine zusätzliche E-Mail-Adresse wurde erfolgreich bestätigt.",
+  "emailVerification.errorMessage": "Die E-Mail-Adresse konnte nicht bestätigt werden. Der Bestätigungslink ist ungültig oder abgelaufen.",
+  "emailVerification.backToSettings": "Zu meinen Einstellungen"
 }

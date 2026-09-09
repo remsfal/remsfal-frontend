@@ -410,6 +410,10 @@ components:
           items:
             $ref: "#/components/schemas/OrderAttachmentJson"
           readOnly: true
+        messageToTenant:
+          type: boolean
+          description: "If true, the message is also copied into the tenant timeline\
+            \ of the issue"
       required:
       - purpose
       - message
@@ -2543,6 +2547,10 @@ paths:
                       items:
                         $ref: "#/components/schemas/OrderAttachmentJson"
                       readOnly: true
+                    messageToTenant:
+                      type: boolean
+                      description: "If true, the message is also copied into the tenant\
+                        \ timeline of the issue"
                   required:
                   - purpose
                   - message
@@ -3978,6 +3986,10 @@ paths:
                       items:
                         $ref: "#/components/schemas/OrderAttachmentJson"
                       readOnly: true
+                    messageToTenant:
+                      type: boolean
+                      description: "If true, the message is also copied into the tenant\
+                        \ timeline of the issue"
                   required:
                   - purpose
                   - message
