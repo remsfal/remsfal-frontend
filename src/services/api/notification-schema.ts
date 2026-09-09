@@ -460,6 +460,8 @@ export interface components {
     ContractorTimelineListJson: {
       /** @description Timeline entries */
       timelines?: $Read<components["schemas"]["ContractorTimelineJson"][]>;
+      /** @description Whether a new timeline entry can be sent to the tenant */
+      visibleToTenant?: $Read<boolean>;
     };
     /** @description A country item of a list */
     CountryItemJson: {
