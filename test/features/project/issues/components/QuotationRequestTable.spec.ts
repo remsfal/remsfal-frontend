@@ -29,7 +29,7 @@ describe('QuotationRequestTable', () => {
   const mountTable = (props = { projectId: 'proj-1', issueId: 'issue-1' }) =>
     mount(QuotationRequestTable, {
       props,
-      global: { stubs: { NewQuotationRequestDialog: true } },
+      global: { stubs: { NewQuotationRequestButton: true } },
     });
 
   it('calls getQuotationRequests with issueId on mount', async () => {
@@ -93,19 +93,19 @@ describe('QuotationRequestTable', () => {
     consoleSpy.mockRestore();
   });
 
-  it('renders NewQuotationRequestDialog', async () => {
+  it('renders NewQuotationRequestButton', async () => {
     const wrapper = mountTable();
     await flushPromises();
-    expect(wrapper.findComponent({ name: 'NewQuotationRequestDialog' }).exists()).toBe(true);
+    expect(wrapper.findComponent({ name: 'NewQuotationRequestButton' }).exists()).toBe(true);
   });
 
-  it('re-fetches requests when NewQuotationRequestDialog emits created', async () => {
+  it('re-fetches requests when NewQuotationRequestButton emits created', async () => {
     const wrapper = mountTable();
     await flushPromises();
 
     const spy = vi.spyOn(quotationRequestService, 'getQuotationRequests').mockResolvedValue({ items: [] });
-    const dialog = wrapper.findComponent({ name: 'NewQuotationRequestDialog' });
-    await dialog.vm.$emit('created');
+    const button = wrapper.findComponent({ name: 'NewQuotationRequestButton' });
+    await button.vm.$emit('created');
     await flushPromises();
 
     expect(spy).toHaveBeenCalled();

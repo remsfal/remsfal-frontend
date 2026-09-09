@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
-import MultiSelect from 'primevue/multiselect';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -13,7 +12,7 @@ import { z } from 'zod';
 import BaseDialog from '@/components/BaseDialog.vue';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 import type { CreateQuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
-import { type ContractorJson, projectContractorService } from '@/services/ProjectContractorService';
+import { type ContractorJson, ContractorMultiSelect, NewContractorButton } from '@/features/project/contractors';
 import { projectService } from '@/services/ProjectService';
 import type { AddressJson } from '@/services/AddressService';
 
@@ -24,26 +23,26 @@ const { t } = useI18n();
 const appToast = useAppToast();
 
 const visible = ref(false);
-const contractors = ref<ContractorJson[]>([]);
-const initialValues = ref({ scopeOfWork: '', contractors: [] as ContractorJson[] });
+const contractorSelectRef = ref<InstanceType<typeof ContractorMultiSelect> | null>(null);
+const selectedContractors = ref<ContractorJson[]>([]);
+const contractorsTouched = ref(false);
+const submitAttempted = ref(false);
+const initialValues = ref({ scopeOfWork: '' });
 const billingAddress = ref<AddressJson | undefined>(undefined);
 const projectOwner = ref<string | undefined>(undefined);
 const projectCareOf = ref<string | undefined>(undefined);
 
-const validationSchema = z.object({
-  scopeOfWork: z.string().trim().min(1, { message: t('quotationRequest.validation.scopeOfWork') }),
-  contractors: z.array(z.any()).min(1, { message: t('quotationRequest.validation.contractors') }),
-});
+const contractorsInvalid = computed(
+  () => (contractorsTouched.value || submitAttempted.value) && selectedContractors.value.length === 0,
+);
+
+const scopeOfWorkRequiredMessage = t('quotationRequest.validation.scopeOfWork');
+const validationSchema = z.object({ scopeOfWork: z.string().trim().min(1, { message: scopeOfWorkRequiredMessage }) });
 
 const resolver = zodResolver(validationSchema);
 
-async function fetchContractors() {
-  try {
-    const result = await projectContractorService.getContractors(props.projectId);
-    contractors.value = result.contractors ?? [];
-  } catch (error) {
-    console.error('Failed to fetch contractors:', error);
-  }
+function onNewContractor(contractor: ContractorJson) {
+  contractorSelectRef.value?.addContractor(contractor);
 }
 
 async function fetchBillingRecipientData() {
@@ -65,22 +64,25 @@ async function ensureBillingRecipientDataLoaded() {
 }
 
 onMounted(() => {
-  fetchContractors();
   fetchBillingRecipientData();
 });
 
 function resetForm() {
-  initialValues.value = { scopeOfWork: '', contractors: [] };
+  initialValues.value = { scopeOfWork: '' };
+  selectedContractors.value = [];
+  contractorsTouched.value = false;
+  submitAttempted.value = false;
 }
 
 const onSubmit = async (event: FormSubmitEvent) => {
-  if (!event.valid) return;
+  submitAttempted.value = true;
+  if (!event.valid || selectedContractors.value.length === 0) return;
   await ensureBillingRecipientDataLoaded();
 
   const s = event.states;
   const data: CreateQuotationRequestJson = {
     scopeOfWork: s.scopeOfWork?.value?.trim(),
-    contractors: s.contractors?.value ?? [],
+    contractors: selectedContractors.value,
     projectOwner: projectOwner.value,
     projectCareOf: projectCareOf.value,
     billingAddress: billingAddress.value,
@@ -141,23 +143,25 @@ const onSubmit = async (event: FormSubmitEvent) => {
           <label for="contractors" class="font-semibold">
             {{ t('quotationRequest.dialog.contractors') }}<span aria-hidden="true"> *</span>
           </label>
-          <MultiSelect
-            id="contractors"
-            name="contractors"
-            :options="contractors"
-            optionLabel="companyName"
-            :placeholder="t('quotationRequest.dialog.contractors')"
-            :class="{ 'p-invalid': $form.contractors?.invalid && $form.contractors?.touched }"
-            display="chip"
-            fluid
-          />
+          <div class="flex items-start gap-2">
+            <ContractorMultiSelect
+              ref="contractorSelectRef"
+              class="flex-1"
+              inputId="contractors"
+              :projectId="props.projectId"
+              v-model="selectedContractors"
+              :invalid="contractorsInvalid"
+              @blur="contractorsTouched = true"
+            />
+            <NewContractorButton :projectId="props.projectId" @newContractor="onNewContractor" />
+          </div>
           <Message
-            v-if="$form.contractors?.invalid && $form.contractors?.touched"
+            v-if="contractorsInvalid"
             severity="error"
             size="small"
             variant="simple"
           >
-            {{ $form.contractors?.error?.message }}
+            {{ t('quotationRequest.validation.contractors') }}
           </Message>
         </div>
       </div>

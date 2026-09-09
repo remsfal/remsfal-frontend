@@ -13,12 +13,12 @@ import {rentalAgreementService,
   type RentJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import {propertyService,
   toRentableUnitView,
-  type UnitType,} from '@/features/project/rentableUnits/services/PropertyService';
-import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
-import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
-import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
-import { storageService } from '@/features/project/rentableUnits/services/StorageService';
-import { siteService } from '@/features/project/rentableUnits/services/SiteService';
+  type UnitType,
+  buildingService,
+  apartmentService,
+  commercialService,
+  storageService,
+  siteService,} from '@/features/project/rentableUnits';
 import AdjustRentDialog, { type RentAdjustmentUnit } from './AdjustRentDialog.vue';
 
 interface RentRow extends RentJson {

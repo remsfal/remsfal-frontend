@@ -84,7 +84,7 @@ src/
 │           └── index.vue
 │
 ├── features/                   # Domain-based feature slices, grouped by view
-│   ├── manager/                 # Domains specific to the manager view
+│   ├── manager/                # Domains specific to the manager view
 │   │   ├── projects/
 │   │   │   ├── components/     # ProjectSelectionTable, NewProjectDialog, ...
 │   │   │   ├── views/          # Feature-specific page-level components (*View.vue)
@@ -99,7 +99,7 @@ src/
 │   │   └── contractors/
 │   │       ├── components/
 │   │       └── index.ts
-│   ├── project/                 # Domains specific to the project view
+│   ├── project/                # Domains specific to the project view
 │   │   ├── rentableUnits/
 │   │   │   ├── components/     # RentableUnitsTable, UnitBreadcrumb, ...
 │   │   │   ├── composables/
@@ -125,13 +125,13 @@ src/
 │   │       └── index.ts
 │   ├── tenant/                  # Domains specific to the tenant view
 │   │   ├── tenancies/
-│   │   │   ├── components/     # Tenant tenancy dashboard cards
+│   │   │   ├── components/      # Tenant tenancy dashboard cards
 │   │   │   └── index.ts
 │   │   └── tenantIssues/
-│   │       ├── components/     # TenantIssueList, tenancyDetails/*, tenantIssue/*
-│   │       ├── services/       # TenancyService (tenant-side)
+│   │       ├── components/      # TenantIssueList, tenancyDetails/*, tenantIssue/*
+│   │       ├── services/        # TenancyService (tenant-side)
 │   │       └── index.ts
-│   ├── contractor/               # Domains specific to the contractor view
+│   ├── contractor/              # Domains specific to the contractor view
 │   │   ├── orderManagement/
 │   │   │   ├── components/
 │   │   │   └── index.ts
@@ -146,7 +146,7 @@ src/
 │       │   └── index.ts
 │       ├── users/
 │       │   ├── components/
-│       │   ├── services/       # UserService
+│       │   ├── services/        # UserService
 │       │   └── index.ts
 │       └── issues/               # issueCategories.ts, issueLabels.ts — shared by project/issues and tenant/tenantIssues
 │
@@ -330,7 +330,7 @@ declare module 'vue-router' {
 - Features are grouped by view: `src/features/<view>/<domain>/`, where `<view>` is one of `manager`, `project`, `tenant`, `contractor`
 - New features are created under the view they belong to
 - Existing code moves to its feature slice when the file is next modified
-- Never reach into a feature's internals from outside — use `index.ts` as the public API
+- Never reach into a feature's internals from outside — use `index.ts` as the public API. This applies to components as well as types and services (see the `RentalUnitTreeNodeJson`/`ContractorJson` re-exports in `rentableUnits/index.ts` and `contractors/index.ts`). If the barrel doesn't yet export something a consumer needs, add the export to `index.ts` rather than importing the full path — don't treat an existing direct-path import elsewhere in the codebase as proof the barrel isn't needed; this rule is not yet fully applied everywhere
 - A domain used by more than one view (e.g. organizations, used by both `manager` and `contractor`) does not belong to any single view — it goes into `src/features/common/<domain>/`. This is the feature-level counterpart to shared UI atoms (see below); when in doubt, start the domain under the view that needs it first and promote it to `common/` once a second view needs it too
 - Feature-specific Views (`*View.vue`) go in `src/features/<view>/<domain>/views/` and are exported via `index.ts` — the global `src/views/` is only for Views without a clear feature home
 
@@ -342,11 +342,12 @@ declare module 'vue-router' {
 - Don't confuse these with `features/common/<domain>/`: `components/`/`composables/` are for generic, domain-agnostic building blocks; `features/common/` is for a cohesive feature domain that happens to be used by more than one view
 
 ```ts
-// ✅ Correct — import through public API
-import { TenantCard } from '@/features/project/tenants'
+// ✅ Correct — import through public API (components and types alike)
+import { TenantCard, type TenantJson } from '@/features/project/tenants'
 
 // ❌ Wrong — reaching into internals
 import TenantCard from '@/features/project/tenants/components/TenantCard.vue'
+import type { TenantJson } from '@/features/project/tenants/services/TenantService'
 ```
 
 **Import order** — follow the pattern established in `PropertyDataCard.vue`:

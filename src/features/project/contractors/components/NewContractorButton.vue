@@ -12,10 +12,12 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseDialog from '@/components/BaseDialog.vue';
 import PhoneInput from '@/components/PhoneInput.vue';
-import { type ContractorWritableJson, projectContractorService } from '@/services/ProjectContractorService';
+import {type ContractorJson,
+  type ContractorWritableJson,
+  contractorService,} from '@/features/project/contractors/services/ContractorService';
 
 const props = defineProps<{ projectId: string }>();
-const emit = defineEmits<(e: 'newContractor', companyName: string) => void>();
+const emit = defineEmits<(e: 'newContractor', contractor: ContractorJson) => void>();
 
 const { t } = useI18n();
 const appToast = useAppToast();
@@ -70,10 +72,10 @@ const onSubmit = async (event: FormSubmitEvent) => {
   };
 
   try {
-    await projectContractorService.createContractor(props.projectId, contractor);
+    const created = await contractorService.createContractor(props.projectId, contractor);
     visible.value = false;
     resetForm();
-    emit('newContractor', companyName);
+    emit('newContractor', created);
     appToast.success(t('contractor.new.successDetail', [companyName]), { summary: t('contractor.new.success') });
   } catch (error) {
     console.error('Failed to create contractor:', error instanceof Error ? error.message : error);

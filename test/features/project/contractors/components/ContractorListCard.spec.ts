@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import ContractorListCard from '@/features/project/contractors/components/ContractorListCard.vue';
-import { projectContractorService } from '@/services/ProjectContractorService';
+import { contractorService } from '@/features/project/contractors/services/ContractorService';
 
 const mockContractors = [
   {
@@ -23,7 +23,7 @@ vi.mock('vue-router', async (importOriginal) => {
 describe('ContractorListCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(projectContractorService, 'getContractors').mockResolvedValue({contractors: mockContractors,});
+    vi.spyOn(contractorService, 'getContractors').mockResolvedValue({contractors: mockContractors,});
   });
 
   const mountCard = (projectId = 'proj-1') =>
@@ -35,7 +35,7 @@ describe('ContractorListCard', () => {
   it('calls getContractors with projectId on mount', async () => {
     mountCard();
     await flushPromises();
-    expect(projectContractorService.getContractors).toHaveBeenCalledWith('proj-1');
+    expect(contractorService.getContractors).toHaveBeenCalledWith('proj-1');
   });
 
   it('renders the card title', async () => {
@@ -58,7 +58,7 @@ describe('ContractorListCard', () => {
   });
 
   it('shows empty state when no contractors', async () => {
-    vi.spyOn(projectContractorService, 'getContractors').mockResolvedValue({contractors: [],});
+    vi.spyOn(contractorService, 'getContractors').mockResolvedValue({contractors: [],});
     const wrapper = mountCard();
     await flushPromises();
     expect(wrapper.text()).toContain('Keine Auftragnehmer vorhanden.');
@@ -72,14 +72,14 @@ describe('ContractorListCard', () => {
   });
 
   it('handles null contractors list from API', async () => {
-    vi.spyOn(projectContractorService, 'getContractors').mockResolvedValue({contractors: undefined,});
+    vi.spyOn(contractorService, 'getContractors').mockResolvedValue({contractors: undefined,});
     const wrapper = mountCard();
     await flushPromises();
     expect(wrapper.exists()).toBe(true);
   });
 
   it('does not throw when getContractors fails', async () => {
-    vi.spyOn(projectContractorService, 'getContractors').mockRejectedValue(new Error('Network'));
+    vi.spyOn(contractorService, 'getContractors').mockRejectedValue(new Error('Network'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
     await flushPromises();
@@ -102,7 +102,7 @@ describe('ContractorListCard', () => {
   });
 
   it('does not navigate when contractor has no id', async () => {
-    vi.spyOn(projectContractorService, 'getContractors').mockResolvedValue({contractors: [{ name: 'No ID GmbH' }],});
+    vi.spyOn(contractorService, 'getContractors').mockResolvedValue({contractors: [{ name: 'No ID GmbH' }],});
     const wrapper = mountCard();
     await flushPromises();
 
@@ -114,7 +114,7 @@ describe('ContractorListCard', () => {
   });
 
   it('handles contractors without name in sort', async () => {
-    vi.spyOn(projectContractorService, 'getContractors')
+    vi.spyOn(contractorService, 'getContractors')
       .mockResolvedValue({contractors: [{ id: 'c-1' }, { id: 'c-2', name: 'Alpha Bau' }]});
     const wrapper = mountCard();
     await flushPromises();
@@ -122,7 +122,7 @@ describe('ContractorListCard', () => {
   });
 
   it('handles the second contractor missing a name in sort', async () => {
-    vi.spyOn(projectContractorService, 'getContractors')
+    vi.spyOn(contractorService, 'getContractors')
       .mockResolvedValue({contractors: [{ id: 'c-1', name: 'Alpha Bau' }, { id: 'c-2' }]});
     const wrapper = mountCard();
     await flushPromises();
@@ -133,7 +133,7 @@ describe('ContractorListCard', () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    const spy = vi.spyOn(projectContractorService, 'getContractors').mockResolvedValue({ contractors: [] });
+    const spy = vi.spyOn(contractorService, 'getContractors').mockResolvedValue({ contractors: [] });
     const btn = wrapper.findComponent({ name: 'NewContractorButton' });
     await btn.vm.$emit('newContractor', 'New Bau GmbH');
     await flushPromises();
