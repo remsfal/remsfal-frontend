@@ -80,12 +80,11 @@ const sendTimelineEntry: UseTimelineOptions['send'] = async (payload, files) => 
       </div>
     </template>
     <template #composer-actions="{ submit, cancel, canSubmit, sending }">
-      <div class="flex justify-end gap-2">
+      <div class="flex justify-between">
         <Button
           data-testid="timeline-message-cancel"
-          :label="t('timeline.cancel')"
+          :label="t('button.cancel')"
           severity="secondary"
-          text
           :disabled="sending"
           @click="() => { cancel(); selectedOption = null; }"
         />

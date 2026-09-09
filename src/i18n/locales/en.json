@@ -705,7 +705,6 @@
   "timeline.uploadButton": "Upload file",
   "timeline.uploadEmpty": "Drag and drop files here or choose them.",
   "timeline.sendMessage": "Send message",
-  "timeline.cancel": "Cancel",
   "timeline.createError": "Timeline entry could not be created.",
   "tenantIssues.loading": "Loading issues…",
   "tenantNewIssueDialog.title": "Create New Issue",

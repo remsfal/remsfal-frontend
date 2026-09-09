@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
 import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
 import QuotationRequestDetailsCard from '../components/QuotationRequestDetailsCard.vue';
+import ContractorOrderTimelineCard from '../components/ContractorOrderTimelineCard.vue';
 import { quotationRequestService, type QuotationRequestJson } from
   '@/features/contractor/orderManagement/services/QuotationRequestService';
 
@@ -55,6 +56,12 @@ watch(() => props.issueId, fetchRequest);
 
     <template v-else-if="request">
       <QuotationRequestDetailsCard :request="request" />
+      <ContractorOrderTimelineCard
+        v-if="request.id"
+        :issueId="props.issueId"
+        :requestId="request.id"
+        :title="t('tenantIssues.timeline.title')"
+      />
     </template>
   </div>
 </template>

@@ -709,7 +709,6 @@
   "timeline.uploadButton": "Datei hochladen",
   "timeline.uploadEmpty": "Dateien hierher ziehen oder auswählen.",
   "timeline.sendMessage": "Nachricht senden",
-  "timeline.cancel": "Abbrechen",
   "timeline.createError": "Nachricht konnte nicht gesendet werden. Versuchen sie es später noch einmal.",
   "tenantNewIssueDialog.title": "Neue Meldung erstellen",
   "tenantNewIssueDialog.createButton": "Erstellen",
