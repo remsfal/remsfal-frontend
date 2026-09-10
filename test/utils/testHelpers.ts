@@ -104,16 +104,16 @@ export async function testErrorHandling(
   await expectToReject(serviceCall());
 }
 
-import type { InboxMessage } from '@/features/manager/inbox/services/InboxService';
+import type { ActivityFeedEntry } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
 
 /**
- * Creates a mock InboxMessage object
+ * Creates a mock ActivityFeedEntry object
  */
-export function createMockInboxMessage(overrides?: Partial<InboxMessage>): InboxMessage {
+export function createMockActivityFeedEntry(overrides?: Partial<ActivityFeedEntry>): ActivityFeedEntry {
   return {
     id: '1',
-    receivedAt: new Date('2025-01-10T10:00:00Z'),
-    isRead: false,
+    createdAt: new Date('2025-01-10T10:00:00Z'),
+    read: false,
     issueId: 'issue-101',
     issueTitle: 'Test Issue 1',
     issueType: 'DEFECT',
@@ -125,13 +125,13 @@ export function createMockInboxMessage(overrides?: Partial<InboxMessage>): Inbox
 }
 
 /**
- * Creates multiple mock InboxMessage objects
+ * Creates multiple mock ActivityFeedEntry objects
  */
-export function createMockInboxMessages(
+export function createMockActivityFeedEntries(
   count: number,
-  baseOverrides?: Partial<InboxMessage>
-): InboxMessage[] {
-  return Array.from({ length: count }, (_, i) => createMockInboxMessage({
+  baseOverrides?: Partial<ActivityFeedEntry>
+): ActivityFeedEntry[] {
+  return Array.from({ length: count }, (_, i) => createMockActivityFeedEntry({
     id: String(i + 1),
     issueId: `issue-${101 + i}`,
     issueTitle: `Test Issue ${i + 1}`,
@@ -140,14 +140,14 @@ export function createMockInboxMessages(
 }
 
 /**
- * Creates mock messages for testing grouping scenarios
+ * Creates mock entries for testing grouping scenarios
  */
-export function createGroupingTestMessages(): InboxMessage[] {
-  const overrides: Partial<InboxMessage>[] = [
+export function createGroupingTestActivityFeedEntries(): ActivityFeedEntry[] {
+  const overrides: Partial<ActivityFeedEntry>[] = [
     {
       id: '1',
-      receivedAt: new Date('2025-01-10T10:00:00Z'),
-      isRead: false,
+      createdAt: new Date('2025-01-10T10:00:00Z'),
+      read: false,
       issueId: 'issue-101',
       issueTitle: 'Test Issue 1',
       issueType: 'DEFECT',
@@ -157,8 +157,8 @@ export function createGroupingTestMessages(): InboxMessage[] {
     },
     {
       id: '2',
-      receivedAt: new Date('2025-01-11T10:00:00Z'),
-      isRead: true,
+      createdAt: new Date('2025-01-11T10:00:00Z'),
+      read: true,
       issueId: 'issue-102',
       issueTitle: 'Test Issue 2',
       issueType: 'TASK',
@@ -168,8 +168,8 @@ export function createGroupingTestMessages(): InboxMessage[] {
     },
     {
       id: '3',
-      receivedAt: new Date('2025-01-12T10:00:00Z'),
-      isRead: false,
+      createdAt: new Date('2025-01-12T10:00:00Z'),
+      read: false,
       issueId: 'issue-103',
       issueTitle: 'Test Issue 3',
       issueType: 'DEFECT',
@@ -178,5 +178,5 @@ export function createGroupingTestMessages(): InboxMessage[] {
       projectName: 'Project 1',
     },
   ];
-  return overrides.map(override => createMockInboxMessage(override));
+  return overrides.map(override => createMockActivityFeedEntry(override));
 }
