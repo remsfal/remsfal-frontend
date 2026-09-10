@@ -92,7 +92,7 @@ export default [
         messageSyntaxVersion: '^11.0.0',
       },
     },
-    rules: {'@intlify/vue-i18n/no-raw-text': ['warn', {ignorePattern: '^[-*()&:]+$',}],},
+    rules: {'@intlify/vue-i18n/no-raw-text': ['warn', {ignorePattern: '^[-*()&:#/+—•]*$',}],},
   },
 
   // general rules

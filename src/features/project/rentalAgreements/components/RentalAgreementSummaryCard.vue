@@ -231,7 +231,7 @@ async function confirmTerminate(): Promise<void> {
               {{ formatLabel('projectTenancies.table.amountKeys') }}
             </dt>
             <dd class="text-gray-900">
-              Schema noch nicht Vollständig
+              {{ t('rentalAgreement.summary.schemaIncomplete') }}
             </dd>
           </div>
         </dl>
