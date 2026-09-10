@@ -3,12 +3,12 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { ref } from 'vue';
 import FileUpload from 'primevue/fileupload';
 import TimelineCard from '@/components/TimelineCard.vue';
-import type { TimelineJson } from '@/composables/useTimeline';
+import type { TenantTimelineJson } from '@/composables/useTimeline';
 
 const toastAddMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAddMock }) }));
 
-const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
+const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
   timelineId: 'timeline-1',
   purpose: 'MESSAGE_SENT',
   message: '',
@@ -18,7 +18,7 @@ const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
 
 const defaultLabels = { title: 'Verlauf' };
 
-const i18nTexts = {loadErrorText: 'Timeline-Einträge konnten nicht geladen werden.',};
+const i18nTexts = {loadErrorText: 'Nachrichten konnten nicht geladen werden.',};
 
 const mountCard = (props: Partial<InstanceType<typeof TimelineCard>['$props']> = {}) =>
   mount(TimelineCard, {
@@ -37,8 +37,8 @@ describe('TimelineCard component', () => {
   });
 
   it('shows loading, then empty state when load() resolves with no entries', async () => {
-    let resolveLoad: ((value: TimelineJson[]) => void) | undefined;
-    const load = vi.fn().mockReturnValue(new Promise<TimelineJson[]>((resolve) => { resolveLoad = resolve; }));
+    let resolveLoad: ((value: TenantTimelineJson[]) => void) | undefined;
+    const load = vi.fn().mockReturnValue(new Promise<TenantTimelineJson[]>((resolve) => { resolveLoad = resolve; }));
     const wrapper = mountCard({ load });
     await flushPromises();
 
@@ -59,8 +59,8 @@ describe('TimelineCard component', () => {
   });
 
   it('disables the compose form while the timeline is loading', async () => {
-    let resolveLoad: ((value: TimelineJson[]) => void) | undefined;
-    const load = vi.fn().mockReturnValue(new Promise<TimelineJson[]>((resolve) => { resolveLoad = resolve; }));
+    let resolveLoad: ((value: TenantTimelineJson[]) => void) | undefined;
+    const load = vi.fn().mockReturnValue(new Promise<TenantTimelineJson[]>((resolve) => { resolveLoad = resolve; }));
     const wrapper = mountCard({ load });
     await flushPromises();
 

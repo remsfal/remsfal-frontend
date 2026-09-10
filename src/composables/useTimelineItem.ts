@@ -1,6 +1,6 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { TimelinePurpose } from '@/composables/useTimeline';
+import type { MessagePurpose } from '@/composables/useTimeline';
 import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
 
 interface TimelineLikeAttachment {
@@ -10,7 +10,7 @@ interface TimelineLikeAttachment {
 }
 
 interface TimelineLikeItem {
-  purpose: TimelinePurpose;
+  purpose: MessagePurpose;
   senderName?: string;
   issueId?: string;
   attachments?: TimelineLikeAttachment[];

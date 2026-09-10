@@ -1,23 +1,20 @@
 import { computed, onMounted, ref, watch, type Ref, type WatchSource } from 'vue';
 import type { FileUploadSelectEvent } from 'primevue/fileupload';
-import type { components as ticketingComponents, Readable } from '@/services/api/ticketing-schema';
+import type { components as ticketingComponents, Readable, Writable } from '@/services/api/ticketing-schema';
 import { useAppToast } from '@/composables/useAppToast';
 
-export type TimelineJson = Readable<ticketingComponents['schemas']['TenantTimelineJson']>;
+export type TenantTimelineJson = Readable<ticketingComponents['schemas']['TenantTimelineJson']>;
 export type ContractorTimelineJson = Readable<ticketingComponents['schemas']['ContractorTimelineJson']>;
-export type TimelinePurpose = ticketingComponents['schemas']['MessagePurpose'];
-export type TimelineEntry = TimelineJson | ContractorTimelineJson;
+export type MessagePurpose = ticketingComponents['schemas']['MessagePurpose'];
+export type TimelineEntry = TenantTimelineJson | ContractorTimelineJson;
 
-export interface TimelineSendPayload {
-  purpose: TimelinePurpose;
-  message: string;
-}
+export type TimelineWritableJson = Writable<ticketingComponents['schemas']['TenantTimelineJson']>;
 
 export interface UseTimelineOptions {
   load: () => Promise<TimelineEntry[]>;
-  send: (payload: TimelineSendPayload, files: File[]) => Promise<void>;
+  send: (payload: TimelineWritableJson, files: File[]) => Promise<void>;
   watchSource?: WatchSource;
-  sendPurpose?: TimelinePurpose;
+  sendPurpose?: MessagePurpose;
   isBlocked?: (items: TimelineEntry[]) => boolean;
   sendErrorMessage: () => string;
   loadErrorLogLabel?: string;

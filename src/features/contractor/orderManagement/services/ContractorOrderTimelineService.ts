@@ -1,15 +1,10 @@
-import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 
 export type ContractorTimelineJson = Readable<ApiComponents['schemas']['ContractorTimelineJson']>;
 export type ContractorTimelineListJson = Readable<ApiComponents['schemas']['ContractorTimelineListJson']>;
 export type OrderAttachmentJson = Readable<ApiComponents['schemas']['OrderAttachmentJson']>;
 export type MessagePurpose = ApiComponents['schemas']['MessagePurpose'];
-
-export interface CreateContractorTimelineEntry {
-  purpose: MessagePurpose;
-  message: string;
-  messageToTenant?: boolean;
-}
+export type ContractorTimelineWritableJson = Writable<ApiComponents['schemas']['ContractorTimelineJson']>;
 
 class ContractorOrderTimelineService {
   async getTimelineEntries(issueId: string): Promise<Required<ContractorTimelineListJson>> {
@@ -19,7 +14,7 @@ class ContractorOrderTimelineService {
 
   async createTimelineEntryWithAttachments(
     issueId: string,
-    entry: CreateContractorTimelineEntry,
+    entry: ContractorTimelineWritableJson,
     files: File[],
   ): Promise<void> {
     const formData = new FormData();

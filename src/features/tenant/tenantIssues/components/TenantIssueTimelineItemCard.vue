@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
+import type { TenantTimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import { buildAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
 
 const props = defineProps<{
-  item: TimelineJson;
+  item: TenantTimelineJson;
   issueId: string;
 }>();
 
