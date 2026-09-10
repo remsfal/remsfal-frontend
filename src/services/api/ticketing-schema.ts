@@ -820,7 +820,10 @@ export interface paths {
       parameters: {
         query?: never;
         header?: never;
-        path?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
         cookie?: never;
       };
       requestBody?: never;
@@ -866,7 +869,10 @@ export interface paths {
           organizationId?: components["schemas"]["UUID"];
         };
         header?: never;
-        path?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
         cookie?: never;
       };
       requestBody: {
@@ -3480,7 +3486,10 @@ export interface paths {
       parameters: {
         query?: never;
         header?: never;
-        path?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
         cookie?: never;
       };
       requestBody?: never;
@@ -3526,7 +3535,10 @@ export interface paths {
           organizationId?: components["schemas"]["UUID"];
         };
         header?: never;
-        path?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
         cookie?: never;
       };
       requestBody: {

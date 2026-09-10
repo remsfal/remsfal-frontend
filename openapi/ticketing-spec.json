@@ -3113,6 +3113,15 @@
     "/ticketing/v1/issues/{issueId}/contractor-timeline" : {
       "get" : {
         "summary" : "Retrieve the timeline entries for a contractor's communication about an issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "Timeline entries retrieved successfully",
@@ -3141,6 +3150,14 @@
       "post" : {
         "summary" : "Create a new timeline entry with attachments for a contractor's communication about an issue.",
         "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
           "description" : "ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization",
           "name" : "organizationId",
           "in" : "query",
@@ -5185,6 +5202,15 @@
     "/ticketing/v1/order-management/{issueId}/timeline" : {
       "get" : {
         "summary" : "Retrieve the timeline entries for a contractor's communication about an issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "Timeline entries retrieved successfully",
@@ -5213,6 +5239,14 @@
       "post" : {
         "summary" : "Create a new timeline entry with attachments for a contractor's communication about an issue.",
         "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
           "description" : "ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization",
           "name" : "organizationId",
           "in" : "query",
