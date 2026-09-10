@@ -1,4 +1,4 @@
-import { apiClient, type ApiComponents, type Readable, type RequestOptions } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
 export type ContractorTimelineJson = Readable<ApiComponents['schemas']['ContractorTimelineJson']>;
 export type ContractorTimelineListJson = Readable<ApiComponents['schemas']['ContractorTimelineListJson']>;
@@ -13,12 +13,7 @@ export interface CreateContractorTimelineEntry {
 
 class ContractorOrderTimelineService {
   async getTimelineEntries(issueId: string): Promise<Required<ContractorTimelineListJson>> {
-    const options = { pathParams: { issueId } } as unknown as
-      RequestOptions<'/ticketing/v1/order-management/{issueId}/timeline', 'get'>;
-    const result = await apiClient.get(
-      '/ticketing/v1/order-management/{issueId}/timeline',
-      options,
-    ) as Partial<ContractorTimelineListJson>;
+    const result = await apiClient.get('/ticketing/v1/order-management/{issueId}/timeline', { pathParams: { issueId } });
     return { timelines: result.timelines ?? [], visibleToTenant: result.visibleToTenant ?? false };
   }
 
@@ -36,9 +31,7 @@ class ContractorOrderTimelineService {
 
     const body = formData as unknown as
       Parameters<typeof apiClient.post<'/ticketing/v1/order-management/{issueId}/timeline'>>[1];
-    const options = { pathParams: { issueId } } as unknown as
-      RequestOptions<'/ticketing/v1/order-management/{issueId}/timeline', 'post'>;
-    await apiClient.post('/ticketing/v1/order-management/{issueId}/timeline', body, options);
+    await apiClient.post('/ticketing/v1/order-management/{issueId}/timeline', body, { pathParams: { issueId } });
   }
 }
 

@@ -692,7 +692,7 @@
   "tenantIssues.timeline.attachmentsCount": "attachments",
   "tenantIssues.timeline.attachmentName": "Attachment {index}",
   "tenantIssues.timeline.downloadAttachment": "Download attachment",
-  "tenantIssues.timeline.tenantMessageTitle": "Message from {senderName}",
+  "tenantIssues.timeline.messageTitle": "Message from {senderName}",
   "tenantIssues.timeline.issueCreatedTitle": "Issue created by {senderName}",
   "tenantIssues.timeline.appointmentRequestedTitle": "Appointment requested by {senderName}",
   "tenantIssues.timeline.appointmentScheduledTitle": "Appointment scheduled by {senderName}",

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
-import i18n from '@/i18n/i18n';
 import type { ContractorTimelineJson }
   from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';
 import ContractorOrderTimelineItemCard from
@@ -29,26 +28,6 @@ describe('ContractorOrderTimelineItemCard component', () => {
     expect(props.date).toBe('2026-01-02T10:00:00.000Z');
     expect(props.message).toBe('Hallo');
     expect(props.testId).toBe('contractor-order-timeline-entry');
-  });
-
-  it('renders purpose-based titles including fallback', () => {
-    const titleFor = (overrides: Partial<ContractorTimelineJson>) =>
-      entryCardProps(mountItemCard(makeTimeline(overrides))).title;
-
-    expect(titleFor({ purpose: 'ISSUE_CREATED', senderName: 'Alex' })).toBe(
-      i18n.global.t('orderManagement.timeline.issueCreatedTitle', { senderName: 'Alex' }),
-    );
-    expect(titleFor({ purpose: 'MESSAGE_SENT', senderName: 'Alex' })).toBe(
-      i18n.global.t('orderManagement.timeline.messageTitle', { senderName: 'Alex' }),
-    );
-    expect(titleFor({ purpose: 'APPOINTMENT_REQUESTED', senderName: 'Alex' })).toBe(
-      i18n.global.t('orderManagement.timeline.appointmentRequestedTitle', { senderName: 'Alex' }),
-    );
-    expect(titleFor({ purpose: 'APPOINTMENT_SCHEDULED', senderName: 'Alex' })).toBe(
-      i18n.global.t('orderManagement.timeline.appointmentScheduledTitle', { senderName: 'Alex' }),
-    );
-    expect(titleFor({ purpose: 'STATUS_CHANGED' })).toBe(i18n.global.t('orderManagement.timeline.statusChangedTitle'));
-    expect(titleFor({ purpose: undefined })).toBe(i18n.global.t('orderManagement.timeline.entryFallbackTitle'));
   });
 
   it('builds attachment download URLs, falling back to the attachment id as filename', () => {

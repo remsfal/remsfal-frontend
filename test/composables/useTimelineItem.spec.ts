@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
-import { useTimelineItem } from '@/composables/useTimelineItem';
+import { buildAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
 import type { TimelineJson } from '@/composables/useTimeline';
 
 const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
@@ -19,7 +19,12 @@ const TestComponent = defineComponent({
     issueId: { type: String, required: true },
   },
   setup(props) {
-    return { ...useTimelineItem(props, '/base') };
+    return {
+      ...useTimelineItem(props, {
+        titleNamespace: 'tenantIssues.timeline',
+        buildAttachmentUrl: buildAttachmentDownloadUrl(`/base/${props.issueId}`),
+      }),
+    };
   },
   template: '<div></div>',
 });
@@ -40,7 +45,7 @@ describe('useTimelineItem', () => {
     ],
     [
       { purpose: 'MESSAGE_SENT', senderName: 'Alex' },
-      'tenantIssues.timeline.tenantMessageTitle',
+      'tenantIssues.timeline.messageTitle',
       { senderName: 'Alex' },
     ],
     [
@@ -69,7 +74,7 @@ describe('useTimelineItem', () => {
     const wrapper = mountTimelineItem(makeTimeline({ purpose: 'MESSAGE_SENT', senderName: undefined }));
 
     expect(wrapper.vm.title).toBe(
-      i18n.global.t('tenantIssues.timeline.tenantMessageTitle', { senderName: i18n.global.t('common.notSet') }),
+      i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: i18n.global.t('common.notSet') }),
     );
   });
 
@@ -101,6 +106,6 @@ describe('useTimelineItem', () => {
 
     await wrapper.setProps({ item: makeTimeline({ purpose: 'MESSAGE_SENT', senderName: 'Alex' }) });
 
-    expect(wrapper.vm.title).toBe(i18n.global.t('tenantIssues.timeline.tenantMessageTitle', { senderName: 'Alex' }));
+    expect(wrapper.vm.title).toBe(i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: 'Alex' }));
   });
 });

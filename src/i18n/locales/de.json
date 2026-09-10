@@ -696,7 +696,7 @@
   "tenantIssues.timeline.attachmentsCount": "Anhänge",
   "tenantIssues.timeline.attachmentName": "Anhang {index}",
   "tenantIssues.timeline.downloadAttachment": "Anhang herunterladen",
-  "tenantIssues.timeline.tenantMessageTitle": "Nachricht von {senderName}",
+  "tenantIssues.timeline.messageTitle": "Nachricht von {senderName}",
   "tenantIssues.timeline.issueCreatedTitle": "Meldung von {senderName} erstellt",
   "tenantIssues.timeline.appointmentRequestedTitle": "Terminanfrage von {senderName}",
   "tenantIssues.timeline.appointmentScheduledTitle": "Terminankündigung von {senderName}",
