@@ -1,22 +1,9 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { MessagePurpose } from '@/composables/useTimeline';
+import type { TimelineEntry } from '@/composables/useTimeline';
 import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
 
-interface TimelineLikeAttachment {
-  attachmentId?: string;
-  contentType?: string;
-  fileName?: string;
-}
-
-interface TimelineLikeItem {
-  purpose: MessagePurpose;
-  senderName?: string;
-  issueId?: string;
-  attachments?: TimelineLikeAttachment[];
-}
-
-export interface UseTimelineItemProps<T extends TimelineLikeItem> {
+export interface UseTimelineItemProps<T extends TimelineEntry> {
   item: T;
   issueId?: string;
 }
@@ -34,7 +21,7 @@ export function buildAttachmentDownloadUrl(resourcePrefix: string) {
   };
 }
 
-export function useTimelineItem<T extends TimelineLikeItem>(
+export function useTimelineItem<T extends TimelineEntry>(
   props: UseTimelineItemProps<T>,
   options: UseTimelineItemOptions,
 ) {
