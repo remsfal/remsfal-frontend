@@ -175,6 +175,39 @@ describe('ActivityFeedStore', () => {
       expect(store.entries).toHaveLength(1);
       expect(store.entries[0].id).toBe('1');
     });
+
+    it('defaults read and title when missing from the raw entry', async () => {
+      server.use(
+        http.get('/ticketing/v1/activities', () => {
+          return HttpResponse.json({
+            size: 1,
+            nextCursor: null,
+            activities: [
+              {
+                ...toRawActivity(mockEntries[0]), read: undefined, title: undefined 
+              },
+            ],
+          });
+        }),
+      );
+
+      await store.fetchActivities();
+
+      expect(store.entries[0].read).toBe(false);
+      expect(store.entries[0].issueTitle).toBe('');
+    });
+
+    it('defaults entries to an empty array when the response has no activities', async () => {
+      server.use(
+        http.get('/ticketing/v1/activities', () => {
+          return HttpResponse.json({ size: 0, nextCursor: null });
+        }),
+      );
+
+      await store.fetchActivities();
+
+      expect(store.entries).toEqual([]);
+    });
   });
 
   describe('loadMoreActivities', () => {
@@ -214,6 +247,30 @@ describe('ActivityFeedStore', () => {
       await store.loadMoreActivities();
 
       expect(store.entries).toHaveLength(3);
+    });
+
+    it('appends nothing when the next page has no activities', async () => {
+      server.use(
+        http.get('/ticketing/v1/activities', ({ request }) => {
+          const url = new URL(request.url);
+          if (url.searchParams.get('cursor')) {
+            return HttpResponse.json({ size: 0, nextCursor: null });
+          }
+          return HttpResponse.json({
+            size: 1,
+            nextCursor: 'cursor-1',
+            activities: [toRawActivity(mockEntries[0])],
+          });
+        }),
+      );
+
+      await store.fetchActivities();
+      expect(store.entries).toHaveLength(1);
+
+      await store.loadMoreActivities();
+
+      expect(store.entries).toHaveLength(1);
+      expect(store.hasMore).toBe(false);
     });
   });
 
