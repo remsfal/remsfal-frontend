@@ -2484,6 +2484,13 @@ paths:
     get:
       summary: Retrieve the timeline entries for a contractor's communication about
         an issue.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: Timeline entries retrieved successfully
@@ -2503,6 +2510,12 @@ paths:
       summary: Create a new timeline entry with attachments for a contractor's communication
         about an issue.
       parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
       - description: "ID of the contractor organization to address; required only\
           \ when creating via the issue-level combined view, ignored by the contractor's\
           \ own mount which already knows its own organization"
@@ -3923,6 +3936,13 @@ paths:
     get:
       summary: Retrieve the timeline entries for a contractor's communication about
         an issue.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: Timeline entries retrieved successfully
@@ -3942,6 +3962,12 @@ paths:
       summary: Create a new timeline entry with attachments for a contractor's communication
         about an issue.
       parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
       - description: "ID of the contractor organization to address; required only\
           \ when creating via the issue-level combined view, ignored by the contractor's\
           \ own mount which already knows its own organization"
