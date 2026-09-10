@@ -6,7 +6,7 @@ import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/BaseCard.vue';
 import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
-import { useTimeline, type UseTimelineOptions, type TimelineJson } from '@/composables/useTimeline';
+import { useTimeline, type UseTimelineOptions, type TimelineEntry } from '@/composables/useTimeline';
 import { useI18n } from 'vue-i18n';
 
 interface Props {
@@ -24,7 +24,7 @@ interface Props {
 const props = defineProps<Props>();
 
 defineSlots<{
-  item(props: { item: TimelineJson }): unknown;
+  item(props: { item: TimelineEntry }): unknown;
   title?(): unknown;
   'before-composer'?(): unknown;
   'composer-actions'?(props: {

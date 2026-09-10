@@ -3,7 +3,8 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import TimelineCard from '@/components/TimelineCard.vue';
-import ContractorOrderTimelineItemCard from './ContractorOrderTimelineItemCard.vue';
+import ContractorOrderTimelineItemCard
+  from '@/features/contractor/orderManagement/components/ContractorOrderTimelineItemCard.vue';
 import type { UseTimelineOptions } from '@/composables/useTimeline';
 import { contractorOrderTimelineService, type ContractorTimelineJson }
   from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';

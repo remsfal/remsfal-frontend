@@ -701,7 +701,6 @@
   "tenantIssues.timeline.appointmentRequestedTitle": "Terminanfrage von {senderName}",
   "tenantIssues.timeline.appointmentScheduledTitle": "Terminankündigung von {senderName}",
   "tenantIssues.timeline.statusChangedTitle": "Status geändert",
-  "tenantIssues.timeline.createError": "Nachricht konnte nicht gesendet werden. Versuchen sie es später noch einmal.",
   "issue.timeline.title": "Mieter Kommunikation",
   "timeline.loadError": "Timeline-Einträge konnten nicht geladen werden.",
   "timeline.empty": "Noch keine Timeline-Einträge vorhanden.",
