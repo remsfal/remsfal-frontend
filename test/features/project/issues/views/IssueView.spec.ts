@@ -73,6 +73,7 @@ describe("IssueView.vue", () => {
               '<div data-test="relationships" @click="$emit(\'saved\')" />',
           },
           IssueOrderManagementCard: true,
+          IssueContractorTimelineCard: true,
         },
       },
     });
@@ -102,7 +103,11 @@ describe("IssueView.vue", () => {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
-          IssueDetailsCard: true, IssueDescriptionCard: true, IssueTimelineCard: true, IssueOrderManagementCard: true
+          IssueDetailsCard: true,
+          IssueDescriptionCard: true,
+          IssueTimelineCard: true,
+          IssueOrderManagementCard: true,
+          IssueContractorTimelineCard: true,
         }
       },
     });
@@ -128,6 +133,7 @@ describe("IssueView.vue", () => {
           IssueDescriptionCard: true,
           IssueTimelineCard: true,
           IssueOrderManagementCard: true,
+          IssueContractorTimelineCard: true,
         },
       },
     });
@@ -166,6 +172,7 @@ describe("IssueView.vue", () => {
           },
           IssueTimelineCard: true,
           IssueOrderManagementCard: true,
+          IssueContractorTimelineCard: true,
         },
       },
     });
@@ -187,7 +194,11 @@ describe("IssueView.vue", () => {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
-          IssueDetailsCard: true, IssueDescriptionCard: true, IssueTimelineCard: true, IssueOrderManagementCard: true
+          IssueDetailsCard: true,
+          IssueDescriptionCard: true,
+          IssueTimelineCard: true,
+          IssueOrderManagementCard: true,
+          IssueContractorTimelineCard: true,
         }
       },
     });

@@ -7,4 +7,11 @@ describe('OrderPlacementService with MSW', () => {
     expect(result.id).toBe('op-1');
     expect(result.status).toBe('PLACED');
   });
+
+  test('getOrders resolves with orders placed for the issue', async () => {
+    const result = await orderPlacementService.getOrders('issue-1');
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].organizationId).toBe('org-1');
+    expect(result.items[0].contractorName).toBe('ACME GmbH');
+  });
 });

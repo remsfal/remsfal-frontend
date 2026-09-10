@@ -16,6 +16,7 @@ interface Props {
   isBlocked?: UseTimelineOptions['isBlocked'];
   sendPurpose?: UseTimelineOptions['sendPurpose'];
   watchSource?: UseTimelineOptions['watchSource'];
+  hideComposer?: boolean;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
 }
@@ -98,7 +99,7 @@ const {
           <slot name="item" :item="slotProps.item" />
         </template>
       </Timeline>
-      <div class="mb-4 flex flex-col gap-2">
+      <div v-if="!hideComposer" class="mb-4 flex flex-col gap-2">
         <label :for="`${testIdPrefix}-message`" class="sr-only">{{ messagePlaceholder }}</label>
         <Textarea
           :id="`${testIdPrefix}-message`"

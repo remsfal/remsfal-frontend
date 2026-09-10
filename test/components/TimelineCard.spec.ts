@@ -190,6 +190,14 @@ describe('TimelineCard component', () => {
     await flushPromises();
   });
 
+  it('hides the compose form when hideComposer is true', async () => {
+    const wrapper = mountCard({ load: vi.fn().mockResolvedValue([]), hideComposer: true });
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="timeline-message-input"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="timeline-message-submit"]').exists()).toBe(false);
+  });
+
   it('logs and shows no toast when send() fails', async () => {
     const send = vi.fn().mockRejectedValue(new Error('boom'));
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
