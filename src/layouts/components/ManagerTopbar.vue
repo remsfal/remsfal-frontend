@@ -7,14 +7,14 @@ import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import AppTopbar from '@/layouts/components/AppTopbar.vue';
 import { computed } from 'vue';
-import { useInboxStore } from '@/features/manager/inbox';
+import { useActivityFeedStore } from '@/features/manager/activityFeeds';
 import TopbarUserActions from '@/layouts/components/TopbarUserActions.vue';
 
 const { t } = useI18n();
 
 const sessionStore = useUserSessionStore();
 const projectStore = useProjectStore();
-const inboxStore = useInboxStore();
+const activityFeedStore = useActivityFeedStore();
 
 const router = useRouter();
 
@@ -29,13 +29,13 @@ const onHomeClick = () => {
   router.push({ name: 'ProjectSelection' });
 };
 
-const onInboxClick = () => {
-  router.push({ name: 'Inbox' });
+const onActivityFeedClick = () => {
+  router.push({ name: 'ActivityFeeds' });
 };
 
 const unreadCount = computed(() =>
-  inboxStore.messages
-    ? inboxStore.messages.filter(m => !m?.isRead).length
+  activityFeedStore.entries
+    ? activityFeedStore.entries.filter(e => !e?.read).length
     : 0
 );
 
@@ -71,17 +71,17 @@ const projectListOptions = computed(() => {
         @change="onProjectSelectionChange($event)"
       />
     </div>
-    <!-- Inbox button remains separate as it has specific logic (unread count) -->
+    <!-- Activity feed button remains separate as it has specific logic (unread count) -->
     <Button
       v-if="sessionStore.user != null"
       class="layout-topbar-shortcut-button layout-topbar-action"
-      @click="onInboxClick()"
+      @click="onActivityFeedClick()"
     >
-      <i class="pi pi-inbox" />
+      <i class="pi pi-bell" />
       <span v-if="unreadCount > 0" class="unread-badge">
         {{ unreadCount }}
       </span>
-      <span>{{ t('toolbar.inbox') }}</span>
+      <span>{{ t('toolbar.activityFeeds') }}</span>
     </Button>
 
     <!-- Use shared component for common user actions -->

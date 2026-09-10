@@ -52,7 +52,7 @@ describe('ManagerMenu.vue', () => {
     await wrapper.vm.$nextTick();
     const labels = wrapper.findAll('.layout-submenu .layout-menuitem-text').map(el => el.text());
     expect(labels).toContain('Meine Übersicht');
-    expect(labels).toContain('Meine Nachrichten');
+    expect(labels).toContain('Aktivitäten');
     expect(labels).toContain('Meine Liegenschaften');
     expect(labels).toContain('Persönliche Daten');
     expect(labels).toContain('Persönliche Einstellungen');
@@ -62,7 +62,7 @@ describe('ManagerMenu.vue', () => {
   it('renders icons for each menu item', async () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.find('.pi-chart-bar').exists()).toBe(true);
-    expect(wrapper.find('.pi-inbox').exists()).toBe(true);
+    expect(wrapper.find('.pi-bell').exists()).toBe(true);
     expect(wrapper.find('.pi-building').exists()).toBe(true);
     expect(wrapper.find('.pi-user').exists()).toBe(true);
     expect(wrapper.find('.pi-user-edit').exists()).toBe(true);
@@ -83,11 +83,11 @@ describe('ManagerMenu.vue', () => {
     expect(pushSpy).toHaveBeenCalledWith('/manager/projects');
   });
 
-  it('navigates to /manager/inbox when messages item is clicked', async () => {
+  it('navigates to /manager/activity-feeds when activity feeds item is clicked', async () => {
     await wrapper.vm.$nextTick();
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
-    await wrapper.find('.pi-inbox').trigger('click');
-    expect(pushSpy).toHaveBeenCalledWith('/manager/inbox');
+    await wrapper.find('.pi-bell').trigger('click');
+    expect(pushSpy).toHaveBeenCalledWith('/manager/activity-feeds');
   });
 });
 

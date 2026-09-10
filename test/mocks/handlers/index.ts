@@ -15,7 +15,7 @@ import { rentalAgreementHandlers } from './rental-agreement.handlers';
 import { tenancyHandlers } from './tenancy.handlers';
 import { taskHandlers } from './task.handlers';
 import { issueHandlers } from './issue.handlers';
-import { inboxHandlers } from './inbox.handlers';
+import { activityFeedHandlers } from './activity-feeds.handlers';
 import { quotationRequestHandlers } from './quotation-request.handlers';
 import { quotationHandlers } from './quotation.handlers';
 import { tenantHandlers } from './tenant.handlers';
@@ -38,7 +38,7 @@ export const handlers = [
   ...tenancyHandlers,
   ...taskHandlers,
   ...issueHandlers,
-  ...inboxHandlers,
+  ...activityFeedHandlers,
   ...quotationRequestHandlers,
   ...quotationHandlers,
   ...tenantHandlers,
