@@ -159,7 +159,7 @@ const totalRent = computed(() => {
           <!-- Total Rent Summary -->
           <div v-if="totalRent > 0" class="pt-3 border-t">
             <div class="flex justify-between items-center font-semibold">
-              <span>Gesamt:</span>
+              <span>{{ t('rentalAgreement.step4.total') }}</span>
               <span class="text-lg">{{ n(totalRent, 'currency') }}</span>
             </div>
           </div>

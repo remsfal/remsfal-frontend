@@ -323,8 +323,8 @@ async function onSubmit(event: FormSubmitEvent) {
               </label>
               <div v-if="displayAlternativeEmail" class="flex items-center gap-2">
                 <InputText :value="displayAlternativeEmail" class="flex-1" disabled />
-                <span v-if="altEmailSuccess" class="text-green-600 font-bold">✔</span>
-                <span v-if="altEmailError" class="text-red-600 font-bold">✗</span>
+                <i v-if="altEmailSuccess" class="pi pi-check text-green-600 font-bold" />
+                <i v-if="altEmailError" class="pi pi-times text-red-600 font-bold" />
                 <Button
                   icon="pi pi-trash"
                   severity="secondary"

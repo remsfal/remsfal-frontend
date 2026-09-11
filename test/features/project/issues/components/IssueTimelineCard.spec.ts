@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { flushPromises, shallowMount, mount } from '@vue/test-utils';
 import TimelineCard from '@/components/TimelineCard.vue';
 import IssueTimelineItemCard from '@/features/project/issues/components/IssueTimelineItemCard.vue';
-import { issueTimelineService, type TimelineJson } from '@/features/project/issues/services/IssueTimelineService';
+import { issueTimelineService, type TenantTimelineJson } from '@/features/project/issues/services/IssueTimelineService';
 
 vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
   const actual = await vi.importActual<typeof import('@/features/project/issues/services/IssueTimelineService')>(
@@ -17,7 +17,7 @@ vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
   };
 });
 
-const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
+const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
   timelineId: 'timeline-1',
   purpose: 'MESSAGE_SENT',
   message: '',

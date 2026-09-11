@@ -73,6 +73,9 @@ const onRowSelect = (event: { data: IssueItemJson }) => {
         </div>
       </div>
     </template>
+    <template #empty>
+      <span class="text-muted-color">{{ t('issueTable.empty') }}</span>
+    </template>
     <Column
       v-for="col in visibleColumns"
       :key="col.key"

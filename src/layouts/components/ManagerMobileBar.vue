@@ -14,9 +14,9 @@ const navItems = computed<MobileNavItem[]>(() => [
     icon: 'pi-chart-bar',
   },
   {
-    label: t('managerMenu.myData.messages'),
-    to: { name: 'Inbox' },
-    icon: 'pi-inbox',
+    label: t('managerMenu.myData.activityFeeds'),
+    to: { name: 'ActivityFeeds' },
+    icon: 'pi-bell',
   },
   {
     label: t('managerMenu.myData.properties'),

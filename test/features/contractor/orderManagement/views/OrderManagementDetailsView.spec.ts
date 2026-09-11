@@ -3,6 +3,8 @@ import { flushPromises, mount } from '@vue/test-utils';
 import OrderManagementDetailsView from '@/features/contractor/orderManagement/views/OrderManagementDetailsView.vue';
 import QuotationRequestDetailsCard from
   '@/features/contractor/orderManagement/components/QuotationRequestDetailsCard.vue';
+import ContractorOrderTimelineCard from
+  '@/features/contractor/orderManagement/components/ContractorOrderTimelineCard.vue';
 import { quotationRequestService, type QuotationRequestJson } from
   '@/features/contractor/orderManagement/services/QuotationRequestService';
 
@@ -16,7 +18,7 @@ const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRe
 
 const mountView = (issueId = 'issue-1') => mount(OrderManagementDetailsView, {
   props: { issueId },
-  global: { stubs: { QuotationRequestDetailsCard: true } },
+  global: { stubs: { QuotationRequestDetailsCard: true, ContractorOrderTimelineCard: true } },
 });
 
 describe('OrderManagementDetailsView', () => {
@@ -29,6 +31,18 @@ describe('OrderManagementDetailsView', () => {
     await flushPromises();
 
     expect(wrapper.getComponent(QuotationRequestDetailsCard).props('request')).toEqual(request);
+  });
+
+  it('renders the contractor timeline for the matching request', async () => {
+    const request = makeRequest();
+    vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValueOnce({ items: [request] });
+
+    const wrapper = mountView('issue-1');
+    await flushPromises();
+
+    const timeline = wrapper.getComponent(ContractorOrderTimelineCard);
+    expect(timeline.props('issueId')).toBe('issue-1');
+    expect(timeline.props('requestId')).toBe('qr-1');
   });
 
   it('shows a not-found message when no item matches the issueId', async () => {

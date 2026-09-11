@@ -31,15 +31,24 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           name: coverage-${{ github.event.workflow_run.id }}
           path: ${{ runner.temp }}/artifacts/coverage
-      - name: Prepare coverage directory and move lcov.info
+      - name: Prepare coverage directories and move lcov.info files
         run: |
-          mkdir -p coverage
-          if [ -f "${{ runner.temp }}/artifacts/coverage/lcov.info" ]; then
-            mv "${{ runner.temp }}/artifacts/coverage/lcov.info" coverage/
-          else
-            echo "Error: lcov.info not found in coverage artifact." >&2
-            exit 1
-          fi
+          # coverage-vitest/lcov.info and coverage-cypress/lcov.info are each tool's own,
+          # unmerged report - sonar-project.properties points sonar.javascript.lcov.reportPaths
+          # at these directly so Sonar can union them itself, since nyc's merge (coverage/)
+          # concatenates the two tools' differently-shaped .vue instrumentation instead of
+          # reconciling it. coverage/ is kept and moved too for now, until that merge step
+          # is cleaned up out of the pipeline.
+          for dir in coverage coverage-vitest coverage-cypress; do
+            mkdir -p "$dir"
+            src="${{ runner.temp }}/artifacts/coverage/$dir/lcov.info"
+            if [ -f "$src" ]; then
+              mv "$src" "$dir/"
+            else
+              echo "Error: $dir/lcov.info not found in coverage artifact." >&2
+              exit 1
+            fi
+          done
       - name: Download ESLint Report from CI Build
         uses: actions/download-artifact@v8
         with:

@@ -94,6 +94,9 @@ function onNewRentableUnit(title: string) {
         </div>
       </div>
     </template>
+    <template #empty>
+      <span class="text-muted-color">{{ t('rentableUnits.table.empty') }}</span>
+    </template>
     <Column field="title" :header="t('rentableUnits.table.title')" expander>
       <template #body="{ node }">
         <div>{{ node.data.title }}</div>

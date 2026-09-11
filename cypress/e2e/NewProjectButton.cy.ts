@@ -44,16 +44,11 @@ describe('NewProjectButton E2E Tests', () => {
       body: { organizations: [] },
     }).as('getOrganizationEmployments');
 
-    // Mock inbox messages to prevent errors in ManagerTopbar
-    cy.intercept('GET', '/api/v1/inbox/messages?offset=0&limit=10', {
+    // Mock activity feed to prevent errors in ManagerTopbar
+    cy.intercept('GET', '/ticketing/v1/activities*', {
       statusCode: 200,
-      body: {
-        first: 0,
-        size: 0,
-        total: 0,
-        messages: [],
-      },
-    }).as('getInboxMessages');
+      body: { size: 0, nextCursor: null, activities: [] },
+    }).as('getActivityFeeds');
 
     // Mock project creation
     cy.intercept('POST', '/api/v1/projects', {

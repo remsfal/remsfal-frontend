@@ -11,7 +11,9 @@ const { t } = useI18n();
       <div class="col-span-10">
         <div class="card">
           <h5>{{ t('customerView.title') }}</h5>
-          <Message severity="info">{{ t('customerView.notAvailable') }}</Message>
+          <Message severity="info">
+            {{ t('customerView.notAvailable') }}
+          </Message>
         </div>
       </div>
     </div>

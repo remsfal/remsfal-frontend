@@ -115,6 +115,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ActivityFeeds': RouteRecordInfo<
+      'ActivityFeeds',
+      '/manager/activity-feeds',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     'ManagerContractorList': RouteRecordInfo<
       'ManagerContractorList',
       '/manager/contractors',
@@ -132,13 +139,6 @@ declare module 'vue-router/auto-routes' {
     'ManagerDashboard': RouteRecordInfo<
       'ManagerDashboard',
       '/manager/dashboard',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    'Inbox': RouteRecordInfo<
-      'Inbox',
-      '/manager/inbox',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -427,6 +427,14 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    'src/pages/manager/activity-feeds.vue': {
+      routes:
+        | 'ActivityFeeds'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     'src/pages/manager/contractors/index.vue': {
       routes:
         | 'ManagerContractorList'
@@ -446,14 +454,6 @@ declare module 'vue-router/auto-routes' {
     'src/pages/manager/dashboard.vue': {
       routes:
         | 'ManagerDashboard'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    'src/pages/manager/inbox.vue': {
-      routes:
-        | 'Inbox'
       views:
         | never
       pathParamNames:

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useI18n } from 'vue-i18n';
+import { I18nT, useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 </script>
@@ -23,10 +23,10 @@ const { t } = useI18n();
                   <span class="text-emerald-600 dark:text-emerald-400">REMSFAL</span>
                 </h1>
                 <h2 class="text-2xl md:text-3xl font-bold text-surface-800 dark:text-surface-100 mb-6 leading-tight">
-                  REmote Management Services for connected FAciLities
+                  {{ t('landingPage.title') }}
                 </h2>
                 <p class="text-lg md:text-xl text-surface-600 dark:text-surface-300 leading-relaxed">
-                  Die erste Open-Source-Software für ganzheitliches, digitales Facility Management
+                  {{ t('landingPage.sub-title') }}
                 </p>
               </div>
               
@@ -71,13 +71,10 @@ const { t } = useI18n();
               >
                 <h2 class="text-xl font-bold text-emerald-700 dark:text-emerald-400 mb-3 flex items-center gap-2">
                   <FontAwesomeIcon icon="fa-solid fa-lightbulb" class="text-lg" />
-                  Unsere Vision
+                  {{ t('landingPage.vision.title') }}
                 </h2>
                 <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-                  Eine End-to-End-Lösung, die alle relevanten Interessengruppen – von Mietern über Hausverwaltungen
-                  bis hin zu Auftragnehmern – nahtlos in einem transparenten Prozess vereint.
-                  REMSFAL bietet hierfür eine ganzheitliche Prozessabbildung, die den gesamten Lebenszyklus
-                  eines Mangelprozesses digitalisiert.
+                  {{ t('landingPage.description') }}
                 </p>
               </div>
 
@@ -87,13 +84,10 @@ const { t } = useI18n();
               >
                 <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400 mb-3 flex items-center gap-2">
                   <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" class="text-lg" />
-                  Das Problem
+                  {{ t('landingPage.problem.title') }}
                 </h2>
                 <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-                  Viele kleine und mittelständische Hausverwaltungen sind mit ineffizienten, analogen Prozessen konfrontiert.
-                  Die manuelle Bearbeitung von Mängelmeldungen per E-Mail oder Telefon ist zeitaufwendig und fehleranfällig.
-                  Gleichzeitig sind die am Markt verfügbaren digitalen Lösungen oft zu teuer und komplex,
-                  was zu Intransparenz für Mieter und unnötig hoher Arbeitsbelastung für Hausverwalter führt.
+                  {{ t('landingPage.problem.text') }}
                 </p>
               </div>
 
@@ -103,41 +97,45 @@ const { t } = useI18n();
               >
                 <h2 class="text-xl font-bold text-purple-700 dark:text-purple-400 mb-3 flex items-center gap-2">
                   <FontAwesomeIcon icon="fa-solid fa-rocket" class="text-lg" />
-                  Unsere Lösung
+                  {{ t('landingPage.solution.title') }}
                 </h2>
-                <p class="text-surface-700 dark:text-surface-300 leading-relaxed mb-4">
-                  REMSFAL bietet eine zugängliche und leistungsstarke Plattform. Die Kernfunktionalität ist das
-                  <strong>Mängelmanagement</strong>, das Mietern ermöglicht, Anfragen einfach und datenschutzkonform zu stellen.
-                  Alle notwendigen Informationen werden bereits bei der Meldung erfasst und intelligent aufbereitet.
-                </p>
+                <I18nT
+                  keypath="landingPage.solution.text"
+                  tag="p"
+                  class="text-surface-700 dark:text-surface-300 leading-relaxed mb-4"
+                >
+                  <template #strong>
+                    <strong>{{ t('landingPage.solution.highlight') }}</strong>
+                  </template>
+                </I18nT>
                 <ul class="space-y-2 text-surface-700 dark:text-surface-300">
                   <li class="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon="fa-solid fa-check-circle"
                       class="text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0"
                     />
-                    <span>Asynchrone Bewertung und Klassifizierung zur Identifikation von Notfällen</span>
+                    <span>{{ t('landingPage.solution.bullet1') }}</span>
                   </li>
                   <li class="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon="fa-solid fa-check-circle"
                       class="text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0"
                     />
-                    <span>Transparente Koordination mit Auftragnehmern</span>
+                    <span>{{ t('landingPage.solution.bullet2') }}</span>
                   </li>
                   <li class="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon="fa-solid fa-check-circle"
                       class="text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0"
                     />
-                    <span>Einfache Stammdatenverwaltung und Dokumentation</span>
+                    <span>{{ t('landingPage.solution.bullet3') }}</span>
                   </li>
                   <li class="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon="fa-solid fa-check-circle"
                       class="text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0"
                     />
-                    <span>Intelligente Auswertung von Schadensdaten zur optimierung von Instandhaltungskosten</span>
+                    <span>{{ t('landingPage.solution.bullet4') }}</span>
                   </li>
                 </ul>
               </div>
@@ -158,7 +156,7 @@ const { t } = useI18n();
         <div class="container mx-auto px-6">
           <div class="text-center mb-16">
             <h2 class="text-3xl font-bold text-surface-800 dark:text-surface-100">
-              Unsere Funktionen
+              {{ t('landingPage.featuresSection.title') }}
             </h2>
           </div>
           <div class="grid md:grid-cols-3 gap-12">
@@ -178,7 +176,7 @@ const { t } = useI18n();
                 {{ t('landingPage.header.defect-management') }}
               </h3>
               <p class="text-surface-600 dark:text-surface-300 leading-relaxed">
-                Effizientes Mängelmanagement für Ihre Immobilien. Erfassen, verfolgen und lösen Sie Probleme schneller.
+                {{ t('landingPage.header.defect-management-description') }}
               </p>
             </div>
 
@@ -198,7 +196,7 @@ const { t } = useI18n();
                 {{ t('landingPage.header.documentation') }}
               </h3>
               <p class="text-surface-600 dark:text-surface-300 leading-relaxed">
-                Lückenlose Dokumentation aller Vorgänge. Behalten Sie den Überblick über Verträge, Protokolle und mehr.
+                {{ t('landingPage.header.documentation-description') }}
               </p>
             </div>
 
@@ -218,8 +216,7 @@ const { t } = useI18n();
                 {{ t('landingPage.header.monitoring') }}
               </h3>
               <p class="text-surface-600 dark:text-surface-300 leading-relaxed">
-                Echtzeit-Monitoring Ihrer Portfolios. Analysieren Sie Performance
-                und treffen Sie datenbasierte Entscheidungen.
+                {{ t('landingPage.header.monitoring-description') }}
               </p>
             </div>
           </div>
@@ -230,8 +227,7 @@ const { t } = useI18n();
       <section class="py-8 border-t border-surface-200 dark:border-surface-700">
         <div class="container mx-auto px-6">
           <p class="text-xs text-surface-500 dark:text-surface-400 text-center leading-relaxed">
-            Mit der Anmeldung über Ihr Google-Konto können Sie Projekte anlegen und verwalten. 
-            Durch die Nutzung stimmen Sie unseren Nutzungsbedingungen und der Datenschutzerklärung zu.
+            {{ t('landingPage.login-description') }}
           </p>
         </div>
       </section>

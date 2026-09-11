@@ -1,29 +1,28 @@
 import { computed, onMounted, ref, watch, type Ref, type WatchSource } from 'vue';
 import type { FileUploadSelectEvent } from 'primevue/fileupload';
-import type { components as ticketingComponents, Readable } from '@/services/api/ticketing-schema';
+import type { components as ticketingComponents, Readable, Writable } from '@/services/api/ticketing-schema';
+import { useAppToast } from '@/composables/useAppToast';
 
-export type TimelineJson = Readable<ticketingComponents['schemas']['TenantTimelineJson']>;
+export type TenantTimelineJson = Readable<ticketingComponents['schemas']['TenantTimelineJson']>;
 export type ContractorTimelineJson = Readable<ticketingComponents['schemas']['ContractorTimelineJson']>;
-export type TimelineEntry = TimelineJson | ContractorTimelineJson;
+export type MessagePurpose = ticketingComponents['schemas']['MessagePurpose'];
+export type TimelineEntry = TenantTimelineJson | ContractorTimelineJson;
 
-type TimelinePurpose = NonNullable<TimelineJson['purpose']>;
-
-export interface TimelineSendPayload {
-  purpose: TimelinePurpose;
-  message?: string;
-}
+export type TimelineWritableJson = Writable<ticketingComponents['schemas']['TenantTimelineJson']>;
 
 export interface UseTimelineOptions {
   load: () => Promise<TimelineEntry[]>;
-  send: (payload: TimelineSendPayload, files: File[]) => Promise<void>;
+  send: (payload: TimelineWritableJson, files: File[]) => Promise<void>;
   watchSource?: WatchSource;
-  sendPurpose?: TimelinePurpose;
+  sendPurpose?: MessagePurpose;
   isBlocked?: (items: TimelineEntry[]) => boolean;
+  sendErrorMessage: () => string;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
 }
 
 export function useTimeline(options: UseTimelineOptions) {
+  const appToast = useAppToast();
   const loading = ref(false);
   const error = ref(false);
   const items = ref([]) as Ref<TimelineEntry[]>;
@@ -74,6 +73,16 @@ export function useTimeline(options: UseTimelineOptions) {
     selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files as File[]);
   };
 
+  const resetComposer = () => {
+    messageText.value = '';
+    selectedFiles.value = [];
+    fileUploadKey.value += 1;
+  };
+
+  const cancel = () => {
+    resetComposer();
+  };
+
   const submit = async () => {
     if (!canSubmit.value) return;
     const trimmedMessage = messageText.value.trim();
@@ -82,16 +91,15 @@ export function useTimeline(options: UseTimelineOptions) {
       await options.send(
         {
           purpose: options.sendPurpose ?? 'MESSAGE_SENT',
-          ...(trimmedMessage ? { message: trimmedMessage } : {}),
+          message: trimmedMessage,
         },
         selectedFiles.value,
       );
-      messageText.value = '';
-      selectedFiles.value = [];
-      fileUploadKey.value += 1;
+      resetComposer();
       await fetchItems();
     } catch (sendError) {
       console.error(options.sendErrorLogLabel ?? 'Failed to create timeline entry', sendError);
+      appToast.error(options.sendErrorMessage());
     } finally {
       sending.value = false;
     }
@@ -112,5 +120,6 @@ export function useTimeline(options: UseTimelineOptions) {
     canSubmit,
     onFilesSelected,
     submit,
+    cancel,
   };
 }

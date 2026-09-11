@@ -43,7 +43,17 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ github.run_id }}
-          path: coverage/
+          # coverage-vitest/ and coverage-cypress/ hold each tool's own lcov.info,
+          # unmerged. Sonar unions per-line hit counts across separate reports itself,
+          # which is robust to Vitest and Cypress instrumenting the same .vue file with
+          # different AST shapes - nyc's merge (coverage/) instead concatenates their
+          # function/branch/line tables unreconciled, inflating the denominator on any
+          # component no e2e spec visits. coverage/ is kept for now until the CI/merge
+          # step itself is cleaned up.
+          path: |
+            coverage/
+            coverage-vitest/lcov.info
+            coverage-cypress/lcov.info
           retention-days: 1
           if-no-files-found: error
       - name: Build ESLint Report (only on LTS version)

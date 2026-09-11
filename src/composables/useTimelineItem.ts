@@ -1,45 +1,53 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { TimelineJson } from '@/composables/useTimeline';
+import type { TimelineEntry } from '@/composables/useTimeline';
 import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
 
-export interface UseTimelineItemProps {
-  item: TimelineJson;
-  issueId: string;
+export interface UseTimelineItemProps<T extends TimelineEntry> {
+  item: T;
+  issueId?: string;
 }
 
-export function useTimelineItem(props: UseTimelineItemProps, attachmentsBasePath: string) {
-  const { t } = useI18n();
+export interface UseTimelineItemOptions {
+  titleNamespace: string;
+  buildAttachmentUrl: (attachmentId: string, fileName?: string) => string;
+}
 
-  const buildDownloadUrl = (issueId: string, attachmentId: string, fileName?: string) => {
-    const encodedIssueId = encodeURIComponent(issueId);
+export function buildAttachmentDownloadUrl(resourcePrefix: string) {
+  return (attachmentId: string, fileName?: string) => {
     const encodedAttachmentId = encodeURIComponent(attachmentId);
     const encodedFileName = encodeURIComponent(fileName || attachmentId);
-    return `${attachmentsBasePath}/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+    return `${resourcePrefix}/attachments/${encodedAttachmentId}/${encodedFileName}`;
   };
+}
+
+export function useTimelineItem<T extends TimelineEntry>(
+  props: UseTimelineItemProps<T>,
+  options: UseTimelineItemOptions,
+) {
+  const { t } = useI18n();
+  const { titleNamespace, buildAttachmentUrl } = options;
 
   const getIssueNumber = (issueId: string) => issueId.split('-').pop() || issueId;
 
   const title = computed(() => {
     const timelineItem = props.item;
     const senderName = timelineItem.senderName?.trim() || t('common.notSet');
+    const issueNumber = getIssueNumber(timelineItem.issueId ?? props.issueId ?? '');
 
     switch (timelineItem.purpose) {
       case 'ISSUE_CREATED':
-        return t('tenantIssues.timeline.issueCreatedTitle', {
-          issueNumber: getIssueNumber(timelineItem.issueId ?? props.issueId),
-          senderName,
-        });
+        return t(`${titleNamespace}.issueCreatedTitle`, { issueNumber, senderName });
       case 'MESSAGE_SENT':
-        return t('tenantIssues.timeline.tenantMessageTitle', { senderName });
+        return t(`${titleNamespace}.messageTitle`, { senderName });
       case 'APPOINTMENT_REQUESTED':
-        return t('tenantIssues.timeline.appointmentRequestedTitle', { senderName });
+        return t(`${titleNamespace}.appointmentRequestedTitle`, { senderName });
       case 'APPOINTMENT_SCHEDULED':
-        return t('tenantIssues.timeline.appointmentScheduledTitle', { senderName });
+        return t(`${titleNamespace}.appointmentScheduledTitle`, { senderName });
       case 'STATUS_CHANGED':
-        return t('tenantIssues.timeline.statusChangedTitle');
+        return t(`${titleNamespace}.statusChangedTitle`);
       default:
-        return t('tenantIssues.timeline.entryFallbackTitle');
+        return t(`${titleNamespace}.entryFallbackTitle`);
     }
   });
 
@@ -54,7 +62,7 @@ export function useTimelineItem(props: UseTimelineItemProps, attachmentsBasePath
       return [{
         attachmentId,
         contentType: attachment.contentType,
-        downloadUrl: buildDownloadUrl(props.issueId, attachmentId, fileName),
+        downloadUrl: buildAttachmentUrl(attachmentId, fileName),
         fileName,
       }];
     }),

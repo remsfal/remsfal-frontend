@@ -1,7 +1,8 @@
-import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 
-export type TimelineJson = Readable<ApiComponents['schemas']['TenantTimelineJson']>;
+export type TenantTimelineJson = Readable<ApiComponents['schemas']['TenantTimelineJson']>;
 export type TimelineListJson = Readable<ApiComponents['schemas']['TenantTimelineListJson']>;
+export type TenantTimelineWritableJson = Writable<ApiComponents['schemas']['TenantTimelineJson']>;
 
 class IssueTimelineService {
   async getTimelineEntries(issueId: string): Promise<TimelineListJson> {
@@ -14,7 +15,7 @@ class IssueTimelineService {
 
   async createTimelineEntryWithAttachments(
     issueId: string,
-    timeline: Partial<TimelineJson>,
+    timeline: TenantTimelineWritableJson,
     files: File[],
   ): Promise<void> {
     const formData = new FormData();

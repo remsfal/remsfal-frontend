@@ -104,6 +104,10 @@ onMounted(fetchRentalAgreements);
         :pt="{ rowGroupHeaderCell: { colspan: 7 } }"
         @rowClick="navigateToRentalAgreementDetails($event.data.id)"
       >
+        <template #empty>
+          <span class="text-muted-color">{{ t('projectTenancies.table.empty') }}</span>
+        </template>
+
         <Column field="startOfRental" :header="t('projectTenancies.table.rentalStart')" />
         <Column field="endOfRental" :header="t('projectTenancies.table.rentalEnd')" />
 
