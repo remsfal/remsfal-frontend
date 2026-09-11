@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
-import type { TimelineJson } from '@/features/project/issues/services/IssueTimelineService';
+import type { TenantTimelineJson } from '@/features/project/issues/services/IssueTimelineService';
 import IssueTimelineItemCard from '@/features/project/issues/components/IssueTimelineItemCard.vue';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 
-const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
+const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
   timelineId: 'timeline-1',
   purpose: 'MESSAGE_SENT',
   message: '',
@@ -12,7 +12,7 @@ const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
   ...overrides,
 });
 
-const mountItemCard = (item: TimelineJson, issueId = 'issue-1') =>
+const mountItemCard = (item: TenantTimelineJson, issueId = 'issue-1') =>
   shallowMount(IssueTimelineItemCard, { props: { item, issueId } });
 
 const entryCardProps = (wrapper: ReturnType<typeof mountItemCard>) =>

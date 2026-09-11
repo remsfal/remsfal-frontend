@@ -6,7 +6,7 @@ import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/BaseCard.vue';
 import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
-import { useTimeline, type UseTimelineOptions, type TimelineJson } from '@/composables/useTimeline';
+import { useTimeline, type UseTimelineOptions, type TimelineEntry } from '@/composables/useTimeline';
 import { useI18n } from 'vue-i18n';
 
 interface Props {
@@ -16,6 +16,7 @@ interface Props {
   isBlocked?: UseTimelineOptions['isBlocked'];
   sendPurpose?: UseTimelineOptions['sendPurpose'];
   watchSource?: UseTimelineOptions['watchSource'];
+  hideComposer?: boolean;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
 }
@@ -23,18 +24,27 @@ interface Props {
 const props = defineProps<Props>();
 
 defineSlots<{
-  item(props: { item: TimelineJson }): unknown;
+  item(props: { item: TimelineEntry }): unknown;
   title?(): unknown;
+  'before-composer'?(): unknown;
+  'composer-actions'?(props: {
+    submit: () => void;
+    cancel: () => void;
+    canSubmit: boolean;
+    sending: boolean;
+    loading: boolean;
+  }): unknown;
 }>();
 
 const testIdPrefix = 'timeline';
 const { t } = useI18n();
-const emptyText = t('tenantIssues.timeline.empty');
-const loadErrorText = t('tenantIssues.timeline.loadError');
-const messagePlaceholder = t('tenantIssues.timeline.messagePlaceholder');
-const uploadButtonLabel = t('tenantIssues.timeline.uploadButton');
-const uploadEmptyText = t('tenantIssues.timeline.uploadEmpty');
-const sendButtonLabel = t('tenantIssues.timeline.sendMessage');
+const emptyText = t('timeline.empty');
+const loadErrorText = t('timeline.loadError');
+const messagePlaceholder = t('timeline.messagePlaceholder');
+const uploadButtonLabel = t('timeline.uploadButton');
+const uploadEmptyText = t('timeline.uploadEmpty');
+const sendButtonLabel = t('timeline.sendMessage');
+const sendErrorMessage = t('timeline.createError');
 
 const {
   loading,
@@ -46,6 +56,7 @@ const {
   canSubmit,
   onFilesSelected,
   submit,
+  cancel,
 } = useTimeline({
   load: props.load,
   send: props.send,
@@ -54,6 +65,7 @@ const {
   watchSource: props.watchSource,
   loadErrorLogLabel: props.loadErrorLogLabel,
   sendErrorLogLabel: props.sendErrorLogLabel,
+  sendErrorMessage: () => sendErrorMessage,
 });
 </script>
 
@@ -98,7 +110,8 @@ const {
           <slot name="item" :item="slotProps.item" />
         </template>
       </Timeline>
-      <div class="mb-4 flex flex-col gap-2">
+      <slot name="before-composer" />
+      <div v-if="!hideComposer" class="mb-4 flex flex-col gap-2">
         <label :for="`${testIdPrefix}-message`" class="sr-only">{{ messagePlaceholder }}</label>
         <Textarea
           :id="`${testIdPrefix}-message`"
@@ -128,16 +141,25 @@ const {
             </template>
           </FileUpload>
         </div>
-        <div class="flex justify-end">
-          <Button
-            :data-testid="`${testIdPrefix}-message-submit`"
-            :label="sendButtonLabel"
-            icon="pi pi-send"
-            :loading="sending"
-            :disabled="!canSubmit"
-            @click="submit"
-          />
-        </div>
+        <slot
+          name="composer-actions"
+          :submit="submit"
+          :cancel="cancel"
+          :canSubmit="canSubmit"
+          :sending="sending"
+          :loading="loading"
+        >
+          <div class="flex justify-end">
+            <Button
+              :data-testid="`${testIdPrefix}-message-submit`"
+              :label="sendButtonLabel"
+              icon="pi pi-send"
+              :loading="sending"
+              :disabled="!canSubmit"
+              @click="submit"
+            />
+          </div>
+        </slot>
       </div>
     </template>
   </BaseCard>

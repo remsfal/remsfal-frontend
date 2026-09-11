@@ -41,7 +41,7 @@ describe('TenantTimelineService', () => {
 
     await tenantTimelineService.createTimelineEntryWithAttachments(
       'issue-1',
-      { purpose: 'MESSAGE_SENT' },
+      { purpose: 'MESSAGE_SENT', message: 'Hello' },
       files,
     );
 
@@ -53,7 +53,7 @@ describe('TenantTimelineService', () => {
     const formData = payload as FormData;
     const timelinePart = formData.get('timeline');
     expect(timelinePart).toBeInstanceOf(Blob);
-    expect(await (timelinePart as Blob).text()).toBe(JSON.stringify({ purpose: 'MESSAGE_SENT' }));
+    expect(await (timelinePart as Blob).text()).toBe(JSON.stringify({ purpose: 'MESSAGE_SENT', message: 'Hello' }));
     expect(formData.getAll('attachment')).toHaveLength(2);
   });
 });

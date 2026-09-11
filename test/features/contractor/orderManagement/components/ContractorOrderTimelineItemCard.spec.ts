@@ -1,30 +1,33 @@
 import { describe, expect, it } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
-import type { TenantTimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
-import TenantIssueTimelineItemCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineItemCard.vue';
+import type { ContractorTimelineJson }
+  from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';
+import ContractorOrderTimelineItemCard from
+  '@/features/contractor/orderManagement/components/ContractorOrderTimelineItemCard.vue';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 
-const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
+const makeTimeline = (overrides: Partial<ContractorTimelineJson> = {}): ContractorTimelineJson => ({
   timelineId: 'timeline-1',
   purpose: 'MESSAGE_SENT',
   message: '',
+  senderRole: 'CONTRACTOR',
   createdAt: '2026-01-02T10:00:00.000Z',
   ...overrides,
 });
 
-const mountItemCard = (item: TenantTimelineJson, issueId = 'issue-1') =>
-  shallowMount(TenantIssueTimelineItemCard, { props: { item, issueId } });
+const mountItemCard = (item: ContractorTimelineJson, requestId = 'request-1') =>
+  shallowMount(ContractorOrderTimelineItemCard, { props: { item, requestId } });
 
 const entryCardProps = (wrapper: ReturnType<typeof mountItemCard>) =>
   wrapper.getComponent(TimelineEntryCard).props();
 
-describe('TenantIssueTimelineItemCard component', () => {
+describe('ContractorOrderTimelineItemCard component', () => {
   it('passes date, message and testId through to TimelineEntryCard', () => {
     const props = entryCardProps(mountItemCard(makeTimeline({ message: 'Hallo' })));
 
     expect(props.date).toBe('2026-01-02T10:00:00.000Z');
     expect(props.message).toBe('Hallo');
-    expect(props.testId).toBe('tenant-issue-timeline-entry');
+    expect(props.testId).toBe('contractor-order-timeline-entry');
   });
 
   it('builds attachment download URLs, falling back to the attachment id as filename', () => {
@@ -44,16 +47,17 @@ describe('TenantIssueTimelineItemCard component', () => {
     expect(entryCardProps(wrapper).attachments).toEqual([
       expect.objectContaining({
         attachmentId: 'att-1',
-        downloadUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-1/report.pdf',
+        downloadUrl: '/ticketing/v1/order-management/quotation-requests/request-1/attachments/att-1/report.pdf',
       }),
       expect.objectContaining({
         attachmentId: 'fallback-att',
-        downloadUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/fallback-att/fallback-att',
+        downloadUrl:
+          '/ticketing/v1/order-management/quotation-requests/request-1/attachments/fallback-att/fallback-att',
       }),
     ]);
   });
 
-  it('encodes issue, attachment and filename in the generated download URL', () => {
+  it('encodes request, attachment and filename in the generated download URL', () => {
     const wrapper = mountItemCard(
       makeTimeline({
         attachments: [{
@@ -62,11 +66,12 @@ describe('TenantIssueTimelineItemCard component', () => {
           contentType: 'application/pdf',
         }],
       }),
-      'issue id/ä',
+      'request id/ä',
     );
 
     expect(entryCardProps(wrapper).attachments?.[0]?.downloadUrl).toBe(
-      '/ticketing/v1/tenant-relations/issues/issue%20id%2F%C3%A4/attachments/att%20id%2F1/file%20name%20%231.pdf',
+      '/ticketing/v1/order-management/quotation-requests/request%20id%2F%C3%A4'
+      + '/attachments/att%20id%2F1/file%20name%20%231.pdf',
     );
   });
 });

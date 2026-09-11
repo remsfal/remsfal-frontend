@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import type { TenantTimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
+import type { ContractorTimelineJson } from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import { buildAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
 
 const props = defineProps<{
-  item: TenantTimelineJson;
-  issueId: string;
+  item: ContractorTimelineJson;
+  requestId: string;
 }>();
 
 const { t } = useI18n();
 
 const { title, attachments } = useTimelineItem(props, {
-  titleNamespace: 'tenantIssues.timeline',
+  titleNamespace: 'orderManagement.timeline',
   buildAttachmentUrl: buildAttachmentDownloadUrl(
-    `/ticketing/v1/tenant-relations/issues/${encodeURIComponent(props.issueId)}`,
+    `/ticketing/v1/order-management/quotation-requests/${encodeURIComponent(props.requestId)}`,
   ),
 });
 </script>
@@ -25,8 +25,8 @@ const { title, attachments } = useTimelineItem(props, {
     :title="title"
     :message="item.message"
     :attachments="attachments"
-    :attachmentsLabel="t('tenantIssues.timeline.attachmentsCount')"
-    :downloadAttachmentLabel="t('tenantIssues.timeline.downloadAttachment')"
-    testId="tenant-issue-timeline-entry"
+    :attachmentsLabel="t('orderManagement.timeline.attachmentsLabel')"
+    :downloadAttachmentLabel="t('orderManagement.timeline.downloadAttachmentLabel')"
+    testId="contractor-order-timeline-entry"
   />
 </template>
