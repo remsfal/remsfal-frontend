@@ -107,7 +107,7 @@
     "nyc": "^18.0.0",
     "openapi-typescript": "^7.10.1",
     "postcss": "^8.5.26",
-    "sass": "^1.102.0",
+    "sass": "^1.104.0",
     "start-server-and-test": "^2.1.5",
     "stylelint": "^17.14.1",
     "stylelint-config-recommended-vue": "^2.0.0",
