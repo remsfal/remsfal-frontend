@@ -77,12 +77,12 @@ watch(
 <template>
   <BaseCard>
     <template #title>
-      Liegenschaftseinstellungen
+      {{ t('projectSettings.title') }}
     </template>
 
     <template #content>
       <div class="flex flex-col gap-3">
-        <label for="name" class="font-medium text-gray-700">Name der Liegenschaft</label>
+        <label for="name" class="font-medium text-gray-700">{{ t('projectSettings.propertyNamePlaceholder') }}</label>
         <div class="flex gap-2 items-center">
           <InputText
             id="name"

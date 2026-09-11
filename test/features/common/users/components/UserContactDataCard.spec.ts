@@ -315,7 +315,7 @@ describe('UserContactDataCard', () => {
     await flushPromises();
 
     expect(v.altEmailError).toBe(true);
-    expect(wrapper.text()).toContain('✗');
+    expect(wrapper.find('i.pi-times').exists()).toBe(true);
     consoleErrorSpy.mockRestore();
   });
 
