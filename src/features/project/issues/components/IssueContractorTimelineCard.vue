@@ -8,7 +8,7 @@ import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import TimelineCard from '@/components/TimelineCard.vue';
 import IssueContractorTimelineItemCard from './IssueContractorTimelineItemCard.vue';
-import type { TimelineSendPayload } from '@/composables/useTimeline';
+import type { TimelineWritableJson } from '@/composables/useTimeline';
 import type { ContractorTimelineJson } from '@/features/project/issues/services/ContractorTimelineService';
 import { contractorTimelineService } from '@/features/project/issues/services/ContractorTimelineService';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
@@ -56,7 +56,7 @@ const loadTimelineEntries = async (organizationId: string) => {
   return (result.timelines ?? []).filter((entry) => entry.organizationId === organizationId);
 };
 
-const sendTimelineEntry = async (organizationId: string, payload: TimelineSendPayload, files: File[]) => {
+const sendTimelineEntry = async (organizationId: string, payload: TimelineWritableJson, files: File[]) => {
   await contractorTimelineService.createTimelineEntryWithAttachments(
     props.issueId,
     organizationId,
@@ -65,10 +65,10 @@ const sendTimelineEntry = async (organizationId: string, payload: TimelineSendPa
   );
 };
 
-const sendHandlerFor = (organizationId: string) => (payload: TimelineSendPayload, files: File[]) =>
+const sendHandlerFor = (organizationId: string) => (payload: TimelineWritableJson, files: File[]) =>
   sendTimelineEntry(organizationId, payload, files);
 
-const sendToSoleContractor = async (payload: TimelineSendPayload, files: File[]) => {
+const sendToSoleContractor = async (payload: TimelineWritableJson, files: File[]) => {
   if (contractors.value.length !== 1) return;
   await sendTimelineEntry(contractors.value[0].organizationId, payload, files);
 };
