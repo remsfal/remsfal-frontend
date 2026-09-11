@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
-import { useTimelineItem } from '@/composables/useTimelineItem';
-import type { TimelineJson } from '@/composables/useTimeline';
+import { buildAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
+import type { TenantTimelineJson } from '@/composables/useTimeline';
 
-const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
+const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
   timelineId: 'timeline-1',
   purpose: 'MESSAGE_SENT',
   message: '',
@@ -15,16 +15,21 @@ const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
 
 const TestComponent = defineComponent({
   props: {
-    item: { type: Object as () => TimelineJson, required: true },
+    item: { type: Object as () => TenantTimelineJson, required: true },
     issueId: { type: String, required: true },
   },
   setup(props) {
-    return { ...useTimelineItem(props, '/base') };
+    return {
+      ...useTimelineItem(props, {
+        titleNamespace: 'tenantIssues.timeline',
+        buildAttachmentUrl: buildAttachmentDownloadUrl(`/base/${props.issueId}`),
+      }),
+    };
   },
   template: '<div></div>',
 });
 
-const mountTimelineItem = (item: TimelineJson, issueId = 'issue-1') =>
+const mountTimelineItem = (item: TenantTimelineJson, issueId = 'issue-1') =>
   mount(TestComponent, { props: { item, issueId } });
 
 describe('useTimelineItem', () => {
@@ -40,7 +45,7 @@ describe('useTimelineItem', () => {
     ],
     [
       { purpose: 'MESSAGE_SENT', senderName: 'Alex' },
-      'tenantIssues.timeline.tenantMessageTitle',
+      'tenantIssues.timeline.messageTitle',
       { senderName: 'Alex' },
     ],
     [
@@ -54,9 +59,9 @@ describe('useTimelineItem', () => {
       { senderName: 'Alex' },
     ],
     [{ purpose: 'STATUS_CHANGED' }, 'tenantIssues.timeline.statusChangedTitle', undefined],
-    [{ purpose: 'UNKNOWN_PURPOSE' as TimelineJson['purpose'] }, 'tenantIssues.timeline.entryFallbackTitle', undefined],
+    [{ purpose: 'UNKNOWN_PURPOSE' as TenantTimelineJson['purpose'] }, 'tenantIssues.timeline.entryFallbackTitle', undefined],
     [{ purpose: undefined }, 'tenantIssues.timeline.entryFallbackTitle', undefined],
-  ] as [Partial<TimelineJson>, string, Record<string, string> | undefined][])(
+  ] as [Partial<TenantTimelineJson>, string, Record<string, string> | undefined][])(
     'maps %o to the %s title',
     (overrides, key, params) => {
       const wrapper = mountTimelineItem(makeTimeline(overrides));
@@ -69,7 +74,7 @@ describe('useTimelineItem', () => {
     const wrapper = mountTimelineItem(makeTimeline({ purpose: 'MESSAGE_SENT', senderName: undefined }));
 
     expect(wrapper.vm.title).toBe(
-      i18n.global.t('tenantIssues.timeline.tenantMessageTitle', { senderName: i18n.global.t('common.notSet') }),
+      i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: i18n.global.t('common.notSet') }),
     );
   });
 
@@ -101,6 +106,6 @@ describe('useTimelineItem', () => {
 
     await wrapper.setProps({ item: makeTimeline({ purpose: 'MESSAGE_SENT', senderName: 'Alex' }) });
 
-    expect(wrapper.vm.title).toBe(i18n.global.t('tenantIssues.timeline.tenantMessageTitle', { senderName: 'Alex' }));
+    expect(wrapper.vm.title).toBe(i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: 'Alex' }));
   });
 });

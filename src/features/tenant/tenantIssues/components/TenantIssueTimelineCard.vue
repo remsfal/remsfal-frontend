@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import TimelineCard from '@/components/TimelineCard.vue';
-import type { TimelineJson } from '@/composables/useTimeline';
+import type { TenantTimelineJson } from '@/composables/useTimeline';
 import TenantIssueTimelineItemCard from './TenantIssueTimelineItemCard.vue';
 import { tenantTimelineService } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 
@@ -11,7 +11,7 @@ const { t } = useI18n();
 
 const blockingStatusMessages = new Set(['CLOSED', 'REJECTED']);
 
-const isBlocked = (items: TimelineJson[]) =>
+const isBlocked = (items: TenantTimelineJson[]) =>
   items.some((timeline) =>
     timeline.purpose === 'STATUS_CHANGED' && blockingStatusMessages.has(timeline.message?.trim().toUpperCase() ?? ''),
   );
