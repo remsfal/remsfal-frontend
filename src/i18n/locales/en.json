@@ -1089,6 +1089,7 @@
   "issueContractorTimeline.entryFallbackTitle": "Update",
   "issueContractorTimeline.attachmentsLabel": "Attachments",
   "issueContractorTimeline.downloadAttachmentLabel": "Download attachment",
+  "issueContractorTimeline.visibleToContractorTag": "Visible to contractor",
   "quotation.table.empty": "No quotations available",
   "quotation.table.status": "Status",
   "quotation.table.contractorName": "Contractor",

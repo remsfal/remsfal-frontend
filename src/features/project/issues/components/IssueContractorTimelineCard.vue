@@ -7,6 +7,7 @@ import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
+import Tag from 'primevue/tag';
 import TimelineCard from '@/components/TimelineCard.vue';
 import BaseCard from '@/components/BaseCard.vue';
 import IssueContractorTimelineItemCard from './IssueContractorTimelineItemCard.vue';
@@ -93,7 +94,10 @@ const loadForSoleOrAllContractors = async () => {
   <template v-if="contractorsLoaded && contractors.length > 1">
     <BaseCard>
       <template #title>
-        {{ t('issueContractorTimeline.title') }}
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <span class="text-xl font-semibold">{{ t('issueContractorTimeline.title') }}</span>
+          <Tag :value="t('issueContractorTimeline.visibleToContractorTag')" severity="secondary" />
+        </div>
       </template>
       <template #content>
         <Tabs :value="contractors[0].organizationId">
@@ -142,6 +146,12 @@ const loadForSoleOrAllContractors = async () => {
       loadErrorLogLabel="Error fetching contractor timeline:"
       sendErrorLogLabel="Error creating contractor timeline entry:"
     >
+      <template #title>
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full">
+          <span class="text-xl font-semibold">{{ t('issueContractorTimeline.title') }}</span>
+          <Tag :value="t('issueContractorTimeline.visibleToContractorTag')" severity="secondary" />
+        </div>
+      </template>
       <template #item="{ item }">
         <IssueContractorTimelineItemCard :item="(item as ContractorTimelineJson)" :issueId="props.issueId" />
       </template>

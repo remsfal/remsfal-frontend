@@ -1091,6 +1091,7 @@
   "issueContractorTimeline.entryFallbackTitle": "Aktualisierung",
   "issueContractorTimeline.attachmentsLabel": "Anhänge",
   "issueContractorTimeline.downloadAttachmentLabel": "Anhang herunterladen",
+  "issueContractorTimeline.visibleToContractorTag": "Für Auftragnehmer sichtbar",
   "quotation.table.empty": "Keine Angebote vorhanden",
   "quotation.table.status": "Status",
   "quotation.table.contractorName": "Auftragnehmer",
