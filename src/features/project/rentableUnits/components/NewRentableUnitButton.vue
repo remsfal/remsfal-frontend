@@ -253,7 +253,10 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
           v-for="option in options"
           :key="option.type"
           class="flex items-center gap-3 px-3 py-3 hover:bg-emphasis cursor-pointer rounded-border"
+          role="button"
+          tabindex="0"
           @click="selectType(option.type)"
+          @keydown.enter="selectType(option.type)"
         >
           <i :class="option.icon" class="text-xl" />
           <div>

@@ -39,7 +39,10 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
         ? (isDarkTheme ? 'bg-surface-800/30 hover:bg-surface-800/50' : 'bg-surface-50 hover:bg-surface-100')
         : (isDarkTheme ? 'bg-surface-900 hover:bg-surface-800/50' : 'bg-surface-0 hover:bg-surface-100')
     ]"
+    role="button"
+    tabindex="0"
     @click="emit('navigate')"
+    @keydown.enter="emit('navigate')"
   >
     <!-- Unread Indicator -->
     <div class="w-2.5 flex-shrink-0 flex items-center justify-center self-center">
