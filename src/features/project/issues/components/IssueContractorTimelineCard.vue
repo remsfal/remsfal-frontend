@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useEventBus } from '@/stores/EventStore';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import TimelineCard from '@/components/TimelineCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import IssueContractorTimelineItemCard from './IssueContractorTimelineItemCard.vue';
 import type { TimelineWritableJson } from '@/composables/useTimeline';
 import type { ContractorTimelineJson } from '@/features/project/issues/services/ContractorTimelineService';
@@ -21,6 +23,7 @@ interface RequestedContractor {
 const props = defineProps<{ issueId: string }>();
 
 const { t } = useI18n();
+const eventBus = useEventBus();
 
 const contractorsLoaded = ref(false);
 const contractors = ref<RequestedContractor[]>([]);
@@ -50,6 +53,13 @@ const loadRequestedContractors = async () => {
 
 onMounted(loadRequestedContractors);
 watch(() => props.issueId, loadRequestedContractors);
+
+const unsubscribeQuotationRequestCreated = eventBus.on('quotationRequest:created', ({ issueId }) => {
+  if (issueId === props.issueId) {
+    loadRequestedContractors();
+  }
+});
+onUnmounted(unsubscribeQuotationRequestCreated);
 
 const loadTimelineEntries = async (organizationId: string) => {
   const result = await contractorTimelineService.getTimelineEntries(props.issueId);
@@ -84,39 +94,46 @@ const loadForSoleOrAllContractors = async () => {
 
 <template>
   <template v-if="contractorsLoaded && contractors.length > 1">
-    <Tabs :value="contractors[0].organizationId">
-      <TabList>
-        <Tab
-          v-for="contractor in contractors"
-          :key="contractor.organizationId"
-          :value="contractor.organizationId"
-          :data-testid="`contractor-tab-${contractor.organizationId}`"
-        >
-          {{ contractor.contractorName }}
-        </Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel
-          v-for="contractor in contractors"
-          :key="contractor.organizationId"
-          :value="contractor.organizationId"
-          :data-testid="`contractor-tab-panel-${contractor.organizationId}`"
-        >
-          <TimelineCard
-            :load="() => loadTimelineEntries(contractor.organizationId)"
-            :send="sendHandlerFor(contractor.organizationId)"
-            :watchSource="() => props.issueId"
-            :title="contractor.contractorName"
-            loadErrorLogLabel="Error fetching contractor timeline:"
-            sendErrorLogLabel="Error creating contractor timeline entry:"
-          >
-            <template #item="{ item }">
-              <IssueContractorTimelineItemCard :item="(item as ContractorTimelineJson)" :issueId="props.issueId" />
-            </template>
-          </TimelineCard>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+    <BaseCard>
+      <template #title>
+        {{ t('issueContractorTimeline.title') }}
+      </template>
+      <template #content>
+        <Tabs :value="contractors[0].organizationId">
+          <TabList>
+            <Tab
+              v-for="contractor in contractors"
+              :key="contractor.organizationId"
+              :value="contractor.organizationId"
+              :data-testid="`contractor-tab-${contractor.organizationId}`"
+            >
+              {{ contractor.contractorName }}
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel
+              v-for="contractor in contractors"
+              :key="contractor.organizationId"
+              :value="contractor.organizationId"
+              :data-testid="`contractor-tab-panel-${contractor.organizationId}`"
+            >
+              <TimelineCard
+                :load="() => loadTimelineEntries(contractor.organizationId)"
+                :send="sendHandlerFor(contractor.organizationId)"
+                :watchSource="() => props.issueId"
+                :title="contractor.contractorName"
+                loadErrorLogLabel="Error fetching contractor timeline:"
+                sendErrorLogLabel="Error creating contractor timeline entry:"
+              >
+                <template #item="{ item }">
+                  <IssueContractorTimelineItemCard :item="(item as ContractorTimelineJson)" :issueId="props.issueId" />
+                </template>
+              </TimelineCard>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </template>
+    </BaseCard>
   </template>
   <template v-else>
     <TimelineCard
