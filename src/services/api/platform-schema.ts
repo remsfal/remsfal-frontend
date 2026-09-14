@@ -5485,7 +5485,6 @@ export interface components {
       | "ISSUE_CREATED"
       | "ISSUE_UPDATED"
       | "ISSUE_ASSIGNED"
-      | "ISSUE_MENTIONED"
       | "TIMELINE_ENTRY_CREATED"
       | "CHAT_MESSAGE_CREATED"
       | "QUOTATION_REQUEST_CREATED"
