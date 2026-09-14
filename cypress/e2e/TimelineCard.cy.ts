@@ -114,6 +114,50 @@ const scenarios: Scenario[] = [
       }).as('getIssueDetail');
     },
   },
+  {
+    name: 'contractor communication timeline',
+    testIdPrefix: 'timeline',
+    timelineBase: `/ticketing/v1/issues/${issueId}`,
+    timelineSegment: 'contractor-timeline',
+    attachmentBase: `/ticketing/v1/issues/${issueId}/attachments`,
+    visitPath: () => `/projects/${projectId}/issues/${issueId}`,
+    setupIntercepts: () => {
+      setupAuthIntercepts();
+      cy.intercept('GET', `/api/v1/projects/${projectId}`, {
+        statusCode: 200,
+        body: { id: projectId, title: 'Test Project', members: [] },
+      }).as('getProject');
+      cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+      cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, { statusCode: 200, body: { organizations: [] } });
+      cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, { statusCode: 200, body: { properties: [] } });
+      cy.intercept(
+        'GET',
+        `/api/v1/projects/${projectId}/rental-agreements`,
+        { statusCode: 200, body: { rentalAgreements: [] } },
+      );
+      cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+      cy.intercept('GET', `/ticketing/v1/issues/${issueId}/quotations`, { statusCode: 200, body: { quotations: [] } });
+      cy.intercept('GET', `/ticketing/v1/issues/${issueId}/chat`, { statusCode: 200, body: { messages: [] } });
+      cy.intercept(
+        'GET',
+        `/api/v1/projects/${projectId}/contractors*`,
+        { statusCode: 200, body: { contractors: [] } },
+      );
+      // Exactly one requested contractor so the card renders its single-timeline view (composer
+      // enabled), the same shape the generic scenario tests below assume.
+      cy.intercept('GET', `/ticketing/v1/issues/${issueId}/quotation-request`, {
+        statusCode: 200,
+        body: { items: [{ id: 'qr-1', organizationId: 'org-1', contractorName: 'ACME GmbH' }] },
+      }).as('getQuotationRequests');
+      // visibleToTenants: false keeps IssueTimelineCard from rendering alongside this card — both
+      // use the shared TimelineCard component with the same hardcoded 'timeline' testIdPrefix, so
+      // having both visible at once would make every '[data-testid="timeline-*"]' selector ambiguous.
+      cy.intercept('GET', `/ticketing/v1/issues/${issueId}`, {
+        statusCode: 200,
+        body: { ...baseIssue, visibleToTenants: false },
+      }).as('getIssueDetail');
+    },
+  },
 ];
 
 scenarios.forEach((scenario) => {
@@ -163,9 +207,10 @@ scenarios.forEach((scenario) => {
           ],
         },
       );
+      // Trailing '*' so this also matches the contractor scenario's '?organizationId=...' query string.
       cy.intercept(
         'POST',
-        `${scenario.timelineBase}/${scenario.timelineSegment}`,
+        `${scenario.timelineBase}/${scenario.timelineSegment}*`,
         { statusCode: 201, body: {} },
       ).as('createTimeline');
 
@@ -266,5 +311,90 @@ describe('TimelineCard E2E Tests (tenant-only blocking behavior)', () => {
       cy.get('[data-testid="timeline-message-input"]').type('Sollte blockiert sein');
       cy.get('[data-testid="timeline-message-submit"]').should('be.disabled');
     });
+  });
+});
+
+describe('Contractor communication timeline (multiple contractors)', () => {
+  const contractorTimelineUrl = `/ticketing/v1/issues/${issueId}/contractor-timeline`;
+
+  beforeEach(() => {
+    setupAuthIntercepts();
+    cy.intercept('GET', `/api/v1/projects/${projectId}`, {
+      statusCode: 200,
+      body: { id: projectId, title: 'Test Project', members: [] },
+    }).as('getProject');
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, { statusCode: 200, body: { organizations: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, { statusCode: 200, body: { properties: [] } });
+    cy.intercept(
+      'GET',
+      `/api/v1/projects/${projectId}/rental-agreements`,
+      { statusCode: 200, body: { rentalAgreements: [] } },
+    );
+    cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+    cy.intercept('GET', `/ticketing/v1/issues/${issueId}/quotations`, { statusCode: 200, body: { quotations: [] } });
+    cy.intercept('GET', `/ticketing/v1/issues/${issueId}/chat`, { statusCode: 200, body: { messages: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/contractors*`, { statusCode: 200, body: { contractors: [] } });
+    // Two contractors have been requested for this issue, so the card should show one tab each.
+    cy.intercept('GET', `/ticketing/v1/issues/${issueId}/quotation-request`, {
+      statusCode: 200,
+      body: {
+        items: [
+          { id: 'qr-1', organizationId: 'org-1', contractorName: 'ACME GmbH' },
+          { id: 'qr-2', organizationId: 'org-2', contractorName: 'Muster Bau' },
+        ],
+      },
+    }).as('getQuotationRequests');
+    cy.intercept('GET', `/ticketing/v1/issues/${issueId}`, { statusCode: 200, body: baseIssue }).as('getIssueDetail');
+  });
+
+  it('shows one tab per contractor, scopes timeline entries per organization, and sends to the active tab', () => {
+    cy.intercept('GET', contractorTimelineUrl, {
+      statusCode: 200,
+      body: {
+        timelines: [
+          {
+            timelineId: 'ct-1',
+            organizationId: 'org-1',
+            purpose: 'MESSAGE_SENT',
+            message: 'Nachricht an ACME',
+            createdAt: '2026-01-02T10:00:00.000Z',
+          },
+          {
+            timelineId: 'ct-2',
+            organizationId: 'org-2',
+            purpose: 'MESSAGE_SENT',
+            message: 'Nachricht an Muster Bau',
+            createdAt: '2026-01-02T10:05:00.000Z',
+          },
+        ],
+        visibleToTenant: false,
+      },
+    }).as('getContractorTimeline');
+    // Trailing '*' matches the '?organizationId=...' query string the create call appends.
+    cy.intercept('POST', `${contractorTimelineUrl}*`, { statusCode: 201, body: {} }).as('createContractorTimeline');
+
+    cy.visit(`/projects/${projectId}/issues/${issueId}`);
+    cy.wait('@getIssueDetail', { timeout: 10000 });
+    cy.wait('@getQuotationRequests', { timeout: 10000 });
+    cy.wait('@getContractorTimeline', { timeout: 10000 });
+
+    cy.get('[data-testid="contractor-tab-org-1"]').should('contain.text', 'ACME GmbH');
+    cy.get('[data-testid="contractor-tab-org-2"]').should('contain.text', 'Muster Bau');
+
+    // Org-1 is the active tab by default and only shows its own entry.
+    cy.get('[data-testid="contractor-tab-panel-org-1"]').should('contain.text', 'Nachricht an ACME');
+    cy.get('[data-testid="contractor-tab-panel-org-1"]').should('not.contain.text', 'Nachricht an Muster Bau');
+
+    cy.get('[data-testid="contractor-tab-org-2"]').click();
+    cy.get('[data-testid="contractor-tab-panel-org-2"]').should('contain.text', 'Nachricht an Muster Bau');
+    cy.get('[data-testid="contractor-tab-panel-org-2"]')
+      .find('[data-testid="timeline-message-input"]')
+      .type('Antwort an Muster Bau');
+    cy.get('[data-testid="contractor-tab-panel-org-2"]')
+      .find('[data-testid="timeline-message-submit"]')
+      .click();
+
+    cy.wait('@createContractorTimeline').its('request.url').should('include', 'organizationId=org-2');
   });
 });

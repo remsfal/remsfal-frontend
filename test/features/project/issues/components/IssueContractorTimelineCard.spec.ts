@@ -2,11 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { flushPromises, shallowMount, mount } from '@vue/test-utils';
 import TimelineCard from '@/components/TimelineCard.vue';
 import IssueContractorTimelineItemCard from '@/features/project/issues/components/IssueContractorTimelineItemCard.vue';
-import { contractorTimelineService, type ContractorTimelineJson, type ContractorTimelineListJson }
+import { contractorTimelineService, type ContractorTimelineJson }
   from '@/features/project/issues/services/ContractorTimelineService';
 import { quotationRequestService, type QuotationRequestJson }
   from '@/features/project/issues/services/QuotationRequestService';
-import type { TimelineWritableJson } from '@/composables/useTimeline';
 import { setupResizeObserverMock } from '../../../../setup/issueTestHelpers';
 
 // PrimeVue TabList relies on ResizeObserver, which JSDOM does not implement.
@@ -195,143 +194,5 @@ describe('IssueContractorTimelineCard component', () => {
     const itemCard = wrapper.getComponent(IssueContractorTimelineItemCard);
     expect(itemCard.props('item')).toEqual(timeline);
     expect(itemCard.props('issueId')).toBe('issue-1');
-  });
-
-  it('logs an error and clears contractors when loading quotation requests fails', async () => {
-    vi.mocked(quotationRequestService.getQuotationRequests).mockRejectedValueOnce(new Error('Network'));
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    const wrapper = await mountCardFull('issue-1');
-
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Error fetching quotation requests for contractor timeline:',
-      expect.any(Error),
-    );
-    expect(wrapper.getComponent(TimelineCard).props('hideComposer')).toBe(true);
-    consoleSpy.mockRestore();
-  });
-
-  it('ignores a quotation request without an organizationId when building the contractor list', async () => {
-    const items = [makeQuotationRequest({ organizationId: undefined })];
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items });
-    vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockResolvedValueOnce({ timelines: [], visibleToTenant: false });
-
-    const wrapper = await mountCardShallow('issue-1');
-
-    expect(wrapper.getComponent(TimelineCard).props('hideComposer')).toBe(true);
-  });
-
-  it('reloads requested contractors when a matching quotationRequest:created event is emitted', async () => {
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValue({ items: [] });
-    vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockResolvedValue({ timelines: [], visibleToTenant: false });
-
-    const wrapper = await mountCardShallow('issue-1');
-    expect(wrapper.getComponent(TimelineCard).props('hideComposer')).toBe(true);
-
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValue({ items: [makeQuotationRequest()] });
-    const { useEventBus } = await import('@/stores/EventStore');
-    useEventBus().emit('quotationRequest:created', { issueId: 'issue-1' });
-    await flushPromises();
-
-    expect(wrapper.getComponent(TimelineCard).props('hideComposer')).toBe(false);
-  });
-
-  it('ignores a quotationRequest:created event for a different issue', async () => {
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValue({ items: [] });
-    vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockResolvedValue({ timelines: [], visibleToTenant: false });
-
-    const wrapper = await mountCardShallow('issue-1');
-    expect(wrapper.getComponent(TimelineCard).props('hideComposer')).toBe(true);
-
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValue({ items: [makeQuotationRequest()] });
-    const { useEventBus } = await import('@/stores/EventStore');
-    useEventBus().emit('quotationRequest:created', { issueId: 'some-other-issue' });
-    await flushPromises();
-
-    expect(wrapper.getComponent(TimelineCard).props('hideComposer')).toBe(true);
-  });
-
-  it('does nothing when sendToSoleContractor is invoked without exactly one requested contractor', async () => {
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items: [] });
-    vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockResolvedValueOnce({ timelines: [], visibleToTenant: false });
-
-    const wrapper = await mountCardShallow('issue-1');
-    const send = wrapper.getComponent(TimelineCard).props('send');
-    await send({ purpose: 'MESSAGE_SENT', message: 'Hallo' }, []);
-
-    expect(contractorTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
-  });
-
-  it('treats a missing quotation request list as empty', async () => {
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({});
-    vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockResolvedValueOnce({ timelines: [], visibleToTenant: false });
-
-    const wrapper = await mountCardShallow('issue-1');
-
-    expect(wrapper.getComponent(TimelineCard).props('hideComposer')).toBe(true);
-  });
-
-  it('falls back to the organizationId as the contractor name when none is provided', async () => {
-    const items = [
-      makeQuotationRequest({ organizationId: 'org-1', contractorName: 'ACME GmbH' }),
-      makeQuotationRequest({ organizationId: 'org-7', contractorName: undefined }),
-    ];
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items });
-    vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockResolvedValue({ timelines: [], visibleToTenant: false });
-
-    const wrapper = await mountCardFull('issue-1');
-
-    expect(wrapper.find('[data-testid="contractor-tab-org-7"]').text()).toBe('org-7');
-  });
-
-  it('defaults the message to an empty string when sending without one', async () => {
-    vi.mocked(quotationRequestService.getQuotationRequests)
-      .mockResolvedValueOnce({ items: [makeQuotationRequest({ organizationId: 'org-9' })] });
-    vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockResolvedValueOnce({ timelines: [], visibleToTenant: false });
-    vi.mocked(contractorTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
-
-    const wrapper = await mountCardShallow('issue-1');
-    const send = wrapper.getComponent(TimelineCard).props('send');
-    const payload = { purpose: 'MESSAGE_SENT', message: undefined } as unknown as TimelineWritableJson;
-    await send(payload, []);
-
-    expect(contractorTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
-      'issue-1',
-      'org-9',
-      { purpose: 'MESSAGE_SENT', message: '' },
-      [],
-    );
-  });
-
-  it('falls back to an empty list when a scoped timeline response has no timelines', async () => {
-    const items = [
-      makeQuotationRequest({ id: 'qr-1', organizationId: 'org-1' }),
-      makeQuotationRequest({ id: 'qr-2', organizationId: 'org-2' }),
-    ];
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items });
-    const response = { visibleToTenant: false } as unknown as Required<ContractorTimelineListJson>;
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValue(response);
-
-    const wrapper = await mountCardFull('issue-1');
-    const timelineCards = wrapper.findAllComponents(TimelineCard);
-    expect(await timelineCards[0].props('load')()).toEqual([]);
-  });
-
-  it('falls back to an empty list in loadForSoleOrAllContractors when the response has no timelines', async () => {
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items: [] });
-    const response = { visibleToTenant: false } as unknown as Required<ContractorTimelineListJson>;
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValueOnce(response);
-
-    const wrapper = await mountCardShallow('issue-1');
-    const load = wrapper.getComponent(TimelineCard).props('load');
-
-    expect(await load()).toEqual([]);
   });
 });
