@@ -5,6 +5,7 @@ type Events = {
   'toast:translate': { severity: string; summary: string; detail: string };
   'auth:login': { userId: string };
   'auth:session-expired': Record<string, never>;
+  'quotationRequest:created': { issueId: string };
 };
 
 type Key = keyof Events;
