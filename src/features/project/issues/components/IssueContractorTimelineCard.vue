@@ -28,9 +28,6 @@ const eventBus = useEventBus();
 const contractorsLoaded = ref(false);
 const contractors = ref<RequestedContractor[]>([]);
 
-// A contractor becomes reachable as soon as a quotation request has been sent to them — the
-// backend ties the contractor-timeline to the quotation request, not to a later order, so
-// communication must be available immediately rather than waiting for a commissioned order.
 const loadRequestedContractors = async () => {
   contractorsLoaded.value = false;
   contractors.value = [];

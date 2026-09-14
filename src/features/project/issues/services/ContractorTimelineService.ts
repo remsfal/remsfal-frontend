@@ -4,9 +4,6 @@ export type ContractorTimelineJson = Readable<ApiComponents['schemas']['Contract
 export type ContractorTimelineListJson = Readable<ApiComponents['schemas']['ContractorTimelineListJson']>;
 
 class ContractorTimelineService {
-  // The OpenAPI spec for this endpoint doesn't declare the `issueId` path parameter, so the generated
-  // type has `path?: never` here — same spec bug as `/ticketing/v1/order-management/{issueId}/timeline`,
-  // worked around the same way (see ContractorOrderTimelineService).
   async getTimelineEntries(issueId: string): Promise<Required<ContractorTimelineListJson>> {
     const options = { pathParams: { issueId } } as unknown as
       RequestOptions<'/ticketing/v1/issues/{issueId}/contractor-timeline', 'get'>;
