@@ -59,6 +59,16 @@ describe('useTimelineItem', () => {
       { senderName: 'Alex' },
     ],
     [{ purpose: 'STATUS_CHANGED' }, 'tenantIssues.timeline.statusChangedTitle', undefined],
+    [
+      { purpose: 'QUOTATION_REQUESTED', senderName: 'Alex' },
+      'tenantIssues.timeline.quotationRequestedTitle',
+      { senderName: 'Alex' },
+    ],
+    [
+      { purpose: 'ORDER_PLACED', senderName: 'Alex' },
+      'tenantIssues.timeline.orderPlacedTitle',
+      { senderName: 'Alex' },
+    ],
     [{ purpose: 'UNKNOWN_PURPOSE' as TenantTimelineJson['purpose'] }, 'tenantIssues.timeline.entryFallbackTitle', undefined],
     [{ purpose: undefined }, 'tenantIssues.timeline.entryFallbackTitle', undefined],
   ] as [Partial<TenantTimelineJson>, string, Record<string, string> | undefined][])(
@@ -76,6 +86,28 @@ describe('useTimelineItem', () => {
     expect(wrapper.vm.title).toBe(
       i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: i18n.global.t('common.notSet') }),
     );
+  });
+
+  it.each([
+    ['WITHDRAWN', 'Zurückgezogen'],
+    ['REJECTED', 'Abgelehnt'],
+    ['CONFIRMED', 'Bestätigt'],
+  ] as const)('translates a STATUS_CHANGED message of %s using the existing status i18n keys', (status, expected) => {
+    const wrapper = mountTimelineItem(makeTimeline({ purpose: 'STATUS_CHANGED', message: status }));
+
+    expect(wrapper.vm.message).toBe(expected);
+  });
+
+  it('falls back to the raw status when no matching status i18n key exists', () => {
+    const wrapper = mountTimelineItem(makeTimeline({ purpose: 'STATUS_CHANGED', message: 'SOME_UNKNOWN_STATUS' }));
+
+    expect(wrapper.vm.message).toBe('SOME_UNKNOWN_STATUS');
+  });
+
+  it('leaves the message untouched for purposes other than STATUS_CHANGED', () => {
+    const wrapper = mountTimelineItem(makeTimeline({ purpose: 'MESSAGE_SENT', message: 'Hallo' }));
+
+    expect(wrapper.vm.message).toBe('Hallo');
   });
 
   it('builds a normalized attachment list under the given base path, ignoring entries without an id', () => {
