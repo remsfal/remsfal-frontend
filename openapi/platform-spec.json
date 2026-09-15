@@ -897,6 +897,64 @@
         "type" : "string",
         "enum" : [ "URGENT", "HIGH", "MEDIUM", "LOW", "UNCLASSIFIED" ]
       },
+      "IssueRequestJson" : {
+        "description" : "A request from a contractor to a tenant about an issue",
+        "type" : "object",
+        "properties" : {
+          "issueRequestId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "organizationId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "agreementId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "attachmentIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            },
+            "description" : "IDs of attachments the contractor is referring to or requesting the tenant to provide"
+          },
+          "createdAt" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          }
+        },
+        "required" : [ "message" ]
+      },
+      "IssueRequestListJson" : {
+        "description" : "A list of issue requests",
+        "type" : "object",
+        "properties" : {
+          "requests" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueRequestJson"
+            },
+            "description" : "Requests",
+            "readOnly" : true
+          }
+        }
+      },
       "IssueStatus" : {
         "type" : "string",
         "enum" : [ "PENDING", "OPEN", "IN_PROGRESS", "CLOSED", "REJECTED" ]
