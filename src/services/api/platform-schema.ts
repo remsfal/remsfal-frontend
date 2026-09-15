@@ -5561,6 +5561,22 @@ export interface components {
     };
     /** @enum {string} */
     IssuePriority: "URGENT" | "HIGH" | "MEDIUM" | "LOW" | "UNCLASSIFIED";
+    /** @description A request from a contractor to a tenant about an issue */
+    IssueRequestJson: {
+      issueRequestId?: $Read<components["schemas"]["UUID"]>;
+      organizationId?: $Read<components["schemas"]["UUID"]>;
+      agreementId?: $Read<components["schemas"]["UUID"]>;
+      message: string;
+      /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
+      attachmentIds?: string[];
+      createdAt?: $Read<components["schemas"]["Instant"]>;
+      modifiedAt?: $Read<components["schemas"]["Instant"]>;
+    };
+    /** @description A list of issue requests */
+    IssueRequestListJson: {
+      /** @description Requests */
+      requests?: $Read<components["schemas"]["IssueRequestJson"][]>;
+    };
     /** @enum {string} */
     IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
     /** @enum {string} */
