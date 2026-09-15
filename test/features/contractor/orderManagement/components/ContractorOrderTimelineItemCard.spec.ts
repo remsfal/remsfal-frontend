@@ -30,6 +30,19 @@ describe('ContractorOrderTimelineItemCard component', () => {
     expect(props.testId).toBe('contractor-order-timeline-entry');
   });
 
+  it.each([
+    ['WITHDRAWN', 'Zurückgezogen'],
+    ['REJECTED', 'Abgelehnt'],
+    ['CONFIRMED', 'Bestätigt'],
+  ] as const)(
+    'translates a STATUS_CHANGED message of %s using the existing status i18n keys',
+    (status, expectedMessage) => {
+      const props = entryCardProps(mountItemCard(makeTimeline({ purpose: 'STATUS_CHANGED', message: status })));
+
+      expect(props.message).toBe(expectedMessage);
+    },
+  );
+
   it('builds attachment download URLs, falling back to the attachment id as filename', () => {
     const wrapper = mountItemCard(
       makeTimeline({

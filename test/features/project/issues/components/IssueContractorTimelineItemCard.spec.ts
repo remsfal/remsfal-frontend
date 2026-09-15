@@ -32,6 +32,8 @@ describe('IssueContractorTimelineItemCard component', () => {
     ['MESSAGE_SENT', 'Nachricht von Contractor GmbH'],
     ['APPOINTMENT_REQUESTED', 'Terminanfrage von Contractor GmbH'],
     ['APPOINTMENT_SCHEDULED', 'Terminankündigung von Contractor GmbH'],
+    ['QUOTATION_REQUESTED', 'Angebotsanfrage von Contractor GmbH gesendet'],
+    ['ORDER_PLACED', 'Auftrag von Contractor GmbH vergeben'],
   ] as const)('titles a %s entry', (purpose, expectedTitle) => {
     const props = entryCardProps(
       mountItemCard(makeTimeline({ purpose, senderName: 'Contractor GmbH' })),
@@ -44,6 +46,27 @@ describe('IssueContractorTimelineItemCard component', () => {
     const props = entryCardProps(mountItemCard(makeTimeline({ purpose: 'STATUS_CHANGED' })));
 
     expect(props.title).toBe('Status geändert');
+  });
+
+  it.each([
+    ['WITHDRAWN', 'Zurückgezogen'],
+    ['REJECTED', 'Abgelehnt'],
+    ['CONFIRMED', 'Bestätigt'],
+  ] as const)(
+    'translates a STATUS_CHANGED message of %s using the existing status i18n keys',
+    (status, expectedMessage) => {
+      const props = entryCardProps(mountItemCard(makeTimeline({ purpose: 'STATUS_CHANGED', message: status })));
+
+      expect(props.message).toBe(expectedMessage);
+    },
+  );
+
+  it('falls back to the raw status when no matching status i18n key exists', () => {
+    const props = entryCardProps(
+      mountItemCard(makeTimeline({ purpose: 'STATUS_CHANGED', message: 'SOME_UNKNOWN_STATUS' })),
+    );
+
+    expect(props.message).toBe('SOME_UNKNOWN_STATUS');
   });
 
   it('builds attachment download URLs under the issue attachments path, falling back to the attachment id as filename', () => {
