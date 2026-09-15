@@ -52,8 +52,6 @@ export interface paths {
         query: {
           /** @description Filter to return only activities of a specific rental agreement */
           agreementId?: components["schemas"]["UUID"];
-          /** @description Filter to return only activities of issues assigned to a specific user */
-          assigneeId?: components["schemas"]["UUID"];
           /** @description Filter to return only activities involving a specific contractor */
           contractorId?: components["schemas"]["UUID"];
           /** @description Opaque cursor returned by a previous call to fetch the next page */
@@ -4333,16 +4331,14 @@ export interface components {
       id?: $Read<components["schemas"]["UUID"]>;
       /** @description Unique identifier of the related project */
       projectId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Title of the related project */
+      projectTitle?: $Read<string>;
       /** @description Unique identifier of the related issue */
       issueId?: $Read<components["schemas"]["UUID"]>;
       /** @description Type of activity */
       activityType?: $Read<components["schemas"]["IssueEventType"]>;
       /** @description Title of the related issue */
-      title?: $Read<string>;
-      /** @description Description of the activity, e.g. a message text */
-      description?: $Read<string>;
-      /** @description Link to the frontend issue page */
-      link?: $Read<string>;
+      issueTitle?: $Read<string>;
       /** @description Unique identifier of the user who triggered this activity */
       actorId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who triggered this activity */
@@ -4350,15 +4346,19 @@ export interface components {
       /** @description Type of the related issue */
       issueType?: $Read<components["schemas"]["IssueType"]>;
       /** @description Status of the related issue */
-      status?: $Read<components["schemas"]["IssueStatus"]>;
+      issueStatus?: $Read<components["schemas"]["IssueStatus"]>;
+      /** @description Priority of the related issue */
+      issuePriority?: $Read<components["schemas"]["IssuePriority"]>;
       /** @description Unique identifier of the related rental agreement */
       agreementId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Names of the tenants of the related rental agreement, if any */
+      tenantNames?: $Read<string[]>;
       /** @description Unique identifier of the contractor organization involved, if any */
       organizationId?: $Read<components["schemas"]["UUID"]>;
       /** @description Unique identifier of the contractor involved, if any */
       contractorId?: $Read<components["schemas"]["UUID"]>;
-      /** @description Unique identifier of the assignee of the related issue */
-      assigneeId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Name of the contractor involved, if any */
+      contractorName?: $Read<string>;
       /** @description Whether the caller has already read this activity */
       read?: $Read<boolean>;
       /** @description Timestamp this activity was recorded at */
