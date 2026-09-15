@@ -876,6 +876,64 @@
         "type" : "string",
         "enum" : [ "URGENT", "HIGH", "MEDIUM", "LOW", "UNCLASSIFIED" ]
       },
+      "IssueRequestJson" : {
+        "description" : "A request from a contractor to a tenant about an issue",
+        "type" : "object",
+        "properties" : {
+          "issueRequestId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "organizationId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "agreementId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "attachmentIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            },
+            "description" : "IDs of attachments the contractor is referring to or requesting the tenant to provide"
+          },
+          "createdAt" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          }
+        },
+        "required" : [ "message" ]
+      },
+      "IssueRequestListJson" : {
+        "description" : "A list of issue requests",
+        "type" : "object",
+        "properties" : {
+          "requests" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueRequestJson"
+            },
+            "description" : "Requests",
+            "readOnly" : true
+          }
+        }
+      },
       "IssueStatus" : {
         "type" : "string",
         "enum" : [ "PENDING", "OPEN", "IN_PROGRESS", "CLOSED", "REJECTED" ]
@@ -5199,6 +5257,126 @@
         } ]
       }
     },
+    "/ticketing/v1/order-management/{issueId}/requests" : {
+      "get" : {
+        "summary" : "Retrieve the requests exchanged between tenant and contractor about an issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Requests retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueRequestListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The issue does not exist"
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Create a new request about an issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IssueRequestJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Request created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueRequestJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The issue does not exist"
+          }
+        }
+      }
+    },
+    "/ticketing/v1/order-management/{issueId}/requests/{issueRequestId}" : {
+      "delete" : {
+        "summary" : "Delete a request the calling contractor has sent to the tenant about an issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the request",
+          "required" : true,
+          "name" : "issueRequestId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Request deleted successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to delete this request"
+          },
+          "404" : {
+            "description" : "The issue or request does not exist"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
     "/ticketing/v1/order-management/{issueId}/timeline" : {
       "get" : {
         "summary" : "Retrieve the timeline entries for a contractor's communication about an issue.",
@@ -5625,6 +5803,93 @@
           },
           "404" : {
             "description" : "Attachment not found"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/tenant-relations/issues/{issueId}/requests" : {
+      "get" : {
+        "summary" : "Retrieve the requests exchanged between tenant and contractor about an issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Requests retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueRequestListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The issue does not exist"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a new request about an issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IssueRequestJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Request created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueRequestJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this request"
+          },
+          "404" : {
+            "description" : "The issue does not exist"
           }
         },
         "security" : [ {
