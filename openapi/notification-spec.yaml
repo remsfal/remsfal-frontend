@@ -16,6 +16,10 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
+        projectTitle:
+          type: string
+          description: Title of the related project
+          readOnly: true
         issueId:
           description: Unique identifier of the related issue
           readOnly: true
@@ -26,17 +30,9 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/IssueEventType"
-        title:
+        issueTitle:
           type: string
           description: Title of the related issue
-          readOnly: true
-        description:
-          type: string
-          description: "Description of the activity, e.g. a message text"
-          readOnly: true
-        link:
-          type: string
-          description: Link to the frontend issue page
           readOnly: true
         actorId:
           description: Unique identifier of the user who triggered this activity
@@ -52,16 +48,27 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/IssueType"
-        status:
+        issueStatus:
           description: Status of the related issue
           readOnly: true
           type: string
           $ref: "#/components/schemas/IssueStatus"
+        issuePriority:
+          description: Priority of the related issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssuePriority"
         agreementId:
           description: Unique identifier of the related rental agreement
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
+        tenantNames:
+          type: array
+          items:
+            type: string
+          description: "Names of the tenants of the related rental agreement, if any"
+          readOnly: true
         organizationId:
           description: "Unique identifier of the contractor organization involved,\
             \ if any"
@@ -73,11 +80,10 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
-        assigneeId:
-          description: Unique identifier of the assignee of the related issue
-          readOnly: true
+        contractorName:
           type: string
-          $ref: "#/components/schemas/UUID"
+          description: "Name of the contractor involved, if any"
+          readOnly: true
         read:
           type: boolean
           description: Whether the caller has already read this activity
