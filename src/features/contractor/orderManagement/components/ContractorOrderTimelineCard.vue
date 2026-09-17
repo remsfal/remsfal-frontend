@@ -1,19 +1,13 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import Button from 'primevue/button';
 import TimelineCard from '@/components/TimelineCard.vue';
 import ContractorOrderTimelineItemCard
   from '@/features/contractor/orderManagement/components/ContractorOrderTimelineItemCard.vue';
 import type { UseTimelineOptions } from '@/composables/useTimeline';
+import { useEventBus } from '@/stores/EventStore';
 import { contractorOrderTimelineService, type ContractorTimelineJson }
   from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';
-
-interface RecipientOption {
-  value: 'TENANT' | 'MANAGER';
-  label: string;
-  severity?: 'danger';
-}
 
 const props = defineProps<{
   issueId: string;
@@ -22,46 +16,24 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
+const eventBus = useEventBus();
 
-const visibleToTenant = ref(false);
-const selectedOption = ref<RecipientOption | null>(null);
-
-const recipientOptions = computed<RecipientOption[]>(() => {
-  const options: RecipientOption[] = [
-    { value: 'MANAGER', label: t('orderManagement.timeline.recipientManager') },
-  ];
-  if (visibleToTenant.value) {
-    options.unshift({
-      value: 'TENANT', label: t('orderManagement.timeline.recipientTenant'), severity: 'danger',
-    });
+const refreshTick = ref(0);
+const unsubscribeIssueRequestCreated = eventBus.on('issueRequest:created', ({ issueId }) => {
+  if (issueId === props.issueId) {
+    refreshTick.value += 1;
   }
-  return options;
 });
+onUnmounted(unsubscribeIssueRequestCreated);
 
-const hasRecipientChoice = computed(() => recipientOptions.value.length > 1);
-
-const submitButtonLabel = computed(() =>
-  selectedOption.value?.label ?? t('orderManagement.timeline.recipientManager'),
-);
-
-const loadTimelineEntries = () => {
-  visibleToTenant.value = false;
-  selectedOption.value = null;
-  return contractorOrderTimelineService.getTimelineEntries(props.issueId).then((r) => {
-    visibleToTenant.value = r.visibleToTenant;
-    return r.timelines ?? [];
-  });
-};
+const loadTimelineEntries = () => contractorOrderTimelineService.getTimelineEntries(props.issueId);
 
 const sendTimelineEntry: UseTimelineOptions['send'] = async (payload, files) => {
   await contractorOrderTimelineService.createTimelineEntryWithAttachments(
     props.issueId,
-    {
-      purpose: payload.purpose, message: payload.message ?? '', messageToTenant: selectedOption.value?.value === 'TENANT'
-    },
+    { purpose: payload.purpose, message: payload.message ?? '' },
     files,
   );
-  selectedOption.value = null;
 };
 </script>
 
@@ -69,46 +41,12 @@ const sendTimelineEntry: UseTimelineOptions['send'] = async (payload, files) => 
   <TimelineCard
     :load="loadTimelineEntries"
     :send="sendTimelineEntry"
-    :watchSource="() => props.issueId"
-    :hideComposer="hasRecipientChoice && !selectedOption"
+    :watchSource="() => `${props.issueId}:${refreshTick}`"
     :title="title"
+    :sendButtonLabel="t('orderManagement.timeline.recipientManager')"
     loadErrorLogLabel="Error fetching order timeline:"
     sendErrorLogLabel="Error creating order timeline entry:"
   >
-    <template #before-composer>
-      <div v-if="hasRecipientChoice && !selectedOption" class="mb-4 flex flex-wrap justify-end gap-2">
-        <Button
-          v-for="option in recipientOptions"
-          :key="option.value"
-          :data-testid="`timeline-recipient-${option.value.toLowerCase()}`"
-          :label="option.label"
-          icon="pi pi-send"
-          :severity="option.severity"
-          @click="selectedOption = option"
-        />
-      </div>
-    </template>
-    <template #composer-actions="{ submit, cancel, canSubmit, sending, loading }">
-      <div :class="hasRecipientChoice ? 'flex justify-between' : 'flex justify-end'">
-        <Button
-          v-if="hasRecipientChoice"
-          data-testid="timeline-message-cancel"
-          :label="t('button.cancel')"
-          severity="secondary"
-          :disabled="sending"
-          @click="() => { cancel(); selectedOption = null; }"
-        />
-        <Button
-          data-testid="timeline-message-submit"
-          :label="submitButtonLabel"
-          :severity="selectedOption?.severity"
-          icon="pi pi-send"
-          :loading="sending"
-          :disabled="!canSubmit || loading"
-          @click="submit"
-        />
-      </div>
-    </template>
     <template #item="{ item }">
       <ContractorOrderTimelineItemCard :item="(item as ContractorTimelineJson)" :requestId="props.requestId" />
     </template>
