@@ -1,7 +1,7 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import ProjectDashboard from '@/views/ProjectDashboard.vue';
+import { ProjectDashboardView } from '@/features/project/dashboard';
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
@@ -9,13 +9,13 @@ import { propertyService } from '@/features/project/rentableUnits/services/Prope
 vi.mock('vue-router', () => ({useRoute: () => ({params: {projectId: '1',},}),}));
 vi.mock('@/features/project/rentableUnits/services/PropertyService');
 
-describe('ProjectDashboard.vue', () => {
+describe('ProjectDashboardView.vue', () => {
   beforeEach(() => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({ properties: [] });
   });
 
   it('renders the dashboard page with correct translation', async () => {
-    const wrapper = mount(ProjectDashboard, {
+    const wrapper = mount(ProjectDashboardView, {
       global: {
         components: {
           Card,
@@ -52,7 +52,7 @@ describe('ProjectDashboard.vue', () => {
   });
 
   it('renders the dashboard page with correct German translation', async () => {
-    const wrapper = mount(ProjectDashboard, {
+    const wrapper = mount(ProjectDashboardView, {
       global: {
         components: {
           Card,
@@ -74,7 +74,7 @@ describe('ProjectDashboard.vue', () => {
       writable: true,
     });
 
-    const wrapper = mount(ProjectDashboard, {
+    const wrapper = mount(ProjectDashboardView, {
       global: {
         components: {
           Card,
