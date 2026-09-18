@@ -29,7 +29,9 @@ const selectedFiles = ref<File[]>([]);
 const fileUploadKey = ref(0);
 const sending = ref(false);
 
-const canSubmit = computed(() => messageText.value.trim().length > 0 && !sending.value);
+const canSubmit = computed(
+  () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) && !sending.value,
+);
 
 const resetComposer = () => {
   messageText.value = '';
