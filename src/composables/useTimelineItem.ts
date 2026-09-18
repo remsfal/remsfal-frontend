@@ -2,6 +2,12 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { TimelineEntry } from '@/composables/useTimeline';
 import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
+import type { components as ticketingComponents } from '@/services/api/ticketing-schema';
+
+export type IssueAttachmentJson = ticketingComponents['schemas']['IssueAttachmentJson'];
+export type OrderAttachmentJson = ticketingComponents['schemas']['OrderAttachmentJson'];
+export type OrderProcessPhase = ticketingComponents['schemas']['OrderProcessPhase'];
+export type TimelineItemAttachment = IssueAttachmentJson | OrderAttachmentJson;
 
 export interface UseTimelineItemProps<T extends TimelineEntry> {
   item: T;
@@ -10,14 +16,36 @@ export interface UseTimelineItemProps<T extends TimelineEntry> {
 
 export interface UseTimelineItemOptions {
   titleNamespace: string;
-  buildAttachmentUrl: (attachmentId: string, fileName?: string) => string;
+  buildAttachmentUrl: (attachment: TimelineItemAttachment) => string;
 }
 
 export function buildAttachmentDownloadUrl(resourcePrefix: string) {
-  return (attachmentId: string, fileName?: string) => {
-    const encodedAttachmentId = encodeURIComponent(attachmentId);
-    const encodedFileName = encodeURIComponent(fileName || attachmentId);
+  return (attachment: { attachmentId?: string; fileName?: string }) => {
+    const encodedAttachmentId = encodeURIComponent(attachment.attachmentId ?? '');
+    const encodedFileName = encodeURIComponent(attachment.fileName || attachment.attachmentId || '');
     return `${resourcePrefix}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+  };
+}
+
+export type OrderAttachmentPhaseSegments = Record<OrderProcessPhase, string>;
+
+export function buildOrderAttachmentDownloadUrl(
+  resourcePrefix: string,
+  phaseSegments: OrderAttachmentPhaseSegments,
+) {
+  const fallback = buildAttachmentDownloadUrl(resourcePrefix);
+
+  return (attachment: OrderAttachmentJson) => {
+    const { processPhase, processId } = attachment;
+    if (!processPhase || !processId || !phaseSegments[processPhase]) {
+      return fallback(attachment);
+    }
+
+    const segment = phaseSegments[processPhase];
+    const encodedProcessId = encodeURIComponent(processId);
+    const encodedAttachmentId = encodeURIComponent(attachment.attachmentId ?? '');
+    const encodedFileName = encodeURIComponent(attachment.fileName || attachment.attachmentId || '');
+    return `${resourcePrefix}/${segment}/${encodedProcessId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
   };
 }
 
@@ -62,7 +90,7 @@ export function useTimelineItem<T extends TimelineEntry>(
       return [{
         attachmentId,
         contentType: attachment.contentType,
-        downloadUrl: buildAttachmentUrl(attachmentId, fileName),
+        downloadUrl: buildAttachmentUrl(attachment),
         fileName,
       }];
     }),

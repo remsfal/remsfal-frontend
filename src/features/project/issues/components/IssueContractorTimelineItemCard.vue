@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n';
 import type { ContractorTimelineJson } from '@/features/project/issues/services/ContractorTimelineService';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
-import { buildAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
+import { buildOrderAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
 
 const props = defineProps<{
   item: ContractorTimelineJson;
@@ -13,7 +13,14 @@ const { t } = useI18n();
 
 const { title, attachments } = useTimelineItem(props, {
   titleNamespace: 'issueContractorTimeline',
-  buildAttachmentUrl: buildAttachmentDownloadUrl(`/ticketing/v1/issues/${encodeURIComponent(props.issueId)}`),
+  buildAttachmentUrl: buildOrderAttachmentDownloadUrl(
+    `/ticketing/v1/issues/${encodeURIComponent(props.issueId)}`,
+    {
+      QUOTATION_REQUEST: 'quotation-request',
+      QUOTATION: 'quotations',
+      ORDER_PLACEMENT: 'orders',
+    },
+  ),
 });
 </script>
 
