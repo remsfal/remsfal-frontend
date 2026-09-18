@@ -1,15 +1,14 @@
 import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 
 export type ContractorTimelineJson = Readable<ApiComponents['schemas']['ContractorTimelineJson']>;
-export type ContractorTimelineListJson = Readable<ApiComponents['schemas']['ContractorTimelineListJson']>;
 export type OrderAttachmentJson = Readable<ApiComponents['schemas']['OrderAttachmentJson']>;
 export type MessagePurpose = ApiComponents['schemas']['MessagePurpose'];
 export type ContractorTimelineWritableJson = Writable<ApiComponents['schemas']['ContractorTimelineJson']>;
 
 class ContractorOrderTimelineService {
-  async getTimelineEntries(issueId: string): Promise<Required<ContractorTimelineListJson>> {
+  async getTimelineEntries(issueId: string): Promise<ContractorTimelineJson[]> {
     const result = await apiClient.get('/ticketing/v1/order-management/{issueId}/timeline', { pathParams: { issueId } });
-    return { timelines: result.timelines ?? [], visibleToTenant: result.visibleToTenant ?? false };
+    return result.timelines ?? [];
   }
 
   async createTimelineEntryWithAttachments(
