@@ -966,7 +966,7 @@
       },
       "MessagePurpose" : {
         "type" : "string",
-        "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED" ]
+        "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED", "REQUEST_CREATED", "REQUEST_ANSWERED" ]
       },
       "OrderAttachmentJson" : {
         "type" : "object",
@@ -5260,7 +5260,7 @@
     },
     "/ticketing/v1/order-management/{issueId}/requests" : {
       "get" : {
-        "summary" : "Retrieve the requests exchanged between tenant and contractor about an issue.",
+        "summary" : "Retrieve the requests the calling contractor has sent to the tenant about an issue.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
@@ -5290,10 +5290,13 @@
           "404" : {
             "description" : "The issue does not exist"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "post" : {
-        "summary" : "Create a new request about an issue.",
+        "summary" : "Create a new request to the tenant about an issue.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
@@ -5336,7 +5339,10 @@
           "404" : {
             "description" : "The issue does not exist"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/ticketing/v1/order-management/{issueId}/requests/{issueRequestId}" : {
@@ -5813,7 +5819,7 @@
     },
     "/ticketing/v1/tenant-relations/issues/{issueId}/requests" : {
       "get" : {
-        "summary" : "Retrieve the requests exchanged between tenant and contractor about an issue.",
+        "summary" : "Retrieve the requests contractors have sent to the tenant about an issue.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
@@ -5847,13 +5853,24 @@
         "security" : [ {
           "SecurityScheme" : [ ]
         } ]
-      },
+      }
+    },
+    "/ticketing/v1/tenant-relations/issues/{issueId}/requests/{issueRequestId}/response" : {
       "post" : {
-        "summary" : "Create a new request about an issue.",
+        "summary" : "Answer a request a contractor has sent about an issue.",
+        "description" : "Deletes the request and records the tenant's response in both the tenant's and the contractor's timeline for the issue.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
           "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the request",
+          "required" : true,
+          "name" : "issueRequestId",
           "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
@@ -5870,15 +5887,8 @@
           "required" : true
         },
         "responses" : {
-          "200" : {
-            "description" : "Request created successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/IssueRequestJson"
-                }
-              }
-            }
+          "204" : {
+            "description" : "Request answered successfully"
           },
           "400" : {
             "description" : "Invalid input"
@@ -5887,10 +5897,10 @@
             "description" : "No user authentication provided via session cookie"
           },
           "403" : {
-            "description" : "User does not have permission to access this request"
+            "description" : "User does not have permission to answer this request"
           },
           "404" : {
-            "description" : "The issue does not exist"
+            "description" : "The issue or request does not exist"
           }
         },
         "security" : [ {

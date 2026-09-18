@@ -640,7 +640,13 @@ export interface components {
     MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
     /** @enum {string} */
     MessagePurpose:
-      "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
+      | "ISSUE_CREATED"
+      | "MESSAGE_SENT"
+      | "APPOINTMENT_REQUESTED"
+      | "APPOINTMENT_SCHEDULED"
+      | "STATUS_CHANGED"
+      | "REQUEST_CREATED"
+      | "REQUEST_ANSWERED";
     /** @description An attachment associated with a quotation request, quotation, or order placement */
     OrderAttachmentJson: {
       attachmentId?: components["schemas"]["UUID"];

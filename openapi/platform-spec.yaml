@@ -837,6 +837,8 @@ components:
       - APPOINTMENT_REQUESTED
       - APPOINTMENT_SCHEDULED
       - STATUS_CHANGED
+      - REQUEST_CREATED
+      - REQUEST_ANSWERED
     OrderAttachmentJson:
       type: object
       description: "An attachment associated with a quotation request, quotation,\
