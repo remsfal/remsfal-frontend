@@ -68,6 +68,52 @@ describe('IssueService with MSW (http)', () => {
     expect(result.issues).toEqual([]);
   });
 
+  test('getLatestIssues requests the cross-project endpoint with the default limit of 5', async () => {
+    let query: URLSearchParams | undefined;
+    server.use(
+      http.get('/ticketing/v1/issues/latest', ({ request }) => {
+        query = new URL(request.url).searchParams;
+        return HttpResponse.json({
+          size: 1, issues: [{
+            id: 'i1', projectId: 'p1', title: 'Latest' 
+          }] 
+        });
+      }),
+    );
+
+    const result = await issueService.getLatestIssues();
+
+    expect(query?.get('limit')).toBe('5');
+    expect(query?.has('projectId')).toBe(false);
+    expect(query?.has('status')).toBe(false);
+    expect(result.issues?.[0]?.projectId).toBe('p1');
+  });
+
+  test('getLatestIssues passes limit and repeated status parameters', async () => {
+    let query: URLSearchParams | undefined;
+    server.use(
+      http.get('/ticketing/v1/issues/latest', ({ request }) => {
+        query = new URL(request.url).searchParams;
+        return HttpResponse.json({ size: 0, issues: [] });
+      }),
+    );
+
+    await issueService.getLatestIssues(3, ['OPEN', 'IN_PROGRESS']);
+
+    expect(query?.get('limit')).toBe('3');
+    expect(query?.getAll('status')).toEqual(['OPEN', 'IN_PROGRESS']);
+  });
+
+  test('getLatestIssues fallback values are applied when data is missing', async () => {
+    server.use(
+      http.get('/ticketing/v1/issues/latest', () => HttpResponse.json({})),
+    );
+
+    const result = await issueService.getLatestIssues();
+    expect(result.size).toBe(0);
+    expect(result.issues).toEqual([]);
+  });
+
   test('createIssueRelation returns the updated issue', async () => {
     const relatedIssue = await issueService.createIssueRelation(issueId, 'related-to', 'related-issue');
     expect(relatedIssue.id).toBe(issueId);
