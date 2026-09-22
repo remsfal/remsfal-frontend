@@ -8,9 +8,11 @@ meta:
 <script setup lang="ts">
 import { ProjectDashboardView } from '@/features/project/dashboard'
 import { ProjectsWelcomeMessage } from '@/features/manager/projects'
+import { RecentIssuesCard } from '@/features/project/issues'
 </script>
 
 <template>
   <ProjectsWelcomeMessage />
+  <RecentIssuesCard />
   <ProjectDashboardView />
 </template>

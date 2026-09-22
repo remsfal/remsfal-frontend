@@ -3,6 +3,7 @@ export { default as IssueView } from './views/IssueView.vue';
 export { default as NewIssueButton } from './components/NewIssueButton.vue';
 export { default as IssueTable, type IssueColumn } from './components/IssueTable.vue';
 export { default as IssueDashboardCards } from './components/IssueDashboardCards.vue';
+export { default as RecentIssuesCard } from './components/RecentIssuesCard.vue';
 export { default as IssueDetailsCard } from './components/IssueDetailsCard.vue';
 export { default as IssueDescriptionCard } from './components/IssueDescriptionCard.vue';
 export { default as IssueTimelineCard } from './components/IssueTimelineCard.vue';
