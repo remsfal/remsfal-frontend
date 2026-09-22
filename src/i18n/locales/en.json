@@ -66,6 +66,8 @@
   "projectDashboard.title": "This is the project dashboard page for project {0}.",
   "projectSelection.title": "Overview of Properties",
   "projectSelection.add": "Add Property",
+  "managerDashboard.projects.emptyState.text": "Welcome to REMSFAL! Create your first property now to get started with managing your real estate.",
+  "managerDashboard.projects.emptyState.link": "Create property now",
   "projectSettings.title": "Property Settings",
   "projectSettings.projectMemberTable.title": "Authorized Members",
   "projectSettings.projectMemberTable.columnName": "Name",

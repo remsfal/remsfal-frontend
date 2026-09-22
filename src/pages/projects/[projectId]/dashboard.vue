@@ -7,7 +7,7 @@ meta:
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import ProjectDashboard from '@/views/ProjectDashboard.vue'
+import { ProjectDashboardView } from '@/features/project/dashboard'
 import { RentableUnitsKpiCards, type RentalUnitTreeNodeJson } from "@/features/project/rentableUnits";
 import { RentalAgreementKpiCards } from "@/features/project/rentalAgreements";
 import { IssueDashboardCards } from "@/features/project/issues";
@@ -30,5 +30,5 @@ const hasUnits = computed(() => rentableUnitTree.value.length > 0)
 
   <IssueDashboardCards :projectId="(route.params.projectId as string)" />
 
-  <ProjectDashboard />
+  <ProjectDashboardView />
 </template>
