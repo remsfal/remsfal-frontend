@@ -148,6 +148,56 @@ describe('ActivityFeedItem', () => {
     }
   });
 
+  it('shows "Mark as unread" button only for read entries', () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: { ...mockEntry, read: true },
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const markAsUnreadButton = wrapper.findAllComponents({ name: 'Button' })
+      .find(btn => btn.props('icon') === 'pi pi-envelope');
+    expect(markAsUnreadButton).toBeDefined();
+  });
+
+  it('does not show "Mark as unread" button for unread entries', () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: { ...mockEntry, read: false },
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const markAsUnreadButton = wrapper.findAll('button').find(btn =>
+      btn.find('i.pi-envelope').exists()
+    );
+    expect(markAsUnreadButton).toBeUndefined();
+  });
+
+  it('emits mark-unread event when mark as unread button is clicked', async () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: { ...mockEntry, read: true },
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const markAsUnreadButton = wrapper.findAllComponents({ name: 'Button' })
+      .find(btn => btn.props('icon') === 'pi pi-envelope');
+
+    if (markAsUnreadButton) {
+      await markAsUnreadButton.trigger('click');
+      expect(wrapper.emitted('markUnread')).toBeTruthy();
+    }
+  });
+
   it('emits delete event when delete button is clicked', async () => {
     wrapper = mount(ActivityFeedItem, {
       props: {

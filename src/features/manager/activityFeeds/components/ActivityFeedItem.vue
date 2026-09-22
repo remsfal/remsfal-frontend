@@ -19,6 +19,7 @@ const emit = defineEmits<{
   select: [];
   navigate: [];
   markRead: [];
+  markUnread: [];
   delete: [];
 }>();
 
@@ -92,7 +93,10 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
     </div>
 
     <!-- Hover Actions  -->
-    <div class="w-16 flex-shrink-0 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
+    <div
+      class="w-16 flex-shrink-0 flex justify-end opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity"
+      @click.stop
+    >
       <Button
         v-if="!entry.read"
         v-tooltip.bottom="t('activityFeeds.actions.markAsRead')"
@@ -101,6 +105,15 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
         rounded
         size="small"
         @click="emit('markRead')"
+      />
+      <Button
+        v-else
+        v-tooltip.bottom="t('activityFeeds.actions.markAsUnread')"
+        icon="pi pi-envelope"
+        text
+        rounded
+        size="small"
+        @click="emit('markUnread')"
       />
       <Button
         v-tooltip.bottom="t('button.delete')"

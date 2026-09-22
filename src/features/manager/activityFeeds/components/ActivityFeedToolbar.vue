@@ -20,6 +20,7 @@ const emit = defineEmits<{
   'update:searchQuery': [value: string];
   markReadSelected: [];
   deleteSelected: [];
+  openFilters: [];
 }>();
 
 const { isDarkTheme } = useLayout();
@@ -74,6 +75,16 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
         />
       </IconField>
     </div>
+
+    <!-- Filters (small screens only, persistent panel handles lg+) -->
+    <Button
+      v-tooltip.bottom="t('activityFeeds.toolbar.openFilters')"
+      class="lg:hidden"
+      icon="pi pi-filter"
+      text
+      rounded
+      @click="emit('openFilters')"
+    />
 
     <div class="flex-1" />
 

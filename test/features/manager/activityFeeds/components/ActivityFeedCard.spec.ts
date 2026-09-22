@@ -159,18 +159,27 @@ describe('ActivityFeedCard.vue', () => {
   it('handles navigation to issue', async () => {
     const entryList = wrapper.findComponent(ActivityFeedList);
     await entryList.vm.$emit('navigate', mockEntries[0]);
+    await flushPromises();
 
     expect(mockPush).toHaveBeenCalled();
   });
 
-  it('marks entry as read when navigating to an unread entry', async () => {
+  it('marks entry as read before navigating to an unread entry', async () => {
     store.entries = mockEntries.map(e => ({ ...e }));
-    const markAsReadSpy = vi.spyOn(store, 'markAsRead');
+    const callOrder: string[] = [];
+    const markAsReadSpy = vi.spyOn(store, 'markAsRead').mockImplementation(async () => {
+      callOrder.push('markAsRead');
+    });
+    mockPush.mockImplementation(() => {
+      callOrder.push('push');
+    });
     const entryList = wrapper.findComponent(ActivityFeedList);
 
     await entryList.vm.$emit('navigate', mockEntries[0]);
+    await flushPromises();
 
     expect(markAsReadSpy).toHaveBeenCalledWith(mockEntries[0]);
+    expect(callOrder).toEqual(['markAsRead', 'push']);
   });
 
   it('does not mark entry as read when navigating to an already read entry', async () => {
@@ -270,6 +279,16 @@ describe('ActivityFeedCard.vue', () => {
     await entryList.vm.$emit('mark-read', mockEntries[0]);
 
     expect(markAsReadSpy).toHaveBeenCalledWith(mockEntries[0]);
+  });
+
+  it('marks a single entry as unread via the entry item action', async () => {
+    store.entries = mockEntries.map(e => ({ ...e }));
+    const markAsUnreadSpy = vi.spyOn(store, 'markAsUnread');
+    const entryList = wrapper.findComponent(ActivityFeedList);
+
+    await entryList.vm.$emit('mark-unread', mockEntries[0]);
+
+    expect(markAsUnreadSpy).toHaveBeenCalledWith(mockEntries[0]);
   });
 
   it('deletes a single entry via the entry item action', async () => {
