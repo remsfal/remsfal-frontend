@@ -1134,7 +1134,6 @@
   "orderManagement.timeline.quotationRequestedTitle": "Quotation requested by {senderName}",
   "orderManagement.timeline.orderPlacedTitle": "Order placed by {senderName}",
   "orderManagement.timeline.entryFallbackTitle": "Update",
-  "orderManagement.timeline.recipientTenant": "Send message to tenant",
   "orderManagement.timeline.recipientManager": "Send message to manager",
   "orderPlacement.status.PLACED": "Placed",
   "orderPlacement.status.CONFIRMED": "Confirmed",

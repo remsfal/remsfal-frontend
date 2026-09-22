@@ -1136,7 +1136,6 @@
   "orderManagement.timeline.quotationRequestedTitle": "Angebotsanfrage von {senderName} gesendet",
   "orderManagement.timeline.orderPlacedTitle": "Auftrag von {senderName} vergeben",
   "orderManagement.timeline.entryFallbackTitle": "Aktualisierung",
-  "orderManagement.timeline.recipientTenant": "Nachricht an Mieter senden",
   "orderManagement.timeline.recipientManager": "Nachricht an Verwalter senden",
   "orderPlacement.status.PLACED": "Angefragt",
   "orderPlacement.status.CONFIRMED": "Bestätigt",
