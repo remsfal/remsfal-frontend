@@ -743,6 +743,7 @@ components:
           $ref: "#/components/schemas/UUID"
         message:
           type: string
+          pattern: \S
         attachmentIds:
           type: array
           items:
@@ -4394,8 +4395,9 @@ paths:
   /ticketing/v1/tenant-relations/issues/{issueId}/requests/{issueRequestId}/response:
     post:
       summary: Answer a request a contractor has sent about an issue.
-      description: Deletes the request and records the tenant's response in both the
-        tenant's and the contractor's timeline for the issue.
+      description: "Deletes the request and records the tenant's response, optionally\
+        \ with file attachments, in both the tenant's and the contractor's timeline\
+        \ for the issue."
       parameters:
       - description: ID of the issue
         required: true
@@ -4411,9 +4413,55 @@ paths:
           $ref: "#/components/schemas/UUID"
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/IssueRequestJson"
+              required:
+              - response
+              type: object
+              properties:
+                response:
+                  description: Response information as JSON
+                  type: object
+                  properties:
+                    issueRequestId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    organizationId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    agreementId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    message:
+                      type: string
+                      pattern: \S
+                    attachmentIds:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                        pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                      description: IDs of attachments the contractor is referring
+                        to or requesting the tenant to provide
+                    createdAt:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/Instant"
+                    modifiedAt:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/Instant"
+                  required:
+                  - message
+                attachment:
+                  description: One or more files to attach to the response
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
         "204":

@@ -916,7 +916,8 @@
             "$ref" : "#/components/schemas/UUID"
           },
           "message" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "\\S"
           },
           "attachmentIds" : {
             "type" : "array",
