@@ -11,7 +11,7 @@ class ContractorTimelineService {
       '/ticketing/v1/issues/{issueId}/contractor-timeline',
       options,
     ) as Partial<ContractorTimelineListJson>;
-    return { timelines: result.timelines ?? [], visibleToTenant: result.visibleToTenant ?? false };
+    return { timelines: result.timelines ?? [] };
   }
 
   async createTimelineEntryWithAttachments(
