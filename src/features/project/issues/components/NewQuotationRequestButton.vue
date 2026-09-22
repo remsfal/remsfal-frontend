@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
+import { useEventBus } from '@/stores/EventStore';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
@@ -21,6 +22,7 @@ const emit = defineEmits<(e: 'created') => void>();
 
 const { t } = useI18n();
 const appToast = useAppToast();
+const eventBus = useEventBus();
 
 const visible = ref(false);
 const contractorSelectRef = ref<InstanceType<typeof ContractorMultiSelect> | null>(null);
@@ -93,6 +95,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
     visible.value = false;
     resetForm();
     emit('created');
+    eventBus.emit('quotationRequest:created', { issueId: props.issueId });
     appToast.success(t('quotationRequest.createSuccess'));
   } catch (error) {
     console.error('Failed to create quotation request:', error instanceof Error ? error.message : error);

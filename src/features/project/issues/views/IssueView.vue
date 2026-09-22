@@ -7,6 +7,7 @@ import IssueAttachmentCard from '../components/IssueAttachmentCard.vue';
 import IssueTimelineCard from '../components/IssueTimelineCard.vue';
 import IssueRelationshipsCard from '../components/IssueRelationshipsCard.vue';
 import IssueOrderManagementCard from '../components/IssueOrderManagementCard.vue';
+import IssueContractorTimelineCard from '../components/IssueContractorTimelineCard.vue';
 import { issueService, type IssueAttachmentJson, type IssueJson } from '@/features/project/issues/services/IssueService';
 
 /* Props */
@@ -169,4 +170,7 @@ watch(
     :issueId="issueId"
     :projectId="projectId"
   />
+
+  <!-- Issue Contractor Timeline Card -->
+  <IssueContractorTimelineCard :issueId="issueId" />
 </template>

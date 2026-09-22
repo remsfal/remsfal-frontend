@@ -19,6 +19,7 @@ export const mockOrderPlacement = {
   id: 'op-1',
   issueId: 'issue-1',
   projectId: 'project-1',
+  organizationId: 'org-1',
   contractorId: 'contractor-1',
   contractorName: 'ACME GmbH',
   quotationId: 'q-1',
@@ -34,6 +35,10 @@ export const quotationHandlers = [
 
   http.post(`${TICKETING_BASE}/issues/:issueId/quotations/:quotationId/orders`, () => {
     return HttpResponse.json(mockOrderPlacement, { status: 201 });
+  }),
+
+  http.get(`${TICKETING_BASE}/issues/:issueId/orders`, () => {
+    return HttpResponse.json({ items: [mockOrderPlacement] }, { status: 200 });
   }),
 
   http.get(`${TICKETING_BASE}/order-management/order-placements`, () => {

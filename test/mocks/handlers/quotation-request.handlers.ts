@@ -8,6 +8,7 @@ export const mockQuotationRequest = {
   projectId: 'project-1',
   triggerId: 'user-1',
   contractorId: 'contractor-1',
+  contractorName: 'ACME GmbH',
   organizationId: 'org-1',
   scopeOfWork: 'Dachrinne reparieren',
   status: 'REQUESTED',

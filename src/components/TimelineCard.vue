@@ -19,6 +19,7 @@ interface Props {
   hideComposer?: boolean;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
+  sendButtonLabel?: string;
 }
 
 const props = defineProps<Props>();
@@ -43,7 +44,7 @@ const loadErrorText = t('timeline.loadError');
 const messagePlaceholder = t('timeline.messagePlaceholder');
 const uploadButtonLabel = t('timeline.uploadButton');
 const uploadEmptyText = t('timeline.uploadEmpty');
-const sendButtonLabel = t('timeline.sendMessage');
+const defaultSendButtonLabel = t('timeline.sendMessage');
 const sendErrorMessage = t('timeline.createError');
 
 const {
@@ -91,7 +92,7 @@ const {
       <div
         v-else-if="items.length === 0"
         :data-testid="`${testIdPrefix}-empty`"
-        class="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-gray-600"
+        class="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-gray-600 mb-2"
       >
         {{ emptyText }}
       </div>
@@ -152,10 +153,10 @@ const {
           <div class="flex justify-end">
             <Button
               :data-testid="`${testIdPrefix}-message-submit`"
-              :label="sendButtonLabel"
+              :label="props.sendButtonLabel ?? defaultSendButtonLabel"
               icon="pi pi-send"
               :loading="sending"
-              :disabled="!canSubmit"
+              :disabled="!canSubmit || loading"
               @click="submit"
             />
           </div>
