@@ -6,14 +6,22 @@ import { onMounted, onUnmounted, ref } from 'vue';
 ChartJS.register(ArcElement);
 
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import Chart from 'primevue/chart';
 import Card from 'primevue/card';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
+import { issueService, type IssueItemJson, type IssuePriority, type IssueStatus }
+  from '@/features/project/issues/services/IssueService';
+import { getIssueTypeLabel } from '@/features/common/issues/issueLabels';
+import { useUserSessionStore } from '@/stores/UserSession';
 const chartPlugins = [ChartDataLabels];
 const { t } = useI18n();
 const route = useRoute('ProjectDashboard');
+const router = useRouter();
+const sessionStore = useUserSessionStore();
 const projectId = route.params.projectId as string;
 const showScrollToTop = ref(false);
 
@@ -33,6 +41,59 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
 });
+
+const OPEN_STATUSES: IssueStatus[] = ['PENDING', 'OPEN', 'IN_PROGRESS'];
+
+const PRIORITY_RANK: Record<IssuePriority, number> = {
+  URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3, UNCLASSIFIED: 4,
+};
+const priorityRank = (p?: IssuePriority): number => (p ? PRIORITY_RANK[p] : PRIORITY_RANK.UNCLASSIFIED);
+
+const isLoadingIssueCards = ref(true);
+const myTasks = ref<IssueItemJson[]>([]);
+const latestReports = ref<IssueItemJson[]>([]);
+
+async function loadMyTasks(projectId: string, assigneeId?: string): Promise<IssueItemJson[]> {
+  try {
+    const page = await issueService.getIssues(projectId, OPEN_STATUSES, undefined, assigneeId);
+    const open = (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
+    return [...open].sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority)).slice(0, 5);
+  } catch (error) {
+    console.error('Failed to load my tasks:', error);
+    return [];
+  }
+}
+
+async function loadLatestReports(projectId: string): Promise<IssueItemJson[]> {
+  try {
+    const page = await issueService.getIssues(
+      projectId, 'PENDING', undefined, undefined, undefined, undefined, undefined, undefined, 5,
+    );
+    return (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
+  } catch (error) {
+    console.error('Failed to load latest reports:', error);
+    return [];
+  }
+}
+
+async function loadIssueCards(projectId: string) {
+  isLoadingIssueCards.value = true;
+  const assigneeId = sessionStore.user?.id;
+  const [tasks, reports] = await Promise.all([
+    loadMyTasks(projectId, assigneeId),
+    loadLatestReports(projectId),
+  ]);
+  myTasks.value = tasks;
+  latestReports.value = reports;
+  isLoadingIssueCards.value = false;
+}
+
+function onIssueRowSelect(event: { data: IssueItemJson }) {
+  if (!event.data.id) return;
+  router.push({ name: 'IssueDetails', params: { projectId, issueId: event.data.id } });
+}
+
+onMounted(() => loadIssueCards(projectId));
 
 const statCards = [
   {
@@ -251,6 +312,73 @@ const recentActivities = [
               </p>
             </div>
           </div>
+        </template>
+      </BaseCard>
+    </div>
+
+    <!-- Meine Aufgaben / Neue Meldungen -->
+    <div class="mb-6 grid grid-cols-1 xl:grid-cols-2 gap-4" data-testid="project-dashboard-issue-cards">
+      <BaseCard :loading="isLoadingIssueCards" :skeletonRows="5">
+        <template #title>
+          {{ t('projectMenu.issueManagement.mine') }}
+        </template>
+        <template #content>
+          <div v-if="myTasks.length === 0" class="text-muted-color text-sm">
+            {{ t('issueDashboard.empty') }}
+          </div>
+          <DataTable
+            v-else
+            class="issue-dashboard-table"
+            :value="myTasks"
+            selectionMode="single"
+            :metaKeySelection="false"
+            :showHeaders="false"
+            :pt="{ bodyRow: { 'data-testid': 'project-dashboard-mytasks-row' } }"
+            @rowSelect="onIssueRowSelect"
+          >
+            <Column field="title" :header="t('issueDetails.fields.title')">
+              <template #body="slotProps">
+                <span class="font-medium truncate">{{ slotProps.data.title }}</span>
+              </template>
+            </Column>
+            <Column field="type" :header="t('issueDetails.fields.type')">
+              <template #body="slotProps">
+                <span class="text-muted-color text-sm">{{ getIssueTypeLabel(slotProps.data.type, t) }}</span>
+              </template>
+            </Column>
+          </DataTable>
+        </template>
+      </BaseCard>
+
+      <BaseCard :loading="isLoadingIssueCards" :skeletonRows="5">
+        <template #title>
+          {{ t('projectMenu.tenantCommunication.new') }}
+        </template>
+        <template #content>
+          <div v-if="latestReports.length === 0" class="text-muted-color text-sm">
+            {{ t('issueDashboard.empty') }}
+          </div>
+          <DataTable
+            v-else
+            class="issue-dashboard-table"
+            :value="latestReports"
+            selectionMode="single"
+            :metaKeySelection="false"
+            :showHeaders="false"
+            :pt="{ bodyRow: { 'data-testid': 'project-dashboard-latestreports-row' } }"
+            @rowSelect="onIssueRowSelect"
+          >
+            <Column field="title" :header="t('issueDetails.fields.title')">
+              <template #body="slotProps">
+                <span class="font-medium truncate">{{ slotProps.data.title }}</span>
+              </template>
+            </Column>
+            <Column field="type" :header="t('issueDetails.fields.type')">
+              <template #body="slotProps">
+                <span class="text-muted-color text-sm">{{ getIssueTypeLabel(slotProps.data.type, t) }}</span>
+              </template>
+            </Column>
+          </DataTable>
         </template>
       </BaseCard>
     </div>

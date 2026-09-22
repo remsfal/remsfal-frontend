@@ -344,6 +344,64 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/ticketing/v1/issues/latest": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve the latest issues across all projects of the user.
+     * @description Returns the most recently created issues of all projects the authenticated user is a member of, newest first. This method is intended solely for use by a property manager, e.g. for a cross-project dashboard. Use the project-scoped issues endpoint for complete, paginated lists.
+     */
+    get: {
+      parameters: {
+        query: {
+          /** @description Maximum number of issues to return */
+          limit: number;
+          /** @description Filter to return only issues matching one of the given statuses (repeat the parameter for multiple values, e.g. status=OPEN&status=IN_PROGRESS); omit to return issues of all statuses */
+          status?: components["schemas"]["IssueStatus"][];
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Latest issues retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["IssueListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/ticketing/v1/issues/{issueId}": {
     parameters: {
       query?: never;
