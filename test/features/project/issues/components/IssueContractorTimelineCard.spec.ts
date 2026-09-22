@@ -161,8 +161,7 @@ describe('IssueContractorTimelineCard component', () => {
 
     expect(await timelineCards[0].props('load')()).toEqual([makeTimeline({ timelineId: 't-1', organizationId: 'org-1' })]);
     expect(await timelineCards[1].props('load')()).toEqual([makeTimeline({ timelineId: 't-2', organizationId: 'org-2' })]);
-
-    // Both tabs mounted and were queried above, but should share a single fetch of the issue's timeline.
+    
     expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
 
     vi.mocked(contractorTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();

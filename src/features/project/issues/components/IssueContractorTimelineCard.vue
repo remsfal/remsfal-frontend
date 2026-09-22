@@ -29,8 +29,6 @@ const eventBus = useEventBus();
 const contractorsLoaded = ref(false);
 const contractors = ref<RequestedContractor[]>([]);
 
-// Every tab shares one fetch of the issue's full timeline; each tab's `load` just filters
-// the already-fetched list by organizationId instead of re-requesting it per tab.
 let timelineEntriesRequest: Promise<ContractorTimelineJson[]> | null = null;
 
 const invalidateTimelineEntries = () => {
