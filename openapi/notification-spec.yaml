@@ -743,6 +743,7 @@ components:
           $ref: "#/components/schemas/UUID"
         message:
           type: string
+          pattern: \S
         attachmentIds:
           type: array
           items:
