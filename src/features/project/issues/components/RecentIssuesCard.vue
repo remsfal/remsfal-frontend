@@ -9,8 +9,6 @@ import { issueService, type IssueItemJson } from '@/features/project/issues/serv
 import { getIssueTypeLabel } from '@/features/common/issues/issueLabels';
 import { useProjectStore } from '@/stores/ProjectStore';
 
-const LIMIT = 5;
-
 const { t } = useI18n();
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -24,7 +22,7 @@ function projectName(projectId?: string): string {
 
 async function loadIssues() {
   try {
-    const page = await issueService.getLatestIssues(LIMIT);
+    const page = await issueService.getLatestIssues();
     issues.value = (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
   } catch (error) {
     console.error('Failed to load latest issues:', error);

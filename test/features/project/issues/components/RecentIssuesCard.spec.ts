@@ -51,7 +51,7 @@ describe('RecentIssuesCard', () => {
     wrapper = mount(RecentIssuesCard);
     await flushPromises();
 
-    expect(issueService.getLatestIssues).toHaveBeenCalledWith(5);
+    expect(issueService.getLatestIssues).toHaveBeenCalledWith();
     expect(refreshProjectListMock).toHaveBeenCalled();
   });
 
