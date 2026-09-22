@@ -18,11 +18,6 @@
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
-          "projectTitle" : {
-            "type" : "string",
-            "description" : "Title of the related project",
-            "readOnly" : true
-          },
           "issueId" : {
             "description" : "Unique identifier of the related issue",
             "readOnly" : true,
@@ -35,9 +30,19 @@
             "type" : "string",
             "$ref" : "#/components/schemas/IssueEventType"
           },
-          "issueTitle" : {
+          "title" : {
             "type" : "string",
             "description" : "Title of the related issue",
+            "readOnly" : true
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "Description of the activity, e.g. a message text",
+            "readOnly" : true
+          },
+          "link" : {
+            "type" : "string",
+            "description" : "Link to the frontend issue page",
             "readOnly" : true
           },
           "actorId" : {
@@ -57,31 +62,17 @@
             "type" : "string",
             "$ref" : "#/components/schemas/IssueType"
           },
-          "issueStatus" : {
+          "status" : {
             "description" : "Status of the related issue",
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/IssueStatus"
-          },
-          "issuePriority" : {
-            "description" : "Priority of the related issue",
-            "readOnly" : true,
-            "type" : "string",
-            "$ref" : "#/components/schemas/IssuePriority"
           },
           "agreementId" : {
             "description" : "Unique identifier of the related rental agreement",
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
-          },
-          "tenantNames" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            },
-            "description" : "Names of the tenants of the related rental agreement, if any",
-            "readOnly" : true
           },
           "organizationId" : {
             "description" : "Unique identifier of the contractor organization involved, if any",
@@ -95,10 +86,11 @@
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
-          "contractorName" : {
+          "assigneeId" : {
+            "description" : "Unique identifier of the assignee of the related issue",
+            "readOnly" : true,
             "type" : "string",
-            "description" : "Name of the contractor involved, if any",
-            "readOnly" : true
+            "$ref" : "#/components/schemas/UUID"
           },
           "read" : {
             "type" : "boolean",
@@ -528,6 +520,10 @@
               "$ref" : "#/components/schemas/OrderAttachmentJson"
             },
             "readOnly" : true
+          },
+          "messageToTenant" : {
+            "type" : "boolean",
+            "description" : "If true, the message is also copied into the tenant timeline of the issue"
           }
         },
         "required" : [ "purpose", "message" ]
@@ -542,6 +538,11 @@
               "$ref" : "#/components/schemas/ContractorTimelineJson"
             },
             "description" : "Timeline entries",
+            "readOnly" : true
+          },
+          "visibleToTenant" : {
+            "type" : "boolean",
+            "description" : "Whether a new timeline entry can be sent to the tenant",
             "readOnly" : true
           }
         }
@@ -916,8 +917,7 @@
             "$ref" : "#/components/schemas/UUID"
           },
           "message" : {
-            "type" : "string",
-            "pattern" : "\\S"
+            "type" : "string"
           },
           "attachmentIds" : {
             "type" : "array",
@@ -979,7 +979,7 @@
       },
       "MessagePurpose" : {
         "type" : "string",
-        "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED", "REQUEST_CREATED", "REQUEST_ANSWERED" ]
+        "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED" ]
       },
       "OrderAttachmentJson" : {
         "type" : "object",

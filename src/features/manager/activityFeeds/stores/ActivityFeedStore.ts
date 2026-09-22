@@ -148,9 +148,9 @@ export const useActivityFeedStore = defineStore('activity-feed', () => {
       createdAt: new Date(raw.createdAt),
       read: raw.read ?? false,
       issueId: raw.issueId,
-      issueTitle: raw.issueTitle ?? '',
+      issueTitle: raw.title ?? '',
       issueType: raw.issueType as IssueType,
-      issueStatus: raw.issueStatus as IssueStatus,
+      issueStatus: raw.status as IssueStatus,
       projectId: raw.projectId,
       projectName: resolveProjectName(raw.projectId, projectStore.projectList),
     };

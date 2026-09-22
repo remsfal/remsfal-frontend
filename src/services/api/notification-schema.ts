@@ -274,14 +274,16 @@ export interface components {
       id?: $Read<components["schemas"]["UUID"]>;
       /** @description Unique identifier of the related project */
       projectId?: $Read<components["schemas"]["UUID"]>;
-      /** @description Title of the related project */
-      projectTitle?: $Read<string>;
       /** @description Unique identifier of the related issue */
       issueId?: $Read<components["schemas"]["UUID"]>;
       /** @description Type of activity */
       activityType?: $Read<components["schemas"]["IssueEventType"]>;
       /** @description Title of the related issue */
-      issueTitle?: $Read<string>;
+      title?: $Read<string>;
+      /** @description Description of the activity, e.g. a message text */
+      description?: $Read<string>;
+      /** @description Link to the frontend issue page */
+      link?: $Read<string>;
       /** @description Unique identifier of the user who triggered this activity */
       actorId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who triggered this activity */
@@ -289,19 +291,15 @@ export interface components {
       /** @description Type of the related issue */
       issueType?: $Read<components["schemas"]["IssueType"]>;
       /** @description Status of the related issue */
-      issueStatus?: $Read<components["schemas"]["IssueStatus"]>;
-      /** @description Priority of the related issue */
-      issuePriority?: $Read<components["schemas"]["IssuePriority"]>;
+      status?: $Read<components["schemas"]["IssueStatus"]>;
       /** @description Unique identifier of the related rental agreement */
       agreementId?: $Read<components["schemas"]["UUID"]>;
-      /** @description Names of the tenants of the related rental agreement, if any */
-      tenantNames?: $Read<string[]>;
       /** @description Unique identifier of the contractor organization involved, if any */
       organizationId?: $Read<components["schemas"]["UUID"]>;
       /** @description Unique identifier of the contractor involved, if any */
       contractorId?: $Read<components["schemas"]["UUID"]>;
-      /** @description Name of the contractor involved, if any */
-      contractorName?: $Read<string>;
+      /** @description Unique identifier of the assignee of the related issue */
+      assigneeId?: $Read<components["schemas"]["UUID"]>;
       /** @description Whether the caller has already read this activity */
       read?: $Read<boolean>;
       /** @description Timestamp this activity was recorded at */
@@ -455,11 +453,15 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       senderRole?: $Read<components["schemas"]["UserContext"]>;
       attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+      /** @description If true, the message is also copied into the tenant timeline of the issue */
+      messageToTenant?: boolean;
     };
     /** @description A list of contractor timelines */
     ContractorTimelineListJson: {
       /** @description Timeline entries */
       timelines?: $Read<components["schemas"]["ContractorTimelineJson"][]>;
+      /** @description Whether a new timeline entry can be sent to the tenant */
+      visibleToTenant?: $Read<boolean>;
     };
     /** @description A country item of a list */
     CountryItemJson: {
@@ -636,13 +638,7 @@ export interface components {
     MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
     /** @enum {string} */
     MessagePurpose:
-      | "ISSUE_CREATED"
-      | "MESSAGE_SENT"
-      | "APPOINTMENT_REQUESTED"
-      | "APPOINTMENT_SCHEDULED"
-      | "STATUS_CHANGED"
-      | "REQUEST_CREATED"
-      | "REQUEST_ANSWERED";
+      "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
     /** @description An attachment associated with a quotation request, quotation, or order placement */
     OrderAttachmentJson: {
       attachmentId?: components["schemas"]["UUID"];

@@ -10,8 +10,9 @@ describe('ContractorTimelineService', () => {
   test('getTimelineEntries fetches entries for the given issue', async () => {
     const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
       timelines: [{
-        timelineId: 't-1', purpose: 'MESSAGE_SENT', message: 'Hi'
+        timelineId: 't-1', purpose: 'MESSAGE_SENT', message: 'Hi' 
       }],
+      visibleToTenant: true,
     });
 
     const result = await contractorTimelineService.getTimelineEntries('issue-1');
@@ -20,6 +21,7 @@ describe('ContractorTimelineService', () => {
     expect(path).toBe('/ticketing/v1/issues/{issueId}/contractor-timeline');
     expect(options).toEqual({ pathParams: { issueId: 'issue-1' } });
     expect(result.timelines).toHaveLength(1);
+    expect(result.visibleToTenant).toBe(true);
   });
 
   test('getTimelineEntries defaults to an empty list when the response is empty', async () => {
@@ -27,7 +29,7 @@ describe('ContractorTimelineService', () => {
 
     const result = await contractorTimelineService.getTimelineEntries('issue-1');
 
-    expect(result).toEqual({ timelines: [] });
+    expect(result).toEqual({ timelines: [], visibleToTenant: false });
   });
 
   test('createTimelineEntryWithAttachments sends multipart form data with the organizationId query param', async () => {

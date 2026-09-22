@@ -9,9 +9,9 @@ const mockActivities: ActivityFeedJson[] = [
     createdAt: '2025-06-01T10:15:00.000Z',
     read: false,
     issueId: 'issue-101',
-    issueTitle: 'Heizung defekt',
+    title: 'Heizung defekt',
     issueType: 'DEFECT',
-    issueStatus: 'OPEN',
+    status: 'OPEN',
     projectId: 'proj-1',
   },
   {
@@ -19,9 +19,9 @@ const mockActivities: ActivityFeedJson[] = [
     createdAt: '2025-05-28T14:30:00.000Z',
     read: false,
     issueId: 'issue-102',
-    issueTitle: 'Wartung Aufzug',
+    title: 'Wartung Aufzug',
     issueType: 'MAINTENANCE',
-    issueStatus: 'IN_PROGRESS',
+    status: 'IN_PROGRESS',
     projectId: 'proj-1',
   },
   {
@@ -29,9 +29,9 @@ const mockActivities: ActivityFeedJson[] = [
     createdAt: '2025-05-25T08:00:00.000Z',
     read: true,
     issueId: 'issue-201',
-    issueTitle: 'Fenster undicht',
+    title: 'Fenster undicht',
     issueType: 'DEFECT',
-    issueStatus: 'PENDING',
+    status: 'PENDING',
     projectId: 'proj-2',
   },
 ];
@@ -53,7 +53,7 @@ describe('ActivityFeedService', () => {
     expect(Array.isArray(data.activities)).toBe(true);
     expect(data.activities?.length).toBe(3);
     expect(data.activities?.[0].id).toBe('1');
-    expect(data.activities?.[0].issueTitle).toBe('Heizung defekt');
+    expect(data.activities?.[0].title).toBe('Heizung defekt');
     expect(data.nextCursor).toBeNull();
   });
 
