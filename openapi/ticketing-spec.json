@@ -18,6 +18,11 @@
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
+          "projectTitle" : {
+            "type" : "string",
+            "description" : "Title of the related project",
+            "readOnly" : true
+          },
           "issueId" : {
             "description" : "Unique identifier of the related issue",
             "readOnly" : true,
@@ -30,19 +35,9 @@
             "type" : "string",
             "$ref" : "#/components/schemas/IssueEventType"
           },
-          "title" : {
+          "issueTitle" : {
             "type" : "string",
             "description" : "Title of the related issue",
-            "readOnly" : true
-          },
-          "description" : {
-            "type" : "string",
-            "description" : "Description of the activity, e.g. a message text",
-            "readOnly" : true
-          },
-          "link" : {
-            "type" : "string",
-            "description" : "Link to the frontend issue page",
             "readOnly" : true
           },
           "actorId" : {
@@ -62,17 +57,31 @@
             "type" : "string",
             "$ref" : "#/components/schemas/IssueType"
           },
-          "status" : {
+          "issueStatus" : {
             "description" : "Status of the related issue",
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/IssueStatus"
+          },
+          "issuePriority" : {
+            "description" : "Priority of the related issue",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/IssuePriority"
           },
           "agreementId" : {
             "description" : "Unique identifier of the related rental agreement",
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
+          },
+          "tenantNames" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "description" : "Names of the tenants of the related rental agreement, if any",
+            "readOnly" : true
           },
           "organizationId" : {
             "description" : "Unique identifier of the contractor organization involved, if any",
@@ -86,11 +95,10 @@
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
-          "assigneeId" : {
-            "description" : "Unique identifier of the assignee of the related issue",
-            "readOnly" : true,
+          "contractorName" : {
             "type" : "string",
-            "$ref" : "#/components/schemas/UUID"
+            "description" : "Name of the contractor involved, if any",
+            "readOnly" : true
           },
           "read" : {
             "type" : "boolean",
@@ -520,10 +528,6 @@
               "$ref" : "#/components/schemas/OrderAttachmentJson"
             },
             "readOnly" : true
-          },
-          "messageToTenant" : {
-            "type" : "boolean",
-            "description" : "If true, the message is also copied into the tenant timeline of the issue"
           }
         },
         "required" : [ "purpose", "message" ]
@@ -538,11 +542,6 @@
               "$ref" : "#/components/schemas/ContractorTimelineJson"
             },
             "description" : "Timeline entries",
-            "readOnly" : true
-          },
-          "visibleToTenant" : {
-            "type" : "boolean",
-            "description" : "Whether a new timeline entry can be sent to the tenant",
             "readOnly" : true
           }
         }
@@ -958,7 +957,7 @@
       },
       "MessagePurpose" : {
         "type" : "string",
-        "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED" ]
+        "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED", "REQUEST_CREATED", "REQUEST_ANSWERED" ]
       },
       "OrderAttachmentJson" : {
         "type" : "object",
@@ -2511,13 +2510,6 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "Filter to return only activities of issues assigned to a specific user",
-          "name" : "assigneeId",
-          "in" : "query",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
           "description" : "Filter to return only activities involving a specific contractor",
           "name" : "contractorId",
           "in" : "query",
@@ -3274,10 +3266,6 @@
                           "$ref" : "#/components/schemas/OrderAttachmentJson"
                         },
                         "readOnly" : true
-                      },
-                      "messageToTenant" : {
-                        "type" : "boolean",
-                        "description" : "If true, the message is also copied into the tenant timeline of the issue"
                       }
                     },
                     "required" : [ "purpose", "message" ]
@@ -5259,7 +5247,7 @@
     },
     "/ticketing/v1/order-management/{issueId}/requests" : {
       "get" : {
-        "summary" : "Retrieve the requests exchanged between tenant and contractor about an issue.",
+        "summary" : "Retrieve the requests the calling contractor has sent to the tenant about an issue.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
@@ -5289,10 +5277,13 @@
           "404" : {
             "description" : "The issue does not exist"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "post" : {
-        "summary" : "Create a new request about an issue.",
+        "summary" : "Create a new request to the tenant about an issue.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
@@ -5335,7 +5326,10 @@
           "404" : {
             "description" : "The issue does not exist"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/ticketing/v1/order-management/{issueId}/requests/{issueRequestId}" : {
@@ -5483,10 +5477,6 @@
                           "$ref" : "#/components/schemas/OrderAttachmentJson"
                         },
                         "readOnly" : true
-                      },
-                      "messageToTenant" : {
-                        "type" : "boolean",
-                        "description" : "If true, the message is also copied into the tenant timeline of the issue"
                       }
                     },
                     "required" : [ "purpose", "message" ]
@@ -5812,7 +5802,7 @@
     },
     "/ticketing/v1/tenant-relations/issues/{issueId}/requests" : {
       "get" : {
-        "summary" : "Retrieve the requests exchanged between tenant and contractor about an issue.",
+        "summary" : "Retrieve the requests contractors have sent to the tenant about an issue.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
@@ -5846,13 +5836,24 @@
         "security" : [ {
           "SecurityScheme" : [ ]
         } ]
-      },
+      }
+    },
+    "/ticketing/v1/tenant-relations/issues/{issueId}/requests/{issueRequestId}/response" : {
       "post" : {
-        "summary" : "Create a new request about an issue.",
+        "summary" : "Answer a request a contractor has sent about an issue.",
+        "description" : "Deletes the request and records the tenant's response in both the tenant's and the contractor's timeline for the issue.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
           "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the request",
+          "required" : true,
+          "name" : "issueRequestId",
           "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
@@ -5869,15 +5870,8 @@
           "required" : true
         },
         "responses" : {
-          "200" : {
-            "description" : "Request created successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/IssueRequestJson"
-                }
-              }
-            }
+          "204" : {
+            "description" : "Request answered successfully"
           },
           "400" : {
             "description" : "Invalid input"
@@ -5886,10 +5880,10 @@
             "description" : "No user authentication provided via session cookie"
           },
           "403" : {
-            "description" : "User does not have permission to access this request"
+            "description" : "User does not have permission to answer this request"
           },
           "404" : {
-            "description" : "The issue does not exist"
+            "description" : "The issue or request does not exist"
           }
         },
         "security" : [ {
