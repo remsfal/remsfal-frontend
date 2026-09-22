@@ -6,12 +6,11 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { ProjectDashboardView, ProjectsWelcomeMessage } from '@/features/project/dashboard'
-import { RecentIssuesCard } from '@/features/project/issues'
+import { ProjectDashboardView } from '@/features/project/dashboard'
+import { ProjectsWelcomeMessage } from '@/features/manager/projects'
 </script>
 
 <template>
   <ProjectsWelcomeMessage />
-  <RecentIssuesCard />
   <ProjectDashboardView />
 </template>

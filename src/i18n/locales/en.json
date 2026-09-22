@@ -68,7 +68,6 @@
   "projectSelection.add": "Add Property",
   "managerDashboard.projects.emptyState.text": "Welcome to Remsfal! Create your first property now to get started with managing it.",
   "managerDashboard.projects.emptyState.link": "Create property now",
-  "managerDashboard.recentIssues.title": "Latest tasks",
   "projectSettings.title": "Property Settings",
   "projectSettings.projectMemberTable.title": "Authorized Members",
   "projectSettings.projectMemberTable.columnName": "Name",

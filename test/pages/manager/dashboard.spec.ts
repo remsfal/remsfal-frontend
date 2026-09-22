@@ -7,16 +7,12 @@ vi.mock('@/features/project/dashboard', () => ({
     name: 'ProjectDashboardView',
     template: '<div data-test="project-dashboard-stub" />',
   },
+}));
+
+vi.mock('@/features/manager/projects', () => ({
   ProjectsWelcomeMessage: {
     name: 'ProjectsWelcomeMessage',
     template: '<div data-test="welcome-message-stub" />',
-  },
-}));
-
-vi.mock('@/features/project/issues', () => ({
-  RecentIssuesCard: {
-    name: 'RecentIssuesCard',
-    template: '<div data-test="recent-issues-stub" />',
   },
 }));
 
@@ -29,10 +25,5 @@ describe('manager/dashboard.vue', () => {
   it('renders ProjectDashboard', () => {
     const wrapper = mount(ManagerDashboardPage);
     expect(wrapper.find('[data-test="project-dashboard-stub"]').exists()).toBe(true);
-  });
-
-  it('renders the recent issues card', () => {
-    const wrapper = mount(ManagerDashboardPage);
-    expect(wrapper.find('[data-test="recent-issues-stub"]').exists()).toBe(true);
   });
 });

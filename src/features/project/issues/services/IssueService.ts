@@ -48,23 +48,6 @@ class IssueService {
     };
   }
 
-  /** Latest issues across all projects of the current user, newest first (single request, no pagination). */
-  async getLatestIssues(limit = 5, status?: IssueStatus | IssueStatus[]): Promise<IssueListJson> {
-    const statusList = status === undefined ? [] : ([] as IssueStatus[]).concat(status);
-
-    const result = await apiClient.get('/ticketing/v1/issues/latest', {
-      params: {
-        limit,
-        ...(statusList.length ? { status: statusList } : {}),
-      },
-    }) as Partial<IssueListJson>;
-    return {
-      size: result.size ?? 0,
-      issues: result.issues ?? [],
-      nextCursor: result.nextCursor,
-    };
-  }
-
   async getIssue(issueId: string): Promise<IssueJson> {
     return apiClient.get('/ticketing/v1/issues/{issueId}', { pathParams: { issueId } }) as Promise<IssueJson>;
   }

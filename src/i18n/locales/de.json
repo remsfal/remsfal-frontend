@@ -68,7 +68,6 @@
   "projectSelection.add": "Liegenschaft hinzufügen",
   "managerDashboard.projects.emptyState.text": "Willkommen bei Remsfal! Legen Sie jetzt Ihre erste Liegenschaft an, um mit der Verwaltung zu beginnen.",
   "managerDashboard.projects.emptyState.link": "Jetzt Liegenschaft anlegen",
-  "managerDashboard.recentIssues.title": "Neueste Aufgaben",
   "projectSettings.title": "Liegenschaftseinstellungen",
   "projectSettings.projectMemberTable.title": "Zugriffsberechtigte Mitglieder",
   "projectSettings.projectMemberTable.columnName": "Name",
