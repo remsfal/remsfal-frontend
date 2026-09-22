@@ -52,8 +52,6 @@ export interface paths {
         query: {
           /** @description Filter to return only activities of a specific rental agreement */
           agreementId?: components["schemas"]["UUID"];
-          /** @description Filter to return only activities of issues assigned to a specific user */
-          assigneeId?: components["schemas"]["UUID"];
           /** @description Filter to return only activities involving a specific contractor */
           contractorId?: components["schemas"]["UUID"];
           /** @description Opaque cursor returned by a previous call to fetch the next page */
@@ -949,8 +947,6 @@ export interface paths {
               organizationId?: $Read<components["schemas"]["UUID"]>;
               senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
-              /** @description If true, the message is also copied into the tenant timeline of the issue */
-              messageToTenant?: boolean;
             };
             /** @description One or more files to attach to the timeline entry */
             attachment?: string[];
@@ -3539,7 +3535,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve the requests exchanged between tenant and contractor about an issue. */
+    /** Retrieve the requests the calling contractor has sent to the tenant about an issue. */
     get: {
       parameters: {
         query?: never;
@@ -3585,7 +3581,7 @@ export interface paths {
       };
     };
     put?: never;
-    /** Create a new request about an issue. */
+    /** Create a new request to the tenant about an issue. */
     post: {
       parameters: {
         query?: never;
@@ -3790,8 +3786,6 @@ export interface paths {
               organizationId?: $Read<components["schemas"]["UUID"]>;
               senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
-              /** @description If true, the message is also copied into the tenant timeline of the issue */
-              messageToTenant?: boolean;
             };
             /** @description One or more files to attach to the timeline entry */
             attachment?: string[];
@@ -4142,7 +4136,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve the requests exchanged between tenant and contractor about an issue. */
+    /** Retrieve the requests contractors have sent to the tenant about an issue. */
     get: {
       parameters: {
         query?: never;
@@ -4188,7 +4182,26 @@ export interface paths {
       };
     };
     put?: never;
-    /** Create a new request about an issue. */
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ticketing/v1/tenant-relations/issues/{issueId}/requests/{issueRequestId}/response": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Answer a request a contractor has sent about an issue.
+     * @description Deletes the request and records the tenant's response, optionally with file attachments, in both the tenant's and the contractor's timeline for the issue.
+     */
     post: {
       parameters: {
         query?: never;
@@ -4196,23 +4209,37 @@ export interface paths {
         path: {
           /** @description ID of the issue */
           issueId: components["schemas"]["UUID"];
+          /** @description ID of the request */
+          issueRequestId: components["schemas"]["UUID"];
         };
         cookie?: never;
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["IssueRequestJson"];
+          "multipart/form-data": {
+            /** @description Response information as JSON */
+            response: {
+              issueRequestId?: $Read<components["schemas"]["UUID"]>;
+              organizationId?: $Read<components["schemas"]["UUID"]>;
+              agreementId?: $Read<components["schemas"]["UUID"]>;
+              message: string;
+              /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
+              attachmentIds?: string[];
+              createdAt?: $Read<components["schemas"]["Instant"]>;
+              modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            };
+            /** @description One or more files to attach to the response */
+            attachment?: string[];
+          };
         };
       };
       responses: {
-        /** @description Request created successfully */
-        200: {
+        /** @description Request answered successfully */
+        204: {
           headers: {
             [name: string]: unknown;
           };
-          content: {
-            "application/json": components["schemas"]["IssueRequestJson"];
-          };
+          content?: never;
         };
         /** @description Invalid input */
         400: {
@@ -4228,14 +4255,14 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description User does not have permission to access this request */
+        /** @description User does not have permission to answer this request */
         403: {
           headers: {
             [name: string]: unknown;
           };
           content?: never;
         };
-        /** @description The issue does not exist */
+        /** @description The issue or request does not exist */
         404: {
           headers: {
             [name: string]: unknown;
@@ -4391,16 +4418,14 @@ export interface components {
       id?: $Read<components["schemas"]["UUID"]>;
       /** @description Unique identifier of the related project */
       projectId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Title of the related project */
+      projectTitle?: $Read<string>;
       /** @description Unique identifier of the related issue */
       issueId?: $Read<components["schemas"]["UUID"]>;
       /** @description Type of activity */
       activityType?: $Read<components["schemas"]["IssueEventType"]>;
       /** @description Title of the related issue */
-      title?: $Read<string>;
-      /** @description Description of the activity, e.g. a message text */
-      description?: $Read<string>;
-      /** @description Link to the frontend issue page */
-      link?: $Read<string>;
+      issueTitle?: $Read<string>;
       /** @description Unique identifier of the user who triggered this activity */
       actorId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who triggered this activity */
@@ -4408,15 +4433,19 @@ export interface components {
       /** @description Type of the related issue */
       issueType?: $Read<components["schemas"]["IssueType"]>;
       /** @description Status of the related issue */
-      status?: $Read<components["schemas"]["IssueStatus"]>;
+      issueStatus?: $Read<components["schemas"]["IssueStatus"]>;
+      /** @description Priority of the related issue */
+      issuePriority?: $Read<components["schemas"]["IssuePriority"]>;
       /** @description Unique identifier of the related rental agreement */
       agreementId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Names of the tenants of the related rental agreement, if any */
+      tenantNames?: $Read<string[]>;
       /** @description Unique identifier of the contractor organization involved, if any */
       organizationId?: $Read<components["schemas"]["UUID"]>;
       /** @description Unique identifier of the contractor involved, if any */
       contractorId?: $Read<components["schemas"]["UUID"]>;
-      /** @description Unique identifier of the assignee of the related issue */
-      assigneeId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Name of the contractor involved, if any */
+      contractorName?: $Read<string>;
       /** @description Whether the caller has already read this activity */
       read?: $Read<boolean>;
       /** @description Timestamp this activity was recorded at */
@@ -4570,15 +4599,11 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       senderRole?: $Read<components["schemas"]["UserContext"]>;
       attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
-      /** @description If true, the message is also copied into the tenant timeline of the issue */
-      messageToTenant?: boolean;
     };
     /** @description A list of contractor timelines */
     ContractorTimelineListJson: {
       /** @description Timeline entries */
       timelines?: $Read<components["schemas"]["ContractorTimelineJson"][]>;
-      /** @description Whether a new timeline entry can be sent to the tenant */
-      visibleToTenant?: $Read<boolean>;
     };
     /** @description A country item of a list */
     CountryItemJson: {
@@ -4755,7 +4780,13 @@ export interface components {
     MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
     /** @enum {string} */
     MessagePurpose:
-      "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
+      | "ISSUE_CREATED"
+      | "MESSAGE_SENT"
+      | "APPOINTMENT_REQUESTED"
+      | "APPOINTMENT_SCHEDULED"
+      | "STATUS_CHANGED"
+      | "REQUEST_CREATED"
+      | "REQUEST_ANSWERED";
     /** @description An attachment associated with a quotation request, quotation, or order placement */
     OrderAttachmentJson: {
       attachmentId?: components["schemas"]["UUID"];

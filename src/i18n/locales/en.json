@@ -66,7 +66,7 @@
   "projectDashboard.title": "This is the project dashboard page for project {0}.",
   "projectSelection.title": "Overview of Properties",
   "projectSelection.add": "Add Property",
-  "managerDashboard.projects.emptyState.text": "Welcome to Remsfal! Create your first property now to get started with managing it.",
+  "managerDashboard.projects.emptyState.text": "Welcome to REMSFAL! Create your first property now to get started with managing your real estate.",
   "managerDashboard.projects.emptyState.link": "Create property now",
   "managerDashboard.recentIssues.title": "Latest tasks",
   "projectSettings.title": "Property Settings",

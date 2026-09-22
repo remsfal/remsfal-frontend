@@ -20,6 +20,13 @@ vi.mock('@/features/project/issues', () => ({
   },
 }));
 
+vi.mock('@/features/manager/projects', () => ({
+  ProjectsWelcomeMessage: {
+    name: 'ProjectsWelcomeMessage',
+    template: '<div data-test="welcome-message-stub" />',
+  },
+}));
+
 describe('manager/dashboard.vue', () => {
   it('renders without errors', () => {
     const wrapper = mount(ManagerDashboardPage);
