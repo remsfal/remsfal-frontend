@@ -6,9 +6,11 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ProjectDashboard from '@/views/ProjectDashboard.vue'
+import { ProjectDashboardView } from '@/features/project/dashboard'
+import { ProjectsWelcomeMessage } from '@/features/manager/projects'
 </script>
 
 <template>
-  <ProjectDashboard />
+  <ProjectsWelcomeMessage />
+  <ProjectDashboardView />
 </template>
