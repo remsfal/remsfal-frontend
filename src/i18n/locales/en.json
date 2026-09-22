@@ -1136,7 +1136,6 @@
   "orderManagement.timeline.appointmentScheduledTitle": "Appointment scheduled by {senderName}",
   "orderManagement.timeline.statusChangedTitle": "Status changed",
   "orderManagement.timeline.entryFallbackTitle": "Update",
-  "orderManagement.timeline.recipientTenant": "Send message to tenant",
   "orderManagement.timeline.recipientManager": "Send message to manager",
   "orderPlacement.status.PLACED": "Placed",
   "orderPlacement.status.CONFIRMED": "Confirmed",
