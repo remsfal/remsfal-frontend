@@ -2,6 +2,8 @@
 import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
 import { tenantIssueRequestService, type IssueRequestJson }
   from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
@@ -31,8 +33,8 @@ const fetchRequests = async () => {
   }
 };
 
-const openRequest = (request: IssueRequestJson) => {
-  selectedRequest.value = request;
+const openRequest = (event: { data: IssueRequestJson }) => {
+  selectedRequest.value = event.data;
   showAnswerDialog.value = true;
 };
 
@@ -70,24 +72,31 @@ watch(() => props.issueId, fetchRequests);
         {{ t('tenantIssues.requests.loadError') }}
       </Message>
 
-      <ul v-else class="flex flex-col gap-2" data-testid="tenant-issue-requests-list">
-        <li v-for="request in requests" :key="request.issueRequestId">
-          <button
-            type="button"
-            class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-left transition
-              hover:border-primary hover:shadow-sm"
-            :data-testid="`tenant-issue-request-${request.issueRequestId}`"
-            @click="openRequest(request)"
-          >
-            <p class="truncate font-medium text-gray-900">
-              {{ request.message }}
-            </p>
-            <p v-if="formattedDate(request)" class="mt-1 text-sm text-gray-500">
-              {{ formattedDate(request) }}
-            </p>
-          </button>
-        </li>
-      </ul>
+      <DataTable
+        v-else
+        :value="requests"
+        dataKey="issueRequestId"
+        selectionMode="single"
+        :metaKeySelection="false"
+        :showHeaders="false"
+        data-testid="tenant-issue-requests-list"
+        @rowSelect="openRequest"
+      >
+        <Column field="message">
+          <template #body="{ data }">
+            <span class="font-medium truncate" :data-testid="`tenant-issue-request-${data.issueRequestId}`">
+              {{ data.message }}
+            </span>
+          </template>
+        </Column>
+        <Column field="createdAt">
+          <template #body="{ data }">
+            <span class="text-muted-color text-sm">
+              {{ formattedDate(data) }}
+            </span>
+          </template>
+        </Column>
+      </DataTable>
     </template>
   </BaseCard>
 

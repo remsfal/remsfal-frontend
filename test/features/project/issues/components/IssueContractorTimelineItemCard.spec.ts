@@ -88,7 +88,9 @@ describe('IssueContractorTimelineItemCard component', () => {
     const wrapper = mountItemCard(
       makeTimeline({
         attachments: [
-          { attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf' },
+          {
+            attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf'
+          },
         ],
       }),
     );
