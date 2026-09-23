@@ -21,8 +21,9 @@ const selectedFiles = ref<File[]>([]);
 const fileUploadKey = ref(0);
 const sending = ref(false);
 
-// The backend requires a message; attachments are optional.
-const canSubmit = computed(() => messageText.value.trim().length > 0 && !sending.value);
+const canSubmit = computed(
+  () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) && !sending.value,
+);
 
 const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
   const uniqueFiles = new Map<string, File>();

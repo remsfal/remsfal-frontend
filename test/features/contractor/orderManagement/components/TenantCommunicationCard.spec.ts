@@ -127,13 +127,20 @@ describe('TenantCommunicationCard', () => {
     expect(createSpy).toHaveBeenCalledWith('issue-1', { message: 'Anbei' }, []);
   });
 
-  it('keeps the submit button disabled when only files are selected', async () => {
+  it('enables submit when only files are selected and sends them with an empty message', async () => {
+    const createSpy = vi.spyOn(issueRequestService, 'createRequest').mockResolvedValue(undefined);
     const wrapper = mountCard();
+    const photo = makeFile('photo.png');
 
-    selectFiles(wrapper, [makeFile('photo.png')]);
+    selectFiles(wrapper, [photo]);
     await flushPromises();
 
-    expect(submitButton(wrapper).attributes('disabled')).toBeDefined();
+    expect(submitButton(wrapper).attributes('disabled')).toBeUndefined();
+
+    await submitButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(createSpy).toHaveBeenCalledWith('issue-1', { message: '' }, [photo]);
   });
 
   it('clears the selected files after a successful send', async () => {
