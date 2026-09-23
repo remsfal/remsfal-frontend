@@ -5,6 +5,7 @@ import Message from 'primevue/message';
 import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
 import QuotationRequestDetailsCard from '../components/QuotationRequestDetailsCard.vue';
 import ContractorOrderTimelineCard from '../components/ContractorOrderTimelineCard.vue';
+import TenantCommunicationCard from '../components/TenantCommunicationCard.vue';
 import { quotationRequestService, type QuotationRequestJson } from
   '@/features/contractor/orderManagement/services/QuotationRequestService';
 
@@ -62,6 +63,7 @@ watch(() => props.issueId, fetchRequest);
         :requestId="request.id"
         :title="t('tenantIssues.timeline.title')"
       />
+      <TenantCommunicationCard :issueId="props.issueId" />
     </template>
   </div>
 </template>
