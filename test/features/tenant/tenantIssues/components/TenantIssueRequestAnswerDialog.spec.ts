@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
+import FileUpload from 'primevue/fileupload';
 import TenantIssueRequestAnswerDialog from '@/features/tenant/tenantIssues/components/TenantIssueRequestAnswerDialog.vue';
 import { tenantIssueRequestService } from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
 import type { IssueRequestJson } from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
@@ -25,6 +26,9 @@ const BaseDialogStub = defineComponent({
     </div>
   `,
 });
+
+const makeFile = (name: string, size = 3, lastModified = 1) =>
+  new File(['x'.repeat(size)], name, { type: 'image/png', lastModified });
 
 const mockRequest: IssueRequestJson = {
   issueRequestId: 'req-1',
@@ -120,5 +124,88 @@ describe('TenantIssueRequestAnswerDialog', () => {
 
     expect((wrapper.get('[data-testid="request-answer-message-input"]').element as HTMLTextAreaElement).value)
       .toBe('');
+  });
+
+  it('enables submit when only files are selected and sends them with an empty message', async () => {
+    const answerSpy = vi.spyOn(tenantIssueRequestService, 'answerRequest').mockResolvedValue(undefined);
+    const wrapper = mountDialog();
+    const photo = makeFile('photo.png');
+
+    wrapper.getComponent(FileUpload).vm.$emit('select', { originalEvent: new Event('change'), files: [photo] });
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="request-answer-submit"]').attributes('disabled')).toBeUndefined();
+
+    await wrapper.get('[data-testid="request-answer-submit"]').trigger('click');
+    await flushPromises();
+
+    expect(answerSpy).toHaveBeenCalledWith('issue-1', 'req-1', { message: '' }, [photo]);
+  });
+
+  it('merges repeated file selections without duplicates', async () => {
+    const answerSpy = vi.spyOn(tenantIssueRequestService, 'answerRequest').mockResolvedValue(undefined);
+    const wrapper = mountDialog();
+    const first = makeFile('a.png', 3, 1);
+    const firstAgain = makeFile('a.png', 3, 1);
+    const second = makeFile('b.png', 5, 2);
+
+    const upload = wrapper.getComponent(FileUpload);
+    upload.vm.$emit('select', { originalEvent: new Event('change'), files: [first] });
+    upload.vm.$emit('select', { originalEvent: new Event('change'), files: [firstAgain, second] });
+    await flushPromises();
+
+    await wrapper.get('[data-testid="request-answer-submit"]').trigger('click');
+    await flushPromises();
+
+    expect(answerSpy).toHaveBeenCalledWith('issue-1', 'req-1', { message: '' }, [firstAgain, second]);
+  });
+
+  it('ignores a select event without a files array', async () => {
+    const wrapper = mountDialog();
+
+    wrapper.getComponent(FileUpload).vm.$emit('select', { originalEvent: new Event('change'), files: null });
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="request-answer-submit"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('does not submit when the request has no issueRequestId', async () => {
+    const answerSpy = vi.spyOn(tenantIssueRequestService, 'answerRequest');
+    const wrapper = mountDialog({ message: 'Ohne ID' });
+
+    await wrapper.get('[data-testid="request-answer-message-input"]').setValue('Antwort');
+    await wrapper.get('[data-testid="request-answer-submit"]').trigger('click');
+    await flushPromises();
+
+    expect(answerSpy).not.toHaveBeenCalled();
+    expect(wrapper.emitted('answered')).toBeUndefined();
+  });
+
+  it('disables the inputs while the answer is being sent', async () => {
+    let resolveAnswer: () => void = () => {};
+    vi.spyOn(tenantIssueRequestService, 'answerRequest').mockReturnValue(
+      new Promise<void>((resolve) => { resolveAnswer = resolve; }),
+    );
+    const wrapper = mountDialog();
+
+    await wrapper.get('[data-testid="request-answer-message-input"]').setValue('Antwort');
+    await wrapper.get('[data-testid="request-answer-submit"]').trigger('click');
+
+    expect(wrapper.get('[data-testid="request-answer-message-input"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[data-testid="request-answer-submit"]').attributes('disabled')).toBeDefined();
+
+    resolveAnswer();
+    await flushPromises();
+
+    expect(wrapper.emitted('answered')).toHaveLength(1);
+  });
+
+  it('forwards visibility changes from the dialog', async () => {
+    const wrapper = mountDialog();
+
+    wrapper.getComponent(BaseDialogStub).vm.$emit('update:visible', false);
+    await flushPromises();
+
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false]);
   });
 });
