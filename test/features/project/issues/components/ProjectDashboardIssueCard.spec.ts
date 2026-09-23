@@ -1,6 +1,6 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import RecentIssuesCard from '@/features/project/issues/components/RecentIssuesCard.vue';
+import ProjectDashboardIssueCard from '@/features/project/issues/components/ProjectDashboardIssueCard.vue';
 import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import type { ProjectItem } from '@/services/ProjectService';
@@ -29,7 +29,7 @@ function issue(overrides: Partial<IssueItemJson>): IssueItemJson {
   };
 }
 
-describe('RecentIssuesCard', () => {
+describe('ProjectDashboardIssueCard', () => {
   let wrapper: VueWrapper;
   let refreshProjectListMock: ReturnType<typeof vi.fn>;
 
@@ -48,7 +48,7 @@ describe('RecentIssuesCard', () => {
   });
 
   it('fetches the 5 latest issues across all projects', async () => {
-    wrapper = mount(RecentIssuesCard);
+    wrapper = mount(ProjectDashboardIssueCard);
     await flushPromises();
 
     expect(issueService.getLatestIssues).toHaveBeenCalledWith();
@@ -68,7 +68,7 @@ describe('RecentIssuesCard', () => {
       ],
     });
 
-    wrapper = mount(RecentIssuesCard);
+    wrapper = mount(ProjectDashboardIssueCard);
     await flushPromises();
 
     const rows = wrapper.findAll('[data-testid="recent-issues-row"]');
@@ -79,7 +79,7 @@ describe('RecentIssuesCard', () => {
   });
 
   it('shows the empty state when there are no issues', async () => {
-    wrapper = mount(RecentIssuesCard);
+    wrapper = mount(ProjectDashboardIssueCard);
     await flushPromises();
 
     expect(wrapper.text()).toContain('issueDashboard.empty');
@@ -89,7 +89,7 @@ describe('RecentIssuesCard', () => {
   it('shows loading skeletons while fetching', () => {
     vi.mocked(issueService.getLatestIssues).mockReturnValue(new Promise(() => {}));
 
-    wrapper = mount(RecentIssuesCard);
+    wrapper = mount(ProjectDashboardIssueCard);
 
     expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(true);
   });
@@ -98,7 +98,7 @@ describe('RecentIssuesCard', () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(issueService.getLatestIssues).mockRejectedValue(new Error('fail'));
 
-    wrapper = mount(RecentIssuesCard);
+    wrapper = mount(ProjectDashboardIssueCard);
     await flushPromises();
 
     expect(consoleErrorSpy).toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe('RecentIssuesCard', () => {
       issues: [issue({ id: 'clickable', projectId: 'p1' })],
     });
 
-    wrapper = mount(RecentIssuesCard);
+    wrapper = mount(ProjectDashboardIssueCard);
     await flushPromises();
 
     await wrapper.find('[data-testid="recent-issues-row"]').trigger('click');
