@@ -2,3 +2,4 @@ export { default as QuotationRequestsCard } from './components/QuotationRequests
 export { default as OrderPlacementRequestsCard } from './components/OrderPlacementRequestsCard.vue';
 export { default as OrderManagementDetailsView } from './views/OrderManagementDetailsView.vue';
 export { default as OrderManagementDashboardCards } from './components/OrderManagementDashboardCards.vue';
+export { default as TenantCommunicationCard } from './components/TenantCommunicationCard.vue';

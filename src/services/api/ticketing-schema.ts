@@ -4142,7 +4142,7 @@ export interface paths {
     put?: never;
     /**
      * Answer a request a contractor has sent about an issue.
-     * @description Deletes the request and records the tenant's response in both the tenant's and the contractor's timeline for the issue.
+     * @description Deletes the request and records the tenant's response, optionally with file attachments, in both the tenant's and the contractor's timeline for the issue.
      */
     post: {
       parameters: {
@@ -4158,7 +4158,21 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["IssueRequestJson"];
+          "multipart/form-data": {
+            /** @description Response information as JSON */
+            response: {
+              issueRequestId?: $Read<components["schemas"]["UUID"]>;
+              organizationId?: $Read<components["schemas"]["UUID"]>;
+              agreementId?: $Read<components["schemas"]["UUID"]>;
+              message: string;
+              /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
+              attachmentIds?: string[];
+              createdAt?: $Read<components["schemas"]["Instant"]>;
+              modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            };
+            /** @description One or more files to attach to the response */
+            attachment?: string[];
+          };
         };
       };
       responses: {
