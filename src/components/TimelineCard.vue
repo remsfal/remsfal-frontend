@@ -19,6 +19,7 @@ interface Props {
   hideComposer?: boolean;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
+  sendButtonLabel?: string;
 }
 
 const props = defineProps<Props>();
@@ -43,7 +44,7 @@ const loadErrorText = t('timeline.loadError');
 const messagePlaceholder = t('timeline.messagePlaceholder');
 const uploadButtonLabel = t('timeline.uploadButton');
 const uploadEmptyText = t('timeline.uploadEmpty');
-const sendButtonLabel = t('timeline.sendMessage');
+const defaultSendButtonLabel = t('timeline.sendMessage');
 const sendErrorMessage = t('timeline.createError');
 
 const {
@@ -152,10 +153,10 @@ const {
           <div class="flex justify-end">
             <Button
               :data-testid="`${testIdPrefix}-message-submit`"
-              :label="sendButtonLabel"
+              :label="props.sendButtonLabel ?? defaultSendButtonLabel"
               icon="pi pi-send"
               :loading="sending"
-              :disabled="!canSubmit"
+              :disabled="!canSubmit || loading"
               @click="submit"
             />
           </div>

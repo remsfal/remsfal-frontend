@@ -77,10 +77,8 @@ describe('IssueContractorTimelineCard component', () => {
   it('enables sending as soon as a quotation request has been sent to exactly one contractor', async () => {
     vi.mocked(quotationRequestService.getQuotationRequests)
       .mockResolvedValueOnce({ items: [makeQuotationRequest()] });
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValueOnce({
-      timelines: [makeTimeline({ organizationId: 'org-1' })],
-      visibleToTenant: false,
-    });
+    vi.mocked(contractorTimelineService.getTimelineEntries)
+      .mockResolvedValueOnce({timelines: [makeTimeline({ organizationId: 'org-1' })],});
 
     const wrapper = await mountCardShallow('issue-1');
 
@@ -95,7 +93,7 @@ describe('IssueContractorTimelineCard component', () => {
     const items = [makeQuotationRequest({ id: 'qr-1' }), makeQuotationRequest({ id: 'qr-2' })];
     vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items });
     vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockResolvedValueOnce({ timelines: [], visibleToTenant: false });
+      .mockResolvedValueOnce({ timelines: [] });
 
     const wrapper = await mountCardShallow('issue-1');
 
@@ -105,7 +103,7 @@ describe('IssueContractorTimelineCard component', () => {
   it('sends messages using the resolved organizationId', async () => {
     vi.mocked(quotationRequestService.getQuotationRequests)
       .mockResolvedValueOnce({ items: [makeQuotationRequest({ organizationId: 'org-9' })] });
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValueOnce({ timelines: [], visibleToTenant: false });
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValueOnce({ timelines: [] });
     vi.mocked(contractorTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
 
     const wrapper = await mountCardShallow('issue-1');
@@ -123,7 +121,7 @@ describe('IssueContractorTimelineCard component', () => {
 
   it('hides the composer when no contractor has been requested yet', async () => {
     vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items: [] });
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValueOnce({ timelines: [], visibleToTenant: false });
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValueOnce({ timelines: [] });
 
     const wrapper = await mountCardFull('issue-1');
 
@@ -149,7 +147,6 @@ describe('IssueContractorTimelineCard component', () => {
         makeTimeline({ timelineId: 't-1', organizationId: 'org-1' }),
         makeTimeline({ timelineId: 't-2', organizationId: 'org-2' }),
       ],
-      visibleToTenant: false,
     });
 
     const wrapper = await mountCardFull('issue-1');
@@ -180,7 +177,7 @@ describe('IssueContractorTimelineCard component', () => {
     vi.mocked(quotationRequestService.getQuotationRequests)
       .mockResolvedValueOnce({ items: [makeQuotationRequest()] });
     vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockResolvedValueOnce({ timelines: [timeline], visibleToTenant: false });
+      .mockResolvedValueOnce({ timelines: [timeline] });
 
     const { default: IssueContractorTimelineCard } = await import(
       '@/features/project/issues/components/IssueContractorTimelineCard.vue'

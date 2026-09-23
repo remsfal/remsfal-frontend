@@ -74,6 +74,8 @@ export function useTimelineItem<T extends TimelineEntry>(
         return t(`${titleNamespace}.appointmentScheduledTitle`, { senderName });
       case 'STATUS_CHANGED':
         return t(`${titleNamespace}.statusChangedTitle`);
+      case 'REQUEST_CREATED':
+        return t(`${titleNamespace}.requestCreatedTitle`, { senderName });
       default:
         return t(`${titleNamespace}.entryFallbackTitle`);
     }

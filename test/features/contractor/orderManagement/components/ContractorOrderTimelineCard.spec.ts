@@ -5,6 +5,7 @@ import ContractorOrderTimelineItemCard from
   '@/features/contractor/orderManagement/components/ContractorOrderTimelineItemCard.vue';
 import { contractorOrderTimelineService, type ContractorTimelineJson }
   from '@/features/contractor/orderManagement/services/ContractorOrderTimelineService';
+import { useEventBus } from '@/stores/EventStore';
 
 vi.mock('@/features/contractor/orderManagement/services/ContractorOrderTimelineService', async () => {
   const actual = await vi.importActual<
@@ -56,8 +57,7 @@ const mountCard = async (props: Partial<CardProps> = {}) => {
 
 describe('ContractorOrderTimelineCard component', () => {
   it('loads timeline entries for the given issue', async () => {
-    const timelineList = { timelines: [makeTimeline()], visibleToTenant: false };
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce(timelineList);
+    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce([makeTimeline()]);
 
     const wrapper = await mountCardShallow();
     const result = await wrapper.getComponent(TimelineCard).props('load')();
@@ -67,8 +67,7 @@ describe('ContractorOrderTimelineCard component', () => {
   });
 
   it('disables the submit button while reloading after issueId changes', async () => {
-    const timelineList = { timelines: [], visibleToTenant: false };
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce(timelineList);
+    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce([]);
 
     const wrapper = await mountCard();
     await flushPromises();
@@ -76,7 +75,7 @@ describe('ContractorOrderTimelineCard component', () => {
     await wrapper.get('[data-testid="timeline-message-input"]').setValue('Entwurf');
     expect(wrapper.get('[data-testid="timeline-message-submit"]').attributes('disabled')).toBeUndefined();
 
-    let resolveSecondLoad: ((value: { timelines: never[]; visibleToTenant: boolean }) => void) | undefined;
+    let resolveSecondLoad: ((value: never[]) => void) | undefined;
     vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockReturnValueOnce(
       new Promise((resolve) => { resolveSecondLoad = resolve; }),
     );
@@ -85,26 +84,27 @@ describe('ContractorOrderTimelineCard component', () => {
 
     expect(wrapper.get('[data-testid="timeline-message-submit"]').attributes('disabled')).toBeDefined();
 
-    resolveSecondLoad?.({ timelines: [], visibleToTenant: false });
+    resolveSecondLoad?.([]);
     await flushPromises();
   });
 
-  it('resets the recipient picker while reloading after issueId changes', async () => {
-    const timelineList = { timelines: [], visibleToTenant: true };
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce(timelineList);
+  it('refetches the timeline when issueRequest:created fires for the same issue', async () => {
+    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockClear();
+    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValue([]);
 
     const wrapper = await mountCard();
     await flushPromises();
+    expect(contractorOrderTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
 
-    expect(wrapper.find('[data-testid="timeline-recipient-tenant"]').exists()).toBe(true);
+    useEventBus().emit('issueRequest:created', { issueId: 'other-issue' });
+    await flushPromises();
+    expect(contractorOrderTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
 
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockReturnValueOnce(
-      new Promise(() => {}),
-    );
-    await wrapper.setProps({ issueId: 'issue-2' });
+    useEventBus().emit('issueRequest:created', { issueId: 'issue-1' });
+    await flushPromises();
+    expect(contractorOrderTimelineService.getTimelineEntries).toHaveBeenCalledTimes(2);
 
-    expect(wrapper.find('[data-testid="timeline-recipient-tenant"]').exists()).toBe(false);
-    expect(wrapper.find('[data-testid="timeline-message-input"]').exists()).toBe(true);
+    wrapper.unmount();
   });
 
   it('sends messages with attachments for the given issue', async () => {
@@ -117,9 +117,7 @@ describe('ContractorOrderTimelineCard component', () => {
 
     expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
       'issue-1',
-      {
-        purpose: 'MESSAGE_SENT', message: 'Hallo', messageToTenant: false
-      },
+      { purpose: 'MESSAGE_SENT', message: 'Hallo' },
       files,
     );
   });
@@ -134,89 +132,14 @@ describe('ContractorOrderTimelineCard component', () => {
 
     expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
       'issue-1',
-      {
-        purpose: 'MESSAGE_SENT', message: '', messageToTenant: false
-      },
+      { purpose: 'MESSAGE_SENT', message: '' },
       files,
     );
   });
 
-  it('sets messageToTenant to true when the tenant recipient button is clicked', async () => {
-    const timelineList = { timelines: [], visibleToTenant: true };
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce(timelineList);
-    vi.mocked(contractorOrderTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
-
-    const wrapper = await mountCard();
-    await flushPromises();
-
-    await wrapper.get('[data-testid="timeline-recipient-tenant"]').trigger('click');
-    await wrapper.get('[data-testid="timeline-message-input"]').setValue('Hallo');
-    await wrapper.get('[data-testid="timeline-message-submit"]').trigger('click');
-    await flushPromises();
-
-    expect(contractorOrderTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
-      'issue-1',
-      {
-        purpose: 'MESSAGE_SENT', message: 'Hallo', messageToTenant: true
-      },
-      [],
-    );
-  });
-
-  it('returns to the recipient picker when cancel is clicked', async () => {
-    const timelineList = { timelines: [], visibleToTenant: true };
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce(timelineList);
-
-    const wrapper = await mountCard();
-    await flushPromises();
-
-    await wrapper.get('[data-testid="timeline-recipient-manager"]').trigger('click');
-    await wrapper.get('[data-testid="timeline-message-input"]').setValue('Entwurf');
-    await wrapper.get('[data-testid="timeline-message-cancel"]').trigger('click');
-
-    expect(wrapper.find('[data-testid="timeline-message-input"]').exists()).toBe(false);
-    expect(wrapper.find('[data-testid="timeline-recipient-tenant"]').exists()).toBe(true);
-    expect(wrapper.find('[data-testid="timeline-recipient-manager"]').exists()).toBe(true);
-  });
-
-  it('does not render a cancel button when the tenant cannot be messaged', async () => {
-    const timelineList = { timelines: [], visibleToTenant: false };
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce(timelineList);
-
-    const wrapper = await mountCard();
-    await flushPromises();
-
-    expect(wrapper.find('[data-testid="timeline-message-cancel"]').exists()).toBe(false);
-    expect(wrapper.find('[data-testid="timeline-message-submit"]').exists()).toBe(true);
-  });
-
-  it('opens the composer immediately when the tenant cannot be messaged', async () => {
-    const timelineList = { timelines: [], visibleToTenant: false };
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce(timelineList);
-
-    const wrapper = await mountCard();
-    await flushPromises();
-
-    expect(wrapper.find('[data-testid="timeline-recipient-manager"]').exists()).toBe(false);
-    expect(wrapper.find('[data-testid="timeline-message-input"]').exists()).toBe(true);
-  });
-
-  it('shows recipient buttons and hides the composer when the tenant can be messaged', async () => {
-    const timelineList = { timelines: [], visibleToTenant: true };
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce(timelineList);
-
-    const wrapper = await mountCard();
-    await flushPromises();
-
-    expect(wrapper.find('[data-testid="timeline-recipient-tenant"]').exists()).toBe(true);
-    expect(wrapper.find('[data-testid="timeline-recipient-manager"]').exists()).toBe(true);
-    expect(wrapper.find('[data-testid="timeline-message-input"]').exists()).toBe(false);
-  });
-
   it('renders ContractorOrderTimelineItemCard for each entry with item and requestId', async () => {
     const timeline = makeTimeline({ timelineId: 'abc' });
-    const timelineList = { timelines: [timeline], visibleToTenant: false };
-    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce(timelineList);
+    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce([timeline]);
 
     const { default: ContractorOrderTimelineCard } = await import(
       '@/features/contractor/orderManagement/components/ContractorOrderTimelineCard.vue'
