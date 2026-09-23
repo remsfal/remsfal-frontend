@@ -3,6 +3,8 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
+import FileUpload from 'primevue/fileupload';
+import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import BaseCard from '@/components/BaseCard.vue';
 import { useAppToast } from '@/composables/useAppToast';
 import { useEventBus } from '@/stores/EventStore';
@@ -15,18 +17,44 @@ const appToast = useAppToast();
 const eventBus = useEventBus();
 
 const messageText = ref('');
+const selectedFiles = ref<File[]>([]);
+const fileUploadKey = ref(0);
 const sending = ref(false);
 
+// The backend requires a message; attachments are optional.
 const canSubmit = computed(() => messageText.value.trim().length > 0 && !sending.value);
+
+const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
+  const uniqueFiles = new Map<string, File>();
+  [...currentFiles, ...newFiles].forEach((file) => {
+    uniqueFiles.set(`${file.name}-${file.size}-${file.lastModified}`, file);
+  });
+  return Array.from(uniqueFiles.values());
+};
+
+const onFilesSelected = (event: FileUploadSelectEvent) => {
+  const files = Array.isArray(event.files) ? event.files : [];
+  selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files as File[]);
+};
+
+const resetComposer = () => {
+  messageText.value = '';
+  selectedFiles.value = [];
+  fileUploadKey.value += 1;
+};
 
 const submit = async () => {
   if (!canSubmit.value) return;
 
   sending.value = true;
   try {
-    await issueRequestService.createRequest(props.issueId, { message: messageText.value.trim() });
+    await issueRequestService.createRequest(
+      props.issueId,
+      { message: messageText.value.trim() },
+      selectedFiles.value,
+    );
     appToast.success(t('orderManagement.tenantCommunication.sendSuccess'));
-    messageText.value = '';
+    resetComposer();
     // Backend copies the request into the contractor/tenant timeline on creation.
     eventBus.emit('issueRequest:created', { issueId: props.issueId });
   } catch (sendError) {
@@ -56,6 +84,25 @@ const submit = async () => {
           :placeholder="t('orderManagement.tenantCommunication.messagePlaceholder')"
           :disabled="sending"
         />
+        <FileUpload
+          :key="fileUploadKey"
+          mode="advanced"
+          :chooseLabel="t('timeline.uploadButton')"
+          multiple
+          customUpload
+          :showUploadButton="false"
+          :showCancelButton="false"
+          accept="image/*,video/*,application/pdf"
+          :maxFileSize="10485760"
+          :fileLimit="10"
+          :disabled="sending"
+          data-testid="tenant-communication-file-upload"
+          @select="onFilesSelected"
+        >
+          <template #empty>
+            <div>{{ t('timeline.uploadEmpty') }}</div>
+          </template>
+        </FileUpload>
         <div class="flex justify-end">
           <Button
             data-testid="tenant-communication-message-submit"
