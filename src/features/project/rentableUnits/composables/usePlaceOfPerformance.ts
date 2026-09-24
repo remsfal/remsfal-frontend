@@ -42,12 +42,6 @@ export function usePlaceOfPerformance() {
     return (await siteService.getSite(projectId, node.key)).address;
   };
 
-  /**
-   * Resolves where work on the given rental unit takes place: the address of the nearest
-   * building or site on the path to the unit (the unit itself included), plus the unit's
-   * title and location. Apartments, storages and commercials inherit their building's
-   * address; properties have no address.
-   */
   const resolvePlaceOfPerformance = async (projectId: string, rentalUnitId: string): Promise<PlaceOfPerformance> => {
     await rentableUnitsStore.fetchRentalUnitTree(projectId);
     const path = findPath(rentableUnitsStore.rentableUnitTree, rentalUnitId, []) ?? [];
