@@ -1,0 +1,98 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { setActivePinia, createPinia } from 'pinia';
+import { placeOfPerformanceService } from '@/features/project/rentableUnits/services/PlaceOfPerformanceService';
+import {propertyService,
+  type PropertyListJson,
+  type RentalUnitTreeNodeJson,} from '@/features/project/rentableUnits/services/PropertyService';
+import { buildingService, type BuildingJson } from '@/features/project/rentableUnits/services/BuildingService';
+import { siteService, type SiteJson } from '@/features/project/rentableUnits/services/SiteService';
+import { findUnitPath } from '@/features/project/rentableUnits/utils/findUnitPath';
+
+const buildingAddress = {
+  street: 'Hauptstraße 5', zip: '14467', city: 'Potsdam', province: 'Brandenburg', countryCode: 'DE'
+};
+const siteAddress = {
+  street: 'Gartenweg 1', zip: '14467', city: 'Potsdam', province: 'Brandenburg', countryCode: 'DE'
+};
+
+const tree = [
+  {
+    key: 'prop-1',
+    data: { type: 'PROPERTY', title: 'Grundstück' },
+    children: [
+      {
+        key: 'bld-1',
+        data: {
+          type: 'BUILDING', title: 'Haus A', location: 'Vorderhaus'
+        },
+        children: [{
+          key: 'apt-1', data: {
+            type: 'APARTMENT', title: 'Wohnung 3.2', location: '3. OG links'
+          }
+        }],
+      },
+      {
+        key: 'site-1', data: {
+          type: 'SITE', title: 'Garten', location: 'Hinterhof'
+        }
+      },
+    ],
+  },
+] as RentalUnitTreeNodeJson[];
+
+describe('findUnitPath', () => {
+  it('returns the path from the root to the target node', () => {
+    expect(findUnitPath(tree, 'apt-1')?.map((node) => node.key)).toEqual(['prop-1', 'bld-1', 'apt-1']);
+  });
+
+  it('returns null for an unknown key', () => {
+    expect(findUnitPath(tree, 'unknown')).toBeNull();
+  });
+});
+
+describe('PlaceOfPerformanceService', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.restoreAllMocks();
+    vi.spyOn(propertyService, 'getPropertyTree').mockResolvedValue({ properties: tree } as PropertyListJson);
+    vi.spyOn(buildingService, 'getBuilding').mockResolvedValue({ address: buildingAddress } as BuildingJson);
+    vi.spyOn(siteService, 'getSite').mockResolvedValue({ address: siteAddress } as SiteJson);
+  });
+
+  it('uses the address of the parent building for an apartment', async () => {
+    const result = await placeOfPerformanceService.resolve('proj-1', 'apt-1');
+    expect(buildingService.getBuilding).toHaveBeenCalledWith('proj-1', 'bld-1');
+    expect(result).toEqual({
+      address: buildingAddress, rentalUnitType: 'APARTMENT', rentalUnitTitle: 'Wohnung 3.2', rentalUnitLocation: '3. OG links'
+    });
+  });
+
+  it('uses the own address for a building', async () => {
+    const result = await placeOfPerformanceService.resolve('proj-1', 'bld-1');
+    expect(buildingService.getBuilding).toHaveBeenCalledWith('proj-1', 'bld-1');
+    expect(result).toEqual({
+      address: buildingAddress, rentalUnitType: 'BUILDING', rentalUnitTitle: 'Haus A', rentalUnitLocation: 'Vorderhaus'
+    });
+  });
+
+  it('uses the own address for a site', async () => {
+    const result = await placeOfPerformanceService.resolve('proj-1', 'site-1');
+    expect(siteService.getSite).toHaveBeenCalledWith('proj-1', 'site-1');
+    expect(result).toEqual({
+      address: siteAddress, rentalUnitType: 'SITE', rentalUnitTitle: 'Garten', rentalUnitLocation: 'Hinterhof'
+    });
+  });
+
+  it('returns no address for a property', async () => {
+    const result = await placeOfPerformanceService.resolve('proj-1', 'prop-1');
+    expect(buildingService.getBuilding).not.toHaveBeenCalled();
+    expect(siteService.getSite).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      address: undefined, rentalUnitType: 'PROPERTY', rentalUnitTitle: 'Grundstück', rentalUnitLocation: undefined
+    });
+  });
+
+  it('returns an empty result when the unit is not part of the tree', async () => {
+    expect(await placeOfPerformanceService.resolve('proj-1', 'unknown')).toEqual({});
+  });
+});
