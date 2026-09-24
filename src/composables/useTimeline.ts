@@ -21,14 +21,46 @@ export interface UseTimelineOptions {
   sendErrorLogLabel?: string;
 }
 
+export function useTimelineComposer() {
+  const messageText = ref('');
+  const selectedFiles = ref<File[]>([]);
+  const fileUploadKey = ref(0);
+
+  const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
+    const uniqueFiles = new Map<string, File>();
+    [...currentFiles, ...newFiles].forEach((file) => {
+      uniqueFiles.set(`${file.name}-${file.size}-${file.lastModified}`, file);
+    });
+    return Array.from(uniqueFiles.values());
+  };
+
+  const onFilesSelected = (event: FileUploadSelectEvent) => {
+    const files = Array.isArray(event.files) ? event.files : [];
+    selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files as File[]);
+  };
+
+  const resetComposer = () => {
+    messageText.value = '';
+    selectedFiles.value = [];
+    fileUploadKey.value += 1;
+  };
+
+  return {
+    messageText,
+    selectedFiles,
+    fileUploadKey,
+    onFilesSelected,
+    resetComposer,
+  };
+}
+
 export function useTimeline(options: UseTimelineOptions) {
   const appToast = useAppToast();
   const loading = ref(false);
   const error = ref(false);
   const items = ref([]) as Ref<TimelineEntry[]>;
-  const messageText = ref('');
-  const selectedFiles = ref<File[]>([]);
-  const fileUploadKey = ref(0);
+  const { messageText, selectedFiles, fileUploadKey, onFilesSelected, resetComposer } =
+    useTimelineComposer();
   const sending = ref(false);
 
   const canSubmit = computed(
@@ -58,25 +90,6 @@ export function useTimeline(options: UseTimelineOptions) {
         loading.value = false;
       }
     }
-  };
-
-  const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
-    const uniqueFiles = new Map<string, File>();
-    [...currentFiles, ...newFiles].forEach((file) => {
-      uniqueFiles.set(`${file.name}-${file.size}-${file.lastModified}`, file);
-    });
-    return Array.from(uniqueFiles.values());
-  };
-
-  const onFilesSelected = (event: FileUploadSelectEvent) => {
-    const files = Array.isArray(event.files) ? event.files : [];
-    selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files as File[]);
-  };
-
-  const resetComposer = () => {
-    messageText.value = '';
-    selectedFiles.value = [];
-    fileUploadKey.value += 1;
   };
 
   const cancel = () => {

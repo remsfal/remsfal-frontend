@@ -4,9 +4,9 @@ import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import FileUpload from 'primevue/fileupload';
-import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import BaseCard from '@/components/BaseCard.vue';
 import { useAppToast } from '@/composables/useAppToast';
+import { useTimelineComposer } from '@/composables/useTimeline';
 import { useEventBus } from '@/stores/EventStore';
 import { issueRequestService } from '@/features/contractor/orderManagement/services/IssueRequestService';
 
@@ -16,33 +16,13 @@ const { t } = useI18n();
 const appToast = useAppToast();
 const eventBus = useEventBus();
 
-const messageText = ref('');
-const selectedFiles = ref<File[]>([]);
-const fileUploadKey = ref(0);
+const { messageText, selectedFiles, fileUploadKey, onFilesSelected, resetComposer } =
+  useTimelineComposer();
 const sending = ref(false);
 
 const canSubmit = computed(
   () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) && !sending.value,
 );
-
-const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
-  const uniqueFiles = new Map<string, File>();
-  [...currentFiles, ...newFiles].forEach((file) => {
-    uniqueFiles.set(`${file.name}-${file.size}-${file.lastModified}`, file);
-  });
-  return Array.from(uniqueFiles.values());
-};
-
-const onFilesSelected = (event: FileUploadSelectEvent) => {
-  const files = Array.isArray(event.files) ? event.files : [];
-  selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files as File[]);
-};
-
-const resetComposer = () => {
-  messageText.value = '';
-  selectedFiles.value = [];
-  fileUploadKey.value += 1;
-};
 
 const submit = async () => {
   if (!canSubmit.value) return;
