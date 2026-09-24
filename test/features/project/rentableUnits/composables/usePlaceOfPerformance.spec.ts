@@ -52,7 +52,7 @@ describe('usePlaceOfPerformance', () => {
     const result = await usePlaceOfPerformance().resolvePlaceOfPerformance('proj-1', 'apt-1');
     expect(buildingService.getBuilding).toHaveBeenCalledWith('proj-1', 'bld-1');
     expect(result).toEqual({
-      address: buildingAddress, rentalUnitType: 'APARTMENT', rentalUnitTitle: 'Wohnung 3.2', rentalUnitLocation: '3. OG links'
+      address: buildingAddress, rentalUnitTitle: 'Wohnung 3.2', rentalUnitLocation: '3. OG links'
     });
   });
 
@@ -60,7 +60,7 @@ describe('usePlaceOfPerformance', () => {
     const result = await usePlaceOfPerformance().resolvePlaceOfPerformance('proj-1', 'bld-1');
     expect(buildingService.getBuilding).toHaveBeenCalledWith('proj-1', 'bld-1');
     expect(result).toEqual({
-      address: buildingAddress, rentalUnitType: 'BUILDING', rentalUnitTitle: 'Haus A', rentalUnitLocation: 'Vorderhaus'
+      address: buildingAddress, rentalUnitTitle: 'Haus A', rentalUnitLocation: 'Vorderhaus'
     });
   });
 
@@ -68,7 +68,7 @@ describe('usePlaceOfPerformance', () => {
     const result = await usePlaceOfPerformance().resolvePlaceOfPerformance('proj-1', 'site-1');
     expect(siteService.getSite).toHaveBeenCalledWith('proj-1', 'site-1');
     expect(result).toEqual({
-      address: siteAddress, rentalUnitType: 'SITE', rentalUnitTitle: 'Garten', rentalUnitLocation: 'Hinterhof'
+      address: siteAddress, rentalUnitTitle: 'Garten', rentalUnitLocation: 'Hinterhof'
     });
   });
 
@@ -77,7 +77,7 @@ describe('usePlaceOfPerformance', () => {
     expect(buildingService.getBuilding).not.toHaveBeenCalled();
     expect(siteService.getSite).not.toHaveBeenCalled();
     expect(result).toEqual({
-      address: undefined, rentalUnitType: 'PROPERTY', rentalUnitTitle: 'Grundstück', rentalUnitLocation: undefined
+      address: undefined, rentalUnitTitle: 'Grundstück', rentalUnitLocation: undefined
     });
   });
 

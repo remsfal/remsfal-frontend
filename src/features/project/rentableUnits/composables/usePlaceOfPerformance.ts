@@ -1,14 +1,12 @@
 import type { AddressJson } from '@/services/AddressService';
 import {EntityType,
-  type RentalUnitTreeNodeJson,
-  type UnitType,} from '@/features/project/rentableUnits/services/PropertyService';
+  type RentalUnitTreeNodeJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 export interface PlaceOfPerformance {
   address?: AddressJson;
-  rentalUnitType?: UnitType;
   rentalUnitTitle?: string;
   rentalUnitLocation?: string;
 }
@@ -47,7 +45,7 @@ export function usePlaceOfPerformance() {
   /**
    * Resolves where work on the given rental unit takes place: the address of the nearest
    * building or site on the path to the unit (the unit itself included), plus the unit's
-   * type, title and location. Apartments, storages and commercials inherit their building's
+   * title and location. Apartments, storages and commercials inherit their building's
    * address; properties have no address.
    */
   const resolvePlaceOfPerformance = async (projectId: string, rentalUnitId: string): Promise<PlaceOfPerformance> => {
@@ -59,7 +57,6 @@ export function usePlaceOfPerformance() {
     const addressNode = path.findLast((node) => ADDRESS_UNIT_TYPES.includes(node.data?.type ?? ''));
     return {
       address: await fetchAddress(projectId, addressNode),
-      rentalUnitType: unit.data?.type,
       rentalUnitTitle: unit.data?.title,
       rentalUnitLocation: unit.data?.location,
     };

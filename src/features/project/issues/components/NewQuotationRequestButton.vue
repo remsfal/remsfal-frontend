@@ -15,8 +15,7 @@ import { quotationRequestService } from '@/features/project/issues/services/Quot
 import type { CreateQuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
 import { type ContractorJson, ContractorMultiSelect, NewContractorButton } from '@/features/project/contractors';
 import { type PlaceOfPerformance, usePlaceOfPerformance } from '@/features/project/rentableUnits';
-import { getPrimaryRentalUnitId, rentalAgreementService } from '@/features/project/rentalAgreements';
-import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
+import { issueService } from '@/features/project/issues/services/IssueService';
 import { projectService } from '@/services/ProjectService';
 import type { AddressJson } from '@/services/AddressService';
 
@@ -70,21 +69,11 @@ async function ensureBillingRecipientDataLoaded() {
   await fetchBillingRecipientData();
 }
 
-// Issues without an explicit rental unit (e.g. terminations or issues created by managers)
-// fall back to the most specific unit rented under the issue's rental agreement.
-async function findRentalUnitId(issue: IssueJson): Promise<string | undefined> {
-  if (issue.rentalUnitId) return issue.rentalUnitId;
-  if (!issue.agreementId) return undefined;
-  const agreement = await rentalAgreementService.getRentalAgreement(props.projectId, issue.agreementId);
-  return getPrimaryRentalUnitId(agreement);
-}
-
 async function fetchPlaceOfPerformance() {
   try {
     const issue = await issueService.getIssue(props.issueId);
-    const rentalUnitId = await findRentalUnitId(issue);
-    placeOfPerformance.value = rentalUnitId
-      ? await resolvePlaceOfPerformance(props.projectId, rentalUnitId)
+    placeOfPerformance.value = issue.rentalUnitId
+      ? await resolvePlaceOfPerformance(props.projectId, issue.rentalUnitId)
       : {};
   } catch (error) {
     console.error('Failed to fetch place of performance:', error);
@@ -121,7 +110,6 @@ const onSubmit = async (event: FormSubmitEvent) => {
     projectCareOf: projectCareOf.value,
     billingAddress: billingAddress.value,
     placeOfPerformance: placeOfPerformance.value?.address,
-    rentalUnitType: placeOfPerformance.value?.rentalUnitType,
     rentalUnitTitle: placeOfPerformance.value?.rentalUnitTitle,
     rentalUnitLocation: placeOfPerformance.value?.rentalUnitLocation,
   };

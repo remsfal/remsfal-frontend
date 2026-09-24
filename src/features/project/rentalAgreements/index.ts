@@ -13,5 +13,3 @@ export { default as RentalAgreementListCard } from './components/RentalAgreement
 export { default as TenantListCard } from './components/TenantListCard.vue';
 export { default as RentalAgreementSelect } from './components/RentalAgreementSelect.vue';
 export type { RentalAgreementItemJson, RentJson } from './services/RentalAgreementService';
-export { rentalAgreementService } from './services/RentalAgreementService';
-export { getPrimaryRentalUnitId } from './utils/primaryRentalUnit';

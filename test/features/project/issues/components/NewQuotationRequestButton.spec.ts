@@ -6,8 +6,6 @@ import NewQuotationRequestButton from '@/features/project/issues/components/NewQ
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 import { projectService } from '@/services/ProjectService';
 import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
-import {rentalAgreementService,
-  type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 const addMock = vi.fn();
 const { resolvePlaceOfPerformanceMock, placeOfPerformanceModuleMock } = vi.hoisted(() => {
@@ -66,7 +64,6 @@ describe('NewQuotationRequestButton', () => {
     vi.spyOn(projectService, 'getProject').mockResolvedValue(mockProject);
     vi.spyOn(issueService, 'getIssue').mockResolvedValue({ id: 'issue-1' } as IssueJson);
     resolvePlaceOfPerformanceMock.mockResolvedValue({});
-    vi.spyOn(rentalAgreementService, 'getRentalAgreement').mockResolvedValue({} as RentalAgreementJson);
   });
 
   const mountButton = (props = { projectId: 'proj-1', issueId: 'issue-1' }) =>
@@ -156,37 +153,11 @@ describe('NewQuotationRequestButton', () => {
     expect(resolvePlaceOfPerformanceMock).toHaveBeenCalledWith('proj-1', 'apt-1');
   });
 
-  it('does not resolve a place of performance when the issue has neither rental unit nor agreement', async () => {
+  it('does not resolve a place of performance when the issue has no rental unit', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({ id: 'issue-1', agreementId: 'agr-1' } as IssueJson);
     mountButton();
     await flushPromises();
-    expect(rentalAgreementService.getRentalAgreement).not.toHaveBeenCalled();
     expect(resolvePlaceOfPerformanceMock).not.toHaveBeenCalled();
-  });
-
-  it('falls back to the primary rental unit of the agreement when the issue has no rental unit', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue(
-      { id: 'issue-1', agreementId: 'agr-1' } as IssueJson,
-    );
-    vi.mocked(rentalAgreementService.getRentalAgreement).mockResolvedValue({
-      storageRents: [{ rentalUnitId: 'storage-1' }],
-      buildingRents: [{ rentalUnitId: 'bld-1' }],
-    } as RentalAgreementJson);
-    mountButton();
-    await flushPromises();
-    expect(rentalAgreementService.getRentalAgreement).toHaveBeenCalledWith('proj-1', 'agr-1');
-    expect(resolvePlaceOfPerformanceMock).toHaveBeenCalledWith('proj-1', 'bld-1');
-  });
-
-  it('prefers the rental unit of the issue over the agreement', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue(
-      {
-        id: 'issue-1', agreementId: 'agr-1', rentalUnitId: 'apt-1'
-      } as IssueJson,
-    );
-    mountButton();
-    await flushPromises();
-    expect(rentalAgreementService.getRentalAgreement).not.toHaveBeenCalled();
-    expect(resolvePlaceOfPerformanceMock).toHaveBeenCalledWith('proj-1', 'apt-1');
   });
 
   it('sends the place of performance with the quotation request', async () => {
@@ -194,7 +165,6 @@ describe('NewQuotationRequestButton', () => {
       address: {
         street: 'Hauptstraße 5', zip: '14467', city: 'Potsdam', province: 'Brandenburg', countryCode: 'DE'
       },
-      rentalUnitType: 'APARTMENT' as const,
       rentalUnitTitle: 'Wohnung 3.2',
       rentalUnitLocation: '3. OG links',
     };
@@ -215,7 +185,6 @@ describe('NewQuotationRequestButton', () => {
       'issue-1',
       expect.objectContaining({
         placeOfPerformance: placeOfPerformance.address,
-        rentalUnitType: 'APARTMENT',
         rentalUnitTitle: 'Wohnung 3.2',
         rentalUnitLocation: '3. OG links',
       }),
