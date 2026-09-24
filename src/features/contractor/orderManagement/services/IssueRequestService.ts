@@ -11,9 +11,7 @@ class IssueRequestService {
       formData.append('attachment', file);
     });
 
-    const body = formData as unknown as
-      Parameters<typeof apiClient.post<'/ticketing/v1/order-management/{issueId}/requests'>>[1];
-    await apiClient.post('/ticketing/v1/order-management/{issueId}/requests', body, { pathParams: { issueId } });
+    await apiClient.post('/ticketing/v1/order-management/{issueId}/requests', formData, { pathParams: { issueId } });
   }
 }
 
