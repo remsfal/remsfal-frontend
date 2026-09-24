@@ -17,6 +17,5 @@ export { apartmentService } from './services/ApartmentService';
 export { commercialService } from './services/CommercialService';
 export { storageService } from './services/StorageService';
 export { siteService } from './services/SiteService';
-export { placeOfPerformanceService, type PlaceOfPerformance } from './services/PlaceOfPerformanceService';
-export { findUnitPath } from './utils/findUnitPath';
+export { usePlaceOfPerformance, type PlaceOfPerformance } from './composables/usePlaceOfPerformance';
 export { useRentableUnitsStore } from './stores/RentableUnitsStore';

@@ -14,7 +14,7 @@ import BaseDialog from '@/components/BaseDialog.vue';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 import type { CreateQuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
 import { type ContractorJson, ContractorMultiSelect, NewContractorButton } from '@/features/project/contractors';
-import { type PlaceOfPerformance, placeOfPerformanceService } from '@/features/project/rentableUnits';
+import { type PlaceOfPerformance, usePlaceOfPerformance } from '@/features/project/rentableUnits';
 import { getPrimaryRentalUnitId, rentalAgreementService } from '@/features/project/rentalAgreements';
 import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 import { projectService } from '@/services/ProjectService';
@@ -26,6 +26,7 @@ const emit = defineEmits<(e: 'created') => void>();
 const { t } = useI18n();
 const appToast = useAppToast();
 const eventBus = useEventBus();
+const { resolvePlaceOfPerformance } = usePlaceOfPerformance();
 
 const visible = ref(false);
 const contractorSelectRef = ref<InstanceType<typeof ContractorMultiSelect> | null>(null);
@@ -83,7 +84,7 @@ async function fetchPlaceOfPerformance() {
     const issue = await issueService.getIssue(props.issueId);
     const rentalUnitId = await findRentalUnitId(issue);
     placeOfPerformance.value = rentalUnitId
-      ? await placeOfPerformanceService.resolve(props.projectId, rentalUnitId)
+      ? await resolvePlaceOfPerformance(props.projectId, rentalUnitId)
       : {};
   } catch (error) {
     console.error('Failed to fetch place of performance:', error);

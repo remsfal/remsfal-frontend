@@ -1,12 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { placeOfPerformanceService } from '@/features/project/rentableUnits/services/PlaceOfPerformanceService';
+import { usePlaceOfPerformance } from '@/features/project/rentableUnits/composables/usePlaceOfPerformance';
 import {propertyService,
   type PropertyListJson,
   type RentalUnitTreeNodeJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import { buildingService, type BuildingJson } from '@/features/project/rentableUnits/services/BuildingService';
 import { siteService, type SiteJson } from '@/features/project/rentableUnits/services/SiteService';
-import { findUnitPath } from '@/features/project/rentableUnits/utils/findUnitPath';
 
 const buildingAddress = {
   street: 'Hauptstraße 5', zip: '14467', city: 'Potsdam', province: 'Brandenburg', countryCode: 'DE'
@@ -40,17 +39,7 @@ const tree = [
   },
 ] as RentalUnitTreeNodeJson[];
 
-describe('findUnitPath', () => {
-  it('returns the path from the root to the target node', () => {
-    expect(findUnitPath(tree, 'apt-1')?.map((node) => node.key)).toEqual(['prop-1', 'bld-1', 'apt-1']);
-  });
-
-  it('returns null for an unknown key', () => {
-    expect(findUnitPath(tree, 'unknown')).toBeNull();
-  });
-});
-
-describe('PlaceOfPerformanceService', () => {
+describe('usePlaceOfPerformance', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.restoreAllMocks();
@@ -60,7 +49,7 @@ describe('PlaceOfPerformanceService', () => {
   });
 
   it('uses the address of the parent building for an apartment', async () => {
-    const result = await placeOfPerformanceService.resolve('proj-1', 'apt-1');
+    const result = await usePlaceOfPerformance().resolvePlaceOfPerformance('proj-1', 'apt-1');
     expect(buildingService.getBuilding).toHaveBeenCalledWith('proj-1', 'bld-1');
     expect(result).toEqual({
       address: buildingAddress, rentalUnitType: 'APARTMENT', rentalUnitTitle: 'Wohnung 3.2', rentalUnitLocation: '3. OG links'
@@ -68,7 +57,7 @@ describe('PlaceOfPerformanceService', () => {
   });
 
   it('uses the own address for a building', async () => {
-    const result = await placeOfPerformanceService.resolve('proj-1', 'bld-1');
+    const result = await usePlaceOfPerformance().resolvePlaceOfPerformance('proj-1', 'bld-1');
     expect(buildingService.getBuilding).toHaveBeenCalledWith('proj-1', 'bld-1');
     expect(result).toEqual({
       address: buildingAddress, rentalUnitType: 'BUILDING', rentalUnitTitle: 'Haus A', rentalUnitLocation: 'Vorderhaus'
@@ -76,7 +65,7 @@ describe('PlaceOfPerformanceService', () => {
   });
 
   it('uses the own address for a site', async () => {
-    const result = await placeOfPerformanceService.resolve('proj-1', 'site-1');
+    const result = await usePlaceOfPerformance().resolvePlaceOfPerformance('proj-1', 'site-1');
     expect(siteService.getSite).toHaveBeenCalledWith('proj-1', 'site-1');
     expect(result).toEqual({
       address: siteAddress, rentalUnitType: 'SITE', rentalUnitTitle: 'Garten', rentalUnitLocation: 'Hinterhof'
@@ -84,7 +73,7 @@ describe('PlaceOfPerformanceService', () => {
   });
 
   it('returns no address for a property', async () => {
-    const result = await placeOfPerformanceService.resolve('proj-1', 'prop-1');
+    const result = await usePlaceOfPerformance().resolvePlaceOfPerformance('proj-1', 'prop-1');
     expect(buildingService.getBuilding).not.toHaveBeenCalled();
     expect(siteService.getSite).not.toHaveBeenCalled();
     expect(result).toEqual({
@@ -93,6 +82,6 @@ describe('PlaceOfPerformanceService', () => {
   });
 
   it('returns an empty result when the unit is not part of the tree', async () => {
-    expect(await placeOfPerformanceService.resolve('proj-1', 'unknown')).toEqual({});
+    expect(await usePlaceOfPerformance().resolvePlaceOfPerformance('proj-1', 'unknown')).toEqual({});
   });
 });

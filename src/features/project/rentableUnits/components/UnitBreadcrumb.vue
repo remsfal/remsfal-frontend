@@ -8,9 +8,8 @@ import Breadcrumb from 'primevue/breadcrumb';
 import type { MenuItem } from 'primevue/menuitem';
 import BaseCard from '@/components/BaseCard.vue';
 import {toRentableUnitView, EntityType,
-  type RentalUnitNodeDataJson,} from '@/features/project/rentableUnits/services/PropertyService';
+  type RentalUnitTreeNodeJson, type RentalUnitNodeDataJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType } from '../unitTypeIcons';
-import { findUnitPath } from '../utils/findUnitPath';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
@@ -23,9 +22,24 @@ const { t } = useI18n();
 const rentableUnitsStore = useRentableUnitsStore();
 const { rentableUnitTree } = storeToRefs(rentableUnitsStore);
 
+function findPath(
+  nodes: RentalUnitTreeNodeJson[],
+  target: string,
+  currentPath: RentalUnitTreeNodeJson[],
+): RentalUnitTreeNodeJson[] | null {
+  for (const node of nodes) {
+    if (node.key === target) return [...currentPath, node];
+    if (node.children?.length) {
+      const found = findPath(node.children, target, [...currentPath, node]);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 const pathNodes = computed<RentalUnitNodeDataJson[]>(() => {
   if (!props.unitId) return [];
-  const resultNodes = findUnitPath(rentableUnitTree.value, props.unitId) ?? [];
+  const resultNodes = findPath(rentableUnitTree.value, props.unitId, []) ?? [];
   return resultNodes.map((node) => ({
     ...node.data,
     title: node.data?.title || 'Unbenannt',
