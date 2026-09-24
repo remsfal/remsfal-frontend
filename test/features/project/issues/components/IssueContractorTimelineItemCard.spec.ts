@@ -46,14 +46,51 @@ describe('IssueContractorTimelineItemCard component', () => {
     expect(props.title).toBe('Status geändert');
   });
 
-  it('builds attachment download URLs under the issue attachments path, falling back to the attachment id as filename', () => {
+  it.each([
+    ['QUOTATION_REQUEST', 'quotation-request'],
+    ['QUOTATION', 'quotations'],
+    ['ORDER_PLACEMENT', 'orders'],
+  ] as const)('builds a %s attachment download URL under the %s path', (processPhase, segment) => {
+    const wrapper = mountItemCard(
+      makeTimeline({
+        attachments: [{
+          attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf', processPhase, processId: 'proc-1',
+        }],
+      }),
+    );
+
+    expect(entryCardProps(wrapper).attachments).toEqual([
+      expect.objectContaining({
+        attachmentId: 'att-1',
+        downloadUrl: `/ticketing/v1/issues/issue-1/${segment}/proc-1/attachments/att-1/report.pdf`,
+      }),
+    ]);
+  });
+
+  it('falls back to the attachment id as filename for process-scoped attachments', () => {
+    const wrapper = mountItemCard(
+      makeTimeline({
+        attachments: [{
+          attachmentId: 'fallback-att', contentType: 'application/pdf', processPhase: 'QUOTATION_REQUEST', processId: 'proc-1',
+        }],
+      }),
+    );
+
+    expect(entryCardProps(wrapper).attachments).toEqual([
+      expect.objectContaining({
+        attachmentId: 'fallback-att',
+        downloadUrl: '/ticketing/v1/issues/issue-1/quotation-request/proc-1/attachments/fallback-att/fallback-att',
+      }),
+    ]);
+  });
+
+  it('falls back to the generic issue attachments path when an attachment has no process phase/id', () => {
     const wrapper = mountItemCard(
       makeTimeline({
         attachments: [
           {
-            attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf' 
+            attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf'
           },
-          { attachmentId: 'fallback-att', contentType: 'application/pdf' },
         ],
       }),
     );
@@ -62,10 +99,6 @@ describe('IssueContractorTimelineItemCard component', () => {
       expect.objectContaining({
         attachmentId: 'att-1',
         downloadUrl: '/ticketing/v1/issues/issue-1/attachments/att-1/report.pdf',
-      }),
-      expect.objectContaining({
-        attachmentId: 'fallback-att',
-        downloadUrl: '/ticketing/v1/issues/issue-1/attachments/fallback-att/fallback-att',
       }),
     ]);
   });

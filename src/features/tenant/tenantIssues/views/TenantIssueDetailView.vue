@@ -6,6 +6,7 @@ import { useAppToast } from '@/composables/useAppToast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import TenantIssueTimelineCard from '../components/TenantIssueTimelineCard.vue';
+import TenantIssueRequestsCard from '../components/TenantIssueRequestsCard.vue';
 import BaseDialog from '@/components/BaseDialog.vue';
 import Button from 'primevue/button';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
@@ -94,6 +95,7 @@ const confirmCancelIssue = () => {
     </div>
 
     <template v-else-if="issue">
+      <TenantIssueRequestsCard :issueId="issue.id || props.issueId" />
       <TenantIssueSummaryCard
         :issue="issue"
         :deletingIssue="deletingIssue"
