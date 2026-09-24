@@ -58,6 +58,10 @@ describe('NewQuotationRequestButton E2E Tests', () => {
     cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
     cy.intercept('GET', `/ticketing/v1/issues/${issueId}/quotations`, { statusCode: 200, body: { quotations: [] } });
     cy.intercept('GET', `/ticketing/v1/issues/${issueId}/chat`, { statusCode: 200, body: { messages: [] } });
+    cy.intercept('GET', `/ticketing/v1/issues/${issueId}/contractor-timeline`, {
+      statusCode: 200,
+      body: { timelines: [] },
+    });
     cy.intercept(
       'GET',
       `/ticketing/v1/issues/${issueId}/quotation-request`,
