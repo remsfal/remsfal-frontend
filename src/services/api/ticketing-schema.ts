@@ -342,6 +342,64 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/ticketing/v1/issues/latest": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve the latest issues across all projects of the user.
+     * @description Returns the most recently created issues of all projects the authenticated user is a member of, newest first. This method is intended solely for use by a property manager, e.g. for a cross-project dashboard. Use the project-scoped issues endpoint for complete, paginated lists.
+     */
+    get: {
+      parameters: {
+        query: {
+          /** @description Maximum number of issues to return */
+          limit: number;
+          /** @description Filter to return only issues matching one of the given statuses (repeat the parameter for multiple values, e.g. status=OPEN&status=IN_PROGRESS); omit to return issues of all statuses */
+          status?: components["schemas"]["IssueStatus"][];
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Latest issues retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["IssueListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/ticketing/v1/issues/{issueId}": {
     parameters: {
       query?: never;
@@ -862,10 +920,7 @@ export interface paths {
     /** Create a new timeline entry with attachments for a contractor's communication about an issue. */
     post: {
       parameters: {
-        query?: {
-          /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
-          organizationId?: components["schemas"]["UUID"];
-        };
+        query?: never;
         header?: never;
         path: {
           /** @description ID of the issue */
@@ -886,7 +941,8 @@ export interface paths {
               message: string;
               createdAt?: components["schemas"]["Instant"];
               modifiedAt?: components["schemas"]["Instant"];
-              organizationId?: $Read<components["schemas"]["UUID"]>;
+              /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
+              organizationId?: components["schemas"]["UUID"];
               senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
             };
@@ -3523,7 +3579,10 @@ export interface paths {
       };
     };
     put?: never;
-    /** Create a new request to the tenant about an issue. */
+    /**
+     * Create a new request to the tenant about an issue.
+     * @description Records the request, optionally with file attachments, in both the contractor's and the tenant's timeline for the issue. Attachments are copied so the tenant can download them.
+     */
     post: {
       parameters: {
         query?: never;
@@ -3536,7 +3595,21 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["IssueRequestJson"];
+          "multipart/form-data": {
+            /** @description Request information as JSON */
+            request: {
+              issueRequestId?: $Read<components["schemas"]["UUID"]>;
+              organizationId?: $Read<components["schemas"]["UUID"]>;
+              agreementId?: $Read<components["schemas"]["UUID"]>;
+              message: string;
+              /** @description IDs of the issue attachments the contractor has sent with this request */
+              attachmentIds?: $Read<string[]>;
+              createdAt?: $Read<components["schemas"]["Instant"]>;
+              modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            };
+            /** @description One or more files to attach to the request */
+            attachment?: string[];
+          };
         };
       };
       responses: {
@@ -3701,10 +3774,7 @@ export interface paths {
     /** Create a new timeline entry with attachments for a contractor's communication about an issue. */
     post: {
       parameters: {
-        query?: {
-          /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
-          organizationId?: components["schemas"]["UUID"];
-        };
+        query?: never;
         header?: never;
         path: {
           /** @description ID of the issue */
@@ -3725,7 +3795,8 @@ export interface paths {
               message: string;
               createdAt?: components["schemas"]["Instant"];
               modifiedAt?: components["schemas"]["Instant"];
-              organizationId?: $Read<components["schemas"]["UUID"]>;
+              /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
+              organizationId?: components["schemas"]["UUID"];
               senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
             };
@@ -4165,8 +4236,8 @@ export interface paths {
               organizationId?: $Read<components["schemas"]["UUID"]>;
               agreementId?: $Read<components["schemas"]["UUID"]>;
               message: string;
-              /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
-              attachmentIds?: string[];
+              /** @description IDs of the issue attachments the contractor has sent with this request */
+              attachmentIds?: $Read<string[]>;
               createdAt?: $Read<components["schemas"]["Instant"]>;
               modifiedAt?: $Read<components["schemas"]["Instant"]>;
             };
@@ -4538,7 +4609,8 @@ export interface components {
       message: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
-      organizationId?: $Read<components["schemas"]["UUID"]>;
+      /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
+      organizationId?: components["schemas"]["UUID"];
       senderRole?: $Read<components["schemas"]["UserContext"]>;
       attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
     };
@@ -4563,6 +4635,14 @@ export interface components {
       projectOwner?: string;
       projectCareOf?: string;
       billingAddress?: components["schemas"]["AddressJson"];
+      /** @description Address of the building or site where the work is performed */
+      placeOfPerformance?: components["schemas"]["AddressJson"];
+      /** @description Title of the rental unit the issue refers to */
+      rentalUnitTitle?: string;
+      /** @description Location of the rental unit within the place of performance */
+      rentalUnitLocation?: string;
+      /** @description Tenants of the rental unit the issue refers to */
+      tenants?: components["schemas"]["UserJson"][];
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
@@ -4694,8 +4774,8 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       agreementId?: $Read<components["schemas"]["UUID"]>;
       message: string;
-      /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
-      attachmentIds?: string[];
+      /** @description IDs of the issue attachments the contractor has sent with this request */
+      attachmentIds?: $Read<string[]>;
       createdAt?: $Read<components["schemas"]["Instant"]>;
       modifiedAt?: $Read<components["schemas"]["Instant"]>;
     };
@@ -4727,6 +4807,8 @@ export interface components {
       | "APPOINTMENT_REQUESTED"
       | "APPOINTMENT_SCHEDULED"
       | "STATUS_CHANGED"
+      | "ORDER_PLACED"
+      | "QUOTATION_REQUESTED"
       | "REQUEST_CREATED"
       | "REQUEST_ANSWERED";
     /** @description An attachment associated with a quotation request, quotation, or order placement */
@@ -4958,6 +5040,20 @@ export interface components {
       status?: components["schemas"]["RequestStatus"];
       /** @description Scope of work description for the contractor */
       scopeOfWork?: string;
+      /** @description First place of performance address line (street) */
+      placeOfPerformanceAddress1?: $Read<string>;
+      /** @description Second place of performance address line (zip and city) */
+      placeOfPerformanceAddress2?: $Read<string>;
+      /** @description Third place of performance address line (province and country) */
+      placeOfPerformanceAddress3?: $Read<string>;
+      /** @description Type of the rental unit the issue refers to */
+      rentalUnitType?: $Read<components["schemas"]["UnitType"]>;
+      /** @description Title of the rental unit the issue refers to */
+      rentalUnitTitle?: $Read<string>;
+      /** @description Location of the rental unit within the place of performance */
+      rentalUnitLocation?: $Read<string>;
+      /** @description Tenants of the rental unit the issue refers to */
+      tenants?: $Read<components["schemas"]["UserJson"][]>;
     };
     /** @description A list of quotation requests */
     QuotationRequestListJson: {
