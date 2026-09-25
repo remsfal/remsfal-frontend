@@ -11,11 +11,7 @@ class IssueRequestService {
       formData.append('attachment', file);
     });
 
-    await apiClient.post(
-      '/ticketing/v1/order-management/{issueId}/requests',
-      formData as never,
-      { pathParams: { issueId } },
-    );
+    await apiClient.post('/ticketing/v1/order-management/{issueId}/requests', formData, { pathParams: { issueId } });
   }
 }
 
