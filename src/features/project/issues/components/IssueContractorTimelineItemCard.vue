@@ -11,7 +11,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const { title, attachments } = useTimelineItem(props, {
+const { title, message, attachments } = useTimelineItem(props, {
   titleNamespace: 'issueContractorTimeline',
   buildAttachmentUrl: buildOrderAttachmentDownloadUrl(
     `/ticketing/v1/issues/${encodeURIComponent(props.issueId)}`,
@@ -28,7 +28,7 @@ const { title, attachments } = useTimelineItem(props, {
   <TimelineEntryCard
     :date="item.createdAt"
     :title="title"
-    :message="item.message"
+    :message="message"
     :attachments="attachments"
     :attachmentsLabel="t('issueContractorTimeline.attachmentsLabel')"
     :downloadAttachmentLabel="t('issueContractorTimeline.downloadAttachmentLabel')"

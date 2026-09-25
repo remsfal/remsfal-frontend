@@ -27,6 +27,8 @@ export function buildAttachmentDownloadUrl(resourcePrefix: string) {
   };
 }
 
+const STATUS_NAMESPACES = ['quotationRequest.status', 'orderPlacement.status'];
+
 export type OrderAttachmentPhaseSegments = Record<OrderProcessPhase, string>;
 
 export function buildOrderAttachmentDownloadUrl(
@@ -53,7 +55,7 @@ export function useTimelineItem<T extends TimelineEntry>(
   props: UseTimelineItemProps<T>,
   options: UseTimelineItemOptions,
 ) {
-  const { t } = useI18n();
+  const { t, te } = useI18n();
   const { titleNamespace, buildAttachmentUrl } = options;
 
   const getIssueNumber = (issueId: string) => issueId.split('-').pop() || issueId;
@@ -74,11 +76,27 @@ export function useTimelineItem<T extends TimelineEntry>(
         return t(`${titleNamespace}.appointmentScheduledTitle`, { senderName });
       case 'STATUS_CHANGED':
         return t(`${titleNamespace}.statusChangedTitle`);
+      case 'QUOTATION_REQUESTED':
+        return t(`${titleNamespace}.quotationRequestedTitle`, { senderName });
+      case 'ORDER_PLACED':
+        return t(`${titleNamespace}.orderPlacedTitle`, { senderName });
       case 'REQUEST_CREATED':
         return t(`${titleNamespace}.requestCreatedTitle`, { senderName });
       default:
         return t(`${titleNamespace}.entryFallbackTitle`);
     }
+  });
+
+  const message = computed(() => {
+    const timelineItem = props.item;
+    if (timelineItem.purpose !== 'STATUS_CHANGED' || !timelineItem.message) {
+      return timelineItem.message;
+    }
+
+    const statusKey = STATUS_NAMESPACES.map((namespace) => `${namespace}.${timelineItem.message}`).find((key) =>
+      te(key),
+    );
+    return statusKey ? t(statusKey) : timelineItem.message;
   });
 
   const attachments = computed<TimelineAttachmentView[]>(() =>
@@ -98,5 +116,9 @@ export function useTimelineItem<T extends TimelineEntry>(
     }),
   );
 
-  return { title, attachments };
+  return {
+    title,
+    message,
+    attachments,
+  };
 }

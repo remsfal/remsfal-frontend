@@ -29,9 +29,25 @@ const eventBus = useEventBus();
 const contractorsLoaded = ref(false);
 const contractors = ref<RequestedContractor[]>([]);
 
+let timelineEntriesRequest: Promise<ContractorTimelineJson[]> | null = null;
+
+const invalidateTimelineEntries = () => {
+  timelineEntriesRequest = null;
+};
+
+const fetchTimelineEntries = () => {
+  if (!timelineEntriesRequest) {
+    timelineEntriesRequest = contractorTimelineService
+      .getTimelineEntries(props.issueId)
+      .then((result) => result.timelines ?? []);
+  }
+  return timelineEntriesRequest;
+};
+
 const loadRequestedContractors = async () => {
   contractorsLoaded.value = false;
   contractors.value = [];
+  invalidateTimelineEntries();
   try {
     const result = await quotationRequestService.getQuotationRequests(props.issueId);
     const seen = new Map<string, string>();
@@ -60,8 +76,8 @@ const unsubscribeQuotationRequestCreated = eventBus.on('quotationRequest:created
 onUnmounted(unsubscribeQuotationRequestCreated);
 
 const loadTimelineEntries = async (organizationId: string) => {
-  const result = await contractorTimelineService.getTimelineEntries(props.issueId);
-  return (result.timelines ?? []).filter((entry) => entry.organizationId === organizationId);
+  const entries = await fetchTimelineEntries();
+  return entries.filter((entry) => entry.organizationId === organizationId);
 };
 
 const sendTimelineEntry = async (organizationId: string, payload: TimelineWritableJson, files: File[]) => {
@@ -71,6 +87,7 @@ const sendTimelineEntry = async (organizationId: string, payload: TimelineWritab
     { purpose: payload.purpose, message: payload.message ?? '' },
     files,
   );
+  invalidateTimelineEntries();
 };
 
 const sendHandlerFor = (organizationId: string) => (payload: TimelineWritableJson, files: File[]) =>
@@ -85,8 +102,7 @@ const loadForSoleOrAllContractors = async () => {
   if (contractors.value.length === 1) {
     return loadTimelineEntries(contractors.value[0].organizationId);
   }
-  const result = await contractorTimelineService.getTimelineEntries(props.issueId);
-  return result.timelines ?? [];
+  return fetchTimelineEntries();
 };
 </script>
 
@@ -136,7 +152,7 @@ const loadForSoleOrAllContractors = async () => {
       </template>
     </BaseCard>
   </template>
-  <template v-else>
+  <template v-else-if="contractorsLoaded">
     <TimelineCard
       :load="loadForSoleOrAllContractors"
       :send="sendToSoleContractor"
