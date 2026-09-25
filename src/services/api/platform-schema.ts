@@ -5435,6 +5435,14 @@ export interface components {
       projectOwner?: string;
       projectCareOf?: string;
       billingAddress?: components["schemas"]["AddressJson"];
+      /** @description Address of the building or site where the work is performed */
+      placeOfPerformance?: components["schemas"]["AddressJson"];
+      /** @description Title of the rental unit the issue refers to */
+      rentalUnitTitle?: string;
+      /** @description Location of the rental unit within the place of performance */
+      rentalUnitLocation?: string;
+      /** @description Tenants of the rental unit the issue refers to */
+      tenants?: components["schemas"]["UserJson"][];
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
@@ -5566,8 +5574,8 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       agreementId?: $Read<components["schemas"]["UUID"]>;
       message: string;
-      /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
-      attachmentIds?: string[];
+      /** @description IDs of the issue attachments the contractor has sent with this request */
+      attachmentIds?: $Read<string[]>;
       createdAt?: $Read<components["schemas"]["Instant"]>;
       modifiedAt?: $Read<components["schemas"]["Instant"]>;
     };
@@ -5832,6 +5840,20 @@ export interface components {
       status?: components["schemas"]["RequestStatus"];
       /** @description Scope of work description for the contractor */
       scopeOfWork?: string;
+      /** @description First place of performance address line (street) */
+      placeOfPerformanceAddress1?: $Read<string>;
+      /** @description Second place of performance address line (zip and city) */
+      placeOfPerformanceAddress2?: $Read<string>;
+      /** @description Third place of performance address line (province and country) */
+      placeOfPerformanceAddress3?: $Read<string>;
+      /** @description Type of the rental unit the issue refers to */
+      rentalUnitType?: $Read<components["schemas"]["UnitType"]>;
+      /** @description Title of the rental unit the issue refers to */
+      rentalUnitTitle?: $Read<string>;
+      /** @description Location of the rental unit within the place of performance */
+      rentalUnitLocation?: $Read<string>;
+      /** @description Tenants of the rental unit the issue refers to */
+      tenants?: $Read<components["schemas"]["UserJson"][]>;
     };
     /** @description A list of quotation requests */
     QuotationRequestListJson: {

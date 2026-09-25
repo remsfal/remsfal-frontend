@@ -63,6 +63,11 @@ const scenarios: Scenario[] = [
         statusCode: 200,
         body: baseIssue,
       }).as('getIssueDetail');
+      // The tenant issue page loads contractor requests independently of the timeline.
+      cy.intercept('GET', `/ticketing/v1/tenant-relations/issues/${issueId}/requests`, {
+        statusCode: 200,
+        body: { requests: [] },
+      });
     },
   },
   {
@@ -99,6 +104,12 @@ const scenarios: Scenario[] = [
       );
       // IssueChatCard fetches chat messages on mount, independently of the timeline.
       cy.intercept('GET', `/ticketing/v1/issues/${issueId}/chat`, { statusCode: 200, body: { messages: [] } });
+      // ContractorTimelineCard is rendered alongside the tenant timeline and fetches its own entries.
+      cy.intercept(
+        'GET',
+        `/ticketing/v1/issues/${issueId}/contractor-timeline`,
+        { statusCode: 200, body: { timelines: [] } },
+      );
       // NewQuotationRequestButton (via its nested ContractorMultiSelect) is mounted alongside
       // QuotationRequestTable (PrimeVue TabPanels render every panel's content up front) and
       // fetches contractors on mount even while hidden.
@@ -288,6 +299,10 @@ describe('TimelineCard E2E Tests (tenant-only blocking behavior)', () => {
       statusCode: 200,
       body: baseIssue,
     }).as('getIssueDetail');
+    cy.intercept('GET', `/ticketing/v1/tenant-relations/issues/${issueId}/requests`, {
+      statusCode: 200,
+      body: { requests: [] },
+    });
   });
 
   ['CLOSED', 'REJECTED'].forEach((statusMessage) => {
@@ -345,7 +360,11 @@ describe('Contractor communication timeline (multiple contractors)', () => {
         ],
       },
     }).as('getQuotationRequests');
-    cy.intercept('GET', `/ticketing/v1/issues/${issueId}`, { statusCode: 200, body: baseIssue }).as('getIssueDetail');
+    // visibleToTenants: false keeps IssueTimelineCard (and its tenant-timeline fetch) off the page.
+    cy.intercept('GET', `/ticketing/v1/issues/${issueId}`, {
+      statusCode: 200,
+      body: { ...baseIssue, visibleToTenants: false },
+    }).as('getIssueDetail');
   });
 
   it('shows one tab per contractor, scopes timeline entries per organization, and sends to the active tab', () => {
