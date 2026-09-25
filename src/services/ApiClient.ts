@@ -247,7 +247,9 @@ type RequestBody<P extends keyof ApiPaths, M extends HttpMethod> =
     ? M extends keyof ApiPaths[P]
       ? ApiPaths[P][M] extends { requestBody?: { content: { 'application/json': infer Body } } }
         ? Writable<Body>
-        : never
+        : ApiPaths[P][M] extends { requestBody?: { content: { 'multipart/form-data': unknown } } }
+          ? FormData
+          : never
       : never
     : never;
 
