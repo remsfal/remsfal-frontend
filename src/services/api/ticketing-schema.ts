@@ -3521,7 +3521,10 @@ export interface paths {
       };
     };
     put?: never;
-    /** Create a new request to the tenant about an issue. */
+    /**
+     * Create a new request to the tenant about an issue.
+     * @description Records the request, optionally with file attachments, in both the contractor's and the tenant's timeline for the issue. Attachments are copied so the tenant can download them.
+     */
     post: {
       parameters: {
         query?: never;
@@ -3534,7 +3537,21 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["IssueRequestJson"];
+          "multipart/form-data": {
+            /** @description Request information as JSON */
+            request: {
+              issueRequestId?: $Read<components["schemas"]["UUID"]>;
+              organizationId?: $Read<components["schemas"]["UUID"]>;
+              agreementId?: $Read<components["schemas"]["UUID"]>;
+              message: string;
+              /** @description IDs of the issue attachments the contractor has sent with this request */
+              attachmentIds?: $Read<string[]>;
+              createdAt?: $Read<components["schemas"]["Instant"]>;
+              modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            };
+            /** @description One or more files to attach to the request */
+            attachment?: string[];
+          };
         };
       };
       responses: {
@@ -4161,8 +4178,8 @@ export interface paths {
               organizationId?: $Read<components["schemas"]["UUID"]>;
               agreementId?: $Read<components["schemas"]["UUID"]>;
               message: string;
-              /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
-              attachmentIds?: string[];
+              /** @description IDs of the issue attachments the contractor has sent with this request */
+              attachmentIds?: $Read<string[]>;
               createdAt?: $Read<components["schemas"]["Instant"]>;
               modifiedAt?: $Read<components["schemas"]["Instant"]>;
             };
@@ -4691,8 +4708,8 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       agreementId?: $Read<components["schemas"]["UUID"]>;
       message: string;
-      /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
-      attachmentIds?: string[];
+      /** @description IDs of the issue attachments the contractor has sent with this request */
+      attachmentIds?: $Read<string[]>;
       createdAt?: $Read<components["schemas"]["Instant"]>;
       modifiedAt?: $Read<components["schemas"]["Instant"]>;
     };

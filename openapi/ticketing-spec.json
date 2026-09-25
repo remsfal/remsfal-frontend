@@ -905,7 +905,8 @@
               "format" : "uuid",
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             },
-            "description" : "IDs of attachments the contractor is referring to or requesting the tenant to provide"
+            "description" : "IDs of the issue attachments the contractor has sent with this request",
+            "readOnly" : true
           },
           "createdAt" : {
             "readOnly" : true,
@@ -5278,6 +5279,7 @@
       },
       "post" : {
         "summary" : "Create a new request to the tenant about an issue.",
+        "description" : "Records the request, optionally with file attachments, in both the contractor's and the tenant's timeline for the issue. Attachments are copied so the tenant can download them.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
@@ -5289,9 +5291,66 @@
         } ],
         "requestBody" : {
           "content" : {
-            "application/json" : {
+            "multipart/form-data" : {
               "schema" : {
-                "$ref" : "#/components/schemas/IssueRequestJson"
+                "required" : [ "request" ],
+                "type" : "object",
+                "properties" : {
+                  "request" : {
+                    "description" : "Request information as JSON",
+                    "type" : "object",
+                    "properties" : {
+                      "issueRequestId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "organizationId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "agreementId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "message" : {
+                        "type" : "string",
+                        "pattern" : "\\S"
+                      },
+                      "attachmentIds" : {
+                        "type" : "array",
+                        "items" : {
+                          "type" : "string",
+                          "format" : "uuid",
+                          "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                        },
+                        "description" : "IDs of the issue attachments the contractor has sent with this request",
+                        "readOnly" : true
+                      },
+                      "createdAt" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "modifiedAt" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/Instant"
+                      }
+                    },
+                    "required" : [ "message" ]
+                  },
+                  "attachment" : {
+                    "description" : "One or more files to attach to the request",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -5883,7 +5942,8 @@
                           "format" : "uuid",
                           "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
                         },
-                        "description" : "IDs of attachments the contractor is referring to or requesting the tenant to provide"
+                        "description" : "IDs of the issue attachments the contractor has sent with this request",
+                        "readOnly" : true
                       },
                       "createdAt" : {
                         "readOnly" : true,

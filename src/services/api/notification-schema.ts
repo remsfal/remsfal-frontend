@@ -609,8 +609,8 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       agreementId?: $Read<components["schemas"]["UUID"]>;
       message: string;
-      /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
-      attachmentIds?: string[];
+      /** @description IDs of the issue attachments the contractor has sent with this request */
+      attachmentIds?: $Read<string[]>;
       createdAt?: $Read<components["schemas"]["Instant"]>;
       modifiedAt?: $Read<components["schemas"]["Instant"]>;
     };

@@ -752,8 +752,9 @@ components:
             type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-          description: IDs of attachments the contractor is referring to or requesting
-            the tenant to provide
+          description: IDs of the issue attachments the contractor has sent with this
+            request
+          readOnly: true
         createdAt:
           readOnly: true
           type: string
