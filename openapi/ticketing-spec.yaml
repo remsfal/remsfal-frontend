@@ -474,6 +474,23 @@ components:
           maxLength: 255
         billingAddress:
           $ref: "#/components/schemas/AddressJson"
+        placeOfPerformance:
+          description: Address of the building or site where the work is performed
+          type: object
+          $ref: "#/components/schemas/AddressJson"
+        rentalUnitTitle:
+          type: string
+          description: Title of the rental unit the issue refers to
+          maxLength: 255
+        rentalUnitLocation:
+          type: string
+          description: Location of the rental unit within the place of performance
+          maxLength: 255
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserJson"
+          description: Tenants of the rental unit the issue refers to
     EmployeeRole:
       type: string
       enum:
@@ -752,8 +769,9 @@ components:
             type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-          description: IDs of attachments the contractor is referring to or requesting
-            the tenant to provide
+          description: IDs of the issue attachments the contractor has sent with this
+            request
+          readOnly: true
         createdAt:
           readOnly: true
           type: string
@@ -1314,6 +1332,37 @@ components:
           type: string
           description: Scope of work description for the contractor
           maxLength: 5000
+        placeOfPerformanceAddress1:
+          type: string
+          description: First place of performance address line (street)
+          readOnly: true
+        placeOfPerformanceAddress2:
+          type: string
+          description: Second place of performance address line (zip and city)
+          readOnly: true
+        placeOfPerformanceAddress3:
+          type: string
+          description: Third place of performance address line (province and country)
+          readOnly: true
+        rentalUnitType:
+          description: Type of the rental unit the issue refers to
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UnitType"
+        rentalUnitTitle:
+          type: string
+          description: Title of the rental unit the issue refers to
+          readOnly: true
+        rentalUnitLocation:
+          type: string
+          description: Location of the rental unit within the place of performance
+          readOnly: true
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserJson"
+          description: Tenants of the rental unit the issue refers to
+          readOnly: true
     QuotationRequestListJson:
       description: A list of quotation requests
       type: object
@@ -2278,6 +2327,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/IssueJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/latest:
+    get:
+      summary: Retrieve the latest issues across all projects of the user.
+      description: "Returns the most recently created issues of all projects the authenticated\
+        \ user is a member of, newest first. This method is intended solely for use\
+        \ by a property manager, e.g. for a cross-project dashboard. Use the project-scoped\
+        \ issues endpoint for complete, paginated lists."
+      parameters:
+      - description: Maximum number of issues to return
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          maximum: 50
+          exclusiveMinimum: 0
+          default: "5"
+        required: true
+      - description: "Filter to return only issues matching one of the given statuses\
+          \ (repeat the parameter for multiple values, e.g. status=OPEN&status=IN_PROGRESS);\
+          \ omit to return issues of all statuses"
+        name: status
+        in: query
+        schema:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueStatus"
+      responses:
+        "200":
+          description: Latest issues retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssueListJson"
         "401":
           description: No user authentication provided via session cookie
         "403":
@@ -3996,6 +4085,9 @@ paths:
       - SecurityScheme: []
     post:
       summary: Create a new request to the tenant about an issue.
+      description: "Records the request, optionally with file attachments, in both\
+        \ the contractor's and the tenant's timeline for the issue. Attachments are\
+        \ copied so the tenant can download them."
       parameters:
       - description: ID of the issue
         required: true
@@ -4005,9 +4097,56 @@ paths:
           $ref: "#/components/schemas/UUID"
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/IssueRequestJson"
+              required:
+              - request
+              type: object
+              properties:
+                request:
+                  description: Request information as JSON
+                  type: object
+                  properties:
+                    issueRequestId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    organizationId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    agreementId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    message:
+                      type: string
+                      pattern: \S
+                    attachmentIds:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                        pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                      description: IDs of the issue attachments the contractor has
+                        sent with this request
+                      readOnly: true
+                    createdAt:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/Instant"
+                    modifiedAt:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/Instant"
+                  required:
+                  - message
+                attachment:
+                  description: One or more files to attach to the request
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
         "200":
@@ -4440,8 +4579,9 @@ paths:
                         type: string
                         format: uuid
                         pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-                      description: IDs of attachments the contractor is referring
-                        to or requesting the tenant to provide
+                      description: IDs of the issue attachments the contractor has
+                        sent with this request
+                      readOnly: true
                     createdAt:
                       readOnly: true
                       type: string

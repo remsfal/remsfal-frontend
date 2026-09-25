@@ -474,6 +474,23 @@ components:
           maxLength: 255
         billingAddress:
           $ref: "#/components/schemas/AddressJson"
+        placeOfPerformance:
+          description: Address of the building or site where the work is performed
+          type: object
+          $ref: "#/components/schemas/AddressJson"
+        rentalUnitTitle:
+          type: string
+          description: Title of the rental unit the issue refers to
+          maxLength: 255
+        rentalUnitLocation:
+          type: string
+          description: Location of the rental unit within the place of performance
+          maxLength: 255
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserJson"
+          description: Tenants of the rental unit the issue refers to
     EmployeeRole:
       type: string
       enum:
@@ -752,8 +769,9 @@ components:
             type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-          description: IDs of attachments the contractor is referring to or requesting
-            the tenant to provide
+          description: IDs of the issue attachments the contractor has sent with this
+            request
+          readOnly: true
         createdAt:
           readOnly: true
           type: string
@@ -1314,6 +1332,37 @@ components:
           type: string
           description: Scope of work description for the contractor
           maxLength: 5000
+        placeOfPerformanceAddress1:
+          type: string
+          description: First place of performance address line (street)
+          readOnly: true
+        placeOfPerformanceAddress2:
+          type: string
+          description: Second place of performance address line (zip and city)
+          readOnly: true
+        placeOfPerformanceAddress3:
+          type: string
+          description: Third place of performance address line (province and country)
+          readOnly: true
+        rentalUnitType:
+          description: Type of the rental unit the issue refers to
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UnitType"
+        rentalUnitTitle:
+          type: string
+          description: Title of the rental unit the issue refers to
+          readOnly: true
+        rentalUnitLocation:
+          type: string
+          description: Location of the rental unit within the place of performance
+          readOnly: true
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserJson"
+          description: Tenants of the rental unit the issue refers to
+          readOnly: true
     QuotationRequestListJson:
       description: A list of quotation requests
       type: object
