@@ -14,6 +14,8 @@ import BaseDialog from '@/components/BaseDialog.vue';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 import type { CreateQuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
 import { type ContractorJson, ContractorMultiSelect, NewContractorButton } from '@/features/project/contractors';
+import { type PlaceOfPerformance, usePlaceOfPerformance } from '@/features/project/rentableUnits';
+import { issueService } from '@/features/project/issues/services/IssueService';
 import { projectService } from '@/services/ProjectService';
 import type { AddressJson } from '@/services/AddressService';
 
@@ -23,6 +25,7 @@ const emit = defineEmits<(e: 'created') => void>();
 const { t } = useI18n();
 const appToast = useAppToast();
 const eventBus = useEventBus();
+const { resolvePlaceOfPerformance } = usePlaceOfPerformance();
 
 const visible = ref(false);
 const contractorSelectRef = ref<InstanceType<typeof ContractorMultiSelect> | null>(null);
@@ -33,6 +36,7 @@ const initialValues = ref({ scopeOfWork: '' });
 const billingAddress = ref<AddressJson | undefined>(undefined);
 const projectOwner = ref<string | undefined>(undefined);
 const projectCareOf = ref<string | undefined>(undefined);
+const placeOfPerformance = ref<PlaceOfPerformance | undefined>(undefined);
 
 const contractorsInvalid = computed(
   () => (contractorsTouched.value || submitAttempted.value) && selectedContractors.value.length === 0,
@@ -65,8 +69,25 @@ async function ensureBillingRecipientDataLoaded() {
   await fetchBillingRecipientData();
 }
 
+async function fetchPlaceOfPerformance() {
+  try {
+    const issue = await issueService.getIssue(props.issueId);
+    placeOfPerformance.value = issue.rentalUnitId
+      ? await resolvePlaceOfPerformance(props.projectId, issue.rentalUnitId)
+      : {};
+  } catch (error) {
+    console.error('Failed to fetch place of performance:', error);
+  }
+}
+
+async function ensurePlaceOfPerformanceLoaded() {
+  if (placeOfPerformance.value !== undefined) return;
+  await fetchPlaceOfPerformance();
+}
+
 onMounted(() => {
   fetchBillingRecipientData();
+  fetchPlaceOfPerformance();
 });
 
 function resetForm() {
@@ -79,7 +100,7 @@ function resetForm() {
 const onSubmit = async (event: FormSubmitEvent) => {
   submitAttempted.value = true;
   if (!event.valid || selectedContractors.value.length === 0) return;
-  await ensureBillingRecipientDataLoaded();
+  await Promise.all([ensureBillingRecipientDataLoaded(), ensurePlaceOfPerformanceLoaded()]);
 
   const s = event.states;
   const data: CreateQuotationRequestJson = {
@@ -88,6 +109,9 @@ const onSubmit = async (event: FormSubmitEvent) => {
     projectOwner: projectOwner.value,
     projectCareOf: projectCareOf.value,
     billingAddress: billingAddress.value,
+    placeOfPerformance: placeOfPerformance.value?.address,
+    rentalUnitTitle: placeOfPerformance.value?.rentalUnitTitle,
+    rentalUnitLocation: placeOfPerformance.value?.rentalUnitLocation,
   };
 
   try {

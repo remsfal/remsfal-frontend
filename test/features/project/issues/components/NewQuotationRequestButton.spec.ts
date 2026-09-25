@@ -5,8 +5,15 @@ import { Form } from '@primevue/forms';
 import NewQuotationRequestButton from '@/features/project/issues/components/NewQuotationRequestButton.vue';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 import { projectService } from '@/services/ProjectService';
+import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 
 const addMock = vi.fn();
+const { resolvePlaceOfPerformanceMock, placeOfPerformanceModuleMock } = vi.hoisted(() => {
+  const resolveMock = vi.fn();
+  const moduleMock = { usePlaceOfPerformance: () => ({ resolvePlaceOfPerformance: resolveMock }) };
+  return { resolvePlaceOfPerformanceMock: resolveMock, placeOfPerformanceModuleMock: moduleMock };
+});
+vi.mock('@/features/project/rentableUnits/composables/usePlaceOfPerformance', () => placeOfPerformanceModuleMock);
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 const BaseDialogStub = {
@@ -55,6 +62,8 @@ describe('NewQuotationRequestButton', () => {
     vi.clearAllMocks();
     vi.spyOn(quotationRequestService, 'createQuotationRequest').mockResolvedValue(undefined);
     vi.spyOn(projectService, 'getProject').mockResolvedValue(mockProject);
+    vi.spyOn(issueService, 'getIssue').mockResolvedValue({ id: 'issue-1' } as IssueJson);
+    resolvePlaceOfPerformanceMock.mockResolvedValue({});
   });
 
   const mountButton = (props = { projectId: 'proj-1', issueId: 'issue-1' }) =>
@@ -130,6 +139,74 @@ describe('NewQuotationRequestButton', () => {
 
     expect(quotationRequestService.createQuotationRequest).not.toHaveBeenCalled();
     expect(wrapper.text()).toContain('Mindestens ein Auftragnehmer muss ausgewählt werden');
+  });
+
+  it('resolves the place of performance from the issue rental unit on mount', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue(
+      {
+        id: 'issue-1', rentalUnitId: 'apt-1', rentalUnitType: 'APARTMENT'
+      } as IssueJson,
+    );
+    mountButton();
+    await flushPromises();
+    expect(issueService.getIssue).toHaveBeenCalledWith('issue-1');
+    expect(resolvePlaceOfPerformanceMock).toHaveBeenCalledWith('proj-1', 'apt-1');
+  });
+
+  it('does not resolve a place of performance when the issue has no rental unit', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({ id: 'issue-1', agreementId: 'agr-1' } as IssueJson);
+    mountButton();
+    await flushPromises();
+    expect(resolvePlaceOfPerformanceMock).not.toHaveBeenCalled();
+  });
+
+  it('sends the place of performance with the quotation request', async () => {
+    const placeOfPerformance = {
+      address: {
+        street: 'Hauptstraße 5', zip: '14467', city: 'Potsdam', province: 'Brandenburg', countryCode: 'DE'
+      },
+      rentalUnitTitle: 'Wohnung 3.2',
+      rentalUnitLocation: '3. OG links',
+    };
+    vi.mocked(issueService.getIssue).mockResolvedValue(
+      {
+        id: 'issue-1', rentalUnitId: 'apt-1', rentalUnitType: 'APARTMENT'
+      } as IssueJson,
+    );
+    resolvePlaceOfPerformanceMock.mockResolvedValue(placeOfPerformance);
+    const wrapper = mountButton();
+    await flushPromises();
+
+    await wrapper.findComponent(ContractorMultiSelectStub).vm.$emit('update:modelValue', [{ id: 'c-1' }]);
+    await wrapper.findComponent(Form).vm.$emit('submit', { valid: true, states: { scopeOfWork: { value: 'Reparatur' } } });
+    await flushPromises();
+
+    expect(quotationRequestService.createQuotationRequest).toHaveBeenCalledWith(
+      'issue-1',
+      expect.objectContaining({
+        placeOfPerformance: placeOfPerformance.address,
+        rentalUnitTitle: 'Wohnung 3.2',
+        rentalUnitLocation: '3. OG links',
+      }),
+    );
+  });
+
+  it('still sends the quotation request when resolving the place of performance fails', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.mocked(issueService.getIssue).mockRejectedValue(new Error('boom'));
+    const wrapper = mountButton();
+    await flushPromises();
+
+    await wrapper.findComponent(ContractorMultiSelectStub).vm.$emit('update:modelValue', [{ id: 'c-1' }]);
+    await wrapper.findComponent(Form).vm.$emit('submit', { valid: true, states: { scopeOfWork: { value: 'Reparatur' } } });
+    await flushPromises();
+
+    expect(quotationRequestService.createQuotationRequest).toHaveBeenCalledWith(
+      'issue-1',
+      expect.objectContaining({ placeOfPerformance: undefined, rentalUnitTitle: undefined }),
+    );
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch place of performance:', expect.any(Error));
+    consoleSpy.mockRestore();
   });
 
   it('calls createQuotationRequest with correct payload on valid submit', async () => {
