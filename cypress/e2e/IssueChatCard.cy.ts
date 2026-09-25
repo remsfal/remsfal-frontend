@@ -94,6 +94,13 @@ describe('IssueChatCard E2E Tests', () => {
       body: { quotations: [] },
     }).as('getQuotations');
 
+    // IssueContractorTimelineCard loads the contractor timelines on mount; without this mock the
+    // request hits the backend, gets a 401 and the failed token refresh redirects to the landing page.
+    cy.intercept('GET', `/ticketing/v1/issues/${issueId}/contractor-timeline`, {
+      statusCode: 200,
+      body: { timelines: [] },
+    }).as('getContractorTimeline');
+
     cy.intercept('GET', `/ticketing/v1/issues/${issueId}`, {
       statusCode: 200,
       body: baseIssue,
