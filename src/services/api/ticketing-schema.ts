@@ -862,10 +862,7 @@ export interface paths {
     /** Create a new timeline entry with attachments for a contractor's communication about an issue. */
     post: {
       parameters: {
-        query?: {
-          /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
-          organizationId?: components["schemas"]["UUID"];
-        };
+        query?: never;
         header?: never;
         path: {
           /** @description ID of the issue */
@@ -886,7 +883,8 @@ export interface paths {
               message: string;
               createdAt?: components["schemas"]["Instant"];
               modifiedAt?: components["schemas"]["Instant"];
-              organizationId?: $Read<components["schemas"]["UUID"]>;
+              /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
+              organizationId?: components["schemas"]["UUID"];
               senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
             };
@@ -3701,10 +3699,7 @@ export interface paths {
     /** Create a new timeline entry with attachments for a contractor's communication about an issue. */
     post: {
       parameters: {
-        query?: {
-          /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
-          organizationId?: components["schemas"]["UUID"];
-        };
+        query?: never;
         header?: never;
         path: {
           /** @description ID of the issue */
@@ -3725,7 +3720,8 @@ export interface paths {
               message: string;
               createdAt?: components["schemas"]["Instant"];
               modifiedAt?: components["schemas"]["Instant"];
-              organizationId?: $Read<components["schemas"]["UUID"]>;
+              /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
+              organizationId?: components["schemas"]["UUID"];
               senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
             };
@@ -4142,7 +4138,7 @@ export interface paths {
     put?: never;
     /**
      * Answer a request a contractor has sent about an issue.
-     * @description Deletes the request and records the tenant's response in both the tenant's and the contractor's timeline for the issue.
+     * @description Deletes the request and records the tenant's response, optionally with file attachments, in both the tenant's and the contractor's timeline for the issue.
      */
     post: {
       parameters: {
@@ -4158,7 +4154,21 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["IssueRequestJson"];
+          "multipart/form-data": {
+            /** @description Response information as JSON */
+            response: {
+              issueRequestId?: $Read<components["schemas"]["UUID"]>;
+              organizationId?: $Read<components["schemas"]["UUID"]>;
+              agreementId?: $Read<components["schemas"]["UUID"]>;
+              message: string;
+              /** @description IDs of attachments the contractor is referring to or requesting the tenant to provide */
+              attachmentIds?: string[];
+              createdAt?: $Read<components["schemas"]["Instant"]>;
+              modifiedAt?: $Read<components["schemas"]["Instant"]>;
+            };
+            /** @description One or more files to attach to the response */
+            attachment?: string[];
+          };
         };
       };
       responses: {
@@ -4524,7 +4534,8 @@ export interface components {
       message: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
-      organizationId?: $Read<components["schemas"]["UUID"]>;
+      /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
+      organizationId?: components["schemas"]["UUID"];
       senderRole?: $Read<components["schemas"]["UserContext"]>;
       attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
     };
@@ -4713,6 +4724,8 @@ export interface components {
       | "APPOINTMENT_REQUESTED"
       | "APPOINTMENT_SCHEDULED"
       | "STATUS_CHANGED"
+      | "ORDER_PLACED"
+      | "QUOTATION_REQUESTED"
       | "REQUEST_CREATED"
       | "REQUEST_ANSWERED";
     /** @description An attachment associated with a quotation request, quotation, or order placement */

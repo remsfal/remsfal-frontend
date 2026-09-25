@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
-import { buildAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
+import { buildAttachmentDownloadUrl, buildOrderAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
+import type { OrderAttachmentJson } from '@/composables/useTimelineItem';
 import type { TenantTimelineJson } from '@/composables/useTimeline';
 
 const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
@@ -139,5 +140,67 @@ describe('useTimelineItem', () => {
     await wrapper.setProps({ item: makeTimeline({ purpose: 'MESSAGE_SENT', senderName: 'Alex' }) });
 
     expect(wrapper.vm.title).toBe(i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: 'Alex' }));
+  });
+});
+
+describe('buildOrderAttachmentDownloadUrl', () => {
+  const phaseSegments = {
+    QUOTATION_REQUEST: 'quotation-request',
+    QUOTATION: 'quotations',
+    ORDER_PLACEMENT: 'orders',
+  } as const;
+
+  const makeAttachment = (overrides: Partial<OrderAttachmentJson> = {}): OrderAttachmentJson => ({
+    attachmentId: 'att-1',
+    fileName: 'report.pdf',
+    processPhase: 'QUOTATION_REQUEST',
+    processId: 'proc-1',
+    ...overrides,
+  });
+
+  it.each([
+    ['QUOTATION_REQUEST', 'quotation-request'],
+    ['QUOTATION', 'quotations'],
+    ['ORDER_PLACEMENT', 'orders'],
+  ] as const)('builds the %s URL under the %s path segment', (processPhase, segment) => {
+    const buildUrl = buildOrderAttachmentDownloadUrl('/base/issue-1', phaseSegments);
+
+    expect(buildUrl(makeAttachment({ processPhase }))).toBe(
+      `/base/issue-1/${segment}/proc-1/attachments/att-1/report.pdf`,
+    );
+  });
+
+  it('falls back to the attachment id as filename when fileName is missing', () => {
+    const buildUrl = buildOrderAttachmentDownloadUrl('/base/issue-1', phaseSegments);
+
+    expect(buildUrl(makeAttachment({ fileName: undefined }))).toBe(
+      '/base/issue-1/quotation-request/proc-1/attachments/att-1/att-1',
+    );
+  });
+
+  it('encodes special characters in processId, attachmentId and fileName', () => {
+    const buildUrl = buildOrderAttachmentDownloadUrl('/base/issue-1', phaseSegments);
+
+    expect(buildUrl(makeAttachment({
+      attachmentId: 'att 1/x', fileName: 'report ä.pdf', processId: 'proc 1/y',
+    }))).toBe(
+      '/base/issue-1/quotation-request/proc%201%2Fy/attachments/att%201%2Fx/report%20%C3%A4.pdf',
+    );
+  });
+
+  it('falls back to the generic attachment URL when processPhase/processId are missing', () => {
+    const buildUrl = buildOrderAttachmentDownloadUrl('/base/issue-1', phaseSegments);
+
+    expect(buildUrl(makeAttachment({ processPhase: undefined, processId: undefined }))).toBe(
+      '/base/issue-1/attachments/att-1/report.pdf',
+    );
+  });
+
+  it('falls back to the generic attachment URL for a phase unknown to phaseSegments', () => {
+    const buildUrl = buildOrderAttachmentDownloadUrl('/base/issue-1', phaseSegments);
+
+    expect(
+      buildUrl(makeAttachment({ processPhase: 'SOMETHING_NEW' as OrderAttachmentJson['processPhase'] })),
+    ).toBe('/base/issue-1/attachments/att-1/report.pdf');
   });
 });
