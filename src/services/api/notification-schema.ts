@@ -452,7 +452,8 @@ export interface components {
       message: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
-      organizationId?: $Read<components["schemas"]["UUID"]>;
+      /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
+      organizationId?: components["schemas"]["UUID"];
       senderRole?: $Read<components["schemas"]["UserContext"]>;
       attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
     };
@@ -641,6 +642,8 @@ export interface components {
       | "APPOINTMENT_REQUESTED"
       | "APPOINTMENT_SCHEDULED"
       | "STATUS_CHANGED"
+      | "ORDER_PLACED"
+      | "QUOTATION_REQUESTED"
       | "REQUEST_CREATED"
       | "REQUEST_ANSWERED";
     /** @description An attachment associated with a quotation request, quotation, or order placement */
