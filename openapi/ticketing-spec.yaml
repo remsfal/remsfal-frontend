@@ -404,7 +404,9 @@ components:
         modifiedAt:
           $ref: "#/components/schemas/Instant"
         organizationId:
-          readOnly: true
+          description: "ID of the contractor organization to address; required only\
+            \ when creating via the issue-level combined view, ignored by the contractor's\
+            \ own mount which already knows its own organization"
           type: string
           $ref: "#/components/schemas/UUID"
         senderRole:
@@ -816,6 +818,8 @@ components:
       - APPOINTMENT_REQUESTED
       - APPOINTMENT_SCHEDULED
       - STATUS_CHANGED
+      - ORDER_PLACED
+      - QUOTATION_REQUESTED
       - REQUEST_CREATED
       - REQUEST_ANSWERED
     OrderAttachmentJson:
@@ -2556,13 +2560,6 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - description: "ID of the contractor organization to address; required only\
-          \ when creating via the issue-level combined view, ignored by the contractor's\
-          \ own mount which already knows its own organization"
-        name: organizationId
-        in: query
-        schema:
-          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           multipart/form-data:
@@ -2592,7 +2589,10 @@ paths:
                     modifiedAt:
                       $ref: "#/components/schemas/Instant"
                     organizationId:
-                      readOnly: true
+                      description: "ID of the contractor organization to address;\
+                        \ required only when creating via the issue-level combined\
+                        \ view, ignored by the contractor's own mount which already\
+                        \ knows its own organization"
                       type: string
                       $ref: "#/components/schemas/UUID"
                     senderRole:
@@ -4090,13 +4090,6 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - description: "ID of the contractor organization to address; required only\
-          \ when creating via the issue-level combined view, ignored by the contractor's\
-          \ own mount which already knows its own organization"
-        name: organizationId
-        in: query
-        schema:
-          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           multipart/form-data:
@@ -4126,7 +4119,10 @@ paths:
                     modifiedAt:
                       $ref: "#/components/schemas/Instant"
                     organizationId:
-                      readOnly: true
+                      description: "ID of the contractor organization to address;\
+                        \ required only when creating via the issue-level combined\
+                        \ view, ignored by the contractor's own mount which already\
+                        \ knows its own organization"
                       type: string
                       $ref: "#/components/schemas/UUID"
                     senderRole:
