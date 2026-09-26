@@ -65,7 +65,7 @@
     "@opentelemetry/semantic-conventions": "^1.43.0",
     "@primevue/forms": ">=4.5.5 <5.0.0",
     "@primevue/themes": ">=4.5.4 <5.0.0",
-    "axios": "^1.18.1",
+    "axios": "^1.20.0",
     "chart.js": "^4.5.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "idb": "^8.0.3",
