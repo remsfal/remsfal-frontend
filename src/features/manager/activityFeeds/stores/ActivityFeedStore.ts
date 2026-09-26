@@ -198,26 +198,43 @@ export const useActivityFeedStore = defineStore('activity-feed', () => {
   }
 
   /**
-   * Marks a single entry as read.
+   * Sets the read status of a single entry.
    * Performs optimistic update before API call and reverts on error.
-   * @param entry - The entry to mark as read
+   * @param entry - The entry to update
+   * @param read - The read status to apply
    */
-  async function markAsRead(entry: ActivityFeedEntry) {
+  async function setReadStatus(entry: ActivityFeedEntry, read: boolean) {
     const entryInStore = entries.value.find(e => e.id === entry.id);
     if (!entryInStore) return;
 
     const originalRead = entryInStore.read;
     try {
       // Optimistic update: update local state immediately
-      entryInStore.read = true;
+      entryInStore.read = read;
       entries.value = [...entries.value];
-      await activityFeedService.setReadStatus(entry.id, true);
+      await activityFeedService.setReadStatus(entry.id, read);
     } catch (error) {
       // Revert optimistic update on error
       entryInStore.read = originalRead;
       entries.value = [...entries.value];
-      console.error('Failed to mark activity as read:', error);
+      console.error('Failed to update activity read status:', error);
     }
+  }
+
+  /**
+   * Marks a single entry as read.
+   * @param entry - The entry to mark as read
+   */
+  async function markAsRead(entry: ActivityFeedEntry) {
+    await setReadStatus(entry, true);
+  }
+
+  /**
+   * Marks a single entry as unread.
+   * @param entry - The entry to mark as unread
+   */
+  async function markAsUnread(entry: ActivityFeedEntry) {
+    await setReadStatus(entry, false);
   }
 
   /**
@@ -322,6 +339,7 @@ export const useActivityFeedStore = defineStore('activity-feed', () => {
     fetchActivities,
     loadMoreActivities,
     markAsRead,
+    markAsUnread,
     markReadSelected,
     confirmDeleteSelected,
     clearFilters,

@@ -2,9 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
+import Checkbox from 'primevue/checkbox';
+import Image from 'primevue/image';
 import NewQuotationRequestButton from '@/features/project/issues/components/NewQuotationRequestButton.vue';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
-import { projectService } from '@/services/ProjectService';
 
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
@@ -37,27 +38,32 @@ const NewContractorButtonStub = {
   template: '<button type="button" data-testid="new-contractor-button">Auftragnehmer hinzufügen</button>',
 };
 
-const mockProject = {
-  title: 'Projekt 1',
-  owner: 'Muster Eigentümer GmbH',
-  careOf: 'Max Mustermann',
-  billingAddress: {
-    street: 'Musterstraße 1',
-    zip: '12345',
-    city: 'Berlin',
-    province: 'Berlin',
-    countryCode: 'DE',
+const mockAttachments = [
+  {
+    attachmentId: 'att-img',
+    fileName: 'schaden.jpg',
+    contentType: 'image/jpeg',
   },
+  {
+    attachmentId: 'att-pdf',
+    fileName: 'gutachten.pdf',
+    contentType: 'application/pdf',
+  },
+];
+
+const defaultProps = {
+  projectId: 'proj-1',
+  issueId: 'issue-1',
+  attachments: mockAttachments,
 };
 
 describe('NewQuotationRequestButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(quotationRequestService, 'createQuotationRequest').mockResolvedValue(undefined);
-    vi.spyOn(projectService, 'getProject').mockResolvedValue(mockProject);
   });
 
-  const mountButton = (props = { projectId: 'proj-1', issueId: 'issue-1' }) =>
+  const mountButton = (props = defaultProps) =>
     mount(NewQuotationRequestButton, {
       props,
       global: {
@@ -86,12 +92,6 @@ describe('NewQuotationRequestButton', () => {
     await trigger?.trigger('click');
     await wrapper.vm.$nextTick();
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('true');
-  });
-
-  it('fetches billing recipient data on mount', async () => {
-    mountButton();
-    await flushPromises();
-    expect(projectService.getProject).toHaveBeenCalledWith('proj-1');
   });
 
   it('renders form field labels', () => {
@@ -148,13 +148,11 @@ describe('NewQuotationRequestButton', () => {
 
     expect(quotationRequestService.createQuotationRequest).toHaveBeenCalledWith(
       'issue-1',
-      expect.objectContaining({
+      {
         scopeOfWork: 'Dachrinne reparieren',
         contractors: selectedContractors,
-        projectOwner: 'Muster Eigentümer GmbH',
-        projectCareOf: 'Max Mustermann',
-        billingAddress: mockProject.billingAddress,
-      }),
+        attachmentIds: [],
+      },
     );
   });
 
@@ -276,5 +274,53 @@ describe('NewQuotationRequestButton', () => {
       'issue-1',
       expect.objectContaining({ scopeOfWork: 'Reparatur' }),
     );
+  });
+
+  it('renders one selectable tile per attachment, including non-image files individually', () => {
+    const wrapper = mountButton();
+    const tiles = wrapper.findAll('[data-test="attachment-tile"]');
+    expect(tiles).toHaveLength(2);
+    expect(wrapper.findAllComponents(Checkbox)).toHaveLength(2);
+    expect(wrapper.findComponent(Image).find('img').attributes('src')).toBe(
+      '/ticketing/v1/issues/issue-1/attachments/att-img/schaden.jpg',
+    );
+    expect(tiles[1].text()).toContain('PDF');
+    expect(tiles[1].text()).toContain('gutachten.pdf');
+  });
+
+  it('does not render the attachments section when the issue has no attachments', () => {
+    const wrapper = mountButton({ ...defaultProps, attachments: [] });
+    expect(wrapper.text()).not.toContain('Anhänge mitsenden');
+    expect(wrapper.find('[data-test="attachment-tile"]').exists()).toBe(false);
+  });
+
+  it('sends the selected attachment ids with the request', async () => {
+    const wrapper = mountButton();
+    const contractorSelect = wrapper.findComponent(ContractorMultiSelectStub);
+    await contractorSelect.vm.$emit('update:modelValue', [{ id: 'c-1' }]);
+
+    const pdfCheckbox = wrapper.findAllComponents(Checkbox)[1];
+    await pdfCheckbox.vm.$emit('update:modelValue', ['att-pdf']);
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', { valid: true, states: { scopeOfWork: { value: 'Reparatur' } } });
+    await flushPromises();
+
+    expect(quotationRequestService.createQuotationRequest).toHaveBeenCalledWith(
+      'issue-1',
+      expect.objectContaining({ attachmentIds: ['att-pdf'] }),
+    );
+  });
+
+  it('resets the attachment selection when dialog emits hide', async () => {
+    const wrapper = mountButton();
+    await wrapper.findAllComponents(Checkbox)[0].vm.$emit('update:modelValue', ['att-img']);
+    expect(wrapper.find('[data-test="attachment-tile"]').classes()).toContain('ring-2');
+
+    await wrapper.findComponent({ name: 'BaseDialog' }).vm.$emit('hide');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('[data-test="attachment-tile"]').classes()).not.toContain('ring-2');
+    expect(wrapper.findAllComponents(Checkbox)[0].props('modelValue')).toEqual([]);
   });
 });

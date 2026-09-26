@@ -80,155 +80,151 @@ const typeFilters = computed(() =>
 </script>
 
 <template>
-  <aside
-    class="hidden lg:block w-72 m-4 p-4 shadow-md rounded-xl"
-    :class="isDarkTheme ? 'bg-surface-900' : 'bg-surface-0'"
-  >
-    <div class="flex flex-col h-full">
-      <!-- Filters Section -->
-      <div class="flex-1 overflow-hidden flex flex-col min-h-0">
-        <div class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-2 px-2 flex-shrink-0">
-          {{ t('activityFeeds.filter.title') }}
-        </div>
+  <div class="flex flex-col h-full">
+    <!-- Filters Section -->
+    <div class="flex-1 overflow-hidden flex flex-col min-h-0">
+      <div class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-2 px-2 flex-shrink-0">
+        {{ t('activityFeeds.filter.title') }}
+      </div>
         
-        <div class="flex-1 min-h-0">
-          <ScrollPanel style="width: 100%; height: 100%;">
-            <div class="space-y-3 pb-6 pr-2">
-              <!-- Smart Filters -->
-              <div v-if="smartFilters.length > 0">
-                <div 
-                  class="text-xs font-medium mb-1 px-2"
-                  :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
-                >
-                  {{ t('activityFeeds.filter.smart') }}
-                </div>
-                <div class="space-y-0.5">
-                  <Button 
-                    v-for="filter in smartFilters" 
-                    :key="filter.id"
-                    text
-                    :severity="activeFilterId === filter.id ? 'success' : 'secondary'"
-                    class="w-full justify-start"
-                    :class="activeFilterId === filter.id 
-                      ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
-                      : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
-                    @click="handleFilterClick(filter)"
-                  >
-                    <template #default>
-                      <span class="flex items-center justify-between w-full">
-                        <span class="flex items-center gap-2">
-                          <i class="pi text-xs" :class="[filter.icon]" />
-                          {{ filter.name }}
-                        </span>
-                        <Badge v-if="getFilterCount(filter) > 0" :value="getFilterCount(filter)" severity="secondary" />
-                      </span>
-                    </template>
-                  </Button>
-                </div>
+      <div class="flex-1 min-h-0">
+        <ScrollPanel style="width: 100%; height: 100%;">
+          <div class="space-y-3 pb-6 pr-2">
+            <!-- Smart Filters -->
+            <div v-if="smartFilters.length > 0">
+              <div 
+                class="text-xs font-medium mb-1 px-2"
+                :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
+              >
+                {{ t('activityFeeds.filter.smart') }}
               </div>
-
-              <!-- Status Filters -->
-              <div v-if="statusFilters.length > 0">
-                <div 
-                  class="text-xs font-medium mb-1 px-2"
-                  :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
+              <div class="space-y-0.5">
+                <Button 
+                  v-for="filter in smartFilters" 
+                  :key="filter.id"
+                  text
+                  :severity="activeFilterId === filter.id ? 'success' : 'secondary'"
+                  class="w-full justify-start"
+                  :class="activeFilterId === filter.id 
+                    ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
+                    : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
+                  @click="handleFilterClick(filter)"
                 >
-                  {{ t('activityFeeds.filter.status') }}
-                </div>
-                <div class="space-y-0.5">
-                  <Button 
-                    v-for="filter in statusFilters" 
-                    :key="filter.id"
-                    text
-                    :severity="activeFilterId === filter.id ? 'success' : 'secondary'"
-                    class="w-full justify-start"
-                    :class="activeFilterId === filter.id 
-                      ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
-                      : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
-                    @click="handleFilterClick(filter)"
-                  >
-                    <template #default>
-                      <span class="flex items-center justify-between w-full">
-                        <span class="flex items-center gap-2">
-                          <i class="pi text-xs" :class="[filter.icon]" />
-                          {{ filter.name }}
-                        </span>
-                        <Badge v-if="getFilterCount(filter) > 0" :value="getFilterCount(filter)" severity="secondary" />
+                  <template #default>
+                    <span class="flex items-center justify-between w-full">
+                      <span class="flex items-center gap-2">
+                        <i class="pi text-xs" :class="[filter.icon]" />
+                        {{ filter.name }}
                       </span>
-                    </template>
-                  </Button>
-                </div>
-              </div>
-
-              <!-- Type Filters -->
-              <div v-if="typeFilters.length > 0">
-                <div 
-                  class="text-xs font-medium mb-1 px-2"
-                  :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
-                >
-                  {{ t('activityFeeds.filter.type') }}
-                </div>
-                <div class="space-y-0.5">
-                  <Button 
-                    v-for="filter in typeFilters" 
-                    :key="filter.id"
-                    text
-                    :severity="activeFilterId === filter.id ? 'success' : 'secondary'"
-                    class="w-full justify-start"
-                    :class="activeFilterId === filter.id 
-                      ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
-                      : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
-                    @click="handleFilterClick(filter)"
-                  >
-                    <template #default>
-                      <span class="flex items-center justify-between w-full">
-                        <span class="flex items-center gap-2">
-                          <i class="pi text-xs" :class="[filter.icon]" />
-                          {{ filter.name }}
-                        </span>
-                        <Badge v-if="getFilterCount(filter) > 0" :value="getFilterCount(filter)" severity="secondary" />
-                      </span>
-                    </template>
-                  </Button>
-                </div>
+                      <Badge v-if="getFilterCount(filter) > 0" :value="getFilterCount(filter)" severity="secondary" />
+                    </span>
+                  </template>
+                </Button>
               </div>
             </div>
-          </ScrollPanel>
-        </div>
-      </div>
 
-      <Divider />
+            <!-- Status Filters -->
+            <div v-if="statusFilters.length > 0">
+              <div 
+                class="text-xs font-medium mb-1 px-2"
+                :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
+              >
+                {{ t('activityFeeds.filter.status') }}
+              </div>
+              <div class="space-y-0.5">
+                <Button 
+                  v-for="filter in statusFilters" 
+                  :key="filter.id"
+                  text
+                  :severity="activeFilterId === filter.id ? 'success' : 'secondary'"
+                  class="w-full justify-start"
+                  :class="activeFilterId === filter.id 
+                    ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
+                    : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
+                  @click="handleFilterClick(filter)"
+                >
+                  <template #default>
+                    <span class="flex items-center justify-between w-full">
+                      <span class="flex items-center gap-2">
+                        <i class="pi text-xs" :class="[filter.icon]" />
+                        {{ filter.name }}
+                      </span>
+                      <Badge v-if="getFilterCount(filter) > 0" :value="getFilterCount(filter)" severity="secondary" />
+                    </span>
+                  </template>
+                </Button>
+              </div>
+            </div>
 
-      <!-- Projects Section -->
-      <div>
-        <div class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-2 px-2">
-          {{ t('activityFeeds.sidebar.projects') }}
-        </div>
-        <ScrollPanel style="width: 100%; height: 120px">
-          <div class="space-y-1">
-            <Button 
-              v-for="proj in projectOptions" 
-              :key="proj.value"
-              text
-              :severity="filterProject.includes(proj.value) ? 'success' : 'secondary'"
-              size="small"
-              class="w-full justify-start"
-              :class="filterProject.includes(proj.value) 
-                ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
-                : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
-              @click="handleProjectClick(proj.value)"
-            >
-              <template #default>
-                <span class="flex items-center justify-between w-full">
-                  <span class="truncate">{{ proj.label }}</span>
-                  <Badge v-if="getProjectCount(proj.value) > 0" :value="getProjectCount(proj.value)" severity="secondary" />
-                </span>
-              </template>
-            </Button>
+            <!-- Type Filters -->
+            <div v-if="typeFilters.length > 0">
+              <div 
+                class="text-xs font-medium mb-1 px-2"
+                :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
+              >
+                {{ t('activityFeeds.filter.type') }}
+              </div>
+              <div class="space-y-0.5">
+                <Button 
+                  v-for="filter in typeFilters" 
+                  :key="filter.id"
+                  text
+                  :severity="activeFilterId === filter.id ? 'success' : 'secondary'"
+                  class="w-full justify-start"
+                  :class="activeFilterId === filter.id 
+                    ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
+                    : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
+                  @click="handleFilterClick(filter)"
+                >
+                  <template #default>
+                    <span class="flex items-center justify-between w-full">
+                      <span class="flex items-center gap-2">
+                        <i class="pi text-xs" :class="[filter.icon]" />
+                        {{ filter.name }}
+                      </span>
+                      <Badge v-if="getFilterCount(filter) > 0" :value="getFilterCount(filter)" severity="secondary" />
+                    </span>
+                  </template>
+                </Button>
+              </div>
+            </div>
           </div>
         </ScrollPanel>
       </div>
     </div>
-  </aside>
+
+    <Divider />
+
+    <!-- Projects Section -->
+    <div>
+      <div class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-2 px-2">
+        {{ t('activityFeeds.sidebar.projects') }}
+      </div>
+      <ScrollPanel style="width: 100%; height: 120px">
+        <div class="space-y-1">
+          <Button 
+            v-for="proj in projectOptions" 
+            :key="proj.value"
+            text
+            :severity="filterProject.includes(proj.value) ? 'success' : 'secondary'"
+            size="small"
+            class="w-full justify-start"
+            :class="filterProject.includes(proj.value) 
+              ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
+              : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
+            @click="handleProjectClick(proj.value)"
+          >
+            <template #default>
+              <span class="flex items-center justify-between w-full">
+                <span class="truncate">{{ proj.label }}</span>
+                <Badge v-if="getProjectCount(proj.value) > 0" :value="getProjectCount(proj.value)" severity="secondary" />
+              </span>
+            </template>
+          </Button>
+        </div>
+      </ScrollPanel>
+    </div>
+  </div>
 </template>
+
 

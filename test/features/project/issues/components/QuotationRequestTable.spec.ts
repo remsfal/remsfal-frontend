@@ -26,7 +26,13 @@ describe('QuotationRequestTable', () => {
     vi.spyOn(quotationRequestService, 'getQuotationRequests').mockResolvedValue({ items: mockRequests });
   });
 
-  const mountTable = (props = { projectId: 'proj-1', issueId: 'issue-1' }) =>
+  const defaultProps = {
+    projectId: 'proj-1',
+    issueId: 'issue-1',
+    attachments: [],
+  };
+
+  const mountTable = (props = defaultProps) =>
     mount(QuotationRequestTable, {
       props,
       global: { stubs: { NewQuotationRequestButton: true } },

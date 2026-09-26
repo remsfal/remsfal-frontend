@@ -169,6 +169,7 @@ watch(
   <IssueOrderManagementCard
     :issueId="issueId"
     :projectId="projectId"
+    :attachments="attachments"
   />
 
   <!-- Issue Contractor Timeline Card -->

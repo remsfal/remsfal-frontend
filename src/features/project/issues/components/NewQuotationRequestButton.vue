@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
 import { useEventBus } from '@/stores/EventStore';
 import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
+import Image from 'primevue/image';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
 import { Form } from '@primevue/forms';
@@ -13,11 +15,11 @@ import { z } from 'zod';
 import BaseDialog from '@/components/BaseDialog.vue';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 import type { CreateQuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
+import type { IssueAttachmentJson } from '@/features/project/issues/services/IssueService';
 import { type ContractorJson, ContractorMultiSelect, NewContractorButton } from '@/features/project/contractors';
-import { projectService } from '@/services/ProjectService';
-import type { AddressJson } from '@/services/AddressService';
+import { isImageAttachment, getAttachmentTypeLabel, getIssueAttachmentUrl } from '@/helper/attachmentHelper';
 
-const props = defineProps<{ projectId: string; issueId: string }>();
+const props = defineProps<{ projectId: string; issueId: string; attachments: IssueAttachmentJson[] }>();
 const emit = defineEmits<(e: 'created') => void>();
 
 const { t } = useI18n();
@@ -30,9 +32,7 @@ const selectedContractors = ref<ContractorJson[]>([]);
 const contractorsTouched = ref(false);
 const submitAttempted = ref(false);
 const initialValues = ref({ scopeOfWork: '' });
-const billingAddress = ref<AddressJson | undefined>(undefined);
-const projectOwner = ref<string | undefined>(undefined);
-const projectCareOf = ref<string | undefined>(undefined);
+const selectedAttachmentIds = ref<string[]>([]);
 
 const contractorsInvalid = computed(
   () => (contractorsTouched.value || submitAttempted.value) && selectedContractors.value.length === 0,
@@ -47,31 +47,10 @@ function onNewContractor(contractor: ContractorJson) {
   contractorSelectRef.value?.addContractor(contractor);
 }
 
-async function fetchBillingRecipientData() {
-  try {
-    const project = await projectService.getProject(props.projectId);
-    projectOwner.value = project.owner;
-    projectCareOf.value = project.careOf;
-    billingAddress.value = project.billingAddress;
-  } catch (error) {
-    console.error('Failed to fetch billing recipient data:', error);
-  }
-}
-
-async function ensureBillingRecipientDataLoaded() {
-  if (projectOwner.value !== undefined || projectCareOf.value !== undefined || billingAddress.value !== undefined) {
-    return;
-  }
-  await fetchBillingRecipientData();
-}
-
-onMounted(() => {
-  fetchBillingRecipientData();
-});
-
 function resetForm() {
   initialValues.value = { scopeOfWork: '' };
   selectedContractors.value = [];
+  selectedAttachmentIds.value = [];
   contractorsTouched.value = false;
   submitAttempted.value = false;
 }
@@ -79,15 +58,12 @@ function resetForm() {
 const onSubmit = async (event: FormSubmitEvent) => {
   submitAttempted.value = true;
   if (!event.valid || selectedContractors.value.length === 0) return;
-  await ensureBillingRecipientDataLoaded();
 
   const s = event.states;
   const data: CreateQuotationRequestJson = {
     scopeOfWork: s.scopeOfWork?.value?.trim(),
     contractors: selectedContractors.value,
-    projectOwner: projectOwner.value,
-    projectCareOf: projectCareOf.value,
-    billingAddress: billingAddress.value,
+    attachmentIds: selectedAttachmentIds.value,
   };
 
   try {
@@ -166,6 +142,44 @@ const onSubmit = async (event: FormSubmitEvent) => {
           >
             {{ t('quotationRequest.validation.contractors') }}
           </Message>
+        </div>
+
+        <div v-if="attachments.length > 0" class="flex flex-col gap-1">
+          <span class="font-semibold">{{ t('quotationRequest.dialog.attachments') }}</span>
+          <div class="flex flex-wrap gap-2">
+            <div
+              v-for="attachment in attachments"
+              :key="attachment.attachmentId"
+              data-test="attachment-tile"
+              class="relative rounded"
+              :class="{ 'ring-2 ring-primary': selectedAttachmentIds.includes(attachment.attachmentId ?? '') }"
+            >
+              <Image
+                v-if="isImageAttachment(attachment)"
+                :src="getIssueAttachmentUrl(issueId, attachment)"
+                :alt="attachment.fileName ?? 'issue-attachment'"
+                preview
+                imageClass="h-24 w-24 object-cover rounded"
+              />
+              <div
+                v-else
+                class="h-24 w-24 flex flex-col items-center justify-center gap-1 rounded px-1
+                       border border-surface-200 bg-surface-100 text-surface-500 text-xs font-medium"
+                :title="attachment.fileName"
+              >
+                <i class="pi pi-file text-2xl" />
+                <span>{{ getAttachmentTypeLabel(attachment) }}</span>
+                <span class="w-full truncate text-center">{{ attachment.fileName }}</span>
+              </div>
+              <Checkbox
+                v-model="selectedAttachmentIds"
+                :inputId="`attachment-${attachment.attachmentId}`"
+                :value="attachment.attachmentId"
+                :aria-label="attachment.fileName"
+                class="absolute top-1 left-1"
+              />
+            </div>
+          </div>
         </div>
       </div>
 

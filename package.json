@@ -1,6 +1,6 @@
 {
   "name": "@remsfal/remsfal-frontend",
-  "version": "1.0.1-SNAPSHOT",
+  "version": "1.0.2-SNAPSHOT",
   "type": "module",
   "homepage": "https://remsfal.de",
   "license": "MIT",
@@ -44,7 +44,7 @@
     "openapi:notification": "openapi-typescript openapi/notification-spec.json --read-write-markers -o src/services/api/notification-schema.ts"
   },
   "dependencies": {
-    "@capacitor/android": "^8.2.0",
+    "@capacitor/android": "^8.5.2",
     "@capacitor/camera": "^8.2.3",
     "@capacitor/core": "^8.4.2",
     "@capacitor/ios": "^8.5.2",
@@ -65,7 +65,7 @@
     "@opentelemetry/semantic-conventions": "^1.43.0",
     "@primevue/forms": ">=4.5.5 <5.0.0",
     "@primevue/themes": ">=4.5.4 <5.0.0",
-    "axios": "^1.18.1",
+    "axios": "^1.20.0",
     "chart.js": "^4.5.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "idb": "^8.0.3",
@@ -87,7 +87,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@tsconfig/node-lts": "^24.0.0",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^26.0.1",
+    "@types/node": "^26.6.2",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vitest/coverage-istanbul": "^5.0.2",
     "@vue/test-utils": "^2.5.0",

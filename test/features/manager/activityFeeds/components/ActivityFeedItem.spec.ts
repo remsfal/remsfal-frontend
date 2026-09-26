@@ -81,6 +81,22 @@ describe('ActivityFeedItem', () => {
     expect(wrapper.emitted('navigate')).toBeTruthy();
   });
 
+  it('emits navigate event when Enter is pressed on the item', async () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: mockEntry,
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const container = wrapper.find('div.group');
+    await container.trigger('keydown.enter');
+
+    expect(wrapper.emitted('navigate')).toBeTruthy();
+  });
+
   it('does not emit navigate when checkbox is clicked', async () => {
     wrapper = mount(ActivityFeedItem, {
       props: {
@@ -145,6 +161,56 @@ describe('ActivityFeedItem', () => {
     if (markAsReadButton) {
       await markAsReadButton.trigger('click');
       expect(wrapper.emitted('markRead')).toBeTruthy();
+    }
+  });
+
+  it('shows "Mark as unread" button only for read entries', () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: { ...mockEntry, read: true },
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const markAsUnreadButton = wrapper.findAllComponents({ name: 'Button' })
+      .find(btn => btn.props('icon') === 'pi pi-envelope');
+    expect(markAsUnreadButton).toBeDefined();
+  });
+
+  it('does not show "Mark as unread" button for unread entries', () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: { ...mockEntry, read: false },
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const markAsUnreadButton = wrapper.findAll('button').find(btn =>
+      btn.find('i.pi-envelope').exists()
+    );
+    expect(markAsUnreadButton).toBeUndefined();
+  });
+
+  it('emits mark-unread event when mark as unread button is clicked', async () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: { ...mockEntry, read: true },
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const markAsUnreadButton = wrapper.findAllComponents({ name: 'Button' })
+      .find(btn => btn.props('icon') === 'pi pi-envelope');
+
+    if (markAsUnreadButton) {
+      await markAsUnreadButton.trigger('click');
+      expect(wrapper.emitted('markUnread')).toBeTruthy();
     }
   });
 
