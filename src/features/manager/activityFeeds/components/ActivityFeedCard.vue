@@ -3,8 +3,10 @@ import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
+import Drawer from 'primevue/drawer';
 
 import BaseCard from '@/components/BaseCard.vue';
+import { useLayout } from '@/layouts/composables/layout';
 import { useActivityFeedStore } from '../stores/ActivityFeedStore';
 import type { ActivityFeedEntry } from '../stores/ActivityFeedStore';
 import ActivityFeedSidebar, { type CustomFilter } from './ActivityFeedSidebar.vue';
@@ -14,6 +16,9 @@ import ActivityFeedList from './ActivityFeedList.vue';
 const { t } = useI18n();
 const router = useRouter();
 const activityFeed = useActivityFeedStore();
+const { isDarkTheme } = useLayout();
+
+const filtersDrawerVisible = ref(false);
 
 const {
   entries,
@@ -102,12 +107,14 @@ const toggleProjectFilter = (projectId: string) => {
   }
 };
 
-const navigateToIssue = (entry: ActivityFeedEntry) => {
+const navigateToIssue = async (entry: ActivityFeedEntry) => {
+  if (!entry.read) {
+    await activityFeed.markAsRead(entry);
+  }
   router.push({
     name: 'IssueDetails',
     params: { projectId: entry.projectId, issueId: entry.issueId }
   });
-  if (!entry.read) activityFeed.markAsRead(entry);
 };
 
 const toggleSelection = (entry: ActivityFeedEntry) => {
@@ -134,6 +141,10 @@ const handleEntryNavigate = (entry: ActivityFeedEntry) => {
 
 const handleEntryMarkRead = (entry: ActivityFeedEntry) => {
   activityFeed.markAsRead(entry);
+};
+
+const handleEntryMarkUnread = (entry: ActivityFeedEntry) => {
+  activityFeed.markAsUnread(entry);
 };
 
 const handleEntryDelete = (entry: ActivityFeedEntry) => {
@@ -164,6 +175,7 @@ const displayedEntries = computed(() => {
             @update:searchQuery="searchQuery = $event"
             @markReadSelected="activityFeed.markReadSelected"
             @deleteSelected="activityFeed.confirmDeleteSelected"
+            @openFilters="filtersDrawerVisible = true"
           />
 
           <ActivityFeedList
@@ -177,22 +189,47 @@ const displayedEntries = computed(() => {
             @selectItem="handleEntrySelect"
             @navigate="handleEntryNavigate"
             @markRead="handleEntryMarkRead"
+            @markUnread="handleEntryMarkUnread"
             @delete="handleEntryDelete"
             @loadMore="activityFeed.loadMoreActivities"
           />
         </div>
 
-        <ActivityFeedSidebar
-          :activeFilterId="activeFilterId"
-          :customFilters="customFilters"
-          :projectOptions="projectOptions"
-          :filterProject="filterProject"
-          :entries="entries"
-          @filterApplied="applyFilter"
-          @projectFilterToggled="toggleProjectFilter"
-          @clearFilters="clearAllFilters"
-        />
+        <!-- Filters: persistent flush column on lg+, no card-in-card chrome -->
+        <aside
+          class="hidden lg:flex lg:flex-col w-72 flex-shrink-0 border-l pl-4 py-4"
+          :class="isDarkTheme ? 'border-surface-800' : 'border-surface-200'"
+        >
+          <ActivityFeedSidebar
+            :activeFilterId="activeFilterId"
+            :customFilters="customFilters"
+            :projectOptions="projectOptions"
+            :filterProject="filterProject"
+            :entries="entries"
+            @filterApplied="applyFilter"
+            @projectFilterToggled="toggleProjectFilter"
+            @clearFilters="clearAllFilters"
+          />
+        </aside>
       </div>
     </template>
   </BaseCard>
+
+  <!-- Filters: drawer fallback below lg -->
+  <Drawer
+    v-model:visible="filtersDrawerVisible"
+    position="right"
+    :header="t('activityFeeds.filter.title')"
+  >
+    <ActivityFeedSidebar
+      :activeFilterId="activeFilterId"
+      :customFilters="customFilters"
+      :projectOptions="projectOptions"
+      :filterProject="filterProject"
+      :entries="entries"
+      @filterApplied="applyFilter"
+      @projectFilterToggled="toggleProjectFilter"
+      @clearFilters="clearAllFilters"
+    />
+  </Drawer>
 </template>

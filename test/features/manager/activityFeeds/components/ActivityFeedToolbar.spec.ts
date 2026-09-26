@@ -197,6 +197,25 @@ describe('ActivityFeedToolbar', () => {
     }
   });
 
+  it('emits openFilters when the filters button is clicked', async () => {
+    wrapper = mount(ActivityFeedToolbar, {
+      props: {
+        activeTab: 'all',
+        searchQuery: '',
+        selectedCount: 0,
+      },
+    });
+
+    const filtersButton = wrapper.findAllComponents({ name: 'Button' })
+      .find(btn => btn.props('icon') === 'pi pi-filter');
+
+    expect(filtersButton).toBeDefined();
+    if (filtersButton) {
+      await filtersButton.trigger('click');
+      expect(wrapper.emitted('openFilters')).toBeTruthy();
+    }
+  });
+
   it('displays correct selected count in tag', () => {
     wrapper = mount(ActivityFeedToolbar, {
       props: {

@@ -160,7 +160,7 @@ describe('ActivityFeedSidebar', () => {
         filterProject: ['proj-1'],
         customFilters: mixedCustomFilters,
       });
-      expect(wrapper.html()).toContain('bg-surface-900');
+      expect(wrapper.html()).toContain('!bg-surface-700');
     } finally {
       layoutConfig.darkTheme = false;
     }

@@ -19,6 +19,7 @@ const emit = defineEmits<{
   select: [];
   navigate: [];
   markRead: [];
+  markUnread: [];
   delete: [];
 }>();
 
@@ -39,7 +40,10 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
         ? (isDarkTheme ? 'bg-surface-800/30 hover:bg-surface-800/50' : 'bg-surface-50 hover:bg-surface-100')
         : (isDarkTheme ? 'bg-surface-900 hover:bg-surface-800/50' : 'bg-surface-0 hover:bg-surface-100')
     ]"
+    role="button"
+    tabindex="0"
     @click="emit('navigate')"
+    @keydown.enter="emit('navigate')"
   >
     <!-- Unread Indicator -->
     <div class="w-2.5 flex-shrink-0 flex items-center justify-center self-center">
@@ -89,7 +93,10 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
     </div>
 
     <!-- Hover Actions  -->
-    <div class="w-16 flex-shrink-0 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
+    <div
+      class="w-16 flex-shrink-0 flex justify-end opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity"
+      @click.stop
+    >
       <Button
         v-if="!entry.read"
         v-tooltip.bottom="t('activityFeeds.actions.markAsRead')"
@@ -98,6 +105,15 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
         rounded
         size="small"
         @click="emit('markRead')"
+      />
+      <Button
+        v-else
+        v-tooltip.bottom="t('activityFeeds.actions.markAsUnread')"
+        icon="pi pi-envelope"
+        text
+        rounded
+        size="small"
+        @click="emit('markUnread')"
       />
       <Button
         v-tooltip.bottom="t('button.delete')"

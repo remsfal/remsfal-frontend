@@ -315,6 +315,47 @@ describe('ActivityFeedStore', () => {
     });
   });
 
+  describe('markAsUnread', () => {
+    beforeEach(async () => {
+      store.entries = mockEntries.map(entry => ({ ...entry, createdAt: new Date(entry.createdAt) }));
+    });
+
+    it('calls service and updates local state optimistically', async () => {
+      const entry = store.entries.find(e => e.read) ?? store.entries[0];
+      entry.read = true;
+
+      await store.markAsUnread(entry);
+
+      expect(entry.read).toBe(false);
+      expect(store.entries.find(e => e.id === entry.id)?.read).toBe(false);
+    });
+
+    it('does nothing when the entry is not found in the store', async () => {
+      const unknownEntry = createMockActivityFeedEntry({ id: 'unknown-id', read: true });
+
+      await expect(store.markAsUnread(unknownEntry)).resolves.not.toThrow();
+
+      expect(store.entries.find(e => e.id === 'unknown-id')).toBeUndefined();
+    });
+
+    it('handles errors gracefully', async () => {
+      store.entries = mockEntries.map(entry => ({ ...entry, read: true }));
+      server.use(
+        http.patch('/ticketing/v1/activities/:activityId/status', () => {
+          return HttpResponse.json({ error: 'Not found' }, { status: 404 });
+        }),
+      );
+
+      const entry = store.entries[0];
+      const originalRead = entry.read;
+
+      await expect(store.markAsUnread(entry)).resolves.not.toThrow();
+
+      const entryAfterError = store.entries.find(e => e.id === entry.id);
+      expect(entryAfterError?.read).toBe(originalRead);
+    });
+  });
+
   describe('markReadSelected', () => {
     beforeEach(async () => {
       store.entries = mockEntries.map(entry => ({ ...entry, createdAt: new Date(entry.createdAt) }));
