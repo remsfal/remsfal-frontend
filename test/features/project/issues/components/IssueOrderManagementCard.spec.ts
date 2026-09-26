@@ -9,7 +9,11 @@ setupResizeObserverMock();
 describe('IssueOrderManagementCard', () => {
   const mountCard = () =>
     mount(IssueOrderManagementCard, {
-      props: { projectId: 'proj-1', issueId: 'issue-1' },
+      props: {
+        projectId: 'proj-1',
+        issueId: 'issue-1',
+        attachments: [],
+      },
       global: {
         stubs: {
           QuotationRequestTable: { template: '<div data-test="qr-table" />' },

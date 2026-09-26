@@ -1069,6 +1069,7 @@
   "quotationRequest.dialog.scopeOfWork": "Scope of Work",
   "quotationRequest.dialog.scopeOfWork.placeholder": "Describe the required work...",
   "quotationRequest.dialog.contractors": "Contractors",
+  "quotationRequest.dialog.attachments": "Include attachments",
   "quotationRequest.dialog.submit": "Request Quotation",
   "quotationRequest.createSuccess": "Request created successfully",
   "quotationRequest.createError": "Error creating request",

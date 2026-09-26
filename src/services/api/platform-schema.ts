@@ -5432,17 +5432,8 @@ export interface components {
     CreateQuotationRequestJson: {
       contractors: components["schemas"]["ContractorJson"][];
       scopeOfWork?: string;
-      projectOwner?: string;
-      projectCareOf?: string;
-      billingAddress?: components["schemas"]["AddressJson"];
-      /** @description Address of the building or site where the work is performed */
-      placeOfPerformance?: components["schemas"]["AddressJson"];
-      /** @description Title of the rental unit the issue refers to */
-      rentalUnitTitle?: string;
-      /** @description Location of the rental unit within the place of performance */
-      rentalUnitLocation?: string;
-      /** @description Tenants of the rental unit the issue refers to */
-      tenants?: components["schemas"]["UserJson"][];
+      /** @description IDs of existing issue attachments to share with the contractors */
+      attachmentIds?: string[];
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";

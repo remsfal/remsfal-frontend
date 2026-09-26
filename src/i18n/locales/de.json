@@ -1071,6 +1071,7 @@
   "quotationRequest.dialog.scopeOfWork": "Leistungsbeschreibung",
   "quotationRequest.dialog.scopeOfWork.placeholder": "Beschreiben Sie die gewünschte Leistung...",
   "quotationRequest.dialog.contractors": "Auftragnehmer",
+  "quotationRequest.dialog.attachments": "Anhänge mitsenden",
   "quotationRequest.dialog.submit": "Angebot anfragen",
   "quotationRequest.createSuccess": "Anfrage erfolgreich erstellt",
   "quotationRequest.createError": "Fehler beim Erstellen der Anfrage",
