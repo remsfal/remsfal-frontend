@@ -70,7 +70,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "idb": "^8.0.3",
     "pinia": "^4.0.3",
-    "primeicons": "^7.0.0",
+    "primeicons": ">=7.0.0 <8.0.0",
     "primevue": ">=4.5.5 <5.0.0",
     "vue": "^3.5.43",
     "vue-i18n": "^11.4.8",

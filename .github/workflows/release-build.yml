@@ -21,7 +21,7 @@ jobs:
         id: generate-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ secrets.REMSFAL_BOT_ID }}
+          client-id: ${{ secrets.REMSFAL_BOT_ID }}
           private-key: ${{ secrets.REMSFAL_BOT_KEY }}
           owner: remsfal
           repositories: remsfal-frontend
@@ -115,8 +115,8 @@ jobs:
           # This updates package.json again with the '-SNAPSHOT' suffix.
           npm version $NEW_DEV_VERSION --no-git-tag-version
           
-          # 5. Commit the new development version
-          git add package.json
+          # 5. Commit the new development version (npm version also updates package-lock.json)
+          git add package.json package-lock.json
           git commit -m "Set next development version to $NEW_DEV_VERSION [skip ci]"
           
           # 6. Push the new development version commit back to the branch

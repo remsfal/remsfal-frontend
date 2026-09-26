@@ -12,6 +12,8 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@primevue/*"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "primeicons"
+        update-types: ["version-update:semver-major"]
   # Enable version updates for GitHub actions
   - package-ecosystem: "github-actions"
     directory: "/.github/workflows"
