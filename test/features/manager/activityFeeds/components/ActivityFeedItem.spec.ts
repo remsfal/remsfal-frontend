@@ -81,6 +81,22 @@ describe('ActivityFeedItem', () => {
     expect(wrapper.emitted('navigate')).toBeTruthy();
   });
 
+  it('emits navigate event when Enter is pressed on the item', async () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: mockEntry,
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const container = wrapper.find('div.group');
+    await container.trigger('keydown.enter');
+
+    expect(wrapper.emitted('navigate')).toBeTruthy();
+  });
+
   it('does not emit navigate when checkbox is clicked', async () => {
     wrapper = mount(ActivityFeedItem, {
       props: {

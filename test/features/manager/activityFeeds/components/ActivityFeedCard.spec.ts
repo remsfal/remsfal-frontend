@@ -9,6 +9,7 @@ import ActivityFeedToolbar from '@/features/manager/activityFeeds/components/Act
 import ActivityFeedList from '@/features/manager/activityFeeds/components/ActivityFeedList.vue';
 import type { ActivityFeedEntry } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
 import { createMockActivityFeedEntry } from '../../../../utils/testHelpers';
+import Drawer from 'primevue/drawer';
 
 // Mocks
 const mockPush = vi.fn();
@@ -332,5 +333,45 @@ describe('ActivityFeedCard.vue', () => {
     const displayed = entryList.props('entries') as ActivityFeedEntry[];
 
     expect(displayed.map(e => e.id)).toEqual(['u-late', 'u-early', 'r-late', 'r-early']);
+  });
+
+  it('opens the filters drawer when the toolbar requests it', async () => {
+    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
+    const drawer = wrapper.findComponent(Drawer);
+
+    await toolbar.vm.$emit('open-filters');
+    await wrapper.vm.$nextTick();
+
+    expect(drawer.props('visible')).toBe(true);
+  });
+
+  it('syncs drawer visibility changes back to the card state', async () => {
+    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
+    const drawer = wrapper.findComponent(Drawer);
+
+    await toolbar.vm.$emit('open-filters');
+    await wrapper.vm.$nextTick();
+    await drawer.vm.$emit('update:visible', false);
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.findComponent(Drawer).props('visible')).toBe(false);
+  });
+
+  it('wires drawer sidebar events to the same filter handlers', async () => {
+    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
+    await toolbar.vm.$emit('open-filters');
+    await wrapper.vm.$nextTick();
+
+    const sidebars = wrapper.findAllComponents(ActivityFeedSidebar);
+    const drawerSidebar = sidebars[1];
+    const filter = {
+      id: 'drawer-filter', name: 'Drawer Filter', icon: 'pi-clock', query: 'status:PENDING'
+    };
+
+    await drawerSidebar.vm.$emit('filter-applied', filter);
+    expect(store.filterIssueStatus).toEqual(['PENDING']);
+
+    await drawerSidebar.vm.$emit('clear-filters');
+    expect(store.filterIssueStatus).toEqual([]);
   });
 });
