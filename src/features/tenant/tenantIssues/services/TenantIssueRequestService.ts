@@ -14,7 +14,7 @@ class TenantIssueRequestService {
 
   async answerRequest(
     issueId: string,
-    issueRequestId: string,
+    requestId: string,
     response: IssueRequestWritableJson,
     files: File[],
   ): Promise<void> {
@@ -26,9 +26,9 @@ class TenantIssueRequestService {
     });
 
     await apiClient.post(
-      '/ticketing/v1/tenant-relations/issues/{issueId}/requests/{issueRequestId}/response',
+      '/ticketing/v1/tenant-relations/issues/{issueId}/requests/{requestId}',
       formData as never,
-      { pathParams: { issueId, issueRequestId } },
+      { pathParams: { issueId, requestId } },
     );
   }
 }
