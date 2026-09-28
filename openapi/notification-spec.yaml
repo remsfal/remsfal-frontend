@@ -416,7 +416,7 @@ components:
         attachments:
           type: array
           items:
-            $ref: "#/components/schemas/OrderAttachmentJson"
+            $ref: "#/components/schemas/IssueAttachmentJson"
           readOnly: true
       required:
       - purpose
@@ -485,8 +485,8 @@ components:
       examples:
       - 2022-03-10T16:15:50Z
     IssueAttachmentJson:
-      description: An issue attachment
       type: object
+      description: An issue attachment
       properties:
         attachmentId:
           $ref: "#/components/schemas/UUID"
@@ -504,6 +504,8 @@ components:
           $ref: "#/components/schemas/Instant"
         issueId:
           $ref: "#/components/schemas/UUID"
+        uploaderContext:
+          $ref: "#/components/schemas/UserContext"
     IssueCategory:
       type: string
       enum:
@@ -822,29 +824,6 @@ components:
       - QUOTATION_REQUESTED
       - REQUEST_CREATED
       - REQUEST_ANSWERED
-    OrderAttachmentJson:
-      type: object
-      description: "An attachment associated with a quotation request, quotation,\
-        \ or order placement"
-      properties:
-        attachmentId:
-          $ref: "#/components/schemas/UUID"
-        fileName:
-          type: string
-        contentType:
-          type: string
-        objectName:
-          type: string
-        uploaderId:
-          $ref: "#/components/schemas/UUID"
-        uploadedBy:
-          type: string
-        createdAt:
-          $ref: "#/components/schemas/Instant"
-        processPhase:
-          $ref: "#/components/schemas/OrderProcessPhase"
-        processId:
-          $ref: "#/components/schemas/UUID"
     OrderPlacementJson:
       description: An order placement created by a manager based on a quotation
       type: object
@@ -878,7 +857,7 @@ components:
         attachments:
           type: array
           items:
-            $ref: "#/components/schemas/OrderAttachmentJson"
+            $ref: "#/components/schemas/IssueAttachmentJson"
         quotationId:
           description: ID of the quotation this order is based on
           readOnly: true
@@ -922,12 +901,6 @@ components:
       - CONFIRMED
       - REJECTED
       - WITHDRAWN
-    OrderProcessPhase:
-      type: string
-      enum:
-      - QUOTATION_REQUEST
-      - QUOTATION
-      - ORDER_PLACEMENT
     OrganizationEmployeeJson:
       description: Employee information in context of an organization
       type: object
@@ -1231,7 +1204,7 @@ components:
         attachments:
           type: array
           items:
-            $ref: "#/components/schemas/OrderAttachmentJson"
+            $ref: "#/components/schemas/IssueAttachmentJson"
         requestId:
           description: ID of the quotation request this quotation responds to
           readOnly: true
@@ -1295,7 +1268,7 @@ components:
         attachments:
           type: array
           items:
-            $ref: "#/components/schemas/OrderAttachmentJson"
+            $ref: "#/components/schemas/IssueAttachmentJson"
         initiatorId:
           description: ID of the user who initiated this request
           readOnly: true

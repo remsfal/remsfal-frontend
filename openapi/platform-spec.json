@@ -525,7 +525,7 @@
           "attachments" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OrderAttachmentJson"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             },
             "readOnly" : true
           }
@@ -631,8 +631,8 @@
         "examples" : [ "2022-03-10T16:15:50Z" ]
       },
       "IssueAttachmentJson" : {
-        "description" : "An issue attachment",
         "type" : "object",
+        "description" : "An issue attachment",
         "properties" : {
           "attachmentId" : {
             "$ref" : "#/components/schemas/UUID"
@@ -657,6 +657,9 @@
           },
           "issueId" : {
             "$ref" : "#/components/schemas/UUID"
+          },
+          "uploaderContext" : {
+            "$ref" : "#/components/schemas/UserContext"
           }
         }
       },
@@ -980,39 +983,6 @@
         "type" : "string",
         "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED", "ORDER_PLACED", "QUOTATION_REQUESTED", "REQUEST_CREATED", "REQUEST_ANSWERED" ]
       },
-      "OrderAttachmentJson" : {
-        "type" : "object",
-        "description" : "An attachment associated with a quotation request, quotation, or order placement",
-        "properties" : {
-          "attachmentId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "fileName" : {
-            "type" : "string"
-          },
-          "contentType" : {
-            "type" : "string"
-          },
-          "objectName" : {
-            "type" : "string"
-          },
-          "uploaderId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "uploadedBy" : {
-            "type" : "string"
-          },
-          "createdAt" : {
-            "$ref" : "#/components/schemas/Instant"
-          },
-          "processPhase" : {
-            "$ref" : "#/components/schemas/OrderProcessPhase"
-          },
-          "processId" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }
-      },
       "OrderPlacementJson" : {
         "description" : "An order placement created by a manager based on a quotation",
         "type" : "object",
@@ -1059,7 +1029,7 @@
           "attachments" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OrderAttachmentJson"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             }
           },
           "quotationId" : {
@@ -1112,10 +1082,6 @@
       "OrderPlacementStatus" : {
         "type" : "string",
         "enum" : [ "PLACED", "CONFIRMED", "REJECTED", "WITHDRAWN" ]
-      },
-      "OrderProcessPhase" : {
-        "type" : "string",
-        "enum" : [ "QUOTATION_REQUEST", "QUOTATION", "ORDER_PLACEMENT" ]
       },
       "OrganizationEmployeeJson" : {
         "description" : "Employee information in context of an organization",
@@ -1509,7 +1475,7 @@
           "attachments" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OrderAttachmentJson"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             }
           },
           "requestId" : {
@@ -1599,7 +1565,7 @@
           "attachments" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OrderAttachmentJson"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             }
           },
           "initiatorId" : {
