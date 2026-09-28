@@ -2,7 +2,8 @@ import globals from 'globals';
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import vue from 'eslint-plugin-vue';
-import importPlugin from 'eslint-plugin-import';
+import { importX } from 'eslint-plugin-import-x';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import i18n from '@intlify/eslint-plugin-vue-i18n';
 import type { Linter } from 'eslint';
 
@@ -97,13 +98,13 @@ export default [
 
   // general rules
   {
-    plugins: { import: importPlugin },
-    settings: { 'import/resolver': { typescript: true } },
+    plugins: { 'import-x': importX },
+    settings: { 'import-x/resolver-next': [createTypeScriptImportResolver()] },
     rules: {
       'max-len': ['error', { code: 128 }],
       'no-tabs': 'error',
       indent: ['error', 2, { SwitchCase: 1 }],
-      'import/extensions': ['error', 'ignorePackages', {
+      'import-x/extensions': ['error', 'ignorePackages', {
         js: 'never',
         mjs: 'never',
         jsx: 'never',
@@ -126,7 +127,7 @@ export default [
   // in root-level config files (e.g. vitest.config.ts importing vite.config.ts).
   {
     files: ['*.config.ts'],
-    rules: { 'import/extensions': 'off' },
+    rules: { 'import-x/extensions': 'off' },
   },
 
   // ignore files at the end of the config
