@@ -51,7 +51,7 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
     </div>
 
     <!-- Checkbox -->
-    <div class="self-center" @click.stop>
+    <div class="self-center" @click.stop @keydown.stop>
       <Checkbox :modelValue="isSelected" binary @change="emit('select')" />
     </div>
 
@@ -96,6 +96,7 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
     <div
       class="w-16 flex-shrink-0 flex justify-end opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity"
       @click.stop
+      @keydown.stop
     >
       <Button
         v-if="!entry.read"

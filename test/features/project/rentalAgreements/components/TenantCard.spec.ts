@@ -23,6 +23,25 @@ describe('TenantCard', () => {
     expect(wrapper.emitted('click')).toBeFalsy();
   });
 
+  it('does not trigger a card click when Enter is pressed on an action', async () => {
+    const wrapper = mount(TenantCard, {
+      props: { tenant },
+      slots: { actions: '<button class="my-action">Action</button>' },
+    });
+
+    await wrapper.find('.my-action').trigger('keydown.enter');
+
+    expect(wrapper.emitted('click')).toBeFalsy();
+  });
+
+  it('emits click when Enter is pressed on the card itself', async () => {
+    const wrapper = mount(TenantCard, { props: { tenant } });
+
+    await wrapper.find('[data-testid="tenant-card"]').trigger('keydown.enter');
+
+    expect(wrapper.emitted('click')).toBeTruthy();
+  });
+
   it('emits click when the card itself is clicked', async () => {
     const wrapper = mount(TenantCard, { props: { tenant } });
 

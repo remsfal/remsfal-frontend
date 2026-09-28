@@ -122,7 +122,7 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
         />
 
         <!-- Contact Buttons & Actions (with click.stop) -->
-        <div class="flex items-center gap-2" @click.stop>
+        <div class="flex items-center gap-2" @click.stop @keydown.stop>
           <TenantContactButtons
             :email="tenant.email"
             :mobilePhoneNumber="tenant.mobilePhoneNumber"

@@ -114,6 +114,39 @@ describe('ActivityFeedItem', () => {
     expect(wrapper.emitted('navigate')).toBeFalsy();
   });
 
+  it('does not emit navigate when Enter is pressed on the checkbox', async () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: mockEntry,
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    await wrapper.find('input[type="checkbox"]').trigger('keydown.enter');
+
+    expect(wrapper.emitted('navigate')).toBeFalsy();
+  });
+
+  it('does not emit navigate when Enter is pressed on a hover action button', async () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: mockEntry,
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const deleteButton = wrapper.findAllComponents({ name: 'Button' })
+      .find(btn => btn.props('icon') === 'pi pi-trash');
+    expect(deleteButton).toBeDefined();
+    await deleteButton!.trigger('keydown.enter');
+
+    expect(wrapper.emitted('navigate')).toBeFalsy();
+  });
+
   it('shows "Mark as read" button only for unread entries', () => {
     wrapper = mount(ActivityFeedItem, {
       props: {
