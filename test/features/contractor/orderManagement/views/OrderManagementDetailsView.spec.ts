@@ -42,7 +42,6 @@ describe('OrderManagementDetailsView', () => {
 
     const timeline = wrapper.getComponent(ContractorOrderTimelineCard);
     expect(timeline.props('issueId')).toBe('issue-1');
-    expect(timeline.props('requestId')).toBe('qr-1');
   });
 
   it('shows a not-found message when no item matches the issueId', async () => {

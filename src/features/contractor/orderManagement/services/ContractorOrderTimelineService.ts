@@ -1,7 +1,6 @@
 import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 
 export type ContractorTimelineJson = Readable<ApiComponents['schemas']['ContractorTimelineJson']>;
-export type OrderAttachmentJson = Readable<ApiComponents['schemas']['OrderAttachmentJson']>;
 export type MessagePurpose = ApiComponents['schemas']['MessagePurpose'];
 export type ContractorTimelineWritableJson = Writable<ApiComponents['schemas']['ContractorTimelineJson']>;
 

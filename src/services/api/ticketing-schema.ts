@@ -944,7 +944,7 @@ export interface paths {
               /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
               organizationId?: components["schemas"]["UUID"];
               senderRole?: $Read<components["schemas"]["UserContext"]>;
-              attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+              attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
             };
             /** @description One or more files to attach to the timeline entry */
             attachment?: string[];
@@ -1163,207 +1163,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/ticketing/v1/issues/{issueId}/orders/{processId}/attachments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Upload one or more attachments.
-     * @description Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** @description One or more files to attach */
-            attachment: string[];
-          };
-        };
-      };
-      responses: {
-        /** @description Attachments uploaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input or unsupported file type */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to upload attachments here */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The quotation request, quotation, or order placement not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/orders/{processId}/attachments/{attachmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an order attachment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to delete this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/orders/{processId}/attachments/{attachmentId}/{filename}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Download an order attachment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description Filename of the attachment */
-          filename: string;
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment downloaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/octet-stream": unknown;
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to access this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/ticketing/v1/issues/{issueId}/parent/{parentIssueId}": {
     parameters: {
       query?: never;
@@ -1514,207 +1313,6 @@ export interface paths {
         };
       };
     };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/quotation-request/{processId}/attachments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Upload one or more attachments.
-     * @description Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** @description One or more files to attach */
-            attachment: string[];
-          };
-        };
-      };
-      responses: {
-        /** @description Attachments uploaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input or unsupported file type */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to upload attachments here */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The quotation request, quotation, or order placement not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/quotation-request/{processId}/attachments/{attachmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an order attachment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to delete this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/quotation-request/{processId}/attachments/{attachmentId}/{filename}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Download an order attachment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description Filename of the attachment */
-          filename: string;
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment downloaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/octet-stream": unknown;
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to access this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -1877,207 +1475,6 @@ export interface paths {
           content?: never;
         };
         /** @description The issue does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/quotations/{processId}/attachments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Upload one or more attachments.
-     * @description Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** @description One or more files to attach */
-            attachment: string[];
-          };
-        };
-      };
-      responses: {
-        /** @description Attachments uploaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input or unsupported file type */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to upload attachments here */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The quotation request, quotation, or order placement not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/quotations/{processId}/attachments/{attachmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an order attachment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to delete this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/quotations/{processId}/attachments/{attachmentId}/{filename}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Download an order attachment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description Filename of the attachment */
-          filename: string;
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment downloaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/octet-stream": unknown;
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to access this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
         404: {
           headers: {
             [name: string]: unknown;
@@ -2616,207 +2013,6 @@ export interface paths {
     };
     trace?: never;
   };
-  "/ticketing/v1/order-management/order-placements/{processId}/attachments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Upload one or more attachments.
-     * @description Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** @description One or more files to attach */
-            attachment: string[];
-          };
-        };
-      };
-      responses: {
-        /** @description Attachments uploaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input or unsupported file type */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to upload attachments here */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The quotation request, quotation, or order placement not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/order-management/order-placements/{processId}/attachments/{attachmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an order attachment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to delete this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/order-management/order-placements/{processId}/attachments/{attachmentId}/{filename}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Download an order attachment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description Filename of the attachment */
-          filename: string;
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment downloaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/octet-stream": unknown;
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to access this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/ticketing/v1/order-management/quotation-requests": {
     parameters: {
       query?: never;
@@ -2855,207 +2051,6 @@ export interface paths {
         };
         /** @description User does not have sufficient organization role */
         403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/order-management/quotation-requests/{processId}/attachments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Upload one or more attachments.
-     * @description Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** @description One or more files to attach */
-            attachment: string[];
-          };
-        };
-      };
-      responses: {
-        /** @description Attachments uploaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input or unsupported file type */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to upload attachments here */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The quotation request, quotation, or order placement not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/order-management/quotation-requests/{processId}/attachments/{attachmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an order attachment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to delete this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/order-management/quotation-requests/{processId}/attachments/{attachmentId}/{filename}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Download an order attachment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description Filename of the attachment */
-          filename: string;
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment downloaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/octet-stream": unknown;
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to access this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
           headers: {
             [name: string]: unknown;
           };
@@ -3265,207 +2260,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/ticketing/v1/order-management/quotations/{processId}/attachments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Upload one or more attachments.
-     * @description Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** @description One or more files to attach */
-            attachment: string[];
-          };
-        };
-      };
-      responses: {
-        /** @description Attachments uploaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input or unsupported file type */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to upload attachments here */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The quotation request, quotation, or order placement not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/order-management/quotations/{processId}/attachments/{attachmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an order attachment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to delete this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/order-management/quotations/{processId}/attachments/{attachmentId}/{filename}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Download an order attachment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description Filename of the attachment */
-          filename: string;
-          /** @description ID of the quotation request, quotation, or order placement */
-          processId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment downloaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/octet-stream": unknown;
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to access this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/ticketing/v1/order-management/quotations/{quotationId}": {
     parameters: {
       query?: never;
@@ -3510,6 +2304,73 @@ export interface paths {
           content?: never;
         };
         /** @description Quotation not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ticketing/v1/order-management/{issueId}/attachments/{attachmentId}/{filename}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Download an issue attachment shared with the contractor
+     * @description The attachment must be referenced by the contractor's timeline, quotation request, quotation or order placement for this issue.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the attachment */
+          attachmentId: components["schemas"]["UUID"];
+          /** @description Filename of the attachment */
+          filename: string;
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Attachment downloaded successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/octet-stream": unknown;
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to access this attachment */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Attachment not found */
         404: {
           headers: {
             [name: string]: unknown;
@@ -3581,7 +2442,7 @@ export interface paths {
     put?: never;
     /**
      * Create a new request to the tenant about an issue.
-     * @description Records the request, optionally with file attachments, in both the contractor's and the tenant's timeline for the issue. Attachments are copied so the tenant can download them.
+     * @description Records the request, optionally with file attachments, in both the contractor's and the tenant's timeline for the issue. Attachments are stored once on the issue and referenced from both timelines.
      */
     post: {
       parameters: {
@@ -3658,7 +2519,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/ticketing/v1/order-management/{issueId}/requests/{issueRequestId}": {
+  "/ticketing/v1/order-management/{issueId}/requests/{requestId}": {
     parameters: {
       query?: never;
       header?: never;
@@ -3677,7 +2538,7 @@ export interface paths {
           /** @description ID of the issue */
           issueId: components["schemas"]["UUID"];
           /** @description ID of the request */
-          issueRequestId: components["schemas"]["UUID"];
+          requestId: components["schemas"]["UUID"];
         };
         cookie?: never;
       };
@@ -3798,7 +2659,7 @@ export interface paths {
               /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
               organizationId?: components["schemas"]["UUID"];
               senderRole?: $Read<components["schemas"]["UserContext"]>;
-              attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+              attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
             };
             /** @description One or more files to attach to the timeline entry */
             attachment?: string[];
@@ -4202,7 +3063,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/ticketing/v1/tenant-relations/issues/{issueId}/requests/{issueRequestId}/response": {
+  "/ticketing/v1/tenant-relations/issues/{issueId}/requests/{requestId}": {
     parameters: {
       query?: never;
       header?: never;
@@ -4223,7 +3084,7 @@ export interface paths {
           /** @description ID of the issue */
           issueId: components["schemas"]["UUID"];
           /** @description ID of the request */
-          issueRequestId: components["schemas"]["UUID"];
+          requestId: components["schemas"]["UUID"];
         };
         cookie?: never;
       };
@@ -4612,7 +3473,7 @@ export interface components {
       /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
       organizationId?: components["schemas"]["UUID"];
       senderRole?: $Read<components["schemas"]["UserContext"]>;
-      attachments?: $Read<components["schemas"]["OrderAttachmentJson"][]>;
+      attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
     };
     /** @description A list of contractor timelines */
     ContractorTimelineListJson: {
@@ -4652,6 +3513,7 @@ export interface components {
       uploadedBy?: string;
       createdAt?: components["schemas"]["Instant"];
       issueId?: components["schemas"]["UUID"];
+      uploaderContext?: components["schemas"]["UserContext"];
     };
     /** @enum {string} */
     IssueCategory:
@@ -4802,18 +3664,6 @@ export interface components {
       | "QUOTATION_REQUESTED"
       | "REQUEST_CREATED"
       | "REQUEST_ANSWERED";
-    /** @description An attachment associated with a quotation request, quotation, or order placement */
-    OrderAttachmentJson: {
-      attachmentId?: components["schemas"]["UUID"];
-      fileName?: string;
-      contentType?: string;
-      objectName?: string;
-      uploaderId?: components["schemas"]["UUID"];
-      uploadedBy?: string;
-      createdAt?: components["schemas"]["Instant"];
-      processPhase?: components["schemas"]["OrderProcessPhase"];
-      processId?: components["schemas"]["UUID"];
-    };
     /** @description An order placement created by a manager based on a quotation */
     OrderPlacementJson: {
       organizationId?: components["schemas"]["UUID"];
@@ -4829,7 +3679,7 @@ export interface components {
       contractorName?: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
-      attachments?: components["schemas"]["OrderAttachmentJson"][];
+      attachments?: components["schemas"]["IssueAttachmentJson"][];
       /** @description ID of the quotation this order is based on */
       quotationId?: $Read<components["schemas"]["UUID"]>;
       /** @description ID of the user who placed the order */
@@ -4849,8 +3699,6 @@ export interface components {
     };
     /** @enum {string} */
     OrderPlacementStatus: "PLACED" | "CONFIRMED" | "REJECTED" | "WITHDRAWN";
-    /** @enum {string} */
-    OrderProcessPhase: "QUOTATION_REQUEST" | "QUOTATION" | "ORDER_PLACEMENT";
     /** @description Employee information in context of an organization */
     OrganizationEmployeeJson: {
       /** @description Unique identifier of the employee (generated by server) */
@@ -4991,7 +3839,7 @@ export interface components {
       organizationId?: components["schemas"]["UUID"];
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
-      attachments?: components["schemas"]["OrderAttachmentJson"][];
+      attachments?: components["schemas"]["IssueAttachmentJson"][];
       /** @description ID of the quotation request this quotation responds to */
       requestId?: $Read<components["schemas"]["UUID"]>;
       /** @description ID of the user who submitted this quotation */
@@ -5022,7 +3870,7 @@ export interface components {
       organizationId?: components["schemas"]["UUID"];
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
-      attachments?: components["schemas"]["OrderAttachmentJson"][];
+      attachments?: components["schemas"]["IssueAttachmentJson"][];
       /** @description ID of the user who initiated this request */
       initiatorId?: $Read<components["schemas"]["UUID"]>;
       /** @description Name of the user who initiated this request */
