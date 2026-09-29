@@ -134,6 +134,14 @@ describe('ActivityFeedList', () => {
     expect(wrapper.emitted('markRead')?.[0]).toEqual([mockEntries[0]]);
   });
 
+  it('emits markUnread event when entry item markUnread is triggered', async () => {
+    mountWithProps({});
+    const firstItem = wrapper.findAllComponents(ActivityFeedItem)[0];
+    await firstItem.vm.$emit('markUnread');
+    expect(wrapper.emitted('markUnread')).toBeTruthy();
+    expect(wrapper.emitted('markUnread')?.[0]).toEqual([mockEntries[0]]);
+  });
+
   it('emits delete event when entry item delete is triggered', async () => {
     mountWithProps({});
     const firstItem = wrapper.findAllComponents(ActivityFeedItem)[0];
@@ -160,7 +168,7 @@ describe('ActivityFeedList', () => {
     }
   });
 
-  it('forwards select/navigate/markRead/delete events for grouped entry items', async () => {
+  it('forwards select/navigate/markRead/markUnread/delete events for grouped entry items', async () => {
     const entries = createGroupingTestActivityFeedEntries().slice(0, 2);
     mountWithProps({ entries, grouping: 'project' });
 
@@ -176,6 +184,9 @@ describe('ActivityFeedList', () => {
 
     await target!.vm.$emit('markRead');
     expect(wrapper.emitted('markRead')?.at(-1)).toEqual([entries[0]]);
+
+    await target!.vm.$emit('markUnread');
+    expect(wrapper.emitted('markUnread')?.at(-1)).toEqual([entries[0]]);
 
     await target!.vm.$emit('delete');
     expect(wrapper.emitted('delete')?.at(-1)).toEqual([entries[0]]);

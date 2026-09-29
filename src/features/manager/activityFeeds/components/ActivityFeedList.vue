@@ -23,6 +23,7 @@ const emit = defineEmits<{
   selectItem: [entry: ActivityFeedEntry];
   navigate: [entry: ActivityFeedEntry];
   markRead: [entry: ActivityFeedEntry];
+  markUnread: [entry: ActivityFeedEntry];
   delete: [entry: ActivityFeedEntry];
   loadMore: [];
 }>();
@@ -168,6 +169,7 @@ const groupedEntries = computed<GroupedEntries | null>(() => {
                 @select="emit('selectItem', entry)"
                 @navigate="emit('navigate', entry)"
                 @markRead="emit('markRead', entry)"
+                @markUnread="emit('markUnread', entry)"
                 @delete="emit('delete', entry)"
               />
             </div>
@@ -205,6 +207,7 @@ const groupedEntries = computed<GroupedEntries | null>(() => {
               @select="emit('selectItem', entry)"
               @navigate="emit('navigate', entry)"
               @markRead="emit('markRead', entry)"
+              @markUnread="emit('markUnread', entry)"
               @delete="emit('delete', entry)"
             />
           </template>
