@@ -35,9 +35,9 @@ describe('TenantIssueRequestService', () => {
     await tenantIssueRequestService.answerRequest('issue-1', 'req-1', { message: 'Anbei das Foto' }, files);
 
     const [path, payload, options] = postSpy.mock.calls[0];
-    expect(path).toBe('/ticketing/v1/tenant-relations/issues/{issueId}/requests/{issueRequestId}/response');
+    expect(path).toBe('/ticketing/v1/tenant-relations/issues/{issueId}/requests/{requestId}');
     expect(payload).toBeInstanceOf(FormData);
-    expect(options).toEqual({ pathParams: { issueId: 'issue-1', issueRequestId: 'req-1' } });
+    expect(options).toEqual({ pathParams: { issueId: 'issue-1', requestId: 'req-1' } });
 
     const formData = payload as FormData;
     const responsePart = formData.get('response');

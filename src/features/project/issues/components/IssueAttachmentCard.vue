@@ -8,7 +8,7 @@ import FileUpload from 'primevue/fileupload';
 import type { FileUploadUploaderEvent } from 'primevue/fileupload';
 import Image from 'primevue/image';
 import { issueService, type IssueAttachmentJson } from '@/features/project/issues/services/IssueService';
-import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';
+import { isImageAttachment, getAttachmentTypeLabel, getIssueAttachmentUrl } from '@/helper/attachmentHelper';
 
 const props = defineProps<{
   issueId: string;
@@ -36,12 +36,7 @@ const nonImageAttachmentGroups = computed(() => {
 });
 
 function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
-  const fileName = attachment.fileName ?? '';
-  const attachmentId = attachment.attachmentId ?? '';
-  const encodedIssueId = encodeURIComponent(props.issueId);
-  const encodedAttachmentId = encodeURIComponent(attachmentId);
-  const encodedFileName = encodeURIComponent(fileName);
-  return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+  return getIssueAttachmentUrl(props.issueId, attachment);
 }
 
 async function handleUpload(event: FileUploadUploaderEvent) {
