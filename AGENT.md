@@ -662,6 +662,24 @@ Props:
 - `dialogClass` (string | null): CSS classes for the dialog. Default: `'w-full max-w-lg'`
 - `modal` (boolean): Whether the dialog is modal. Default: `true`
 
+**Tables & Lists (DataTable vs. DataView)**:
+
+Choose the component by the shape of the data, not by the desired look:
+- **DataTable** — columnar data (sorting, pagination, aligned columns). The default choice.
+- **DataView** (or a plain `v-for` list) — rich entries that don't fit into columns (e.g. `ActivityFeedItem` with checkbox, icon, two-line title and hover actions; `TenantCard` with wrapping layout).
+
+Both follow **one interaction contract**, with DataTable as the reference:
+- **Clickable DataTable**: `rowHover` + `class="cursor-pointer"` + `@rowClick` (see `ContractorListCard.vue`). Type the handler with `DataTableRowClickEvent`.
+- **Non-clickable DataTable**: no `rowHover` — hover must never suggest an action that doesn't exist.
+- **Never** use `selectionMode` just to detect a click. Only use it when the selection state is actually bound (`v-model:selection` / `v-model:selectionKeys`).
+- **Clickable DataView / list row**: use the `interactive-row` utility (defined in `src/assets/tailwind.css`). It applies the same `--p-datatable-row-hover-*` tokens as `rowHover`, plus `cursor-pointer` and a `focus-visible` ring. Keep `role="button"`, `tabindex="0"` and `@keydown.enter` for keyboard access.
+- Row separators: `border-b border-surface` / `border-t border-surface` (same color as DataTable cell borders).
+- **Don't**: hover shadows (`hover:shadow-*`), rounded rows, lifting/scale effects, or hand-picked `hover:bg-surface-*` colors.
+
+**Theme-aware colors — no `isDarkTheme` ternaries**:
+- `tailwindcss-primeui` is imported in `src/assets/tailwind.css` and provides token-based utilities that adapt to light/dark mode automatically: `text-color`, `text-muted-color`, `border-surface`, `bg-emphasis`, `bg-highlight`, `rounded-border`, …
+- Prefer these over `:class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"`-style branches.
+
 ### Form Validation Pattern
 
 **Standard:** All forms use **PrimeVue Forms + Zod Resolver** for schema-based validation with **PrimeVue Message** component for error display.

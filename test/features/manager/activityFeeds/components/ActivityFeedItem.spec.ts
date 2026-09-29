@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ActivityFeedItem from '@/features/manager/activityFeeds/components/ActivityFeedItem.vue';
 import type { ActivityFeedEntry } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
-import { useLayout } from '@/layouts/composables/layout';
 
 describe('ActivityFeedItem', () => {
   let wrapper: VueWrapper;
@@ -280,40 +279,47 @@ describe('ActivityFeedItem', () => {
     expect(wrapper.text()).toContain('5 days ago');
   });
 
-  it('applies dark theme classes when dark mode is enabled', () => {
-    const { layoutConfig } = useLayout();
-    layoutConfig.darkTheme = true;
-    try {
-      wrapper = mount(ActivityFeedItem, {
-        props: {
-          entry: mockEntry,
-          isSelected: false,
-          index: 0,
-          isLast: false,
-        },
-      });
-      expect(wrapper.html()).toContain('bg-surface-900');
-    } finally {
-      layoutConfig.darkTheme = false;
-    }
+  it('uses the shared interactive-row styling with a token-based separator', () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: mockEntry,
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    const row = wrapper.find('div.group');
+    expect(row.classes()).toContain('interactive-row');
+    expect(row.classes()).toContain('border-surface');
+    expect(row.classes().some(c => c.startsWith('bg-') || c.startsWith('hover:'))).toBe(false);
   });
 
-  it('applies dark theme classes for a read entry', () => {
-    const { layoutConfig } = useLayout();
-    layoutConfig.darkTheme = true;
-    try {
-      wrapper = mount(ActivityFeedItem, {
-        props: {
-          entry: { ...mockEntry, read: true },
-          isSelected: false,
-          index: 0,
-          isLast: false,
-        },
-      });
-      expect(wrapper.html()).toContain('bg-surface-800/30');
-    } finally {
-      layoutConfig.darkTheme = false;
-    }
+  it('emphasizes the title of an unread entry', () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: { ...mockEntry, read: false },
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    expect(wrapper.find('.font-semibold').text()).toBe(mockEntry.issueTitle);
+  });
+
+  it('renders the title of a read entry in regular weight', () => {
+    wrapper = mount(ActivityFeedItem, {
+      props: {
+        entry: { ...mockEntry, read: true },
+        isSelected: false,
+        index: 0,
+        isLast: false,
+      },
+    });
+
+    expect(wrapper.find('.font-normal').text()).toBe(mockEntry.issueTitle);
+    expect(wrapper.find('.font-semibold').exists()).toBe(false);
   });
 
   it('omits the border class for the last item in the list', () => {

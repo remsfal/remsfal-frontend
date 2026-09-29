@@ -5,7 +5,6 @@ import type { ActivityFeedFilterGroup } from '@/features/manager/activityFeeds/c
 import SelectButton from 'primevue/selectbutton';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
-import { useLayout } from '@/layouts/composables/layout';
 
 const filterGroups: ActivityFeedFilterGroup[] = [
   {
@@ -332,22 +331,16 @@ describe('ActivityFeedToolbar', () => {
     expect(tag.props('value')).toContain('5');
   });
 
-  it('applies dark theme classes when dark mode is enabled', () => {
-    const { layoutConfig } = useLayout();
-    layoutConfig.darkTheme = true;
-    try {
-      wrapper = mount(ActivityFeedToolbar, {
-        props: {
-          activeTab: 'all',
-          searchQuery: '',
-          selectedCount: 0,
-          ...filterProps,
-        },
-      });
-      expect(wrapper.html()).toContain('border-surface-800');
-    } finally {
-      layoutConfig.darkTheme = false;
-    }
+  it('uses the theme border token for the toolbar separator', () => {
+    wrapper = mount(ActivityFeedToolbar, {
+      props: {
+        activeTab: 'all',
+        searchQuery: '',
+        selectedCount: 0,
+        ...filterProps,
+      },
+    });
+    expect(wrapper.classes()).toContain('border-surface');
   });
 
   it('emits an empty string when search input is cleared to a falsy value', async () => {

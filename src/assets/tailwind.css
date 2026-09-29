@@ -1,1 +1,22 @@
 @import "tailwindcss";
+@import "tailwindcss-primeui";
+
+/*
+ * Interaction contract for clickable list rows (DataView items, custom lists).
+ * Mirrors DataTable `rowHover` by using the same theme tokens, so tables and lists
+ * behave identically in light and dark mode. No shadows, no lifting, no rounded rows.
+ */
+@utility interactive-row {
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+
+  &:hover {
+    background: var(--p-datatable-row-hover-background);
+    color: var(--p-datatable-row-hover-color);
+  }
+
+  &:focus-visible {
+    outline: var(--p-focus-ring-width) var(--p-focus-ring-style) var(--p-focus-ring-color);
+    outline-offset: calc(-1 * var(--p-focus-ring-width));
+  }
+}

@@ -42,6 +42,15 @@ describe('TenantCard', () => {
     expect(wrapper.emitted('click')).toBeTruthy();
   });
 
+  it('uses the shared interactive-row hover instead of a card shadow', () => {
+    const wrapper = mount(TenantCard, { props: { tenant } });
+    const card = wrapper.find('[data-testid="tenant-card"]');
+
+    expect(card.classes()).toContain('interactive-row');
+    expect(card.classes()).not.toContain('hover:shadow-lg');
+    expect(card.classes()).not.toContain('rounded-lg');
+  });
+
   it('emits click when the card itself is clicked', async () => {
     const wrapper = mount(TenantCard, { props: { tenant } });
 

@@ -66,7 +66,7 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
 <template>
   <div
     data-testid="tenant-card"
-    class="flex flex-col md:flex-row gap-6 p-4 w-full rounded-lg cursor-pointer hover:shadow-lg transition-shadow"
+    class="interactive-row flex flex-col md:flex-row gap-6 p-4 w-full"
     role="button"
     tabindex="0"
     @click="emit('click')"

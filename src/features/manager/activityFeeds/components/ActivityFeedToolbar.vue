@@ -9,7 +9,6 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import SelectButton from 'primevue/selectbutton';
 import Tag from 'primevue/tag';
-import { useLayout } from '@/layouts/composables/layout';
 
 export interface ActivityFeedFilterOption {
   id: string;
@@ -40,7 +39,6 @@ const emit = defineEmits<{
   deleteSelected: [];
 }>();
 
-const { isDarkTheme } = useLayout();
 const { t } = useI18n();
 
 const activeFilter = computed(() =>
@@ -68,10 +66,7 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
 </script>
 
 <template>
-  <div 
-    class="flex flex-wrap items-center gap-4 px-4 py-3 border-b"
-    :class="isDarkTheme ? 'border-surface-800' : 'border-surface-200'"
-  >
+  <div class="flex flex-wrap items-center gap-4 py-3 border-b border-surface">
     <!-- All / Unread Toggle -->
     <SelectButton 
       :modelValue="activeTab" 
