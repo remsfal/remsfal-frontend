@@ -11,7 +11,7 @@ export interface PlaceOfPerformance {
   rentalUnitLocation?: string;
 }
 
-const ADDRESS_UNIT_TYPES: string[] = [EntityType.Building, EntityType.Site];
+const ADDRESS_UNIT_TYPES = new Set<string>([EntityType.Building, EntityType.Site]);
 
 function findPath(
   nodes: RentalUnitTreeNodeJson[],
@@ -48,7 +48,7 @@ export function usePlaceOfPerformance() {
     const unit = path.at(-1);
     if (!unit) return {};
 
-    const addressNode = path.findLast((node) => ADDRESS_UNIT_TYPES.includes(node.data?.type ?? ''));
+    const addressNode = path.findLast((node) => ADDRESS_UNIT_TYPES.has(node.data?.type ?? ''));
     return {
       address: await fetchAddress(projectId, addressNode),
       rentalUnitTitle: unit.data?.title,
