@@ -1,9 +1,27 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ActivityFeedToolbar from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
+import type { ActivityFeedFilterGroup } from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
 import SelectButton from 'primevue/selectbutton';
 import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
 import { useLayout } from '@/layouts/composables/layout';
+
+const filterGroups: ActivityFeedFilterGroup[] = [
+  {
+    label: 'Status',
+    items: [
+      {
+        id: 'status-open', name: 'Offen', icon: 'pi-circle', query: 'status:OPEN', count: 2 
+      },
+      {
+        id: 'status-closed', name: 'Geschlossen', icon: 'pi-check-circle', query: 'status:CLOSED', count: 0 
+      },
+    ],
+  },
+];
+
+const filterProps = { filterGroups, activeFilterId: null };
 
 describe('ActivityFeedToolbar', () => {
   let wrapper: VueWrapper;
@@ -21,6 +39,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 
@@ -38,6 +57,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'unread',
         searchQuery: '',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 
@@ -51,6 +71,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 
@@ -67,6 +88,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 
@@ -82,6 +104,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 
@@ -97,6 +120,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 
@@ -111,6 +135,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: 'test query',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 
@@ -124,6 +149,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 
@@ -140,6 +166,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 
@@ -153,6 +180,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 3,
+        ...filterProps,
       },
     });
 
@@ -167,6 +195,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 2,
+        ...filterProps,
       },
     });
 
@@ -185,6 +214,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 2,
+        ...filterProps,
       },
     });
 
@@ -197,23 +227,94 @@ describe('ActivityFeedToolbar', () => {
     }
   });
 
-  it('emits openFilters when the filters button is clicked', async () => {
+  it('emits update:activeFilterId when a filter is selected', async () => {
     wrapper = mount(ActivityFeedToolbar, {
       props: {
-        activeTab: 'all',
-        searchQuery: '',
-        selectedCount: 0,
+        activeTab: 'all', searchQuery: '', selectedCount: 0, ...filterProps 
       },
     });
 
-    const filtersButton = wrapper.findAllComponents({ name: 'Button' })
-      .find(btn => btn.props('icon') === 'pi pi-filter');
+    await wrapper.findComponent(Select).vm.$emit('update:modelValue', 'status-open');
 
-    expect(filtersButton).toBeDefined();
-    if (filtersButton) {
-      await filtersButton.trigger('click');
-      expect(wrapper.emitted('openFilters')).toBeTruthy();
-    }
+    expect(wrapper.emitted('update:activeFilterId')?.[0]).toEqual(['status-open']);
+  });
+
+  it('emits null when the filter select is cleared', async () => {
+    wrapper = mount(ActivityFeedToolbar, {
+      props: {
+        activeTab: 'all', searchQuery: '', selectedCount: 0, ...filterProps, activeFilterId: 'status-open' 
+      },
+    });
+
+    await wrapper.findComponent(Select).vm.$emit('update:modelValue', undefined);
+
+    expect(wrapper.emitted('update:activeFilterId')?.[0]).toEqual([null]);
+  });
+
+  it('shows the selected filter name in the filter select', () => {
+    wrapper = mount(ActivityFeedToolbar, {
+      props: {
+        activeTab: 'all', searchQuery: '', selectedCount: 0, ...filterProps, activeFilterId: 'status-open' 
+      },
+    });
+
+    expect(wrapper.findComponent(Select).text()).toContain('Offen');
+  });
+
+  it('shows the placeholder when no filter is selected', () => {
+    wrapper = mount(ActivityFeedToolbar, {
+      props: {
+        activeTab: 'all', searchQuery: '', selectedCount: 0, ...filterProps 
+      },
+    });
+
+    expect(wrapper.findComponent(Select).text()).toContain('Filter wählen');
+  });
+
+  it('clears the filter via the filter clear button', async () => {
+    wrapper = mount(ActivityFeedToolbar, {
+      props: {
+        activeTab: 'all', searchQuery: '', selectedCount: 0, ...filterProps, activeFilterId: 'status-open' 
+      },
+    });
+
+    const clearButton = wrapper.find('button[aria-label="Filter entfernen"]');
+    expect(clearButton.attributes('disabled')).toBeUndefined();
+    await clearButton.trigger('click');
+
+    expect(wrapper.emitted('update:activeFilterId')?.[0]).toEqual([null]);
+  });
+
+  it('disables the filter clear button when no filter is active', () => {
+    wrapper = mount(ActivityFeedToolbar, {
+      props: {
+        activeTab: 'all', searchQuery: '', selectedCount: 0, ...filterProps 
+      },
+    });
+
+    expect(wrapper.find('button[aria-label="Filter entfernen"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('clears the search query via the search clear button', async () => {
+    wrapper = mount(ActivityFeedToolbar, {
+      props: {
+        activeTab: 'all', searchQuery: 'heating', selectedCount: 0, ...filterProps 
+      },
+    });
+
+    await wrapper.find('button[aria-label="Suche leeren"]').trigger('click');
+
+    expect(wrapper.emitted('update:searchQuery')?.[0]).toEqual(['']);
+  });
+
+  it('disables the search clear button when the search query is empty', () => {
+    wrapper = mount(ActivityFeedToolbar, {
+      props: {
+        activeTab: 'all', searchQuery: '', selectedCount: 0, ...filterProps 
+      },
+    });
+
+    expect(wrapper.find('button[aria-label="Suche leeren"]').attributes('disabled')).toBeDefined();
   });
 
   it('displays correct selected count in tag', () => {
@@ -222,6 +323,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 5,
+        ...filterProps,
       },
     });
 
@@ -239,6 +341,7 @@ describe('ActivityFeedToolbar', () => {
           activeTab: 'all',
           searchQuery: '',
           selectedCount: 0,
+          ...filterProps,
         },
       });
       expect(wrapper.html()).toContain('border-surface-800');
@@ -253,6 +356,7 @@ describe('ActivityFeedToolbar', () => {
         activeTab: 'all',
         searchQuery: 'test query',
         selectedCount: 0,
+        ...filterProps,
       },
     });
 

@@ -78,11 +78,11 @@ describe('QuotationRequestsCard', () => {
     consoleSpy.mockRestore();
   });
 
-  it('navigates to the order details route when a row is selected', async () => {
+  it('navigates to the order details route when a row is clicked', async () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    wrapper.getComponent(QuotationRequestsTable).vm.$emit('rowSelect', mockRequests[0]);
+    wrapper.getComponent(QuotationRequestsTable).vm.$emit('rowClick', mockRequests[0]);
 
     expect(pushMock).toHaveBeenCalledWith({
       name: 'ContractorOrderDetails',
