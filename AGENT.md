@@ -128,7 +128,7 @@ src/
 │   │   │   ├── components/      # Tenant tenancy dashboard cards
 │   │   │   └── index.ts
 │   │   └── tenantIssues/
-│   │       ├── components/      # TenantIssueList, tenancyDetails/*, tenantIssue/*
+│   │       ├── components/      # TenantIssueListCard, TenantIssueListItem, NewTenancyIssueDialog, ...
 │   │       ├── services/        # TenancyService (tenant-side)
 │   │       └── index.ts
 │   ├── contractor/              # Domains specific to the contractor view
@@ -666,13 +666,15 @@ Props:
 
 Choose the component by the shape of the data, not by the desired look:
 - **DataTable** — columnar data (sorting, pagination, aligned columns). The default choice.
-- **DataView** (or a plain `v-for` list) — rich entries that don't fit into columns (e.g. `ActivityFeedItem` with checkbox, icon, two-line title and hover actions; `TenantCard` with wrapping layout).
+- **DataView** (or a plain `v-for` list) — rich entries that don't fit into columns (e.g. `ActivityFeedItem` with checkbox, icon, two-line title and hover actions; `TenantCard` with wrapping layout; `TenantIssueListItem` with title and tag group).
+- Structure for list pages: `*View.vue` (thin) → `*Card.vue` (`BaseCard` with `#title`, `:loading`, toolbar, `DataView`) → `*Item.vue` (one row with `interactive-row`). Reference: `ActivityFeedView` → `ActivityFeedCard` → `ActivityFeedItem`, `TenantIssueListView` → `TenantIssueListCard` → `TenantIssueListItem`.
+- Toolbar inputs: search as `InputGroup` (search icon | `InputText` | clear `Button`); filter `Select`s with `showClear` instead of "All …" options.
 
 Both follow **one interaction contract**, with DataTable as the reference:
 - **Clickable DataTable**: `rowHover` + `class="cursor-pointer"` + `@rowClick` (see `ContractorListCard.vue`). Type the handler with `DataTableRowClickEvent`.
 - **Non-clickable DataTable**: no `rowHover` — hover must never suggest an action that doesn't exist.
 - **Never** use `selectionMode` just to detect a click. Only use it when the selection state is actually bound (`v-model:selection` / `v-model:selectionKeys`).
-- **Clickable DataView / list row**: use the `interactive-row` utility (defined in `src/assets/tailwind.css`). It applies the same `--p-datatable-row-hover-*` tokens as `rowHover`, plus `cursor-pointer` and a `focus-visible` ring. Keep `role="button"`, `tabindex="0"` and `@keydown.enter` for keyboard access.
+- **Clickable DataView / list row**: use the `interactive-row` utility (defined in `src/assets/tailwind.css`). It applies the semantic `--p-content-hover-*` tokens that DataTable's `rowHover` resolves to, plus `cursor-pointer` and a `focus-visible` ring. Never reference component tokens like `--p-datatable-*` outside that component — PrimeVue only injects them once the component is mounted, so they are undefined on pages without a DataTable. Keep `role="button"`, `tabindex="0"` and `@keydown.enter` for keyboard access.
 - Row separators: `border-b border-surface` / `border-t border-surface` (same color as DataTable cell borders).
 - **Don't**: hover shadows (`hover:shadow-*`), rounded rows, lifting/scale effects, or hand-picked `hover:bg-surface-*` colors.
 

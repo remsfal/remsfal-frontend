@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import Tag from 'primevue/tag';
 import type { TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 
-describe('TenantIssueCard component', () => {
+describe('TenantIssueListItem component', () => {
   const baseIssue: TenantIssueJson = {
     id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
     title: 'Heizung defekt',
@@ -13,12 +13,12 @@ describe('TenantIssueCard component', () => {
     description: 'Die Heizung ist kalt.',
   };
 
-  const mountCard = async (issue: TenantIssueJson) => {
-    const { default: TenantIssueCard } = await import(
-      '@/features/tenant/tenantIssues/components/TenantIssueCard.vue'
+  const mountCard = async (issue: TenantIssueJson, isLast = false) => {
+    const { default: TenantIssueListItem } = await import(
+      '@/features/tenant/tenantIssues/components/TenantIssueListItem.vue'
     );
 
-    return mount(TenantIssueCard, { props: { issue } });
+    return mount(TenantIssueListItem, { props: { issue, isLast } });
   };
 
   it('renders title and shows only uuid node as issue tag', async () => {
@@ -122,11 +122,49 @@ describe('TenantIssueCard component', () => {
     expect(tags[2].props('value')).toBe('UNKNOWN');
   });
 
-  it('emits select when the card is clicked', async () => {
+  it('emits select when the row is clicked', async () => {
     const wrapper = await mountCard(baseIssue);
 
-    await wrapper.get('[data-testid="tenant-issue-card"]').trigger('click');
+    await wrapper.get('[data-testid="tenant-issue-item"]').trigger('click');
 
     expect(wrapper.emitted('select')).toHaveLength(1);
+  });
+
+  it('emits select when Enter is pressed on the row', async () => {
+    const wrapper = await mountCard(baseIssue);
+
+    await wrapper.get('[data-testid="tenant-issue-item"]').trigger('keydown.enter');
+
+    expect(wrapper.emitted('select')).toHaveLength(1);
+  });
+
+  it('uses the shared interactive-row styling without card shadow or lift effects', async () => {
+    const wrapper = await mountCard(baseIssue);
+    const row = wrapper.get('[data-testid="tenant-issue-item"]');
+
+    expect(row.classes()).toContain('interactive-row');
+    expect(row.classes()).toContain('border-surface');
+    expect(wrapper.find('.p-card').exists()).toBe(false);
+    expect(wrapper.html()).not.toContain('shadow');
+  });
+
+  it('omits the separator for the last row', async () => {
+    const wrapper = await mountCard(baseIssue, true);
+
+    expect(wrapper.get('[data-testid="tenant-issue-item"]').classes()).not.toContain('border-b');
+  });
+
+  it.each(['CLOSED', 'REJECTED'] as const)('strikes through and mutes the title of a %s issue', async (status) => {
+    const wrapper = await mountCard({ ...baseIssue, status });
+
+    const title = wrapper.get('.line-through');
+    expect(title.text()).toBe('Heizung defekt');
+    expect(title.classes()).toContain('text-muted-color');
+  });
+
+  it('does not strike through the title of an open issue', async () => {
+    const wrapper = await mountCard(baseIssue);
+
+    expect(wrapper.find('.line-through').exists()).toBe(false);
   });
 });
