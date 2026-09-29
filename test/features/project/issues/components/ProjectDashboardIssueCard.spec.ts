@@ -119,4 +119,59 @@ describe('ProjectDashboardIssueCard', () => {
 
     expect(push).toHaveBeenCalledWith({ name: 'IssueDetails', params: { projectId: 'p1', issueId: 'clickable' } });
   });
+
+  it('does not navigate when the clicked issue has no project', async () => {
+    vi.mocked(issueService.getLatestIssues).mockResolvedValue({
+      size: 1,
+      issues: [issue({ id: 'orphan', projectId: undefined })],
+    });
+
+    wrapper = mount(ProjectDashboardIssueCard);
+    await flushPromises();
+
+    await wrapper.find('[data-testid="recent-issues-row"]').trigger('click');
+
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it('shows no project name when the project is not in the project list', async () => {
+    vi.mocked(issueService.getLatestIssues).mockResolvedValue({
+      size: 1,
+      issues: [issue({
+        id: 'foreign', title: 'Foreign', projectId: 'unknown' 
+      })],
+    });
+
+    wrapper = mount(ProjectDashboardIssueCard);
+    await flushPromises();
+
+    const row = wrapper.find('[data-testid="recent-issues-row"]');
+    expect(row.text()).toContain('Foreign');
+    expect(row.text()).not.toContain('Musterliegenschaft');
+  });
+
+  it('skips issues without an id', async () => {
+    vi.mocked(issueService.getLatestIssues).mockResolvedValue({
+      size: 2,
+      issues: [issue({ id: undefined, title: 'No Id' }), issue({ id: 'with-id', title: 'With Id' })],
+    });
+
+    wrapper = mount(ProjectDashboardIssueCard);
+    await flushPromises();
+
+    const rows = wrapper.findAll('[data-testid="recent-issues-row"]');
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.text()).toContain('With Id');
+  });
+
+  it('shows the empty state when the response contains no issue list', async () => {
+    vi.mocked(issueService.getLatestIssues).mockResolvedValue({ size: 0 } as Awaited<
+      ReturnType<typeof issueService.getLatestIssues>
+    >);
+
+    wrapper = mount(ProjectDashboardIssueCard);
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('issueDashboard.empty');
+  });
 });
