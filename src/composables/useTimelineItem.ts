@@ -5,9 +5,7 @@ import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue'
 import type { components as ticketingComponents } from '@/services/api/ticketing-schema';
 
 export type IssueAttachmentJson = ticketingComponents['schemas']['IssueAttachmentJson'];
-export type OrderAttachmentJson = ticketingComponents['schemas']['OrderAttachmentJson'];
-export type OrderProcessPhase = ticketingComponents['schemas']['OrderProcessPhase'];
-export type TimelineItemAttachment = IssueAttachmentJson | OrderAttachmentJson;
+export type TimelineItemAttachment = IssueAttachmentJson;
 
 export interface UseTimelineItemProps<T extends TimelineEntry> {
   item: T;
@@ -28,28 +26,6 @@ export function buildAttachmentDownloadUrl(resourcePrefix: string) {
 }
 
 const STATUS_NAMESPACES = ['quotationRequest.status', 'orderPlacement.status'];
-
-export type OrderAttachmentPhaseSegments = Record<OrderProcessPhase, string>;
-
-export function buildOrderAttachmentDownloadUrl(
-  resourcePrefix: string,
-  phaseSegments: OrderAttachmentPhaseSegments,
-) {
-  const fallback = buildAttachmentDownloadUrl(resourcePrefix);
-
-  return (attachment: OrderAttachmentJson) => {
-    const { processPhase, processId } = attachment;
-    if (!processPhase || !processId || !phaseSegments[processPhase]) {
-      return fallback(attachment);
-    }
-
-    const segment = phaseSegments[processPhase];
-    const encodedProcessId = encodeURIComponent(processId);
-    const encodedAttachmentId = encodeURIComponent(attachment.attachmentId ?? '');
-    const encodedFileName = encodeURIComponent(attachment.fileName || attachment.attachmentId || '');
-    return `${resourcePrefix}/${segment}/${encodedProcessId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
-  };
-}
 
 export function useTimelineItem<T extends TimelineEntry>(
   props: UseTimelineItemProps<T>,

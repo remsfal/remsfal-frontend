@@ -15,8 +15,8 @@ const makeTimeline = (overrides: Partial<ContractorTimelineJson> = {}): Contract
   ...overrides,
 });
 
-const mountItemCard = (item: ContractorTimelineJson, requestId = 'request-1') =>
-  shallowMount(ContractorOrderTimelineItemCard, { props: { item, requestId } });
+const mountItemCard = (item: ContractorTimelineJson, issueId = 'issue-1') =>
+  shallowMount(ContractorOrderTimelineItemCard, { props: { item, issueId } });
 
 const entryCardProps = (wrapper: ReturnType<typeof mountItemCard>) =>
   wrapper.getComponent(TimelineEntryCard).props();
@@ -60,17 +60,16 @@ describe('ContractorOrderTimelineItemCard component', () => {
     expect(entryCardProps(wrapper).attachments).toEqual([
       expect.objectContaining({
         attachmentId: 'att-1',
-        downloadUrl: '/ticketing/v1/order-management/quotation-requests/request-1/attachments/att-1/report.pdf',
+        downloadUrl: '/ticketing/v1/order-management/issue-1/attachments/att-1/report.pdf',
       }),
       expect.objectContaining({
         attachmentId: 'fallback-att',
-        downloadUrl:
-          '/ticketing/v1/order-management/quotation-requests/request-1/attachments/fallback-att/fallback-att',
+        downloadUrl: '/ticketing/v1/order-management/issue-1/attachments/fallback-att/fallback-att',
       }),
     ]);
   });
 
-  it('encodes request, attachment and filename in the generated download URL', () => {
+  it('encodes issue, attachment and filename in the generated download URL', () => {
     const wrapper = mountItemCard(
       makeTimeline({
         attachments: [{
@@ -79,12 +78,11 @@ describe('ContractorOrderTimelineItemCard component', () => {
           contentType: 'application/pdf',
         }],
       }),
-      'request id/ä',
+      'issue id/ä',
     );
 
     expect(entryCardProps(wrapper).attachments?.[0]?.downloadUrl).toBe(
-      '/ticketing/v1/order-management/quotation-requests/request%20id%2F%C3%A4'
-      + '/attachments/att%20id%2F1/file%20name%20%231.pdf',
+      '/ticketing/v1/order-management/issue%20id%2F%C3%A4/attachments/att%20id%2F1/file%20name%20%231.pdf',
     );
   });
 });

@@ -5,8 +5,9 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import NewQuotationRequestButton from './NewQuotationRequestButton.vue';
 import { quotationRequestService, type QuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
+import type { IssueAttachmentJson } from '@/features/project/issues/services/IssueService';
 
-const props = defineProps<{ projectId: string; issueId: string }>();
+const props = defineProps<{ projectId: string; issueId: string; attachments: IssueAttachmentJson[] }>();
 
 const { t, d } = useI18n();
 
@@ -48,6 +49,7 @@ onMounted(() => {
     <NewQuotationRequestButton
       :projectId="projectId"
       :issueId="issueId"
+      :attachments="attachments"
       @created="fetchRequests"
     />
   </div>

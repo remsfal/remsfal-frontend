@@ -6,7 +6,7 @@ import { buildAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTi
 
 const props = defineProps<{
   item: ContractorTimelineJson;
-  requestId: string;
+  issueId: string;
 }>();
 
 const { t } = useI18n();
@@ -14,7 +14,7 @@ const { t } = useI18n();
 const { title, message, attachments } = useTimelineItem(props, {
   titleNamespace: 'orderManagement.timeline',
   buildAttachmentUrl: buildAttachmentDownloadUrl(
-    `/ticketing/v1/order-management/quotation-requests/${encodeURIComponent(props.requestId)}`,
+    `/ticketing/v1/order-management/${encodeURIComponent(props.issueId)}`,
   ),
 });
 </script>

@@ -525,7 +525,7 @@
           "attachments" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OrderAttachmentJson"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             },
             "readOnly" : true
           }
@@ -589,38 +589,14 @@
             "type" : "string",
             "maxLength" : 5000
           },
-          "projectOwner" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "projectCareOf" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "billingAddress" : {
-            "$ref" : "#/components/schemas/AddressJson"
-          },
-          "placeOfPerformance" : {
-            "description" : "Address of the building or site where the work is performed",
-            "type" : "object",
-            "$ref" : "#/components/schemas/AddressJson"
-          },
-          "rentalUnitTitle" : {
-            "type" : "string",
-            "description" : "Title of the rental unit the issue refers to",
-            "maxLength" : 255
-          },
-          "rentalUnitLocation" : {
-            "type" : "string",
-            "description" : "Location of the rental unit within the place of performance",
-            "maxLength" : 255
-          },
-          "tenants" : {
+          "attachmentIds" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/UserJson"
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             },
-            "description" : "Tenants of the rental unit the issue refers to"
+            "description" : "IDs of existing issue attachments to share with the contractors"
           }
         }
       },
@@ -634,8 +610,8 @@
         "examples" : [ "2022-03-10T16:15:50Z" ]
       },
       "IssueAttachmentJson" : {
-        "description" : "An issue attachment",
         "type" : "object",
+        "description" : "An issue attachment",
         "properties" : {
           "attachmentId" : {
             "$ref" : "#/components/schemas/UUID"
@@ -660,6 +636,9 @@
           },
           "issueId" : {
             "$ref" : "#/components/schemas/UUID"
+          },
+          "uploaderContext" : {
+            "$ref" : "#/components/schemas/UserContext"
           }
         }
       },
@@ -983,39 +962,6 @@
         "type" : "string",
         "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED", "ORDER_PLACED", "QUOTATION_REQUESTED", "REQUEST_CREATED", "REQUEST_ANSWERED" ]
       },
-      "OrderAttachmentJson" : {
-        "type" : "object",
-        "description" : "An attachment associated with a quotation request, quotation, or order placement",
-        "properties" : {
-          "attachmentId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "fileName" : {
-            "type" : "string"
-          },
-          "contentType" : {
-            "type" : "string"
-          },
-          "objectName" : {
-            "type" : "string"
-          },
-          "uploaderId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "uploadedBy" : {
-            "type" : "string"
-          },
-          "createdAt" : {
-            "$ref" : "#/components/schemas/Instant"
-          },
-          "processPhase" : {
-            "$ref" : "#/components/schemas/OrderProcessPhase"
-          },
-          "processId" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }
-      },
       "OrderPlacementJson" : {
         "description" : "An order placement created by a manager based on a quotation",
         "type" : "object",
@@ -1062,7 +1008,7 @@
           "attachments" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OrderAttachmentJson"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             }
           },
           "quotationId" : {
@@ -1115,10 +1061,6 @@
       "OrderPlacementStatus" : {
         "type" : "string",
         "enum" : [ "PLACED", "CONFIRMED", "REJECTED", "WITHDRAWN" ]
-      },
-      "OrderProcessPhase" : {
-        "type" : "string",
-        "enum" : [ "QUOTATION_REQUEST", "QUOTATION", "ORDER_PLACEMENT" ]
       },
       "OrganizationEmployeeJson" : {
         "description" : "Employee information in context of an organization",
@@ -1512,7 +1454,7 @@
           "attachments" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OrderAttachmentJson"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             }
           },
           "requestId" : {
@@ -1602,7 +1544,7 @@
           "attachments" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OrderAttachmentJson"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             }
           },
           "initiatorId" : {
@@ -3369,7 +3311,7 @@
                       "attachments" : {
                         "type" : "array",
                         "items" : {
-                          "$ref" : "#/components/schemas/OrderAttachmentJson"
+                          "$ref" : "#/components/schemas/IssueAttachmentJson"
                         },
                         "readOnly" : true
                       }
@@ -3540,156 +3482,6 @@
         } ]
       }
     },
-    "/ticketing/v1/issues/{issueId}/orders/{processId}/attachments" : {
-      "post" : {
-        "summary" : "Upload one or more attachments.",
-        "description" : "Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.",
-        "parameters" : [ {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "multipart/form-data" : {
-              "schema" : {
-                "required" : [ "attachment" ],
-                "type" : "object",
-                "properties" : {
-                  "attachment" : {
-                    "description" : "One or more files to attach",
-                    "type" : "array",
-                    "items" : {
-                      "type" : "string",
-                      "format" : "binary"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Attachments uploaded successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : { }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid input or unsupported file type"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to upload attachments here"
-          },
-          "404" : {
-            "description" : "The quotation request, quotation, or order placement not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/issues/{issueId}/orders/{processId}/attachments/{attachmentId}" : {
-      "delete" : {
-        "summary" : "Delete an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "Attachment deleted successfully"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to delete this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/issues/{issueId}/orders/{processId}/attachments/{attachmentId}/{filename}" : {
-      "get" : {
-        "summary" : "Download an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Filename of the attachment",
-          "required" : true,
-          "name" : "filename",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Attachment downloaded successfully",
-            "content" : {
-              "application/octet-stream" : { }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to access this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
     "/ticketing/v1/issues/{issueId}/parent/{parentIssueId}" : {
       "put" : {
         "summary" : "Set another issue as parent issue.",
@@ -3807,156 +3599,6 @@
           },
           "403" : {
             "description" : "Not Allowed"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/issues/{issueId}/quotation-request/{processId}/attachments" : {
-      "post" : {
-        "summary" : "Upload one or more attachments.",
-        "description" : "Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.",
-        "parameters" : [ {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "multipart/form-data" : {
-              "schema" : {
-                "required" : [ "attachment" ],
-                "type" : "object",
-                "properties" : {
-                  "attachment" : {
-                    "description" : "One or more files to attach",
-                    "type" : "array",
-                    "items" : {
-                      "type" : "string",
-                      "format" : "binary"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Attachments uploaded successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : { }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid input or unsupported file type"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to upload attachments here"
-          },
-          "404" : {
-            "description" : "The quotation request, quotation, or order placement not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/issues/{issueId}/quotation-request/{processId}/attachments/{attachmentId}" : {
-      "delete" : {
-        "summary" : "Delete an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "Attachment deleted successfully"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to delete this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/issues/{issueId}/quotation-request/{processId}/attachments/{attachmentId}/{filename}" : {
-      "get" : {
-        "summary" : "Download an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Filename of the attachment",
-          "required" : true,
-          "name" : "filename",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Attachment downloaded successfully",
-            "content" : {
-              "application/octet-stream" : { }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to access this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
           }
         },
         "security" : [ {
@@ -4095,156 +3737,6 @@
           },
           "404" : {
             "description" : "The issue does not exist"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/issues/{issueId}/quotations/{processId}/attachments" : {
-      "post" : {
-        "summary" : "Upload one or more attachments.",
-        "description" : "Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.",
-        "parameters" : [ {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "multipart/form-data" : {
-              "schema" : {
-                "required" : [ "attachment" ],
-                "type" : "object",
-                "properties" : {
-                  "attachment" : {
-                    "description" : "One or more files to attach",
-                    "type" : "array",
-                    "items" : {
-                      "type" : "string",
-                      "format" : "binary"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Attachments uploaded successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : { }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid input or unsupported file type"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to upload attachments here"
-          },
-          "404" : {
-            "description" : "The quotation request, quotation, or order placement not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/issues/{issueId}/quotations/{processId}/attachments/{attachmentId}" : {
-      "delete" : {
-        "summary" : "Delete an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "Attachment deleted successfully"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to delete this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/issues/{issueId}/quotations/{processId}/attachments/{attachmentId}/{filename}" : {
-      "get" : {
-        "summary" : "Download an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Filename of the attachment",
-          "required" : true,
-          "name" : "filename",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Attachment downloaded successfully",
-            "content" : {
-              "application/octet-stream" : { }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to access this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
           }
         },
         "security" : [ {
@@ -4708,156 +4200,6 @@
         } ]
       }
     },
-    "/ticketing/v1/order-management/order-placements/{processId}/attachments" : {
-      "post" : {
-        "summary" : "Upload one or more attachments.",
-        "description" : "Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.",
-        "parameters" : [ {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "multipart/form-data" : {
-              "schema" : {
-                "required" : [ "attachment" ],
-                "type" : "object",
-                "properties" : {
-                  "attachment" : {
-                    "description" : "One or more files to attach",
-                    "type" : "array",
-                    "items" : {
-                      "type" : "string",
-                      "format" : "binary"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Attachments uploaded successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : { }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid input or unsupported file type"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to upload attachments here"
-          },
-          "404" : {
-            "description" : "The quotation request, quotation, or order placement not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/order-management/order-placements/{processId}/attachments/{attachmentId}" : {
-      "delete" : {
-        "summary" : "Delete an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "Attachment deleted successfully"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to delete this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/order-management/order-placements/{processId}/attachments/{attachmentId}/{filename}" : {
-      "get" : {
-        "summary" : "Download an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Filename of the attachment",
-          "required" : true,
-          "name" : "filename",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Attachment downloaded successfully",
-            "content" : {
-              "application/octet-stream" : { }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to access this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
     "/ticketing/v1/order-management/quotation-requests" : {
       "get" : {
         "summary" : "Retrieve quotation requests for the authenticated contractor.",
@@ -4878,156 +4220,6 @@
           },
           "403" : {
             "description" : "User does not have sufficient organization role"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/order-management/quotation-requests/{processId}/attachments" : {
-      "post" : {
-        "summary" : "Upload one or more attachments.",
-        "description" : "Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.",
-        "parameters" : [ {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "multipart/form-data" : {
-              "schema" : {
-                "required" : [ "attachment" ],
-                "type" : "object",
-                "properties" : {
-                  "attachment" : {
-                    "description" : "One or more files to attach",
-                    "type" : "array",
-                    "items" : {
-                      "type" : "string",
-                      "format" : "binary"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Attachments uploaded successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : { }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid input or unsupported file type"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to upload attachments here"
-          },
-          "404" : {
-            "description" : "The quotation request, quotation, or order placement not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/order-management/quotation-requests/{processId}/attachments/{attachmentId}" : {
-      "delete" : {
-        "summary" : "Delete an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "Attachment deleted successfully"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to delete this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/order-management/quotation-requests/{processId}/attachments/{attachmentId}/{filename}" : {
-      "get" : {
-        "summary" : "Download an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Filename of the attachment",
-          "required" : true,
-          "name" : "filename",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Attachment downloaded successfully",
-            "content" : {
-              "application/octet-stream" : { }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to access this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
           }
         },
         "security" : [ {
@@ -5163,156 +4355,6 @@
         } ]
       }
     },
-    "/ticketing/v1/order-management/quotations/{processId}/attachments" : {
-      "post" : {
-        "summary" : "Upload one or more attachments.",
-        "description" : "Uploads one or more files to an already-existing quotation request, quotation, or order placement. Each file must be provided as a separate 'attachment' part in the multipart request.",
-        "parameters" : [ {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "multipart/form-data" : {
-              "schema" : {
-                "required" : [ "attachment" ],
-                "type" : "object",
-                "properties" : {
-                  "attachment" : {
-                    "description" : "One or more files to attach",
-                    "type" : "array",
-                    "items" : {
-                      "type" : "string",
-                      "format" : "binary"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Attachments uploaded successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : { }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid input or unsupported file type"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to upload attachments here"
-          },
-          "404" : {
-            "description" : "The quotation request, quotation, or order placement not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/order-management/quotations/{processId}/attachments/{attachmentId}" : {
-      "delete" : {
-        "summary" : "Delete an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "Attachment deleted successfully"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to delete this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
-    "/ticketing/v1/order-management/quotations/{processId}/attachments/{attachmentId}/{filename}" : {
-      "get" : {
-        "summary" : "Download an order attachment",
-        "parameters" : [ {
-          "description" : "ID of the attachment",
-          "required" : true,
-          "name" : "attachmentId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Filename of the attachment",
-          "required" : true,
-          "name" : "filename",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the quotation request, quotation, or order placement",
-          "required" : true,
-          "name" : "processId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Attachment downloaded successfully",
-            "content" : {
-              "application/octet-stream" : { }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "User does not have permission to access this attachment"
-          },
-          "404" : {
-            "description" : "Attachment not found"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      }
-    },
     "/ticketing/v1/order-management/quotations/{quotationId}" : {
       "get" : {
         "summary" : "Retrieve a single quotation submitted by the authenticated contractor.",
@@ -5344,6 +4386,57 @@
           },
           "404" : {
             "description" : "Quotation not found"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/order-management/{issueId}/attachments/{attachmentId}/{filename}" : {
+      "get" : {
+        "summary" : "Download an issue attachment shared with the contractor",
+        "description" : "The attachment must be referenced by the contractor's timeline, quotation request, quotation or order placement for this issue.",
+        "parameters" : [ {
+          "description" : "ID of the attachment",
+          "required" : true,
+          "name" : "attachmentId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "Filename of the attachment",
+          "required" : true,
+          "name" : "filename",
+          "in" : "path",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Attachment downloaded successfully",
+            "content" : {
+              "application/octet-stream" : { }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this attachment"
+          },
+          "404" : {
+            "description" : "Attachment not found"
           }
         },
         "security" : [ {
@@ -5390,7 +4483,7 @@
       },
       "post" : {
         "summary" : "Create a new request to the tenant about an issue.",
-        "description" : "Records the request, optionally with file attachments, in both the contractor's and the tenant's timeline for the issue. Attachments are copied so the tenant can download them.",
+        "description" : "Records the request, optionally with file attachments, in both the contractor's and the tenant's timeline for the issue. Attachments are stored once on the issue and referenced from both timelines.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
@@ -5496,7 +4589,7 @@
         } ]
       }
     },
-    "/ticketing/v1/order-management/{issueId}/requests/{issueRequestId}" : {
+    "/ticketing/v1/order-management/{issueId}/requests/{requestId}" : {
       "delete" : {
         "summary" : "Delete a request the calling contractor has sent to the tenant about an issue.",
         "parameters" : [ {
@@ -5510,7 +4603,7 @@
         }, {
           "description" : "ID of the request",
           "required" : true,
-          "name" : "issueRequestId",
+          "name" : "requestId",
           "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
@@ -5631,7 +4724,7 @@
                       "attachments" : {
                         "type" : "array",
                         "items" : {
-                          "$ref" : "#/components/schemas/OrderAttachmentJson"
+                          "$ref" : "#/components/schemas/IssueAttachmentJson"
                         },
                         "readOnly" : true
                       }
@@ -5995,7 +5088,7 @@
         } ]
       }
     },
-    "/ticketing/v1/tenant-relations/issues/{issueId}/requests/{issueRequestId}/response" : {
+    "/ticketing/v1/tenant-relations/issues/{issueId}/requests/{requestId}" : {
       "post" : {
         "summary" : "Answer a request a contractor has sent about an issue.",
         "description" : "Deletes the request and records the tenant's response, optionally with file attachments, in both the tenant's and the contractor's timeline for the issue.",
@@ -6010,7 +5103,7 @@
         }, {
           "description" : "ID of the request",
           "required" : true,
-          "name" : "issueRequestId",
+          "name" : "requestId",
           "in" : "path",
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
@@ -6260,7 +5353,7 @@
   },
   "info" : {
     "title" : "remsfal-ticketing API",
-    "version" : "1.0.13-SNAPSHOT"
+    "version" : "1.0.15-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "http://localhost:8081",

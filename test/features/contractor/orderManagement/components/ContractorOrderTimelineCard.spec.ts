@@ -31,13 +31,11 @@ const makeTimeline = (overrides: Partial<ContractorTimelineJson> = {}): Contract
 
 interface CardProps {
   issueId: string;
-  requestId: string;
   title: string;
 }
 
 const defaultProps: CardProps = {
   issueId: 'issue-1',
-  requestId: 'request-1',
   title: 'Mieter-Kommunikation',
 };
 
@@ -137,7 +135,7 @@ describe('ContractorOrderTimelineCard component', () => {
     );
   });
 
-  it('renders ContractorOrderTimelineItemCard for each entry with item and requestId', async () => {
+  it('renders ContractorOrderTimelineItemCard for each entry with item and issueId', async () => {
     const timeline = makeTimeline({ timelineId: 'abc' });
     vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValueOnce([timeline]);
 
@@ -152,6 +150,6 @@ describe('ContractorOrderTimelineCard component', () => {
 
     const itemCard = wrapper.getComponent(ContractorOrderTimelineItemCard);
     expect(itemCard.props('item')).toEqual(timeline);
-    expect(itemCard.props('requestId')).toBe('request-1');
+    expect(itemCard.props('issueId')).toBe('issue-1');
   });
 });
