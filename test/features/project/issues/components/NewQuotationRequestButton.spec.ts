@@ -2,18 +2,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
+import Checkbox from 'primevue/checkbox';
+import Image from 'primevue/image';
 import NewQuotationRequestButton from '@/features/project/issues/components/NewQuotationRequestButton.vue';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
-import { projectService } from '@/services/ProjectService';
-import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
 
 const addMock = vi.fn();
-const { resolvePlaceOfPerformanceMock, placeOfPerformanceModuleMock } = vi.hoisted(() => {
-  const resolveMock = vi.fn();
-  const moduleMock = { usePlaceOfPerformance: () => ({ resolvePlaceOfPerformance: resolveMock }) };
-  return { resolvePlaceOfPerformanceMock: resolveMock, placeOfPerformanceModuleMock: moduleMock };
-});
-vi.mock('@/features/project/rentableUnits/composables/usePlaceOfPerformance', () => placeOfPerformanceModuleMock);
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 const BaseDialogStub = {
@@ -44,29 +38,32 @@ const NewContractorButtonStub = {
   template: '<button type="button" data-testid="new-contractor-button">Auftragnehmer hinzufügen</button>',
 };
 
-const mockProject = {
-  title: 'Projekt 1',
-  owner: 'Muster Eigentümer GmbH',
-  careOf: 'Max Mustermann',
-  billingAddress: {
-    street: 'Musterstraße 1',
-    zip: '12345',
-    city: 'Berlin',
-    province: 'Berlin',
-    countryCode: 'DE',
+const mockAttachments = [
+  {
+    attachmentId: 'att-img',
+    fileName: 'schaden.jpg',
+    contentType: 'image/jpeg',
   },
+  {
+    attachmentId: 'att-pdf',
+    fileName: 'gutachten.pdf',
+    contentType: 'application/pdf',
+  },
+];
+
+const defaultProps = {
+  projectId: 'proj-1',
+  issueId: 'issue-1',
+  attachments: mockAttachments,
 };
 
 describe('NewQuotationRequestButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(quotationRequestService, 'createQuotationRequest').mockResolvedValue(undefined);
-    vi.spyOn(projectService, 'getProject').mockResolvedValue(mockProject);
-    vi.spyOn(issueService, 'getIssue').mockResolvedValue({ id: 'issue-1' } as IssueJson);
-    resolvePlaceOfPerformanceMock.mockResolvedValue({});
   });
 
-  const mountButton = (props = { projectId: 'proj-1', issueId: 'issue-1' }) =>
+  const mountButton = (props = defaultProps) =>
     mount(NewQuotationRequestButton, {
       props,
       global: {
@@ -95,12 +92,6 @@ describe('NewQuotationRequestButton', () => {
     await trigger?.trigger('click');
     await wrapper.vm.$nextTick();
     expect(wrapper.find('[data-testid="dialog"]').attributes('data-visible')).toBe('true');
-  });
-
-  it('fetches billing recipient data on mount', async () => {
-    mountButton();
-    await flushPromises();
-    expect(projectService.getProject).toHaveBeenCalledWith('proj-1');
   });
 
   it('renders form field labels', () => {
@@ -141,74 +132,6 @@ describe('NewQuotationRequestButton', () => {
     expect(wrapper.text()).toContain('Mindestens ein Auftragnehmer muss ausgewählt werden');
   });
 
-  it('resolves the place of performance from the issue rental unit on mount', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue(
-      {
-        id: 'issue-1', rentalUnitId: 'apt-1', rentalUnitType: 'APARTMENT'
-      } as IssueJson,
-    );
-    mountButton();
-    await flushPromises();
-    expect(issueService.getIssue).toHaveBeenCalledWith('issue-1');
-    expect(resolvePlaceOfPerformanceMock).toHaveBeenCalledWith('proj-1', 'apt-1');
-  });
-
-  it('does not resolve a place of performance when the issue has no rental unit', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({ id: 'issue-1', agreementId: 'agr-1' } as IssueJson);
-    mountButton();
-    await flushPromises();
-    expect(resolvePlaceOfPerformanceMock).not.toHaveBeenCalled();
-  });
-
-  it('sends the place of performance with the quotation request', async () => {
-    const placeOfPerformance = {
-      address: {
-        street: 'Hauptstraße 5', zip: '14467', city: 'Potsdam', province: 'Brandenburg', countryCode: 'DE'
-      },
-      rentalUnitTitle: 'Wohnung 3.2',
-      rentalUnitLocation: '3. OG links',
-    };
-    vi.mocked(issueService.getIssue).mockResolvedValue(
-      {
-        id: 'issue-1', rentalUnitId: 'apt-1', rentalUnitType: 'APARTMENT'
-      } as IssueJson,
-    );
-    resolvePlaceOfPerformanceMock.mockResolvedValue(placeOfPerformance);
-    const wrapper = mountButton();
-    await flushPromises();
-
-    await wrapper.findComponent(ContractorMultiSelectStub).vm.$emit('update:modelValue', [{ id: 'c-1' }]);
-    await wrapper.findComponent(Form).vm.$emit('submit', { valid: true, states: { scopeOfWork: { value: 'Reparatur' } } });
-    await flushPromises();
-
-    expect(quotationRequestService.createQuotationRequest).toHaveBeenCalledWith(
-      'issue-1',
-      expect.objectContaining({
-        placeOfPerformance: placeOfPerformance.address,
-        rentalUnitTitle: 'Wohnung 3.2',
-        rentalUnitLocation: '3. OG links',
-      }),
-    );
-  });
-
-  it('still sends the quotation request when resolving the place of performance fails', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.mocked(issueService.getIssue).mockRejectedValue(new Error('boom'));
-    const wrapper = mountButton();
-    await flushPromises();
-
-    await wrapper.findComponent(ContractorMultiSelectStub).vm.$emit('update:modelValue', [{ id: 'c-1' }]);
-    await wrapper.findComponent(Form).vm.$emit('submit', { valid: true, states: { scopeOfWork: { value: 'Reparatur' } } });
-    await flushPromises();
-
-    expect(quotationRequestService.createQuotationRequest).toHaveBeenCalledWith(
-      'issue-1',
-      expect.objectContaining({ placeOfPerformance: undefined, rentalUnitTitle: undefined }),
-    );
-    expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch place of performance:', expect.any(Error));
-    consoleSpy.mockRestore();
-  });
-
   it('calls createQuotationRequest with correct payload on valid submit', async () => {
     const wrapper = mountButton();
     const selectedContractors = [{ id: 'c-1', name: 'Alpha Bau GmbH' }];
@@ -225,13 +148,11 @@ describe('NewQuotationRequestButton', () => {
 
     expect(quotationRequestService.createQuotationRequest).toHaveBeenCalledWith(
       'issue-1',
-      expect.objectContaining({
+      {
         scopeOfWork: 'Dachrinne reparieren',
         contractors: selectedContractors,
-        projectOwner: 'Muster Eigentümer GmbH',
-        projectCareOf: 'Max Mustermann',
-        billingAddress: mockProject.billingAddress,
-      }),
+        attachmentIds: [],
+      },
     );
   });
 
@@ -353,5 +274,53 @@ describe('NewQuotationRequestButton', () => {
       'issue-1',
       expect.objectContaining({ scopeOfWork: 'Reparatur' }),
     );
+  });
+
+  it('renders one selectable tile per attachment, including non-image files individually', () => {
+    const wrapper = mountButton();
+    const tiles = wrapper.findAll('[data-test="attachment-tile"]');
+    expect(tiles).toHaveLength(2);
+    expect(wrapper.findAllComponents(Checkbox)).toHaveLength(2);
+    expect(wrapper.findComponent(Image).find('img').attributes('src')).toBe(
+      '/ticketing/v1/issues/issue-1/attachments/att-img/schaden.jpg',
+    );
+    expect(tiles[1].text()).toContain('PDF');
+    expect(tiles[1].text()).toContain('gutachten.pdf');
+  });
+
+  it('does not render the attachments section when the issue has no attachments', () => {
+    const wrapper = mountButton({ ...defaultProps, attachments: [] });
+    expect(wrapper.text()).not.toContain('Anhänge mitsenden');
+    expect(wrapper.find('[data-test="attachment-tile"]').exists()).toBe(false);
+  });
+
+  it('sends the selected attachment ids with the request', async () => {
+    const wrapper = mountButton();
+    const contractorSelect = wrapper.findComponent(ContractorMultiSelectStub);
+    await contractorSelect.vm.$emit('update:modelValue', [{ id: 'c-1' }]);
+
+    const pdfCheckbox = wrapper.findAllComponents(Checkbox)[1];
+    await pdfCheckbox.vm.$emit('update:modelValue', ['att-pdf']);
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', { valid: true, states: { scopeOfWork: { value: 'Reparatur' } } });
+    await flushPromises();
+
+    expect(quotationRequestService.createQuotationRequest).toHaveBeenCalledWith(
+      'issue-1',
+      expect.objectContaining({ attachmentIds: ['att-pdf'] }),
+    );
+  });
+
+  it('resets the attachment selection when dialog emits hide', async () => {
+    const wrapper = mountButton();
+    await wrapper.findAllComponents(Checkbox)[0].vm.$emit('update:modelValue', ['att-img']);
+    expect(wrapper.find('[data-test="attachment-tile"]').classes()).toContain('ring-2');
+
+    await wrapper.findComponent({ name: 'BaseDialog' }).vm.$emit('hide');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('[data-test="attachment-tile"]').classes()).not.toContain('ring-2');
+    expect(wrapper.findAllComponents(Checkbox)[0].props('modelValue')).toEqual([]);
   });
 });

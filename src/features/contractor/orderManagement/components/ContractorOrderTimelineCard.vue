@@ -11,7 +11,6 @@ import { contractorOrderTimelineService, type ContractorTimelineJson }
 
 const props = defineProps<{
   issueId: string;
-  requestId: string;
   title: string;
 }>();
 
@@ -48,7 +47,7 @@ const sendTimelineEntry: UseTimelineOptions['send'] = async (payload, files) => 
     sendErrorLogLabel="Error creating order timeline entry:"
   >
     <template #item="{ item }">
-      <ContractorOrderTimelineItemCard :item="(item as ContractorTimelineJson)" :requestId="props.requestId" />
+      <ContractorOrderTimelineItemCard :item="(item as ContractorTimelineJson)" :issueId="props.issueId" />
     </template>
   </TimelineCard>
 </template>

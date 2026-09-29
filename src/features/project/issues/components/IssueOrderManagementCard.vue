@@ -9,8 +9,9 @@ import BaseCard from '@/components/BaseCard.vue';
 import QuotationRequestTable from './QuotationRequestTable.vue';
 import QuoteTable from './QuoteTable.vue';
 import OrderTable from './OrderTable.vue';
+import type { IssueAttachmentJson } from '@/features/project/issues/services/IssueService';
 
-defineProps<{ projectId: string; issueId: string }>();
+defineProps<{ projectId: string; issueId: string; attachments: IssueAttachmentJson[] }>();
 
 const { t } = useI18n();
 </script>
@@ -35,7 +36,7 @@ const { t } = useI18n();
         </TabList>
         <TabPanels>
           <TabPanel value="quotationRequests">
-            <QuotationRequestTable :projectId="projectId" :issueId="issueId" />
+            <QuotationRequestTable :projectId="projectId" :issueId="issueId" :attachments="attachments" />
           </TabPanel>
           <TabPanel value="quotations">
             <QuoteTable :issueId="issueId" />

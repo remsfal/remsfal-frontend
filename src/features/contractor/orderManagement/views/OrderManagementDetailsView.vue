@@ -58,9 +58,7 @@ watch(() => props.issueId, fetchRequest);
     <template v-else-if="request">
       <QuotationRequestDetailsCard :request="request" />
       <ContractorOrderTimelineCard
-        v-if="request.id"
         :issueId="props.issueId"
-        :requestId="request.id"
         :title="t('tenantIssues.timeline.title')"
       />
       <TenantCommunicationCard :issueId="props.issueId" />

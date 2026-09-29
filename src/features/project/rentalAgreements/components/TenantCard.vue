@@ -67,7 +67,10 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
   <div
     data-testid="tenant-card"
     class="flex flex-col md:flex-row gap-6 p-4 w-full rounded-lg cursor-pointer hover:shadow-lg transition-shadow"
+    role="button"
+    tabindex="0"
     @click="emit('click')"
+    @keydown.enter="emit('click')"
   >
     <!-- Avatar Section -->
     <div class="flex justify-center md:justify-start md:w-40">
