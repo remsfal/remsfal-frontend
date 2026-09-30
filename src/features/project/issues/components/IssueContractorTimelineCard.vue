@@ -52,8 +52,6 @@ const loadRequestedContractors = async () => {
 onMounted(loadRequestedContractors);
 watch(() => props.issueId, loadRequestedContractors);
 
-// The endpoint always returns the complete timeline of the issue, so all
-// contractor tabs share a single request instead of fetching it once each.
 let cachedTimeline: { issueId: string; request: Promise<ContractorTimelineJson[]> } | null = null;
 
 const invalidateTimeline = () => {
