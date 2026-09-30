@@ -52,16 +52,34 @@ const loadRequestedContractors = async () => {
 onMounted(loadRequestedContractors);
 watch(() => props.issueId, loadRequestedContractors);
 
+// The endpoint always returns the complete timeline of the issue, so all
+// contractor tabs share a single request instead of fetching it once each.
+let cachedTimeline: { issueId: string; request: Promise<ContractorTimelineJson[]> } | null = null;
+
+const invalidateTimeline = () => {
+  cachedTimeline = null;
+};
+
+const fetchTimeline = () => {
+  if (cachedTimeline?.issueId !== props.issueId) {
+    const request = contractorTimelineService.getTimelineEntries(props.issueId).then((result) => result.timelines ?? []);
+    request.catch(invalidateTimeline);
+    cachedTimeline = { issueId: props.issueId, request };
+  }
+  return cachedTimeline.request;
+};
+
 const unsubscribeQuotationRequestCreated = eventBus.on('quotationRequest:created', ({ issueId }) => {
   if (issueId === props.issueId) {
+    invalidateTimeline();
     loadRequestedContractors();
   }
 });
 onUnmounted(unsubscribeQuotationRequestCreated);
 
 const loadTimelineEntries = async (organizationId: string) => {
-  const result = await contractorTimelineService.getTimelineEntries(props.issueId);
-  return (result.timelines ?? []).filter((entry) => entry.organizationId === organizationId);
+  const timelines = await fetchTimeline();
+  return timelines.filter((entry) => entry.organizationId === organizationId);
 };
 
 const sendTimelineEntry = async (organizationId: string, payload: TimelineWritableJson, files: File[]) => {
@@ -71,6 +89,7 @@ const sendTimelineEntry = async (organizationId: string, payload: TimelineWritab
     { purpose: payload.purpose, message: payload.message ?? '' },
     files,
   );
+  invalidateTimeline();
 };
 
 const sendHandlerFor = (organizationId: string) => (payload: TimelineWritableJson, files: File[]) =>
@@ -85,8 +104,7 @@ const loadForSoleOrAllContractors = async () => {
   if (contractors.value.length === 1) {
     return loadTimelineEntries(contractors.value[0].organizationId);
   }
-  const result = await contractorTimelineService.getTimelineEntries(props.issueId);
-  return result.timelines ?? [];
+  return fetchTimeline();
 };
 </script>
 

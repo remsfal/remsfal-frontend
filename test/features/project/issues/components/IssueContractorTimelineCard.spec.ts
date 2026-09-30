@@ -172,6 +172,49 @@ describe('IssueContractorTimelineCard component', () => {
     );
   });
 
+  it('requests the timeline only once for all contractor tabs and again after sending a message', async () => {
+    const items = [
+      makeQuotationRequest({ id: 'qr-1', organizationId: 'org-1' }),
+      makeQuotationRequest({ id: 'qr-2', organizationId: 'org-2' }),
+    ];
+    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items });
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockClear();
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValue({
+      timelines: [
+        makeTimeline({ timelineId: 't-1', organizationId: 'org-1' }),
+        makeTimeline({ timelineId: 't-2', organizationId: 'org-2' }),
+      ],
+    });
+
+    const wrapper = await mountCardFull('issue-1');
+
+    const timelineCards = wrapper.findAllComponents(TimelineCard);
+    expect(timelineCards).toHaveLength(2);
+    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
+
+    vi.mocked(contractorTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
+    await timelineCards[0].props('send')({ purpose: 'MESSAGE_SENT', message: 'Hi' }, []);
+    await timelineCards[0].props('load')();
+    await timelineCards[1].props('load')();
+
+    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not cache a failed timeline request', async () => {
+    vi.mocked(quotationRequestService.getQuotationRequests)
+      .mockResolvedValueOnce({ items: [makeQuotationRequest()] });
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockReset();
+    vi.mocked(contractorTimelineService.getTimelineEntries)
+      .mockRejectedValueOnce(new Error('boom'))
+      .mockResolvedValueOnce({ timelines: [makeTimeline({ organizationId: 'org-1' })] });
+
+    const wrapper = await mountCardShallow('issue-1');
+    const load = wrapper.getComponent(TimelineCard).props('load');
+
+    await expect(load()).rejects.toThrow('boom');
+    expect(await load()).toEqual([makeTimeline({ organizationId: 'org-1' })]);
+  });
+
   it('renders IssueContractorTimelineItemCard for each entry with item and issueId', async () => {
     const timeline = makeTimeline({ timelineId: 'abc', organizationId: 'org-1' });
     vi.mocked(quotationRequestService.getQuotationRequests)
