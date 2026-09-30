@@ -62,8 +62,6 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
   return title;
 };
 
-// Switches to the stacked layout as soon as the single-row layout no longer
-// fits, and back once the width that row needed is available again.
 const cardRef = ref<HTMLElement | null>(null);
 const stacked = ref(false);
 let requiredWidth = 0;
