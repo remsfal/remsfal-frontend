@@ -104,7 +104,7 @@ watch(
     ref="cardRef"
     data-testid="tenant-card"
     :data-layout="stacked ? 'stacked' : 'row'"
-    class="flex gap-6 p-4 w-full rounded-lg cursor-pointer hover:shadow-lg transition-shadow"
+    class="interactive-row flex gap-6 p-4 w-full"
     :class="stacked ? 'flex-col' : 'flex-row'"
     role="button"
     tabindex="0"
@@ -164,7 +164,7 @@ watch(
         />
 
         <!-- Contact Buttons & Actions (with click.stop) -->
-        <div class="flex gap-2" :class="stacked ? 'flex-col items-start' : 'items-center'" @click.stop>
+        <div class="flex gap-2" :class="stacked ? 'flex-col items-start' : 'items-center'" @click.stop @keydown.stop>
           <TenantContactButtons
             :vertical="stacked"
             :email="tenant.email"
