@@ -38,6 +38,7 @@ function translateRole(role: MemberRole): string {
     scrollable
     :loading="isLoading"
     rowHover
+    class="cursor-pointer"
     :rows="10"
     dataKey="id"
     :totalRecords="projectStore.totalProjects"

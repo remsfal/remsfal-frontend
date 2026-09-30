@@ -19,7 +19,7 @@ const columns = computed<IssueColumn[]>(() =>
   ['issueNumber', 'title', 'type', 'status', 'assignee', 'modifiedAt']
 );
 
-const onIssueSelect = (issue: IssueItemJson) => {
+const onIssueClick = (issue: IssueItemJson) => {
   router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: issue.id ?? '' } });
 };
 
@@ -36,7 +36,7 @@ onMounted(() => loadIssues({ projectId: props.projectId, agreementId: props.agre
         :issues="issues"
         :projectId="props.projectId"
         :columns="columns"
-        @rowSelect="onIssueSelect"
+        @rowClick="onIssueClick"
       />
     </template>
   </BaseCard>
