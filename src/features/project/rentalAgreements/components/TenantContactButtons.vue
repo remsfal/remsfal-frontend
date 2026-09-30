@@ -9,6 +9,7 @@ const props = defineProps<{
   businessPhoneNumber?: string;
   privatePhoneNumber?: string;
   disabled?: boolean;
+  vertical?: boolean;
 }>();
 
 const { t } = useI18n();
@@ -29,7 +30,7 @@ const emailActionable = computed(() => !props.disabled && !!props.email);
 </script>
 
 <template>
-  <div class="flex gap-2">
+  <div class="flex gap-2" :class="{ 'flex-col items-start': vertical }">
     <!-- Phone: one button per available number, labeled with its type -->
     <template v-if="!hasPhoneNumbers">
       <Button

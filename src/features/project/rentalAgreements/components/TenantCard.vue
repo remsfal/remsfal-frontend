@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import Tag from 'primevue/tag';
 import type { TenantItemJson } from '../services/TenantService';
 import TenantContactButtons from './TenantContactButtons.vue';
@@ -61,30 +61,74 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
 
   return title;
 };
+
+// Switches to the stacked layout as soon as the single-row layout no longer
+// fits, and back once the width that row needed is available again.
+const cardRef = ref<HTMLElement | null>(null);
+const stacked = ref(false);
+let requiredWidth = 0;
+let resizeObserver: ResizeObserver | undefined;
+
+const updateLayout = async () => {
+  const card = cardRef.value;
+  if (!card) return;
+  if (stacked.value) {
+    if (card.clientWidth < requiredWidth) return;
+    stacked.value = false;
+    await nextTick();
+  }
+  if (card.scrollWidth > card.clientWidth) {
+    requiredWidth = card.scrollWidth;
+    stacked.value = true;
+  }
+};
+
+onMounted(() => {
+  if (typeof ResizeObserver === 'undefined' || !cardRef.value) return;
+  resizeObserver = new ResizeObserver(updateLayout);
+  resizeObserver.observe(cardRef.value);
+});
+
+onUnmounted(() => resizeObserver?.disconnect());
+
+watch(
+  () => props.tenant,
+  () => {
+    requiredWidth = 0;
+    updateLayout();
+  },
+  { flush: 'post' },
+);
 </script>
 
 <template>
   <div
+    ref="cardRef"
     data-testid="tenant-card"
-    class="flex flex-col md:flex-row gap-6 p-4 w-full rounded-lg cursor-pointer hover:shadow-lg transition-shadow"
+    :data-layout="stacked ? 'stacked' : 'row'"
+    class="flex gap-6 p-4 w-full rounded-lg cursor-pointer hover:shadow-lg transition-shadow"
+    :class="stacked ? 'flex-col' : 'flex-row'"
     role="button"
     tabindex="0"
     @click="emit('click')"
     @keydown.enter="emit('click')"
   >
     <!-- Avatar Section -->
-    <div class="flex justify-center md:justify-start md:w-40">
+    <div class="flex shrink-0" :class="stacked ? 'justify-center' : 'justify-start w-40'">
       <Avatar size="xlarge" class="bg-surface-100 text-primary">
         <FontAwesomeIcon icon="fa-solid fa-building-user" class="text-2xl translate-y-0.5" />
       </Avatar>
     </div>
 
     <!-- Content Section -->
-    <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
+    <div
+      class="flex gap-6"
+      :class="stacked ? 'flex-col min-w-0' : 'flex-row justify-between items-center grow shrink-0'"
+    >
       <!-- Name & Units -->
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4" :class="stacked ? 'min-w-0' : 'shrink-0'">
         <!-- Name -->
-        <div class="font-bold text-2xl">
+        <div class="font-bold text-2xl" :class="stacked ? 'break-words' : 'whitespace-nowrap'">
           {{ fullName }}
         </div>
 
@@ -113,7 +157,7 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
       </div>
 
       <!-- Status & Actions -->
-      <div class="flex flex-col md:items-end gap-4">
+      <div class="flex flex-col gap-4" :class="stacked ? 'items-start max-w-full' : 'items-end shrink-0'">
         <!-- Active/Inactive Status Tag (hidden when active state is not applicable) -->
         <Tag
           v-if="tenant.active !== undefined"
@@ -122,8 +166,9 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
         />
 
         <!-- Contact Buttons & Actions (with click.stop) -->
-        <div class="flex items-center gap-2" @click.stop>
+        <div class="flex gap-2" :class="stacked ? 'flex-col items-start' : 'items-center'" @click.stop>
           <TenantContactButtons
+            :vertical="stacked"
             :email="tenant.email"
             :mobilePhoneNumber="tenant.mobilePhoneNumber"
             :businessPhoneNumber="tenant.businessPhoneNumber"

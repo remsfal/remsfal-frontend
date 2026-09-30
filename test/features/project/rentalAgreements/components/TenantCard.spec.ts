@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { flushPromises, mount } from '@vue/test-utils';
 import TenantCard from '@/features/project/rentalAgreements/components/TenantCard.vue';
 import type { TenantItemJson } from '@/features/project/rentalAgreements/services/TenantService';
 
@@ -11,6 +11,10 @@ const tenant: TenantItemJson = {
 };
 
 describe('TenantCard', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('renders content passed into the actions slot without triggering a card click', async () => {
     const wrapper = mount(TenantCard, {
       props: { tenant },
@@ -29,5 +33,39 @@ describe('TenantCard', () => {
     await wrapper.find('[data-testid="tenant-card"]').trigger('click');
 
     expect(wrapper.emitted('click')).toBeTruthy();
+  });
+
+  it('switches to the stacked layout once the row overflows and back when it fits again', async () => {
+    let notifyResize: () => void = () => {};
+    vi.stubGlobal('ResizeObserver', class {
+      constructor(callback: () => void) {
+        notifyResize = callback;
+      }
+      observe() {}
+      disconnect() {}
+    });
+    const wrapper = mount(TenantCard, { props: { tenant } });
+    const card = wrapper.find('[data-testid="tenant-card"]');
+    const setWidths = (clientWidth: number, scrollWidth: number) => {
+      Object.defineProperty(card.element, 'clientWidth', { value: clientWidth, configurable: true });
+      Object.defineProperty(card.element, 'scrollWidth', { value: scrollWidth, configurable: true });
+    };
+
+    expect(card.attributes('data-layout')).toBe('row');
+
+    setWidths(500, 800);
+    notifyResize();
+    await flushPromises();
+    expect(card.attributes('data-layout')).toBe('stacked');
+
+    setWidths(700, 700);
+    notifyResize();
+    await flushPromises();
+    expect(card.attributes('data-layout')).toBe('stacked');
+
+    setWidths(800, 800);
+    notifyResize();
+    await flushPromises();
+    expect(card.attributes('data-layout')).toBe('row');
   });
 });
