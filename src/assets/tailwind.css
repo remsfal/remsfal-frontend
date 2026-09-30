@@ -1,1 +1,24 @@
 @import "tailwindcss";
+@import "tailwindcss-primeui";
+
+/*
+ * Interaction contract for clickable list rows (DataView items, custom lists).
+ * Mirrors DataTable `rowHover`, whose row.hoverBackground/hoverColor resolve to the
+ * semantic content.hover.* tokens. The semantic tokens are used directly because
+ * component tokens (--p-datatable-*) are only injected once a DataTable is mounted.
+ * No shadows, no lifting, no rounded rows.
+ */
+@utility interactive-row {
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+
+  @variant hover {
+    background: var(--p-content-hover-background);
+    color: var(--p-content-hover-color);
+  }
+
+  @variant focus-visible {
+    outline: var(--p-focus-ring-width) var(--p-focus-ring-style) var(--p-focus-ring-color);
+    outline-offset: calc(-1 * var(--p-focus-ring-width));
+  }
+}

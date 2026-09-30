@@ -1,6 +1,6 @@
 export { default as ActivityFeedCard } from './components/ActivityFeedCard.vue';
-export { default as ActivityFeedSidebar, type CustomFilter, type ProjectOption } from './components/ActivityFeedSidebar.vue';
-export { default as ActivityFeedToolbar } from './components/ActivityFeedToolbar.vue';
+export { default as ActivityFeedToolbar, type ActivityFeedFilterGroup, type ActivityFeedFilterOption }
+  from './components/ActivityFeedToolbar.vue';
 export { default as ActivityFeedList } from './components/ActivityFeedList.vue';
 export { default as ActivityFeedItem } from './components/ActivityFeedItem.vue';
 export { default as ActivityFeedEmptyState } from './components/ActivityFeedEmptyState.vue';

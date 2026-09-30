@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
-import DataTable from 'primevue/datatable';
+import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
 import { tenantIssueRequestService, type IssueRequestJson }
@@ -33,8 +33,8 @@ const fetchRequests = async () => {
   }
 };
 
-const openRequest = (event: { data: IssueRequestJson }) => {
-  selectedRequest.value = event.data;
+const openRequest = (event: DataTableRowClickEvent) => {
+  selectedRequest.value = event.data as IssueRequestJson;
   showAnswerDialog.value = true;
 };
 
@@ -76,11 +76,11 @@ watch(() => props.issueId, fetchRequests);
         v-else
         :value="requests"
         dataKey="issueRequestId"
-        selectionMode="single"
-        :metaKeySelection="false"
+        rowHover
+        class="cursor-pointer"
         :showHeaders="false"
         data-testid="tenant-issue-requests-list"
-        @rowSelect="openRequest"
+        @rowClick="openRequest"
       >
         <Column field="message">
           <template #body="{ data }">

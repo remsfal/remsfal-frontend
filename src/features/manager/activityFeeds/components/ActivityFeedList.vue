@@ -7,7 +7,6 @@ import DataView from 'primevue/dataview';
 import type { ActivityFeedEntry } from '../stores/ActivityFeedStore';
 import ActivityFeedItem from './ActivityFeedItem.vue';
 import ActivityFeedEmptyState from './ActivityFeedEmptyState.vue';
-import { useLayout } from '@/layouts/composables/layout';
 
 const props = defineProps<{
   entries: ActivityFeedEntry[];
@@ -28,7 +27,6 @@ const emit = defineEmits<{
   loadMore: [];
 }>();
 
-const { isDarkTheme } = useLayout();
 const { t, locale } = useI18n();
 
 const isAllSelected = computed(() =>
@@ -138,20 +136,14 @@ const groupedEntries = computed<GroupedEntries | null>(() => {
 
     <template v-else>
       <!-- List Header -->
-      <div
-        class="flex items-center gap-4 px-4 py-2.5 border-b"
-        :class="isDarkTheme ? 'bg-surface-800/50 border-surface-800' : 'bg-surface-50 border-surface-200'"
-      >
+      <div class="flex items-center gap-4 px-4 py-2.5 border-b border-surface bg-emphasis">
         <div class="w-2.5 flex-shrink-0" />
         <Checkbox
           :modelValue="isAllSelected"
           binary
           @change="emit('selectAll')"
         />
-        <span
-          class="text-sm font-medium"
-          :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
-        >{{ t('activityFeeds.actions.selectAll') }}</span>
+        <span class="text-sm font-medium text-muted-color">{{ t('activityFeeds.actions.selectAll') }}</span>
       </div>
 
       <!-- Entry List -->
@@ -183,15 +175,12 @@ const groupedEntries = computed<GroupedEntries | null>(() => {
           <template v-for="(group, groupIndex) in groupedEntries" :key="group.key">
             <!-- Group Header -->
             <div
-              class="px-4 py-2 border-b sticky top-0 z-10"
-              :class="isDarkTheme ? 'bg-surface-800/50 border-surface-700' : 'bg-surface-100 border-surface-200'"
+              class="px-4 py-2 border-b border-surface bg-emphasis sticky top-0 z-10"
+              data-testid="activity-feed-group-header"
             >
-              <span
-                class="text-sm font-semibold"
-                :class="isDarkTheme ? 'text-surface-300' : 'text-surface-700'"
-              >
+              <span class="text-sm font-semibold">
                 {{ group.label }}
-                <span class="text-surface-500 ml-2 font-normal">
+                <span class="text-muted-color ml-2 font-normal">
                   ({{ group.entries.length }})
                 </span>
               </span>

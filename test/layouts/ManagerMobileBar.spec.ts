@@ -57,7 +57,7 @@ describe('ManagerMobileBar.vue', () => {
     const { wrapper } = mountComponent();
     const navItems = wrapper.findAll('a.nav-item');
     expect(navItems[0].text()).toContain('Meine Übersicht');
-    expect(navItems[1].text()).toContain('Aktivitäten');
+    expect(navItems[1].text()).toContain('Neueste Aktivitäten');
     expect(navItems[2].text()).toContain('Meine Liegenschaften');
     expect(navItems[3].text()).toContain('Meine Auftragnehmer');
   });
