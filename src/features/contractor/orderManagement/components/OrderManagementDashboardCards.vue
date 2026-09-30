@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import DataTable from 'primevue/datatable';
+import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
 import { quotationRequestService } from '@/features/contractor/orderManagement/services/QuotationRequestService';
@@ -53,9 +53,10 @@ function goToOpenOrders() {
   router.push({ name: 'ContractorOrdersOpen' });
 }
 
-function goToQuotationRequestDetails(event: { data: QuotationRequestJson }) {
-  if (!event.data.issueId) return;
-  router.push({ name: 'ContractorOrderDetails', params: { issueId: event.data.issueId } });
+function goToQuotationRequestDetails(event: DataTableRowClickEvent) {
+  const request = event.data as QuotationRequestJson;
+  if (!request.issueId) return;
+  router.push({ name: 'ContractorOrderDetails', params: { issueId: request.issueId } });
 }
 
 onMounted(() => loadData());
@@ -74,10 +75,10 @@ onMounted(() => loadData());
         <DataTable
           v-else
           :value="newQuotationRequests"
-          selectionMode="single"
-          :metaKeySelection="false"
+          rowHover
+          class="cursor-pointer"
           :showHeaders="false"
-          @rowSelect="goToQuotationRequestDetails"
+          @rowClick="goToQuotationRequestDetails"
         >
           <Column field="scopeOfWork">
             <template #body="{ data }">
@@ -106,10 +107,10 @@ onMounted(() => loadData());
         <DataTable
           v-else
           :value="newOrders"
-          selectionMode="single"
-          :metaKeySelection="false"
+          rowHover
+          class="cursor-pointer"
           :showHeaders="false"
-          @rowSelect="goToOpenOrders"
+          @rowClick="goToOpenOrders"
         >
           <Column field="projectOwner">
             <template #body="{ data }">

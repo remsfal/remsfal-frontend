@@ -1,28 +1,28 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import DataTable from 'primevue/datatable';
+import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable';
 import Column from 'primevue/column';
 import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
 const props = defineProps<{ requests: QuotationRequestJson[] }>();
 
 const emit = defineEmits<{
-  rowSelect: [request: QuotationRequestJson];
+  rowClick: [request: QuotationRequestJson];
 }>();
 
 const { t, d } = useI18n();
 
-const onRowSelect = (event: { data: QuotationRequestJson }) => {
-  emit('rowSelect', event.data);
+const onRowClick = (event: DataTableRowClickEvent) => {
+  emit('rowClick', event.data as QuotationRequestJson);
 };
 </script>
 
 <template>
   <DataTable
     :value="props.requests"
-    selectionMode="single"
-    :metaKeySelection="false"
-    @rowSelect="onRowSelect"
+    rowHover
+    class="cursor-pointer"
+    @rowClick="onRowClick"
   >
     <template #empty>
       <span class="text-muted-color">{{ t('orderManagement.quotationRequests.empty') }}</span>
