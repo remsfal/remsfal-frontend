@@ -12,12 +12,12 @@
   cursor: pointer;
   transition: background-color 150ms, color 150ms;
 
-  &:hover {
+  @variant hover {
     background: var(--p-content-hover-background);
     color: var(--p-content-hover-color);
   }
 
-  &:focus-visible {
+  @variant focus-visible {
     outline: var(--p-focus-ring-width) var(--p-focus-ring-style) var(--p-focus-ring-color);
     outline-offset: calc(-1 * var(--p-focus-ring-width));
   }
