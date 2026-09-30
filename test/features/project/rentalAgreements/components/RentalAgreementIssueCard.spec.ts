@@ -15,7 +15,7 @@ vi.mock('@/features/project/issues/services/IssueService', () => ({ issueService
 
 const IssueTableStub = {
   props: ['issues', 'projectId', 'columns'],
-  emits: ['rowSelect'],
+  emits: ['rowClick'],
   template: '<div class="issue-table-stub" />',
 };
 
@@ -94,11 +94,11 @@ describe('RentalAgreementIssueCard', () => {
     consoleSpy.mockRestore();
   });
 
-  test('navigates to issue details on row select', async () => {
+  test('navigates to issue details on row click', async () => {
     wrapper = mountCard();
     await flushPromises();
 
-    await wrapper.findComponent(IssueTableStub).vm.$emit('rowSelect', sampleIssue);
+    await wrapper.findComponent(IssueTableStub).vm.$emit('rowClick', sampleIssue);
 
     expect(push).toHaveBeenCalledWith({
       name: 'IssueDetails',

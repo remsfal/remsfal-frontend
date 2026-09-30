@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import DataTable from 'primevue/datatable';
+import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
 import { issueService, type IssueItemJson, type IssuePriority, type IssueStatus }
@@ -61,9 +61,10 @@ async function loadData(projectId: string) {
   isLoading.value = false;
 }
 
-function onRowSelect(event: { data: IssueItemJson }) {
-  if (!event.data.id) return;
-  router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: event.data.id } });
+function onRowClick(event: DataTableRowClickEvent) {
+  const issue = event.data as IssueItemJson;
+  if (!issue.id) return;
+  router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: issue.id } });
 }
 
 onMounted(() => loadData(props.projectId));
@@ -81,13 +82,12 @@ onMounted(() => loadData(props.projectId));
         </div>
         <DataTable
           v-else
-          class="issue-dashboard-table"
+          class="issue-dashboard-table cursor-pointer"
           :value="urgentIssues"
-          selectionMode="single"
-          :metaKeySelection="false"
+          rowHover
           :showHeaders="false"
           :pt="{ bodyRow: { 'data-testid': 'issue-dashboard-urgent-row' } }"
-          @rowSelect="onRowSelect"
+          @rowClick="onRowClick"
         >
           <Column field="title" :header="t('issueDetails.fields.title')">
             <template #body="slotProps">
@@ -113,13 +113,12 @@ onMounted(() => loadData(props.projectId));
         </div>
         <DataTable
           v-else
-          class="issue-dashboard-table"
+          class="issue-dashboard-table cursor-pointer"
           :value="recentIssues"
-          selectionMode="single"
-          :metaKeySelection="false"
+          rowHover
           :showHeaders="false"
           :pt="{ bodyRow: { 'data-testid': 'issue-dashboard-recent-row' } }"
-          @rowSelect="onRowSelect"
+          @rowClick="onRowClick"
         >
           <Column field="title" :header="t('issueDetails.fields.title')">
             <template #body="slotProps">

@@ -225,7 +225,6 @@ async function confirmRemove() {
         v-else
         :value="groupedRentRows"
         dataKey="rowKey"
-        rowHover
         rowGroupMode="subheader"
         groupRowsBy="unitId"
         :pt="{ rowGroupHeaderCell: { colspan: 6 } }"

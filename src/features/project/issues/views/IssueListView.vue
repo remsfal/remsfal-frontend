@@ -99,7 +99,7 @@ const handleIssueCreated = async (newIssue: IssueItemJson) => {
   router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: newIssue.id ?? '' } });
 };
 
-const onIssueSelect = (issue: IssueItemJson) => {
+const onIssueClick = (issue: IssueItemJson) => {
   router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: issue.id ?? '' } });
 };
 
@@ -120,7 +120,7 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], load)
         :issues="issues"
         :projectId="props.projectId"
         :columns="columns"
-        @rowSelect="onIssueSelect"
+        @rowClick="onIssueClick"
       />
 
       <!-- Create Buttons -->
