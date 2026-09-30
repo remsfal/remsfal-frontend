@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed } from 'vue';
 import Tag from 'primevue/tag';
 import type { TenantItemJson } from '../services/TenantService';
 import TenantContactButtons from './TenantContactButtons.vue';
@@ -61,72 +61,30 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
 
   return title;
 };
-
-const cardRef = ref<HTMLElement | null>(null);
-const stacked = ref(false);
-let requiredWidth = 0;
-let resizeObserver: ResizeObserver | undefined;
-
-const updateLayout = async () => {
-  const card = cardRef.value;
-  if (!card) return;
-  if (stacked.value) {
-    if (card.clientWidth < requiredWidth) return;
-    stacked.value = false;
-    await nextTick();
-  }
-  if (card.scrollWidth > card.clientWidth) {
-    requiredWidth = card.scrollWidth;
-    stacked.value = true;
-  }
-};
-
-onMounted(() => {
-  if (typeof ResizeObserver === 'undefined' || !cardRef.value) return;
-  resizeObserver = new ResizeObserver(updateLayout);
-  resizeObserver.observe(cardRef.value);
-});
-
-onUnmounted(() => resizeObserver?.disconnect());
-
-watch(
-  () => props.tenant,
-  () => {
-    requiredWidth = 0;
-    updateLayout();
-  },
-  { flush: 'post' },
-);
 </script>
 
 <template>
   <div
-    ref="cardRef"
     data-testid="tenant-card"
-    :data-layout="stacked ? 'stacked' : 'row'"
-    class="interactive-row flex gap-6 p-4 w-full"
-    :class="stacked ? 'flex-col' : 'flex-row'"
+    class="interactive-row flex flex-col xl:flex-row gap-6 p-4 w-full"
     role="button"
     tabindex="0"
     @click="emit('click')"
     @keydown.enter="emit('click')"
   >
     <!-- Avatar Section -->
-    <div class="flex shrink-0" :class="stacked ? 'justify-center' : 'justify-start w-40'">
+    <div class="flex justify-center xl:justify-start xl:w-40 shrink-0">
       <Avatar size="xlarge" class="bg-surface-100 text-primary">
         <FontAwesomeIcon icon="fa-solid fa-building-user" class="text-2xl translate-y-0.5" />
       </Avatar>
     </div>
 
     <!-- Content Section -->
-    <div
-      class="flex gap-6"
-      :class="stacked ? 'flex-col min-w-0' : 'flex-row justify-between items-center grow shrink-0'"
-    >
+    <div class="flex flex-col xl:flex-row justify-between xl:items-center flex-1 min-w-0 gap-6">
       <!-- Name & Units -->
-      <div class="flex flex-col gap-4" :class="stacked ? 'min-w-0' : 'shrink-0'">
+      <div class="flex flex-col gap-4 min-w-0">
         <!-- Name -->
-        <div class="font-bold text-2xl" :class="stacked ? 'break-words' : 'whitespace-nowrap'">
+        <div class="font-bold text-2xl break-words">
           {{ fullName }}
         </div>
 
@@ -155,7 +113,7 @@ watch(
       </div>
 
       <!-- Status & Actions -->
-      <div class="flex flex-col gap-4" :class="stacked ? 'items-start max-w-full' : 'items-end shrink-0'">
+      <div class="flex flex-col items-start xl:items-end gap-4 max-w-full">
         <!-- Active/Inactive Status Tag (hidden when active state is not applicable) -->
         <Tag
           v-if="tenant.active !== undefined"
@@ -164,9 +122,12 @@ watch(
         />
 
         <!-- Contact Buttons & Actions (with click.stop) -->
-        <div class="flex gap-2" :class="stacked ? 'flex-col items-start' : 'items-center'" @click.stop @keydown.stop>
+        <div
+          class="flex flex-col items-start xl:flex-row xl:flex-wrap xl:items-center xl:justify-end gap-2"
+          @click.stop
+          @keydown.stop
+        >
           <TenantContactButtons
-            :vertical="stacked"
             :email="tenant.email"
             :mobilePhoneNumber="tenant.mobilePhoneNumber"
             :businessPhoneNumber="tenant.businessPhoneNumber"
