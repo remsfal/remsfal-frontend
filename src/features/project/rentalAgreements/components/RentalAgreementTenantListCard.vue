@@ -90,8 +90,7 @@ function tenantName(tenant: TenantJson) {
         <div
           v-for="(tenant, index) in tenants"
           :key="tenant.id ?? index"
-          :class="{ 'border-t': index !== 0 }"
-          :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
+          :class="{ 'border-t border-surface': index !== 0 }"
         >
           <TenantCard
             :tenant="{ ...tenant, active: props.active ? true : undefined }"

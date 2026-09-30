@@ -4,12 +4,11 @@ import { http, HttpResponse } from 'msw';
 import { server } from '../../../../mocks/server';
 import ActivityFeedCard from '@/features/manager/activityFeeds/components/ActivityFeedCard.vue';
 import { useActivityFeedStore } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
-import ActivityFeedSidebar from '@/features/manager/activityFeeds/components/ActivityFeedSidebar.vue';
 import ActivityFeedToolbar from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
+import type { ActivityFeedFilterGroup } from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
 import ActivityFeedList from '@/features/manager/activityFeeds/components/ActivityFeedList.vue';
 import type { ActivityFeedEntry } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
 import { createMockActivityFeedEntry } from '../../../../utils/testHelpers';
-import Drawer from 'primevue/drawer';
 
 // Mocks
 const mockPush = vi.fn();
@@ -47,6 +46,7 @@ describe('ActivityFeedCard.vue', () => {
 
   beforeEach(async () => {
     store = useActivityFeedStore();
+    store.clearFilters();
 
     server.use(
       http.get('/ticketing/v1/activities', () => {
@@ -83,17 +83,32 @@ describe('ActivityFeedCard.vue', () => {
   });
 
 
-  it('handles filter application', async () => {
-    const sidebar = wrapper.findComponent(ActivityFeedSidebar);
-    const filter = {
-      id: '1', name: 'Open Defects', icon: 'pi-exclamation-circle', query: 'status:OPEN type:DEFECT'
-    };
+  it('renders the card title', () => {
+    expect(wrapper.text()).toContain('Neueste Aktivitäten');
+  });
 
-    await sidebar.vm.$emit('filter-applied', filter);
+  it('applies a smart filter selected in the toolbar', async () => {
+    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
+
+    await toolbar.vm.$emit('update:activeFilterId', 'smart-urgent');
+
+    expect(store.filterIssueStatus).toEqual(['OPEN']);
+    expect(store.filterIssueType).toEqual(['DEFECT']);
+    expect(toolbar.props('activeFilterId')).toBe('smart-urgent');
+  });
+
+  it('passes grouped filter options with entry counts to the toolbar', async () => {
+    store.entries = mockEntries.map(e => ({ ...e }));
     await wrapper.vm.$nextTick();
 
-    expect(store.filterIssueStatus).toContain('OPEN');
-    expect(store.filterIssueType).toContain('DEFECT');
+    const groups = wrapper.findComponent(ActivityFeedToolbar).props('filterGroups') as ActivityFeedFilterGroup[];
+    const options = groups.flatMap(group => group.items);
+
+    expect(groups.map(group => group.label)).toEqual(['Schnellfilter', 'Status', 'Typ', 'Projekte']);
+    expect(options.find(option => option.id === 'smart-urgent')?.count).toBe(1);
+    expect(options.find(option => option.id === 'status-closed')?.count).toBe(1);
+    expect(options.find(option => option.id === 'type-inquiry')?.count).toBe(0);
+    expect(options.find(option => option.id === 'project-proj-2')?.count).toBe(1);
   });
 
   it('handles search query updates', async () => {
@@ -193,26 +208,39 @@ describe('ActivityFeedCard.vue', () => {
     expect(markAsReadSpy).not.toHaveBeenCalled();
   });
 
-  it('toggles a filter off and clears filters when the same filter is applied twice', async () => {
-    const sidebar = wrapper.findComponent(ActivityFeedSidebar);
-    const filter = {
-      id: 'toggle-filter', name: 'Toggle Filter', icon: 'pi-cog', query: 'status:OPEN'
-    };
+  it('replaces the previous filter when another filter is selected', async () => {
+    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
 
-    await sidebar.vm.$emit('filter-applied', filter);
-    expect(store.filterIssueStatus).toContain('OPEN');
+    await toolbar.vm.$emit('update:activeFilterId', 'smart-urgent');
+    await toolbar.vm.$emit('update:activeFilterId', 'status-pending');
 
-    await sidebar.vm.$emit('filter-applied', filter);
-    expect(store.filterIssueStatus).toHaveLength(0);
+    expect(store.filterIssueStatus).toEqual(['PENDING']);
+    expect(store.filterIssueType).toEqual([]);
   });
 
-  it('clears filters when sidebar emits clearFilters', async () => {
-    const sidebar = wrapper.findComponent(ActivityFeedSidebar);
-    store.filterProject = ['proj-1'];
+  it('clears the filter without touching the search query', async () => {
+    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
+    store.searchQuery = 'heating';
 
-    await sidebar.vm.$emit('clear-filters');
+    await toolbar.vm.$emit('update:activeFilterId', 'type-task');
+    expect(store.filterIssueType).toEqual(['TASK']);
+    expect(store.searchQuery).toBe('heating');
 
-    expect(store.filterProject).toHaveLength(0);
+    await toolbar.vm.$emit('update:activeFilterId', null);
+    expect(store.filterIssueType).toEqual([]);
+    expect(toolbar.props('activeFilterId')).toBeNull();
+    expect(store.searchQuery).toBe('heating');
+
+    store.searchQuery = '';
+  });
+
+  it('ignores unknown filter ids', async () => {
+    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
+
+    await toolbar.vm.$emit('update:activeFilterId', 'does-not-exist');
+
+    expect(toolbar.props('activeFilterId')).toBeNull();
+    expect(store.filterIssueStatus).toEqual([]);
   });
 
   it('ignores invalid tab change values', async () => {
@@ -224,22 +252,13 @@ describe('ActivityFeedCard.vue', () => {
     expect(store.activeTab).toBe('all');
   });
 
-  it('activates a project filter when it is not yet active', async () => {
-    const sidebar = wrapper.findComponent(ActivityFeedSidebar);
-    store.filterProject = [];
+  it('applies a project filter selected in the toolbar', async () => {
+    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
 
-    await sidebar.vm.$emit('project-filter-toggled', 'proj-1');
+    await toolbar.vm.$emit('update:activeFilterId', 'project-proj-1');
 
     expect(store.filterProject).toEqual(['proj-1']);
-  });
-
-  it('clears the project filter when the active project is toggled again', async () => {
-    const sidebar = wrapper.findComponent(ActivityFeedSidebar);
-    store.filterProject = ['proj-1'];
-
-    await sidebar.vm.$emit('project-filter-toggled', 'proj-1');
-
-    expect(store.filterProject).toEqual([]);
+    expect(store.filterIssueStatus).toEqual([]);
   });
 
   it('deselects an already selected entry', async () => {
@@ -333,45 +352,5 @@ describe('ActivityFeedCard.vue', () => {
     const displayed = entryList.props('entries') as ActivityFeedEntry[];
 
     expect(displayed.map(e => e.id)).toEqual(['u-late', 'u-early', 'r-late', 'r-early']);
-  });
-
-  it('opens the filters drawer when the toolbar requests it', async () => {
-    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
-    const drawer = wrapper.findComponent(Drawer);
-
-    await toolbar.vm.$emit('open-filters');
-    await wrapper.vm.$nextTick();
-
-    expect(drawer.props('visible')).toBe(true);
-  });
-
-  it('syncs drawer visibility changes back to the card state', async () => {
-    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
-    const drawer = wrapper.findComponent(Drawer);
-
-    await toolbar.vm.$emit('open-filters');
-    await wrapper.vm.$nextTick();
-    await drawer.vm.$emit('update:visible', false);
-    await wrapper.vm.$nextTick();
-
-    expect(wrapper.findComponent(Drawer).props('visible')).toBe(false);
-  });
-
-  it('wires drawer sidebar events to the same filter handlers', async () => {
-    const toolbar = wrapper.findComponent(ActivityFeedToolbar);
-    await toolbar.vm.$emit('open-filters');
-    await wrapper.vm.$nextTick();
-
-    const sidebars = wrapper.findAllComponents(ActivityFeedSidebar);
-    const drawerSidebar = sidebars[1];
-    const filter = {
-      id: 'drawer-filter', name: 'Drawer Filter', icon: 'pi-clock', query: 'status:PENDING'
-    };
-
-    await drawerSidebar.vm.$emit('filter-applied', filter);
-    expect(store.filterIssueStatus).toEqual(['PENDING']);
-
-    await drawerSidebar.vm.$emit('clear-filters');
-    expect(store.filterIssueStatus).toEqual([]);
   });
 });

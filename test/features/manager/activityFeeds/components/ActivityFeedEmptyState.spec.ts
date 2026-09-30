@@ -55,7 +55,7 @@ describe('ActivityFeedEmptyState', () => {
     expect(container.classes()).toContain('items-center');
     expect(container.classes()).toContain('justify-center');
     expect(container.classes()).toContain('h-64');
-    expect(container.classes()).toContain('text-surface-400');
+    expect(container.classes()).toContain('text-muted-color');
   });
 });
 
