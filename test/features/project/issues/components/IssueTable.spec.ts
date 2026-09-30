@@ -67,15 +67,22 @@ describe('IssueTable', () => {
     expect(cells2[1].text()).toBe('user3');
   });
 
-  it('emits rowSelect event when row is selected', async () => {
+  it('emits rowClick event when a row is clicked', async () => {
     const dataTable = wrapper.findComponent(DataTable);
 
-    // Simulate row selection
-    await dataTable.vm.$emit('rowSelect', { data: mockIssues[0] });
+    // Simulate row click
+    await dataTable.vm.$emit('rowClick', { data: mockIssues[0] });
 
     // Check that the event was emitted
-    expect(wrapper.emitted('rowSelect')).toBeTruthy();
-    expect(wrapper.emitted('rowSelect')?.[0]).toEqual([mockIssues[0]]);
+    expect(wrapper.emitted('rowClick')).toBeTruthy();
+    expect(wrapper.emitted('rowClick')?.[0]).toEqual([mockIssues[0]]);
+  });
+
+  it('highlights rows on hover instead of using row selection', () => {
+    const dataTable = wrapper.findComponent(DataTable);
+
+    expect(dataTable.props('rowHover')).toBe(true);
+    expect(dataTable.props('selectionMode')).toBeFalsy();
   });
 
   it('renders only the columns passed via the columns prop', async () => {

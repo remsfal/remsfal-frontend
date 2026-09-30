@@ -3,6 +3,7 @@ import { mount, flushPromises, type VueWrapper } from '@vue/test-utils';
 import RentalAgreementUnitListCard from '@/features/project/rentalAgreements/components/RentalAgreementUnitListCard.vue';
 import AdjustRentDialog from '@/features/project/rentalAgreements/components/AdjustRentDialog.vue';
 import BaseDialog from '@/components/BaseDialog.vue';
+import DataTable from 'primevue/datatable';
 import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
@@ -135,6 +136,13 @@ describe('RentalAgreementUnitListCard', () => {
     const wrapper = mountCard({ id: 'agreement-1' });
     await flushPromises();
     expect(wrapper.text()).toContain('Noch keine Wirtschaftseinheiten hinzugefügt.');
+  });
+
+  it('does not highlight rows on hover, since only the unit group header is clickable', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+
+    expect(wrapper.findComponent(DataTable).props('rowHover')).toBe(false);
   });
 
   it('hydrates units from mixed rent-array types via their respective services', async () => {

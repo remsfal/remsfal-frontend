@@ -1,30 +1,49 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import Badge from 'primevue/badge';
 import Button from 'primevue/button';
-import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
+import InputGroup from 'primevue/inputgroup';
+import InputGroupAddon from 'primevue/inputgroupaddon';
 import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
 import SelectButton from 'primevue/selectbutton';
 import Tag from 'primevue/tag';
-import { useLayout } from '@/layouts/composables/layout';
+
+export interface ActivityFeedFilterOption {
+  id: string;
+  name: string;
+  icon: string;
+  query: string;
+  count: number;
+}
+
+export interface ActivityFeedFilterGroup {
+  label: string;
+  items: ActivityFeedFilterOption[];
+}
 
 const props = defineProps<{
   activeTab: 'all' | 'unread';
   searchQuery: string;
   selectedCount: number;
+  filterGroups: ActivityFeedFilterGroup[];
+  activeFilterId: string | null;
 }>();
 
 const emit = defineEmits<{
   'update:activeTab': [value: 'all' | 'unread'];
   'update:searchQuery': [value: string];
+  'update:activeFilterId': [value: string | null];
   markReadSelected: [];
   deleteSelected: [];
-  openFilters: [];
 }>();
 
-const { isDarkTheme } = useLayout();
 const { t } = useI18n();
+
+const activeFilter = computed(() =>
+  props.filterGroups.flatMap(group => group.items).find(option => option.id === props.activeFilterId) ?? null
+);
 
 const tabOptions = computed(() => [
   { label: t('activityFeeds.filter.statusOptions.all'), value: 'all' },
@@ -47,10 +66,7 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
 </script>
 
 <template>
-  <div 
-    class="flex items-center gap-4 px-4 py-3 border-b"
-    :class="isDarkTheme ? 'border-surface-800' : 'border-surface-200'"
-  >
+  <div class="flex flex-wrap items-center gap-4 py-3 border-b border-surface">
     <!-- All / Unread Toggle -->
     <SelectButton 
       :modelValue="activeTab" 
@@ -63,30 +79,66 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
     />
 
     <!-- Search -->
-    <div class="flex-1 w-full">
-      <IconField iconPosition="left">
-        <InputIcon class="pi pi-search" />
-        <InputText 
-          :modelValue="searchQuery" 
-          :placeholder="t('activityFeeds.toolbar.searchPlaceholder')" 
-          class="w-full rounded-lg"
-          :class="isDarkTheme ? 'border-surface-600' : 'border-surface-300'"
-          @update:modelValue="emit('update:searchQuery', $event || '')"
-        />
-      </IconField>
-    </div>
+    <InputGroup class="flex-1 min-w-60">
+      <InputGroupAddon>
+        <i class="pi pi-search" />
+      </InputGroupAddon>
+      <InputText
+        :modelValue="searchQuery"
+        :placeholder="t('activityFeeds.toolbar.searchPlaceholder')"
+        :aria-label="t('activityFeeds.toolbar.searchPlaceholder')"
+        @update:modelValue="emit('update:searchQuery', $event || '')"
+      />
+      <Button
+        icon="pi pi-times"
+        severity="secondary"
+        :aria-label="t('activityFeeds.toolbar.clearSearch')"
+        :disabled="!searchQuery"
+        @click="emit('update:searchQuery', '')"
+      />
+    </InputGroup>
 
-    <!-- Filters (small screens only, persistent panel handles lg+) -->
-    <Button
-      v-tooltip.bottom="t('activityFeeds.toolbar.openFilters')"
-      class="lg:hidden"
-      icon="pi pi-filter"
-      text
-      rounded
-      @click="emit('openFilters')"
-    />
-
-    <div class="flex-1" />
+    <!-- Filter -->
+    <InputGroup class="w-full md:w-80">
+      <InputGroupAddon>
+        <i class="pi pi-filter" />
+      </InputGroupAddon>
+      <Select
+        :modelValue="activeFilterId"
+        :options="filterGroups"
+        optionLabel="name"
+        optionValue="id"
+        optionGroupLabel="label"
+        optionGroupChildren="items"
+        :placeholder="t('activityFeeds.filter.placeholder')"
+        :ariaLabel="t('activityFeeds.filter.title')"
+        @update:modelValue="emit('update:activeFilterId', $event ?? null)"
+      >
+        <template #value="{ placeholder }">
+          <span v-if="activeFilter" class="flex items-center gap-2">
+            <i class="pi text-xs" :class="activeFilter.icon" />
+            <span class="truncate">{{ activeFilter.name }}</span>
+          </span>
+          <span v-else>{{ placeholder }}</span>
+        </template>
+        <template #option="{ option }">
+          <span class="flex items-center justify-between gap-2 w-full">
+            <span class="flex items-center gap-2 min-w-0">
+              <i class="pi text-xs" :class="option.icon" />
+              <span class="truncate">{{ option.name }}</span>
+            </span>
+            <Badge v-if="option.count > 0" :value="option.count" severity="secondary" />
+          </span>
+        </template>
+      </Select>
+      <Button
+        icon="pi pi-times"
+        severity="secondary"
+        :aria-label="t('activityFeeds.filter.clear')"
+        :disabled="!activeFilterId"
+        @click="emit('update:activeFilterId', null)"
+      />
+    </InputGroup>
 
     <!-- Bulk Actions -->
     <div v-if="selectedCount > 0" class="flex items-center gap-2">

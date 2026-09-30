@@ -10,7 +10,7 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center h-64 text-surface-400">
+  <div class="flex flex-col items-center justify-center h-64 text-muted-color">
     <i :class="hasSearchQuery ? 'pi pi-search' : 'pi pi-bell'" class="text-5xl mb-3" />
     <span class="text-lg">{{
       hasSearchQuery ? t('activityFeeds.empty.noResults') : t('activityFeeds.empty.allCaughtUp')
