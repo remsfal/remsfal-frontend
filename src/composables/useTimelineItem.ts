@@ -5,7 +5,6 @@ import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue'
 import type { components as ticketingComponents } from '@/services/api/ticketing-schema';
 
 export type IssueAttachmentJson = ticketingComponents['schemas']['IssueAttachmentJson'];
-export type TimelineItemAttachment = IssueAttachmentJson;
 
 export interface UseTimelineItemProps<T extends TimelineEntry> {
   item: T;
@@ -14,7 +13,7 @@ export interface UseTimelineItemProps<T extends TimelineEntry> {
 
 export interface UseTimelineItemOptions {
   titleNamespace: string;
-  buildAttachmentUrl: (attachment: TimelineItemAttachment) => string;
+  buildAttachmentUrl: (attachment: IssueAttachmentJson) => string;
 }
 
 export function buildAttachmentDownloadUrl(resourcePrefix: string) {

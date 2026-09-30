@@ -216,11 +216,11 @@ describe("IssueListView.vue", () => {
       .toEqual(['issueNumber', 'title', 'type', 'status', 'modifiedAt']);
   });
 
-  test("navigates to issue details on row select", async () => {
+  test("navigates to issue details on row click", async () => {
     const issue = {
       id: "123", title: "Sample", status: 'OPEN' as IssueStatus
     };
-    await wrapper.findComponent(IssueTable).vm.$emit("rowSelect", issue);
+    await wrapper.findComponent(IssueTable).vm.$emit("rowClick", issue);
 
     expect(pushMock).toHaveBeenCalledWith({
       name: "IssueDetails",
@@ -376,10 +376,10 @@ describe("IssueListView.vue", () => {
     });
   });
 
-  test("onIssueSelect falls back to empty issueId when id is missing", async () => {
+  test("onIssueClick falls back to empty issueId when id is missing", async () => {
     const issue = { title: "No Id Issue", status: 'OPEN' as IssueStatus };
 
-    await wrapper.findComponent(IssueTable).vm.$emit("rowSelect", issue);
+    await wrapper.findComponent(IssueTable).vm.$emit("rowClick", issue);
 
     expect(pushMock).toHaveBeenCalledWith({
       name: 'IssueDetails',

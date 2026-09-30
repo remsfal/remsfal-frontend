@@ -29,7 +29,7 @@ async function fetchRequests() {
   }
 }
 
-function onRequestSelect(request: QuotationRequestJson) {
+function onRequestClick(request: QuotationRequestJson) {
   if (!request.issueId) return;
   router.push({ name: 'ContractorOrderDetails', params: { issueId: request.issueId } });
 }
@@ -45,7 +45,7 @@ onMounted(() => {
       {{ t('orderManagement.quotationRequests.title') }}
     </template>
     <template #content>
-      <QuotationRequestsTable :requests="quotationRequests" @rowSelect="onRequestSelect" />
+      <QuotationRequestsTable :requests="quotationRequests" @rowClick="onRequestClick" />
     </template>
   </BaseCard>
 </template>

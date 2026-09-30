@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, toRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import DataTable from 'primevue/datatable';
+import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable';
 import Column from 'primevue/column';
 import { type IssueItemJson } from '@/features/project/issues/services/IssueService';
 import { useProjectMembers } from '@/composables/useProjectMembers';
@@ -19,7 +19,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  rowSelect: [issue: IssueItemJson];
+  rowClick: [issue: IssueItemJson];
 }>();
 
 const { t, locale } = useI18n();
@@ -51,8 +51,8 @@ const modifiedAtLabel = (modifiedAt?: string) => {
 
 const visibleColumns = computed(() => props.columns.map((key) => ({ key, ...COLUMN_DEFS[key] })));
 
-const onRowSelect = (event: { data: IssueItemJson }) => {
-  emit('rowSelect', event.data);
+const onRowClick = (event: DataTableRowClickEvent) => {
+  emit('rowClick', event.data as IssueItemJson);
 };
 </script>
 
@@ -62,9 +62,9 @@ const onRowSelect = (event: { data: IssueItemJson }) => {
     tableStyle="min-width: 60rem"
     paginator
     :rows="50"
-    selectionMode="single"
-    :metaKeySelection="false"
-    @rowSelect="onRowSelect"
+    rowHover
+    class="cursor-pointer"
+    @rowClick="onRowClick"
   >
     <template #header>
       <div class="flex justify-between flex-col sm:flex-row">
