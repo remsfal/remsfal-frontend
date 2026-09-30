@@ -6,7 +6,6 @@ import Checkbox from 'primevue/checkbox';
 import Tag from 'primevue/tag';
 import type { ActivityFeedEntry } from '../stores/ActivityFeedStore';
 import { getRelativeTime, getStatusColor, getStatusIcon } from '../composables/useActivityFeedHelpers';
-import { useLayout } from '@/layouts/composables/layout';
 
 const props = defineProps<{
   entry: ActivityFeedEntry;
@@ -23,7 +22,6 @@ const emit = defineEmits<{
   delete: [];
 }>();
 
-const { isDarkTheme } = useLayout();
 const { t } = useI18n();
 
 const statusIcon = computed(() => getStatusIcon(props.entry.issueStatus));
@@ -33,13 +31,8 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
 
 <template>
   <div
-    class="group flex items-start gap-4 px-4 py-4 cursor-pointer transition-all duration-150"
-    :class="[
-      !isLast ? (isDarkTheme ? 'border-b border-surface-800' : 'border-b border-surface-200') : '',
-      entry.read
-        ? (isDarkTheme ? 'bg-surface-800/30 hover:bg-surface-800/50' : 'bg-surface-50 hover:bg-surface-100')
-        : (isDarkTheme ? 'bg-surface-900 hover:bg-surface-800/50' : 'bg-surface-0 hover:bg-surface-100')
-    ]"
+    class="interactive-row group flex items-start gap-4 px-4 py-4"
+    :class="{ 'border-b border-surface': !isLast }"
     role="button"
     tabindex="0"
     @click="emit('navigate')"
@@ -51,7 +44,7 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
     </div>
 
     <!-- Checkbox -->
-    <div class="self-center" @click.stop>
+    <div class="self-center" @click.stop @keydown.stop>
       <Checkbox :modelValue="isSelected" binary @change="emit('select')" />
     </div>
 
@@ -61,18 +54,12 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
     <!-- Content Block -->
     <div class="flex-1 min-w-0">
       <!-- Project + Issue ID -->
-      <div
-        class="text-sm mb-0.5"
-        :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
-      >
+      <div class="text-sm text-muted-color mb-0.5">
         {{ entry.projectName }}
-        <span :class="isDarkTheme ? 'text-surface-500' : 'text-surface-400'">#{{ entry.issueId }}</span>
+        <span>#{{ entry.issueId }}</span>
       </div>
-      <!-- Title -->
-      <div
-        class="font-semibold"
-        :class="isDarkTheme ? 'text-surface-0' : 'text-surface-900'"
-      >
+      <!-- Title: unread entries are emphasized, read entries use regular weight -->
+      <div :class="entry.read ? 'font-normal' : 'font-semibold'">
         {{ entry.issueTitle }}
       </div>
     </div>
@@ -84,10 +71,7 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
 
     <!-- Time  -->
     <div class="w-28 flex-shrink-0 text-left">
-      <span
-        class="text-sm whitespace-nowrap"
-        :class="isDarkTheme ? 'text-surface-500' : 'text-surface-400'"
-      >
+      <span class="text-sm text-muted-color whitespace-nowrap">
         {{ relativeTime }}
       </span>
     </div>
@@ -96,6 +80,7 @@ const relativeTime = computed(() => getRelativeTime(props.entry.createdAt));
     <div
       class="w-16 flex-shrink-0 flex justify-end opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity"
       @click.stop
+      @keydown.stop
     >
       <Button
         v-if="!entry.read"

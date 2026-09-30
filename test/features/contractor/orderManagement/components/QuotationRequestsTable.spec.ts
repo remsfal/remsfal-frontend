@@ -27,11 +27,11 @@ describe('QuotationRequestsTable', () => {
     expect(wrapper.text()).toContain('Keine Anfragen zur Erstellung eines Angebots vorhanden');
   });
 
-  it('emits rowSelect with the selected request when a row is clicked', async () => {
+  it('emits rowClick with the clicked request when a row is clicked', async () => {
     const wrapper = mount(QuotationRequestsTable, { props: { requests: mockRequests } });
 
-    wrapper.getComponent(DataTable).vm.$emit('rowSelect', { data: mockRequests[1] });
+    wrapper.getComponent(DataTable).vm.$emit('rowClick', { data: mockRequests[1] });
 
-    expect(wrapper.emitted('rowSelect')).toEqual([[mockRequests[1]]]);
+    expect(wrapper.emitted('rowClick')).toEqual([[mockRequests[1]]]);
   });
 });

@@ -52,7 +52,7 @@ describe('ManagerMenu.vue', () => {
     await wrapper.vm.$nextTick();
     const labels = wrapper.findAll('.layout-submenu .layout-menuitem-text').map(el => el.text());
     expect(labels).toContain('Meine Übersicht');
-    expect(labels).toContain('Aktivitäten');
+    expect(labels).toContain('Neueste Aktivitäten');
     expect(labels).toContain('Meine Liegenschaften');
     expect(labels).toContain('Persönliche Daten');
     expect(labels).toContain('Persönliche Einstellungen');

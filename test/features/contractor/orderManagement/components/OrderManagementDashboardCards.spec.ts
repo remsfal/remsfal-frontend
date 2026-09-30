@@ -123,7 +123,7 @@ describe('OrderManagementDashboardCards', () => {
     expect(wrapper.findComponent(DataTable).exists()).toBe(false);
   });
 
-  it('navigates to the quotation request details page when a quotation request row is selected', async () => {
+  it('navigates to the quotation request details page when a quotation request row is clicked', async () => {
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({ items: quotationRequests });
     vi.spyOn(orderPlacementService, 'getOrderPlacements').mockResolvedValue({ items: [] });
 
@@ -131,7 +131,7 @@ describe('OrderManagementDashboardCards', () => {
     await flushPromises();
 
     const table = wrapper.findAllComponents(DataTable)[0]!;
-    await table.vm.$emit('row-select', { data: quotationRequests[0] });
+    await table.vm.$emit('rowClick', { data: quotationRequests[0] });
 
     expect(routerMocks.push).toHaveBeenCalledWith({
       name: 'ContractorOrderDetails',
@@ -139,7 +139,7 @@ describe('OrderManagementDashboardCards', () => {
     });
   });
 
-  it('navigates to the open orders page when an order row is selected', async () => {
+  it('navigates to the open orders page when an order row is clicked', async () => {
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({ items: [] });
     vi.spyOn(orderPlacementService, 'getOrderPlacements').mockResolvedValue({ items: orderPlacements });
 
@@ -147,7 +147,7 @@ describe('OrderManagementDashboardCards', () => {
     await flushPromises();
 
     const table = wrapper.findAllComponents(DataTable)[0]!;
-    await table.vm.$emit('row-select', { data: orderPlacements[0] });
+    await table.vm.$emit('rowClick', { data: orderPlacements[0] });
 
     expect(routerMocks.push).toHaveBeenCalledWith({ name: 'ContractorOrdersOpen' });
   });

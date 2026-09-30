@@ -5,7 +5,6 @@ import ActivityFeedEmptyState from '@/features/manager/activityFeeds/components/
 import ActivityFeedItem from '@/features/manager/activityFeeds/components/ActivityFeedItem.vue';
 import type { ActivityFeedEntry } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
 import { createMockActivityFeedEntry, createGroupingTestActivityFeedEntries } from '../../../../utils/testHelpers';
-import { useLayout } from '@/layouts/composables/layout';
 
 describe('ActivityFeedList', () => {
   let wrapper: VueWrapper;
@@ -157,15 +156,11 @@ describe('ActivityFeedList', () => {
     expect(items[1].props('isSelected')).toBe(false);
   });
 
-  it('applies dark theme classes when dark mode is enabled', () => {
-    const { layoutConfig } = useLayout();
-    layoutConfig.darkTheme = true;
-    try {
-      mountWithProps({});
-      expect(wrapper.html()).toContain('bg-surface-800/50');
-    } finally {
-      layoutConfig.darkTheme = false;
-    }
+  it('styles the list header with theme tokens instead of dark-mode specific classes', () => {
+    mountWithProps({});
+    const header = wrapper.find('.border-b.border-surface.bg-emphasis');
+    expect(header.exists()).toBe(true);
+    expect(wrapper.html()).not.toContain('surface-800');
   });
 
   it('forwards select/navigate/markRead/markUnread/delete events for grouped entry items', async () => {
@@ -247,7 +242,7 @@ describe('ActivityFeedList', () => {
       const entriesWithMultipleProjects = createGroupingTestActivityFeedEntries();
       mountWithProps({ entries: entriesWithMultipleProjects, grouping: 'project' });
 
-      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      const groupHeaders = wrapper.findAll('[data-testid="activity-feed-group-header"]');
       expect(groupHeaders.length).toBeGreaterThan(0);
     });
 
@@ -256,7 +251,7 @@ describe('ActivityFeedList', () => {
       const entriesToday = [createMockActivityFeedEntry({ createdAt: today })];
       mountWithProps({ entries: entriesToday, grouping: 'date' });
 
-      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      const groupHeaders = wrapper.findAll('[data-testid="activity-feed-group-header"]');
       expect(groupHeaders.length).toBeGreaterThan(0);
     });
 
@@ -265,7 +260,7 @@ describe('ActivityFeedList', () => {
       const entriesYesterday = [createMockActivityFeedEntry({ createdAt: yesterday })];
       mountWithProps({ entries: entriesYesterday, grouping: 'date' });
 
-      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      const groupHeaders = wrapper.findAll('[data-testid="activity-feed-group-header"]');
       expect(groupHeaders.length).toBeGreaterThan(0);
     });
 
@@ -274,7 +269,7 @@ describe('ActivityFeedList', () => {
       const entriesWeekAgo = [createMockActivityFeedEntry({ createdAt: weekAgo })];
       mountWithProps({ entries: entriesWeekAgo, grouping: 'date' });
 
-      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      const groupHeaders = wrapper.findAll('[data-testid="activity-feed-group-header"]');
       expect(groupHeaders.length).toBeGreaterThan(0);
     });
 
@@ -283,7 +278,7 @@ describe('ActivityFeedList', () => {
       const entriesMonthAgo = [createMockActivityFeedEntry({ createdAt: monthAgo })];
       mountWithProps({ entries: entriesMonthAgo, grouping: 'date' });
 
-      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      const groupHeaders = wrapper.findAll('[data-testid="activity-feed-group-header"]');
       expect(groupHeaders.length).toBeGreaterThan(0);
     });
 
@@ -295,7 +290,7 @@ describe('ActivityFeedList', () => {
 
       mountWithProps({ entries: [monthAgo, weekAgo, yesterday, today], grouping: 'date' });
 
-      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      const groupHeaders = wrapper.findAll('[data-testid="activity-feed-group-header"]');
       expect(groupHeaders).toHaveLength(4);
     });
 
