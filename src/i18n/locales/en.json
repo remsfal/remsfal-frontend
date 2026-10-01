@@ -2,7 +2,6 @@
   "accountSettings.userProfile.title": "My Personal Contact Details",
   "accountSettings.userProfile.name": "Name",
   "accountSettings.userProfile.email": "Email",
-  "accountSettings.userProfile.addAlternativeEmail": "Add alternative email",
   "accountSettings.userProfile.alternativeEmail": "Alternative email",
   "accountSettings.userProfile.alternativeEmailNotEqualPrimary": "The alternative email must not match the primary email.",
   "accountSettings.userProfile.privatePhone": "Private Phone Number",

@@ -14,7 +14,6 @@ import Button from 'primevue/button';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
 import Skeleton from 'primevue/skeleton';
-import BaseDialog from '@/components/BaseDialog.vue';
 import { userService } from '@/features/common/users/services/UserService';
 import { type Locale } from '@/i18n/i18n';
 import { toISODateString } from '@/helper/dateHelper';
@@ -82,15 +81,30 @@ const privatePhoneError = computed(() => phoneFieldError(currentPhones.private))
 const hasPhoneError = computed(() => !!mobilePhoneError.value || !!businessPhoneError.value || !!privatePhoneError.value);
 
 const email = ref('');
-const additionalEmails = ref<string[]>([]);
-const altEmailDirty = ref(false);
+
+// Alternative email tracked separately (not via PrimeVue Forms), locked once saved
+const serverAltEmail = ref('');
+const currentAltEmail = ref('');
+const altEmailLocked = ref(false);
 const altEmailSuccess = ref(false);
 const altEmailError = ref(false);
 
-const dialogVisible = ref(false);
-const alternativeEmailInput = ref('');
-const isEmailInvalid = ref(false);
-const emailErrorMessage = ref('');
+const altEmailDirty = computed(() => currentAltEmail.value.trim() !== serverAltEmail.value);
+
+const altEmailFieldError = computed<string | null>(() => {
+  const entered = currentAltEmail.value.trim();
+  if (!entered) return null;
+  if (entered.toLowerCase() === email.value.trim().toLowerCase()) {
+    return t('accountSettings.userProfile.alternativeEmailNotEqualPrimary');
+  }
+  return null;
+});
+
+function applyAltEmail(additionalEmails: string[] | undefined) {
+  serverAltEmail.value = currentAltEmail.value = additionalEmails?.[0] ?? '';
+  altEmailLocked.value = !!serverAltEmail.value;
+}
+
 const isLoading = ref(true);
 
 const localeOptions = [
@@ -125,9 +139,7 @@ onMounted(async () => {
     };
     Object.assign(serverPhones, phones);
     Object.assign(currentPhones, phones);
-    additionalEmails.value = Array.isArray(profile.additionalEmails)
-      ? [...profile.additionalEmails]
-      : [];
+    applyAltEmail(profile.additionalEmails);
     formKey.value++;
   } catch (error) {
     console.error('Failed to load user profile', error);
@@ -136,54 +148,17 @@ onMounted(async () => {
   }
 });
 
-const displayAlternativeEmail = computed<string | null>(() =>
-  additionalEmails.value.length > 0 ? (additionalEmails.value[0] ?? null) : null,
-);
-
-function validateEmailFormat(emailStr: string) {
-  return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailStr);
-}
-
-function resetAltEmailDialog() {
-  alternativeEmailInput.value = '';
-  isEmailInvalid.value = false;
-  emailErrorMessage.value = '';
-}
-
-function saveAlternativeEmail() {
-  const entered = alternativeEmailInput.value.trim();
-  const primary = email.value.trim().toLowerCase();
-
-  if (!entered || !validateEmailFormat(entered)) {
-    isEmailInvalid.value = true;
-    emailErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidEmail');
-    return;
-  }
-  if (entered.toLowerCase() === primary) {
-    isEmailInvalid.value = true;
-    emailErrorMessage.value = t('accountSettings.userProfile.alternativeEmailNotEqualPrimary');
-    return;
-  }
-  isEmailInvalid.value = false;
-  emailErrorMessage.value = '';
-  additionalEmails.value = [entered];
-  altEmailDirty.value = true;
-  altEmailSuccess.value = false;
-  altEmailError.value = false;
-  dialogVisible.value = false;
-  alternativeEmailInput.value = '';
-}
-
 function deleteAlternativeEmail() {
-  additionalEmails.value = [];
-  altEmailDirty.value = true;
+  currentAltEmail.value = '';
+  altEmailLocked.value = false;
   altEmailSuccess.value = false;
   altEmailError.value = false;
 }
 
 async function onSubmit(event: FormSubmitEvent) {
-  if (!event.valid || hasPhoneError.value) return;
+  if (!event.valid || hasPhoneError.value || altEmailFieldError.value) return;
   const s = event.states;
+  const enteredAltEmail = currentAltEmail.value.trim();
   try {
     const updatedUser = await userService.updateUser({
       firstName: s.firstName?.value || undefined,
@@ -194,7 +169,7 @@ async function onSubmit(event: FormSubmitEvent) {
       businessPhoneNumber: currentPhones.business || undefined,
       privatePhoneNumber: currentPhones.private || undefined,
       locale: s.locale?.value || undefined,
-      additionalEmails: altEmailDirty.value ? additionalEmails.value : undefined,
+      additionalEmails: altEmailDirty.value ? (enteredAltEmail ? [enteredAltEmail] : []) : undefined,
     });
 
     initialValues.value = {
@@ -216,10 +191,7 @@ async function onSubmit(event: FormSubmitEvent) {
     Object.assign(serverPhones, savedPhones);
     Object.assign(currentPhones, savedPhones);
 
-    additionalEmails.value = Array.isArray(updatedUser.additionalEmails)
-      ? [...updatedUser.additionalEmails]
-      : [];
-    altEmailDirty.value = false;
+    applyAltEmail(updatedUser.additionalEmails);
     altEmailSuccess.value = true;
     altEmailError.value = false;
 
@@ -318,29 +290,38 @@ async function onSubmit(event: FormSubmitEvent) {
 
             <!-- Alternative Email -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium">
+              <label class="font-medium" for="alternativeEmail">
                 {{ t('accountSettings.userProfile.alternativeEmail') }}
               </label>
-              <div v-if="displayAlternativeEmail" class="flex items-center gap-2">
-                <InputText :value="displayAlternativeEmail" class="flex-1" disabled />
+              <div class="flex items-center gap-2">
+                <InputText
+                  id="alternativeEmail"
+                  v-model="currentAltEmail"
+                  :disabled="altEmailLocked"
+                  :invalid="!!altEmailFieldError"
+                  autocomplete="off"
+                  class="flex-1"
+                  type="email"
+                />
                 <i v-if="altEmailSuccess" class="pi pi-check text-green-600 font-bold" />
                 <i v-if="altEmailError" class="pi pi-times text-red-600 font-bold" />
                 <Button
+                  v-if="altEmailLocked"
+                  :aria-label="t('button.delete')"
                   icon="pi pi-trash"
                   severity="secondary"
                   type="button"
                   @click="deleteAlternativeEmail"
                 />
               </div>
-              <div>
-                <Button
-                  :disabled="!!displayAlternativeEmail"
-                  :label="t('accountSettings.userProfile.addAlternativeEmail')"
-                  icon="pi pi-plus"
-                  type="button"
-                  @click="dialogVisible = true"
-                />
-              </div>
+              <Message
+                v-if="altEmailFieldError"
+                severity="error"
+                size="small"
+                variant="simple"
+              >
+                {{ altEmailFieldError }}
+              </Message>
             </div>
 
             <!-- Mobile Phone -->
@@ -429,7 +410,7 @@ async function onSubmit(event: FormSubmitEvent) {
             <Button
               :disabled="
                 !(formFields.some(k => $form[k]?.dirty) || altEmailDirty || phoneDirty || dateOfBirthDirty) ||
-                  hasPhoneError
+                  hasPhoneError || !!altEmailFieldError
               "
               :label="t('button.save')"
               icon="pi pi-save"
@@ -440,44 +421,4 @@ async function onSubmit(event: FormSubmitEvent) {
       </Form>
     </template>
   </BaseCard>
-
-  <!-- Alternative Email Dialog -->
-  <BaseDialog
-    v-model:visible="dialogVisible"
-    :header="t('accountSettings.userProfile.addAlternativeEmail')"
-    @hide="resetAltEmailDialog"
-  >
-    <div class="flex flex-col gap-4">
-      <div class="flex flex-col gap-1">
-        <label class="font-semibold" for="alt-email-input">
-          {{ t('accountSettings.userProfile.email') }}
-        </label>
-        <InputText
-          id="alt-email-input"
-          v-model="alternativeEmailInput"
-          :invalid="isEmailInvalid"
-          :placeholder="t('accountSettings.userProfile.alternativeEmail')"
-          autocomplete="off"
-          fluid
-          type="email"
-        />
-        <small v-if="isEmailInvalid" class="text-red-500">
-          {{ emailErrorMessage }}
-        </small>
-      </div>
-      <div class="flex justify-end gap-2">
-        <Button
-          :label="t('button.cancel')"
-          severity="secondary"
-          type="button"
-          @click="dialogVisible = false"
-        />
-        <Button
-          :label="t('button.add')"
-          type="button"
-          @click="saveAlternativeEmail"
-        />
-      </div>
-    </div>
-  </BaseDialog>
 </template>

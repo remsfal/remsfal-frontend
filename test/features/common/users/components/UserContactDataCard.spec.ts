@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { mount, flushPromises, DOMWrapper, VueWrapper } from '@vue/test-utils';
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
@@ -31,18 +31,12 @@ const mockProfile = {
 };
 
 type UserContactDataCardVm = {
-  email: string;
-  additionalEmails: string[];
+  currentAltEmail: string;
+  altEmailLocked: boolean;
   altEmailDirty: boolean;
   altEmailSuccess: boolean;
   altEmailError: boolean;
-  dialogVisible: boolean;
-  alternativeEmailInput: string;
-  isEmailInvalid: boolean;
-  emailErrorMessage: string;
-  saveAlternativeEmail: () => void;
-  deleteAlternativeEmail: () => void;
-  resetAltEmailDialog: () => void;
+  altEmailFieldError: string | null;
 };
 
 describe('UserContactDataCard', () => {
@@ -51,6 +45,16 @@ describe('UserContactDataCard', () => {
   const vm = (): UserContactDataCardVm => wrapper.vm as unknown as UserContactDataCardVm;
 
   const mountCard = () => mount(UserContactDataCard, { global: { stubs: { PhoneInput: true } } });
+
+  const submitForm = async () => {
+    await wrapper.findComponent(Form).vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' }
+      },
+    });
+    await flushPromises();
+  };
 
   beforeEach(() => {
     vi.mocked(userService.getUser).mockResolvedValue({ ...mockProfile });
@@ -270,51 +274,15 @@ describe('UserContactDataCard', () => {
     );
   });
 
-  test('includes the alternative email when it was changed before submitting', async () => {
-    await flushPromises();
-    const v = vm();
-    v.alternativeEmailInput = 'alt@example.com';
-    v.saveAlternativeEmail();
-    await flushPromises();
-    expect(v.altEmailDirty).toBe(true);
-
-    vi.mocked(userService.updateUser).mockResolvedValue({
-      ...mockProfile,
-      additionalEmails: ['alt@example.com'],
-    });
-
-    const form = wrapper.findComponent(Form);
-    await form.vm.$emit('submit', {
-      valid: true,
-      states: {
-        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' }
-      },
-    });
-    await flushPromises();
-
-    expect(userService.updateUser).toHaveBeenCalledWith(
-      expect.objectContaining({ additionalEmails: ['alt@example.com'] }),
-    );
-  });
-
-  test('shows the error icon next to an existing alternative email when saving fails', async () => {
+  test('shows the error icon next to the alternative email when saving fails', async () => {
     await flushPromises();
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const v = vm();
-    v.additionalEmails = ['alt@example.com'];
-    await flushPromises();
+    await wrapper.find('input#alternativeEmail').setValue('alt@example.com');
     vi.mocked(userService.updateUser).mockRejectedValue(new Error('save failed'));
 
-    const form = wrapper.findComponent(Form);
-    await form.vm.$emit('submit', {
-      valid: true,
-      states: {
-        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' }
-      },
-    });
-    await flushPromises();
+    await submitForm();
 
-    expect(v.altEmailError).toBe(true);
+    expect(vm().altEmailError).toBe(true);
     expect(wrapper.find('i.pi-times').exists()).toBe(true);
     consoleErrorSpy.mockRestore();
   });
@@ -348,185 +316,92 @@ describe('UserContactDataCard', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test('opens and closes the alternative email dialog through the UI', async () => {
-    await flushPromises();
-    const body = new DOMWrapper(document.body);
 
-    await wrapper.find('button[aria-label="Alternative E-Mail hinzufügen"]').trigger('click');
-    await flushPromises();
-    expect(vm().dialogVisible).toBe(true);
+  describe('Alternative email', () => {
+    const altInput = () => wrapper.find('input#alternativeEmail');
+    const trashButton = () => wrapper.find('button[aria-label="Löschen"]');
 
-    await body.find('#alt-email-input').setValue('alt@example.com');
-    await body.find('button[aria-label="Abbrechen"]').trigger('click');
-    await flushPromises();
-
-    expect(vm().dialogVisible).toBe(false);
-  });
-
-  test('closes the dialog when the dialog itself emits update:visible', async () => {
-    await flushPromises();
-
-    await wrapper.find('button[aria-label="Alternative E-Mail hinzufügen"]').trigger('click');
-    await flushPromises();
-    expect(vm().dialogVisible).toBe(true);
-
-    const dialog = wrapper.findComponent({ name: 'Dialog' });
-    await dialog.vm.$emit('update:visible', false);
-    await flushPromises();
-
-    expect(vm().dialogVisible).toBe(false);
-  });
-
-  describe('Alternative email dialog', () => {
-    beforeEach(async () => {
+    test('is editable without trash button when no alternative email is saved', async () => {
       await flushPromises();
-      const v = vm();
-      v.email = 'primary@example.com';
-      v.additionalEmails = [];
-      v.altEmailDirty = false;
-      v.altEmailSuccess = false;
-      v.altEmailError = false;
-      v.dialogVisible = false;
-      v.alternativeEmailInput = '';
-      v.isEmailInvalid = false;
-      v.emailErrorMessage = '';
+
+      expect((altInput().element as HTMLInputElement).disabled).toBe(false);
+      expect(trashButton().exists()).toBe(false);
     });
 
-    test('marks email invalid if format is invalid', async () => {
-      const v = vm();
-      v.dialogVisible = true;
-      v.alternativeEmailInput = 'not-an-email';
-
-      v.saveAlternativeEmail();
+    test('is locked with trash button when an alternative email is saved', async () => {
+      vi.mocked(userService.getUser).mockResolvedValue({
+        ...mockProfile,
+        additionalEmails: ['alt@example.com'],
+      });
+      wrapper = mountCard();
       await flushPromises();
 
-      expect(v.isEmailInvalid).toBe(true);
-      expect(v.emailErrorMessage).not.toBe('');
-      expect(v.dialogVisible).toBe(true);
-      expect(v.additionalEmails).toEqual([]);
+      expect((altInput().element as HTMLInputElement).value).toBe('alt@example.com');
+      expect((altInput().element as HTMLInputElement).disabled).toBe(true);
+      expect(trashButton().exists()).toBe(true);
     });
 
-    test('rejects alternative email equal to primary email', async () => {
-      const v = vm();
-      v.dialogVisible = true;
-      v.email = 'same@example.com';
-      v.alternativeEmailInput = 'same@example.com';
-
-      v.saveAlternativeEmail();
+    test('saves a new alternative email and locks the field afterwards', async () => {
       await flushPromises();
+      await altInput().setValue('  alt@example.com  ');
+      expect(vm().altEmailDirty).toBe(true);
+      vi.mocked(userService.updateUser).mockResolvedValue({
+        ...mockProfile,
+        additionalEmails: ['alt@example.com'],
+      });
 
-      expect(v.isEmailInvalid).toBe(true);
-      expect(v.emailErrorMessage).not.toBe('');
-      expect(v.dialogVisible).toBe(true);
-      expect(v.additionalEmails).toEqual([]);
+      await submitForm();
+
+      expect(userService.updateUser).toHaveBeenCalledWith(
+        expect.objectContaining({ additionalEmails: ['alt@example.com'] }),
+      );
+      expect(vm().altEmailLocked).toBe(true);
+      expect(vm().altEmailDirty).toBe(false);
+      expect((altInput().element as HTMLInputElement).disabled).toBe(true);
+      expect(trashButton().exists()).toBe(true);
     });
 
-    test('successful save sets additionalEmails and closes dialog', async () => {
-      const v = vm();
-      v.dialogVisible = true;
-      v.alternativeEmailInput = 'alt@example.com';
-
-      v.saveAlternativeEmail();
+    test('does not send additionalEmails when the field was not changed', async () => {
       await flushPromises();
 
-      expect(v.additionalEmails).toEqual(['alt@example.com']);
-      expect(v.altEmailDirty).toBe(true);
-      expect(v.altEmailSuccess).toBe(false);
-      expect(v.altEmailError).toBe(false);
-      expect(v.dialogVisible).toBe(false);
-      expect(v.alternativeEmailInput).toBe('');
-      expect(v.isEmailInvalid).toBe(false);
-      expect(v.emailErrorMessage).toBe('');
+      await submitForm();
+
+      expect(userService.updateUser).toHaveBeenCalledWith(
+        expect.objectContaining({ additionalEmails: undefined }),
+      );
     });
 
-    test('trims alternative email before validation', async () => {
-      const v = vm();
-      v.dialogVisible = true;
-      v.alternativeEmailInput = '   alt@example.com   ';
-
-      v.saveAlternativeEmail();
+    test('trash button clears and unlocks the field and saving removes the email', async () => {
+      vi.mocked(userService.getUser).mockResolvedValue({
+        ...mockProfile,
+        additionalEmails: ['alt@example.com'],
+      });
+      wrapper = mountCard();
       await flushPromises();
 
-      expect(v.additionalEmails).toEqual(['alt@example.com']);
-      expect(v.dialogVisible).toBe(false);
+      await trashButton().trigger('click');
+
+      expect(vm().currentAltEmail).toBe('');
+      expect(vm().altEmailLocked).toBe(false);
+      expect((altInput().element as HTMLInputElement).disabled).toBe(false);
+      expect(trashButton().exists()).toBe(false);
+
+      await submitForm();
+
+      expect(userService.updateUser).toHaveBeenCalledWith(
+        expect.objectContaining({ additionalEmails: [] }),
+      );
     });
 
-    test('empty input after trim keeps dialog open', async () => {
-      const v = vm();
-      v.dialogVisible = true;
-      v.alternativeEmailInput = '   ';
-
-      v.saveAlternativeEmail();
+    test('shows an error when the alternative email equals the primary email', async () => {
       await flushPromises();
+      await altInput().setValue('PRIMARY@example.com');
 
-      expect(v.isEmailInvalid).toBe(true);
-      expect(v.dialogVisible).toBe(true);
-      expect(v.additionalEmails).toEqual([]);
-    });
+      expect(vm().altEmailFieldError).not.toBeNull();
 
-    test('deleteAlternativeEmail clears additionalEmails and resets icons', async () => {
-      const v = vm();
-      v.additionalEmails = ['alt@example.com'];
-      v.altEmailSuccess = true;
-      v.altEmailError = true;
+      await submitForm();
 
-      v.deleteAlternativeEmail();
-      await flushPromises();
-
-      expect(v.additionalEmails).toEqual([]);
-      expect(v.altEmailDirty).toBe(true);
-      expect(v.altEmailSuccess).toBe(false);
-      expect(v.altEmailError).toBe(false);
-    });
-
-    test('deleteAlternativeEmail when empty still marks altEmailDirty', async () => {
-      const v = vm();
-      v.additionalEmails = [];
-      v.altEmailDirty = false;
-
-      v.deleteAlternativeEmail();
-      await flushPromises();
-
-      expect(v.altEmailDirty).toBe(true);
-    });
-
-    test('resetAltEmailDialog clears dialog state', async () => {
-      const v = vm();
-      v.alternativeEmailInput = 'old@example.com';
-      v.isEmailInvalid = true;
-      v.emailErrorMessage = 'Fehler';
-
-      v.resetAltEmailDialog();
-      await flushPromises();
-
-      expect(v.alternativeEmailInput).toBe('');
-      expect(v.isEmailInvalid).toBe(false);
-      expect(v.emailErrorMessage).toBe('');
-    });
-
-    test('resetAltEmailDialog is idempotent on clean state', async () => {
-      const v = vm();
-      v.alternativeEmailInput = '';
-      v.isEmailInvalid = false;
-      v.emailErrorMessage = '';
-
-      v.resetAltEmailDialog();
-      await flushPromises();
-
-      expect(v.alternativeEmailInput).toBe('');
-      expect(v.isEmailInvalid).toBe(false);
-      expect(v.emailErrorMessage).toBe('');
-    });
-
-    test('deleting the alternative email is reflected in the UI', async () => {
-      const v = vm();
-      v.additionalEmails = ['alt@example.com'];
-      await flushPromises();
-
-      await wrapper.find('.pi-trash').element.closest('button')!.click();
-      await flushPromises();
-
-      expect(v.additionalEmails).toEqual([]);
+      expect(userService.updateUser).not.toHaveBeenCalled();
     });
   });
 });
