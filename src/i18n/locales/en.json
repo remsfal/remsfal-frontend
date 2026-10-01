@@ -6,6 +6,7 @@
   "accountSettings.userProfile.alternativeEmailInvalid": "Please enter a valid email address.",
   "accountSettings.userProfile.alternativeEmailSaveError": "Email could not be saved.",
   "accountSettings.userProfile.alternativeEmailSaveSuccess": "Email saved successfully. Please check your inbox to confirm the email address.",
+  "accountSettings.userProfile.alternativeEmailUnverified": "Please confirm the email address.",
   "accountSettings.userProfile.privatePhone": "Private Phone Number",
   "accountSettings.userProfile.businessPhone": "Business Phone Number",
   "accountSettings.userProfile.mobilePhone": "Mobile Phone Number",

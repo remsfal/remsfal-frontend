@@ -85,18 +85,23 @@ const email = ref('');
 const serverAltEmail = ref('');
 const currentAltEmail = ref('');
 const altEmailLocked = ref(false);
+const altEmailVerified = ref(false);
 const altEmailSuccess = ref(false);
 const altEmailError = ref(false);
 
 const altEmailDirty = computed(() => currentAltEmail.value.trim() !== serverAltEmail.value);
+const altEmailUnverified = computed(() => altEmailLocked.value && !altEmailVerified.value);
 
 function validateEmailFormat(emailStr: string) {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailStr);
 }
 
-function applyAltEmail(additionalEmails: string[] | undefined) {
+function applyAltEmail(additionalEmails?: string[], verifiedAdditionalEmails?: string[]) {
   serverAltEmail.value = currentAltEmail.value = additionalEmails?.[0] ?? '';
   altEmailLocked.value = !!serverAltEmail.value;
+  altEmailVerified.value = !!verifiedAdditionalEmails?.some(
+    (verified) => verified.toLowerCase() === serverAltEmail.value.toLowerCase(),
+  );
 }
 
 const isLoading = ref(true);
@@ -133,7 +138,7 @@ onMounted(async () => {
     };
     Object.assign(serverPhones, phones);
     Object.assign(currentPhones, phones);
-    applyAltEmail(profile.additionalEmails);
+    applyAltEmail(profile.additionalEmails, profile.verifiedAdditionalEmails);
     formKey.value++;
   } catch (error) {
     console.error('Failed to load user profile', error);
@@ -197,7 +202,7 @@ async function onSubmit(event: FormSubmitEvent) {
       return;
     }
 
-    applyAltEmail(updatedUser.additionalEmails);
+    applyAltEmail(updatedUser.additionalEmails, updatedUser.verifiedAdditionalEmails);
     altEmailSuccess.value = true;
     altEmailError.value = false;
     if (altEmailChanged && enteredAltEmail) {
@@ -324,6 +329,14 @@ async function onSubmit(event: FormSubmitEvent) {
                   @click="deleteAlternativeEmail"
                 />
               </div>
+              <Message
+                v-if="altEmailUnverified"
+                severity="warn"
+                size="small"
+                variant="simple"
+              >
+                {{ t('accountSettings.userProfile.alternativeEmailUnverified') }}
+              </Message>
             </div>
 
             <!-- Mobile Phone -->

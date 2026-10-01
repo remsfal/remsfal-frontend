@@ -340,6 +340,34 @@ describe('UserContactDataCard', () => {
       expect(trashButton().exists()).toBe(true);
     });
 
+    test('shows a hint when the saved alternative email is not verified yet', async () => {
+      vi.mocked(userService.getUser).mockResolvedValue({
+        ...mockProfile,
+        additionalEmails: ['alt@example.com'],
+        verifiedAdditionalEmails: [],
+      });
+      wrapper = mountCard();
+      await flushPromises();
+
+      expect(wrapper.text()).toContain('Bitte bestätigen Sie die E-Mail.');
+
+      await trashButton().trigger('click');
+
+      expect(wrapper.text()).not.toContain('Bitte bestätigen Sie die E-Mail.');
+    });
+
+    test('shows no hint when the saved alternative email is verified', async () => {
+      vi.mocked(userService.getUser).mockResolvedValue({
+        ...mockProfile,
+        additionalEmails: ['alt@example.com'],
+        verifiedAdditionalEmails: ['alt@example.com'],
+      });
+      wrapper = mountCard();
+      await flushPromises();
+
+      expect(wrapper.text()).not.toContain('Bitte bestätigen Sie die E-Mail.');
+    });
+
     test('saves a new alternative email and locks the field afterwards', async () => {
       await flushPromises();
       await altInput().setValue('  alt@example.com  ');
