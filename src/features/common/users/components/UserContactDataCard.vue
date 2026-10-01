@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useAppToast } from '@/composables/useAppToast';
+import { TOAST_LIFE, useAppToast } from '@/composables/useAppToast';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -91,14 +91,11 @@ const altEmailError = ref(false);
 
 const altEmailDirty = computed(() => currentAltEmail.value.trim() !== serverAltEmail.value);
 
-const altEmailFieldError = computed<string | null>(() => {
-  const entered = currentAltEmail.value.trim();
-  if (!entered) return null;
-  if (entered.toLowerCase() === email.value.trim().toLowerCase()) {
-    return t('accountSettings.userProfile.alternativeEmailNotEqualPrimary');
-  }
-  return null;
-});
+function validateEmailFormat(emailStr: string) {
+  return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailStr);
+}
+
+const TOAST_EXTRA_LIFE = 5000;
 
 function applyAltEmail(additionalEmails: string[] | undefined) {
   serverAltEmail.value = currentAltEmail.value = additionalEmails?.[0] ?? '';
@@ -156,9 +153,12 @@ function deleteAlternativeEmail() {
 }
 
 async function onSubmit(event: FormSubmitEvent) {
-  if (!event.valid || hasPhoneError.value || altEmailFieldError.value) return;
+  if (!event.valid || hasPhoneError.value) return;
   const s = event.states;
   const enteredAltEmail = currentAltEmail.value.trim();
+  const altEmailChanged = altEmailDirty.value;
+  const altEmailInvalid = altEmailChanged && !!enteredAltEmail && !validateEmailFormat(enteredAltEmail);
+  const sendAltEmail = altEmailChanged && !altEmailInvalid;
   try {
     const updatedUser = await userService.updateUser({
       firstName: s.firstName?.value || undefined,
@@ -169,7 +169,7 @@ async function onSubmit(event: FormSubmitEvent) {
       businessPhoneNumber: currentPhones.business || undefined,
       privatePhoneNumber: currentPhones.private || undefined,
       locale: s.locale?.value || undefined,
-      additionalEmails: altEmailDirty.value ? (enteredAltEmail ? [enteredAltEmail] : []) : undefined,
+      additionalEmails: sendAltEmail ? (enteredAltEmail ? [enteredAltEmail] : []) : undefined,
     });
 
     initialValues.value = {
@@ -191,15 +191,31 @@ async function onSubmit(event: FormSubmitEvent) {
     Object.assign(serverPhones, savedPhones);
     Object.assign(currentPhones, savedPhones);
 
+    appToast.success(t('accountSettings.userProfile.saveSuccess'), { summary: t('success.saved') });
+
+    if (altEmailInvalid) {
+      altEmailSuccess.value = false;
+      altEmailError.value = true;
+      appToast.error(t('accountSettings.userProfile.alternativeEmailInvalid'), { life: TOAST_LIFE.error + TOAST_EXTRA_LIFE });
+      return;
+    }
+
     applyAltEmail(updatedUser.additionalEmails);
     altEmailSuccess.value = true;
     altEmailError.value = false;
-
-    appToast.success(t('accountSettings.userProfile.saveSuccess'), { summary: t('success.saved') });
+    if (altEmailChanged && enteredAltEmail) {
+      appToast.success(t('accountSettings.userProfile.alternativeEmailSaveSuccess'), {
+        summary: t('success.saved'),
+        life: TOAST_LIFE.success + TOAST_EXTRA_LIFE,
+      });
+    }
   } catch (error) {
     console.error('Failed to update user profile', error);
     altEmailSuccess.value = false;
     altEmailError.value = true;
+    if (altEmailChanged) {
+      appToast.error(t('accountSettings.userProfile.alternativeEmailSaveError'), { life: TOAST_LIFE.error + TOAST_EXTRA_LIFE });
+    }
   }
 }
 </script>
@@ -298,10 +314,10 @@ async function onSubmit(event: FormSubmitEvent) {
                   id="alternativeEmail"
                   v-model="currentAltEmail"
                   :disabled="altEmailLocked"
-                  :invalid="!!altEmailFieldError"
                   autocomplete="off"
                   class="flex-1"
-                  type="email"
+                  inputmode="email"
+                  type="text"
                 />
                 <i v-if="altEmailSuccess" class="pi pi-check text-green-600 font-bold" />
                 <i v-if="altEmailError" class="pi pi-times text-red-600 font-bold" />
@@ -314,14 +330,6 @@ async function onSubmit(event: FormSubmitEvent) {
                   @click="deleteAlternativeEmail"
                 />
               </div>
-              <Message
-                v-if="altEmailFieldError"
-                severity="error"
-                size="small"
-                variant="simple"
-              >
-                {{ altEmailFieldError }}
-              </Message>
             </div>
 
             <!-- Mobile Phone -->
@@ -410,7 +418,7 @@ async function onSubmit(event: FormSubmitEvent) {
             <Button
               :disabled="
                 !(formFields.some(k => $form[k]?.dirty) || altEmailDirty || phoneDirty || dateOfBirthDirty) ||
-                  hasPhoneError || !!altEmailFieldError
+                  hasPhoneError
               "
               :label="t('button.save')"
               icon="pi pi-save"

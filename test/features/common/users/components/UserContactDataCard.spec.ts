@@ -36,7 +36,6 @@ type UserContactDataCardVm = {
   altEmailDirty: boolean;
   altEmailSuccess: boolean;
   altEmailError: boolean;
-  altEmailFieldError: string | null;
 };
 
 describe('UserContactDataCard', () => {
@@ -393,15 +392,83 @@ describe('UserContactDataCard', () => {
       );
     });
 
-    test('shows an error when the alternative email equals the primary email', async () => {
+    test('shows the email confirmation toast in addition to the profile toast', async () => {
       await flushPromises();
-      await altInput().setValue('PRIMARY@example.com');
-
-      expect(vm().altEmailFieldError).not.toBeNull();
+      await altInput().setValue('alt@example.com');
+      vi.mocked(userService.updateUser).mockResolvedValue({
+        ...mockProfile,
+        additionalEmails: ['alt@example.com'],
+      });
 
       await submitForm();
 
-      expect(userService.updateUser).not.toHaveBeenCalled();
+      expect(addMock).toHaveBeenCalledTimes(2);
+      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
+        severity: 'success',
+        detail: 'Profil wurde erfolgreich gespeichert.',
+        life: 3000,
+      }));
+      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
+        severity: 'success',
+        detail: 'E-Mail erfolgreich gespeichert. Bitte schauen Sie in Ihre E-Mails, um die E-Mail zu bestätigen.',
+        life: 8000,
+      }));
+    });
+
+    test('shows only the profile toast when the alternative email is removed', async () => {
+      vi.mocked(userService.getUser).mockResolvedValue({
+        ...mockProfile,
+        additionalEmails: ['alt@example.com'],
+      });
+      wrapper = mountCard();
+      await flushPromises();
+      await trashButton().trigger('click');
+
+      await submitForm();
+
+      expect(addMock).toHaveBeenCalledTimes(1);
+      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ detail: 'Profil wurde erfolgreich gespeichert.' }));
+    });
+
+    test('shows an error toast when saving the alternative email fails', async () => {
+      await flushPromises();
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      await altInput().setValue('alt@example.com');
+      vi.mocked(userService.updateUser).mockRejectedValue(new Error('save failed'));
+
+      await submitForm();
+
+      expect(addMock).toHaveBeenCalledTimes(1);
+      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
+        severity: 'error',
+        detail: 'E-Mail konnte nicht gespeichert werden.',
+        life: 9000,
+      }));
+      consoleErrorSpy.mockRestore();
+    });
+
+    test('saves the profile without an invalid alternative email and shows both toasts', async () => {
+      await flushPromises();
+      await altInput().setValue('not-an-email');
+
+      await submitForm();
+
+      expect(userService.updateUser).toHaveBeenCalledWith(
+        expect.objectContaining({ additionalEmails: undefined }),
+      );
+      expect(addMock).toHaveBeenCalledTimes(2);
+      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
+        severity: 'success',
+        detail: 'Profil wurde erfolgreich gespeichert.',
+        life: 3000,
+      }));
+      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
+        severity: 'error',
+        detail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
+        life: 9000,
+      }));
+      expect(vm().currentAltEmail).toBe('not-an-email');
+      expect(vm().altEmailLocked).toBe(false);
     });
   });
 });
