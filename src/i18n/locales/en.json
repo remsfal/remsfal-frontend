@@ -988,7 +988,6 @@
   "tenantIssue.validation.tenancyRequired": "Please select a rental unit",
   "tenantIssue.success": "Report successfully created",
   "tenantIssue.error": "Error creating report",
-  "tenantDashboard.title": "My Tenancies",
   "tenantDashboard.loading": "Loading tenancies …",
   "tenantDashboard.empty": "No tenancies found.",
   "tenantDashboard.error": "Tenancies could not be loaded.",
