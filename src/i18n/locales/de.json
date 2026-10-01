@@ -991,7 +991,6 @@
   "tenantIssue.validation.tenancyRequired": "Bitte wählen Sie eine Mieteinheit",
   "tenantIssue.success": "Meldung erfolgreich erstellt",
   "tenantIssue.error": "Fehler beim Erstellen der Meldung",
-  "tenantDashboard.title": "Meine Mietverhältnisse",
   "tenantDashboard.loading": "Lade Mietverhältnisse …",
   "tenantDashboard.empty": "Keine Mietverhältnisse gefunden.",
   "tenantDashboard.error": "Mietverhältnisse konnten nicht geladen werden.",
