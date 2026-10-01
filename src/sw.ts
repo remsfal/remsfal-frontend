@@ -33,9 +33,16 @@ self.addEventListener('fetch', (event) => {
     fetch(event.request)
       .then((response) => {
         const responseClone = response.clone();
-        caches.open(RUNTIME_CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
+        // Keep the SW alive until the cache write finishes; a failed write must not
+        // break the response, so errors are only logged.
+        event.waitUntil(
+          caches
+            .open(RUNTIME_CACHE_NAME)
+            .then((cache) => cache.put(event.request, responseClone))
+            .catch((error: unknown) => {
+              console.error('[Service Worker] Failed to update runtime cache:', error);
+            }),
+        );
         return response;
       })
       .catch(async () => {
