@@ -6179,6 +6179,12 @@ export interface components {
        *     ]
        */
       additionalEmails?: string[];
+      /**
+       * @example [
+       *       "test@example.com"
+       *     ]
+       */
+      verifiedAdditionalEmails?: $Read<string[]>;
       registeredDate?: $Read<components["schemas"]["LocalDate"]>;
       lastLoginDate?: $Read<components["schemas"]["LocalDateTime"]>;
     };
