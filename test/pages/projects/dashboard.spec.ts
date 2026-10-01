@@ -2,17 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ProjectDashboardPage from '@/pages/projects/[projectId]/dashboard.vue';
 
-vi.mock('@/features/project/dashboard', () => ({
-  ProjectDashboardView: {
-    name: 'ProjectDashboardView',
-    template: '<div data-test="project-dashboard-stub" />',
-  },
-}));
-
 vi.mock('@/features/project/rentableUnits', () => ({
   RentableUnitsKpiCards: {
     name: 'RentableUnitsKpiCards',
-    template: '<div />',
+    template: '<div data-test="rentable-units-kpi-stub" />',
   },
 }));
 
@@ -29,8 +22,8 @@ describe('projects/[projectId]/dashboard.vue', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it('renders ProjectDashboard', () => {
+  it('renders RentableUnitsKpiCards', () => {
     const wrapper = mount(ProjectDashboardPage);
-    expect(wrapper.find('[data-test="project-dashboard-stub"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="rentable-units-kpi-stub"]').exists()).toBe(true);
   });
 });
