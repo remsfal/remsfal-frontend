@@ -4,6 +4,7 @@ interface Scenario {
   timelineBase: string;
   timelineSegment: string;
   attachmentBase: string;
+  entryDefaults?: object;
   visitPath: () => string;
   setupIntercepts: () => void;
 }
@@ -131,6 +132,8 @@ const scenarios: Scenario[] = [
     timelineBase: `/ticketing/v1/issues/${issueId}`,
     timelineSegment: 'contractor-timeline',
     attachmentBase: `/ticketing/v1/issues/${issueId}/attachments`,
+    // With a single requested contractor the card only shows entries of that organization.
+    entryDefaults: { organizationId: 'org-1' },
     visitPath: () => `/projects/${projectId}/issues/${issueId}`,
     setupIntercepts: () => {
       setupAuthIntercepts();
@@ -173,6 +176,8 @@ const scenarios: Scenario[] = [
 
 scenarios.forEach((scenario) => {
   describe(`TimelineCard E2E Tests (${scenario.name})`, () => {
+    const entry = (fields: object) => ({ ...scenario.entryDefaults, ...fields });
+
     function setupTimeline(
       firstTimelineResponse: object = { timelines: [] },
       nextTimelineResponse: object = firstTimelineResponse,
@@ -194,27 +199,27 @@ scenarios.forEach((scenario) => {
     it('renders timeline entries and sends a message', () => {
       setupTimeline(
         {
-          timelines: [{
+          timelines: [entry({
             timelineId: 'tl-1',
             purpose: 'ISSUE_CREATED',
             message: 'Issue erstellt',
             createdAt: '2026-01-02T10:00:00.000Z',
-          }],
+          })],
         },
         {
           timelines: [
-            {
+            entry({
               timelineId: 'tl-1',
               purpose: 'ISSUE_CREATED',
               message: 'Issue erstellt',
               createdAt: '2026-01-02T10:00:00.000Z',
-            },
-            {
+            }),
+            entry({
               timelineId: 'tl-2',
               purpose: 'MESSAGE_SENT',
               message: 'Neue Nachricht',
               createdAt: '2026-01-02T10:01:00.000Z',
-            },
+            }),
           ],
         },
       );
@@ -264,13 +269,13 @@ scenarios.forEach((scenario) => {
 
     it('opens download for non-image attachments', () => {
       setupTimeline({
-        timelines: [{
+        timelines: [entry({
           timelineId: 'tl-file',
           purpose: 'MESSAGE_SENT',
           message: 'Datei angehängt',
           createdAt: '2026-01-02T10:00:00.000Z',
           attachments: [{ attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf' }],
-        }],
+        })],
       });
 
       cy.visit(scenario.visitPath());
