@@ -27,27 +27,6 @@ const billingAddress = computed(() =>
     .join(', ') || null,
 );
 
-const placeOfPerformance = computed(() =>
-  [
-    props.request.placeOfPerformanceAddress1,
-    props.request.placeOfPerformanceAddress2,
-    props.request.placeOfPerformanceAddress3,
-  ]
-    .filter((line) => !!line)
-    .join(', ') || null,
-);
-
-const tenants = computed(() =>
-  (props.request.tenants ?? []).map((tenant) => ({
-    id: tenant.id ?? tenant.email,
-    name: tenant.name || [tenant.firstName, tenant.lastName].filter((part) => !!part).join(' '),
-    email: tenant.email,
-    phone: tenant.mobilePhoneNumber || tenant.privatePhoneNumber || tenant.businessPhoneNumber,
-  })),
-);
-
-const tenantPhones = computed(() => tenants.value.filter((tenant) => !!tenant.phone));
-
 const createdAtLabel = computed(() => dateLabel(props.request.createdAt));
 </script>
 
@@ -124,55 +103,6 @@ const createdAtLabel = computed(() => dateLabel(props.request.createdAt));
             </dt>
             <dd class="text-gray-900 break-words">
               {{ request.initiatedBy }}
-            </dd>
-          </div>
-        </dl>
-      </div>
-      <div
-        v-if="tenants.length > 0 || placeOfPerformance"
-        class="mt-4 grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3"
-      >
-        <div v-if="tenants.length > 0" class="space-y-2 text-base text-gray-600">
-          <dl v-for="tenant in tenants" :key="tenant.id" data-testid="tenant-item" class="space-y-2">
-            <div v-if="tenant.name" class="flex items-center justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('orderManagement.quotationRequestDetails.fields.tenant') }}
-              </dt>
-              <dd class="text-gray-900 break-words">
-                {{ tenant.name }}
-              </dd>
-            </div>
-            <div v-if="tenant.email" class="flex items-center justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('orderManagement.quotationRequestDetails.fields.email') }}
-              </dt>
-              <dd class="break-words">
-                <a :href="`mailto:${tenant.email}`" class="text-primary hover:underline">{{ tenant.email }}</a>
-              </dd>
-            </div>
-          </dl>
-        </div>
-        <dl v-if="placeOfPerformance || tenantPhones.length > 0" class="space-y-2 text-base text-gray-600">
-          <div v-if="placeOfPerformance" data-testid="place-of-performance" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
-              {{ t('orderManagement.quotationRequestDetails.fields.address') }}
-            </dt>
-            <dd class="text-gray-900 break-words">
-              {{ placeOfPerformance }}
-            </dd>
-          </div>
-          <div
-            v-for="tenant in tenantPhones"
-            :key="tenant.id"
-            data-testid="tenant-phone"
-            class="flex items-center justify-start gap-2"
-          >
-            <dt class="font-medium text-gray-500">
-              {{ t('orderManagement.quotationRequestDetails.fields.phone') }}
-            </dt>
-            <dd class="break-words">
-              <a :href="`tel:${tenant.phone}`" class="text-primary hover:underline">{{ tenant.phone }}</a>
-              <span v-if="tenants.length > 1 && tenant.name" class="text-gray-500"> ({{ tenant.name }})</span>
             </dd>
           </div>
         </dl>

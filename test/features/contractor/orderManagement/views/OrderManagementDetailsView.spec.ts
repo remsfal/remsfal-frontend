@@ -5,6 +5,8 @@ import QuotationRequestDetailsCard from
   '@/features/contractor/orderManagement/components/QuotationRequestDetailsCard.vue';
 import ContractorOrderTimelineCard from
   '@/features/contractor/orderManagement/components/ContractorOrderTimelineCard.vue';
+import TenantCommunicationCard from
+  '@/features/contractor/orderManagement/components/TenantCommunicationCard.vue';
 import { quotationRequestService, type QuotationRequestJson } from
   '@/features/contractor/orderManagement/services/QuotationRequestService';
 
@@ -18,7 +20,11 @@ const makeRequest = (overrides: Partial<QuotationRequestJson> = {}): QuotationRe
 
 const mountView = (issueId = 'issue-1') => mount(OrderManagementDetailsView, {
   props: { issueId },
-  global: { stubs: { QuotationRequestDetailsCard: true, ContractorOrderTimelineCard: true } },
+  global: {
+    stubs: {
+      QuotationRequestDetailsCard: true, ContractorOrderTimelineCard: true, TenantCommunicationCard: true,
+    },
+  },
 });
 
 describe('OrderManagementDetailsView', () => {
@@ -42,6 +48,18 @@ describe('OrderManagementDetailsView', () => {
 
     const timeline = wrapper.getComponent(ContractorOrderTimelineCard);
     expect(timeline.props('issueId')).toBe('issue-1');
+  });
+
+  it('passes the matching request to the tenant communication card', async () => {
+    const request = makeRequest({ rentalUnitTitle: 'Wohnung 3' });
+    vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValueOnce({ items: [request] });
+
+    const wrapper = mountView('issue-1');
+    await flushPromises();
+
+    const tenantCommunication = wrapper.getComponent(TenantCommunicationCard);
+    expect(tenantCommunication.props('issueId')).toBe('issue-1');
+    expect(tenantCommunication.props('request')).toEqual(request);
   });
 
   it('shows a not-found message when no item matches the issueId', async () => {

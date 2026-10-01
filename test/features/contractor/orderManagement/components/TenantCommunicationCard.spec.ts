@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import FileUpload from 'primevue/fileupload';
+import i18n from '@/i18n/i18n';
 import TenantCommunicationCard from '@/features/contractor/orderManagement/components/TenantCommunicationCard.vue';
 import { issueRequestService } from '@/features/contractor/orderManagement/services/IssueRequestService';
+import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 import { useEventBus } from '@/stores/EventStore';
 
 const addMock = vi.fn();
@@ -16,7 +18,81 @@ describe('TenantCommunicationCard', () => {
     vi.clearAllMocks();
   });
 
-  const mountCard = () => mount(TenantCommunicationCard, { props: { issueId: 'issue-1' } });
+  const mountCard = (request: QuotationRequestJson = { issueId: 'issue-1' }) =>
+    mount(TenantCommunicationCard, { props: { issueId: 'issue-1', request } });
+
+  describe('tenant and rental unit info', () => {
+    it('renders tenant name and phone without email, preferring the mobile number', () => {
+      const wrapper = mountCard({
+        tenants: [{
+          id: 't-1', firstName: 'Max', lastName: 'Mieter', email: 'max@example.org',
+          mobilePhoneNumber: '+491701234', privatePhoneNumber: '+49301111',
+        }],
+      });
+
+      const names = wrapper.get('[data-testid="tenant-names"]');
+      expect(names.text()).toContain(i18n.global.t('orderManagement.tenantCommunication.fields.tenant'));
+      expect(names.text()).toContain('Max Mieter');
+      const phones = wrapper.get('[data-testid="tenant-phones"]');
+      expect(phones.text()).toContain(i18n.global.t('orderManagement.tenantCommunication.fields.phone'));
+      expect(phones.find('a[href="tel:+491701234"]').exists()).toBe(true);
+      expect(phones.text()).not.toContain('+49301111');
+      expect(wrapper.text()).not.toContain('max@example.org');
+    });
+
+    it('lists several tenants comma separated in one row each', () => {
+      const wrapper = mountCard({
+        tenants: [
+          {
+            id: 't-1', name: 'Max Mieter', businessPhoneNumber: '+49302222',
+          },
+          {
+            id: 't-2', name: 'Erika Muster', privatePhoneNumber: '+49303333',
+          },
+        ],
+      });
+
+      expect(wrapper.get('[data-testid="tenant-names"]').text()).toContain('Max Mieter, Erika Muster');
+      const phones = wrapper.get('[data-testid="tenant-phones"]');
+      expect(phones.findAll('a')).toHaveLength(2);
+      expect(phones.text()).toContain('+49302222, +49303333');
+    });
+
+    it('renders the place of performance and the location of the rental unit', () => {
+      const wrapper = mountCard({
+        placeOfPerformanceAddress1: 'Parkstraße 6',
+        placeOfPerformanceAddress2: '14482 Potsdam',
+        rentalUnitLocation: '2. OG links',
+      });
+
+      const address = wrapper.get('[data-testid="place-of-performance"]');
+      expect(address.text()).toContain(i18n.global.t('orderManagement.tenantCommunication.fields.address'));
+      expect(address.text()).toContain('Parkstraße 6, 14482 Potsdam');
+      const location = wrapper.get('[data-testid="rental-unit-location"]');
+      expect(location.text()).toContain(i18n.global.t('orderManagement.tenantCommunication.fields.rentalUnitLocation'));
+      expect(location.text()).toContain('2. OG links');
+    });
+
+    it('renders the rental unit title and the translated unit type', () => {
+      const wrapper = mountCard({
+        rentalUnitTitle: 'Wohnung 3',
+        rentalUnitType: 'APARTMENT',
+      });
+
+      const title = wrapper.get('[data-testid="rental-unit-title"]');
+      expect(title.text()).toContain(i18n.global.t('orderManagement.tenantCommunication.fields.rentalUnit'));
+      expect(title.text()).toContain('Wohnung 3');
+      const type = wrapper.get('[data-testid="rental-unit-type"]');
+      expect(type.text()).toContain(i18n.global.t('orderManagement.tenantCommunication.fields.rentalUnitType'));
+      expect(type.text()).toContain(i18n.global.t('unitTypes.apartment'));
+    });
+
+    it('hides the info block when no tenant or rental unit data is provided', () => {
+      const wrapper = mountCard();
+
+      expect(wrapper.find('[data-testid="tenant-communication-info"]').exists()).toBe(false);
+    });
+  });
 
   it('renders the card title "Mieter Kommunikation"', () => {
     const wrapper = mountCard();
