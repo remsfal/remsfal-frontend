@@ -161,6 +161,8 @@ describe('IssueContractorTimelineCard component', () => {
 
     expect(await timelineCards[0].props('load')()).toEqual([makeTimeline({ timelineId: 't-1', organizationId: 'org-1' })]);
     expect(await timelineCards[1].props('load')()).toEqual([makeTimeline({ timelineId: 't-2', organizationId: 'org-2' })]);
+    
+    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
 
     vi.mocked(contractorTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
     await timelineCards[1].props('send')({ purpose: 'MESSAGE_SENT', message: 'Hi' }, []);

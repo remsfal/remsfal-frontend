@@ -106,11 +106,6 @@ export default defineConfig({
               priority: 60,
             },
             {
-              name: 'vendor-chart',
-              test: /chart\.js|chartjs/,
-              priority: 50,
-            },
-            {
               name: 'vendor-primevue',
               test: /primevue|@primevue/,
               priority: 40,

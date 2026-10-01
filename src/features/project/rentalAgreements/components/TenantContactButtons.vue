@@ -29,7 +29,7 @@ const emailActionable = computed(() => !props.disabled && !!props.email);
 </script>
 
 <template>
-  <div class="flex gap-2">
+  <div class="flex flex-col items-start xl:flex-row xl:flex-wrap xl:justify-end gap-2">
     <!-- Phone: one button per available number, labeled with its type -->
     <template v-if="!hasPhoneNumbers">
       <Button

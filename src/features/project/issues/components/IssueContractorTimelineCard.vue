@@ -29,9 +29,25 @@ const eventBus = useEventBus();
 const contractorsLoaded = ref(false);
 const contractors = ref<RequestedContractor[]>([]);
 
+let cachedTimeline: { issueId: string; request: Promise<ContractorTimelineJson[]> } | null = null;
+
+const invalidateTimeline = () => {
+  cachedTimeline = null;
+};
+
+const fetchTimeline = () => {
+  if (cachedTimeline?.issueId !== props.issueId) {
+    const request = contractorTimelineService.getTimelineEntries(props.issueId).then((result) => result.timelines ?? []);
+    request.catch(invalidateTimeline);
+    cachedTimeline = { issueId: props.issueId, request };
+  }
+  return cachedTimeline.request;
+};
+
 const loadRequestedContractors = async () => {
   contractorsLoaded.value = false;
   contractors.value = [];
+  invalidateTimeline();
   try {
     const result = await quotationRequestService.getQuotationRequests(props.issueId);
     const seen = new Map<string, string>();
@@ -51,21 +67,6 @@ const loadRequestedContractors = async () => {
 
 onMounted(loadRequestedContractors);
 watch(() => props.issueId, loadRequestedContractors);
-
-let cachedTimeline: { issueId: string; request: Promise<ContractorTimelineJson[]> } | null = null;
-
-const invalidateTimeline = () => {
-  cachedTimeline = null;
-};
-
-const fetchTimeline = () => {
-  if (cachedTimeline?.issueId !== props.issueId) {
-    const request = contractorTimelineService.getTimelineEntries(props.issueId).then((result) => result.timelines ?? []);
-    request.catch(invalidateTimeline);
-    cachedTimeline = { issueId: props.issueId, request };
-  }
-  return cachedTimeline.request;
-};
 
 const unsubscribeQuotationRequestCreated = eventBus.on('quotationRequest:created', ({ issueId }) => {
   if (issueId === props.issueId) {
@@ -152,7 +153,7 @@ const loadForSoleOrAllContractors = async () => {
       </template>
     </BaseCard>
   </template>
-  <template v-else>
+  <template v-else-if="contractorsLoaded">
     <TimelineCard
       :load="loadForSoleOrAllContractors"
       :send="sendToSoleContractor"
