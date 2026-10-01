@@ -66,25 +66,25 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
 <template>
   <div
     data-testid="tenant-card"
-    class="interactive-row flex flex-col md:flex-row gap-6 p-4 w-full"
+    class="interactive-row flex flex-col xl:flex-row gap-6 p-4 w-full"
     role="button"
     tabindex="0"
     @click="emit('click')"
     @keydown.enter="emit('click')"
   >
     <!-- Avatar Section -->
-    <div class="flex justify-center md:justify-start md:w-40">
+    <div class="flex justify-center xl:justify-start xl:w-40 shrink-0">
       <Avatar size="xlarge" class="bg-surface-100 text-primary">
         <FontAwesomeIcon icon="fa-solid fa-building-user" class="text-2xl translate-y-0.5" />
       </Avatar>
     </div>
 
     <!-- Content Section -->
-    <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
+    <div class="flex flex-col xl:flex-row justify-between xl:items-center flex-1 min-w-0 gap-6">
       <!-- Name & Units -->
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4 min-w-0">
         <!-- Name -->
-        <div class="font-bold text-2xl">
+        <div class="font-bold text-2xl break-words">
           {{ fullName }}
         </div>
 
@@ -113,7 +113,7 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
       </div>
 
       <!-- Status & Actions -->
-      <div class="flex flex-col md:items-end gap-4">
+      <div class="flex flex-col items-start xl:items-end gap-4 max-w-full">
         <!-- Active/Inactive Status Tag (hidden when active state is not applicable) -->
         <Tag
           v-if="tenant.active !== undefined"
@@ -122,7 +122,11 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
         />
 
         <!-- Contact Buttons & Actions (with click.stop) -->
-        <div class="flex items-center gap-2" @click.stop @keydown.stop>
+        <div
+          class="flex flex-col items-start xl:flex-row xl:flex-wrap xl:items-center xl:justify-end gap-2"
+          @click.stop
+          @keydown.stop
+        >
           <TenantContactButtons
             :email="tenant.email"
             :mobilePhoneNumber="tenant.mobilePhoneNumber"
