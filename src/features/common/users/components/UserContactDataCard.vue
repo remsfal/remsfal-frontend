@@ -161,6 +161,7 @@ async function onSubmit(event: FormSubmitEvent) {
   const altEmailChanged = altEmailDirty.value;
   const altEmailInvalid = altEmailChanged && !!enteredAltEmail && !validateEmailFormat(enteredAltEmail);
   const sendAltEmail = altEmailChanged && !altEmailInvalid;
+  const altEmailPayload = enteredAltEmail ? [enteredAltEmail] : [];
   try {
     const updatedUser = await userService.updateUser({
       firstName: s.firstName?.value || undefined,
@@ -171,7 +172,7 @@ async function onSubmit(event: FormSubmitEvent) {
       businessPhoneNumber: currentPhones.business || undefined,
       privatePhoneNumber: currentPhones.private || undefined,
       locale: s.locale?.value || undefined,
-      additionalEmails: sendAltEmail ? (enteredAltEmail ? [enteredAltEmail] : []) : undefined,
+      additionalEmails: sendAltEmail ? altEmailPayload : undefined,
     });
 
     initialValues.value = {
