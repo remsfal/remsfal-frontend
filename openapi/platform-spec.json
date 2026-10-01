@@ -2500,6 +2500,14 @@
             },
             "examples" : [ [ "test@example.com", "info@example.com" ] ]
           },
+          "verifiedAdditionalEmails" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "readOnly" : true,
+            "examples" : [ [ "test@example.com" ] ]
+          },
           "registeredDate" : {
             "readOnly" : true,
             "type" : "string",
