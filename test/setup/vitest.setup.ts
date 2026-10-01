@@ -14,39 +14,6 @@ import ConfirmationService from 'primevue/confirmationservice';
 // Set up MSW server globally
 import '../mocks/setupTests';
 
-vi.mock('primevue/chart', () => ({
-  default: {
-    name: 'Chart',
-    template: '<div data-test="chart-stub"></div>',
-  },
-}));
-
-vi.mock('chart.js', () => {
-  class FakeElement {
-    _dummy = true;
-  }
-
-  return {
-    // Chart.js expects static register():
-    Chart: {register: () => {},},
-
-    // Elements
-    ArcElement: FakeElement,
-    BarElement: FakeElement,
-    LineElement: FakeElement,
-    PointElement: FakeElement,
-
-    // Scales
-    CategoryScale: FakeElement,
-    LinearScale: FakeElement,
-    RadialLinearScale: FakeElement,
-
-    // Plugins
-    Tooltip: FakeElement,
-    Legend: FakeElement,
-  };
-});
-
 beforeAll(() => {
   i18n.global.locale.value = 'de';
 });
