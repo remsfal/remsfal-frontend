@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { TOAST_LIFE, useAppToast } from '@/composables/useAppToast';
+import { useAppToast } from '@/composables/useAppToast';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -82,7 +82,6 @@ const hasPhoneError = computed(() => !!mobilePhoneError.value || !!businessPhone
 
 const email = ref('');
 
-// Alternative email tracked separately (not via PrimeVue Forms), locked once saved
 const serverAltEmail = ref('');
 const currentAltEmail = ref('');
 const altEmailLocked = ref(false);
@@ -94,8 +93,6 @@ const altEmailDirty = computed(() => currentAltEmail.value.trim() !== serverAltE
 function validateEmailFormat(emailStr: string) {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailStr);
 }
-
-const TOAST_EXTRA_LIFE = 5000;
 
 function applyAltEmail(additionalEmails: string[] | undefined) {
   serverAltEmail.value = currentAltEmail.value = additionalEmails?.[0] ?? '';
@@ -196,7 +193,7 @@ async function onSubmit(event: FormSubmitEvent) {
     if (altEmailInvalid) {
       altEmailSuccess.value = false;
       altEmailError.value = true;
-      appToast.error(t('accountSettings.userProfile.alternativeEmailInvalid'), { life: TOAST_LIFE.error + TOAST_EXTRA_LIFE });
+      appToast.error(t('accountSettings.userProfile.alternativeEmailInvalid'));
       return;
     }
 
@@ -204,17 +201,14 @@ async function onSubmit(event: FormSubmitEvent) {
     altEmailSuccess.value = true;
     altEmailError.value = false;
     if (altEmailChanged && enteredAltEmail) {
-      appToast.success(t('accountSettings.userProfile.alternativeEmailSaveSuccess'), {
-        summary: t('success.saved'),
-        life: TOAST_LIFE.success + TOAST_EXTRA_LIFE,
-      });
+      appToast.success(t('accountSettings.userProfile.alternativeEmailSaveSuccess'), { summary: t('success.saved') });
     }
   } catch (error) {
     console.error('Failed to update user profile', error);
     altEmailSuccess.value = false;
     altEmailError.value = true;
     if (altEmailChanged) {
-      appToast.error(t('accountSettings.userProfile.alternativeEmailSaveError'), { life: TOAST_LIFE.error + TOAST_EXTRA_LIFE });
+      appToast.error(t('accountSettings.userProfile.alternativeEmailSaveError'));
     }
   }
 }

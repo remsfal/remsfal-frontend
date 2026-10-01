@@ -406,12 +406,10 @@ describe('UserContactDataCard', () => {
       expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
         severity: 'success',
         detail: 'Profil wurde erfolgreich gespeichert.',
-        life: 3000,
       }));
       expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
         severity: 'success',
         detail: 'E-Mail erfolgreich gespeichert. Bitte schauen Sie in Ihre E-Mails, um die E-Mail zu bestätigen.',
-        life: 8000,
       }));
     });
 
@@ -442,7 +440,6 @@ describe('UserContactDataCard', () => {
       expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
         severity: 'error',
         detail: 'E-Mail konnte nicht gespeichert werden.',
-        life: 9000,
       }));
       consoleErrorSpy.mockRestore();
     });
@@ -460,12 +457,10 @@ describe('UserContactDataCard', () => {
       expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
         severity: 'success',
         detail: 'Profil wurde erfolgreich gespeichert.',
-        life: 3000,
       }));
       expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
         severity: 'error',
         detail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
-        life: 9000,
       }));
       expect(vm().currentAltEmail).toBe('not-an-email');
       expect(vm().altEmailLocked).toBe(false);

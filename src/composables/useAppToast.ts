@@ -13,7 +13,6 @@ export type AppToastSeverity = keyof typeof TOAST_LIFE;
 export interface AppToastOptions {
   /** Overrides the default summary for this severity. Pass an already-resolved (t()'d) string. */
   summary?: string;
-  life?: number;
 }
 
 export function useAppToast() {
@@ -25,7 +24,7 @@ export function useAppToast() {
       severity,
       summary: options?.summary ?? (severity === 'error' ? t('error.general') : t(`toast.${severity}Summary`)),
       detail,
-      life: options?.life ?? TOAST_LIFE[severity],
+      life: TOAST_LIFE[severity],
     });
   }
 
