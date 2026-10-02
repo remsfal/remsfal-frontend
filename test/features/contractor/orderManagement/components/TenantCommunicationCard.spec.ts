@@ -358,6 +358,38 @@ describe('TenantCommunicationCard', () => {
       expect(entries(wrapper)).toHaveLength(1);
     });
 
+    it('emits issueRequest:withdrawn on the event bus after a successful withdrawal', async () => {
+      getRequestsSpy.mockResolvedValue(openRequests);
+      vi.spyOn(issueRequestService, 'deleteRequest').mockResolvedValue(undefined);
+      const handler = vi.fn();
+      useEventBus().on('issueRequest:withdrawn', handler);
+      const wrapper = mountCard();
+      await flushPromises();
+
+      await wrapper.findAll('[data-testid="withdraw-request-button"]')[0].trigger('click');
+      await wrapper.get('[data-testid="withdraw-request-confirm"]').trigger('click');
+      await flushPromises();
+
+      expect(handler).toHaveBeenCalledWith({ issueId: 'issue-1' });
+    });
+
+    it('does not emit issueRequest:withdrawn when withdrawing fails', async () => {
+      getRequestsSpy.mockResolvedValue(openRequests);
+      vi.spyOn(issueRequestService, 'deleteRequest').mockRejectedValue(new Error('network'));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const handler = vi.fn();
+      useEventBus().on('issueRequest:withdrawn', handler);
+      const wrapper = mountCard();
+      await flushPromises();
+
+      await wrapper.findAll('[data-testid="withdraw-request-button"]')[0].trigger('click');
+      await wrapper.get('[data-testid="withdraw-request-confirm"]').trigger('click');
+      await flushPromises();
+
+      expect(handler).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+
     it('withdraws a request after confirmation and removes it from the list', async () => {
       getRequestsSpy.mockResolvedValue(openRequests);
       const deleteSpy = vi.spyOn(issueRequestService, 'deleteRequest').mockResolvedValue(undefined);

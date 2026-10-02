@@ -138,6 +138,7 @@ const confirmWithdraw = async () => {
   try {
     await issueRequestService.deleteRequest(props.issueId, requestId);
     openRequests.value = openRequests.value.filter((request) => request.issueRequestId !== requestId);
+    eventBus.emit('issueRequest:withdrawn', { issueId: props.issueId });
     appToast.success(t('orderManagement.tenantCommunication.withdrawRequestSuccess'));
   } catch (withdrawError) {
     console.error('Failed to withdraw issue request:', withdrawError);

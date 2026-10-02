@@ -45,6 +45,8 @@ export function useTimelineItem<T extends TimelineEntry>(
         return t(`${titleNamespace}.orderPlacedTitle`, { senderName });
       case 'REQUEST_CREATED':
         return t(`${titleNamespace}.requestCreatedTitle`, { senderName });
+      case 'REQUEST_WITHDRAWN':
+        return t(`${titleNamespace}.requestWithdrawnTitle`, { senderName });
       default:
         return t(`${titleNamespace}.entryFallbackTitle`);
     }
