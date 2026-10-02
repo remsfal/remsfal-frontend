@@ -2,9 +2,6 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { TimelineEntry } from '@/composables/useTimeline';
 import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
-import type { components as ticketingComponents } from '@/services/api/ticketing-schema';
-
-export type IssueAttachmentJson = ticketingComponents['schemas']['IssueAttachmentJson'];
 
 export interface UseTimelineItemProps<T extends TimelineEntry> {
   item: T;
@@ -13,15 +10,6 @@ export interface UseTimelineItemProps<T extends TimelineEntry> {
 
 export interface UseTimelineItemOptions {
   titleNamespace: string;
-  buildAttachmentUrl: (attachment: IssueAttachmentJson) => string;
-}
-
-export function buildAttachmentDownloadUrl(resourcePrefix: string) {
-  return (attachment: { attachmentId?: string; fileName?: string }) => {
-    const encodedAttachmentId = encodeURIComponent(attachment.attachmentId ?? '');
-    const encodedFileName = encodeURIComponent(attachment.fileName || attachment.attachmentId || '');
-    return `${resourcePrefix}/attachments/${encodedAttachmentId}/${encodedFileName}`;
-  };
 }
 
 const STATUS_NAMESPACES = ['quotationRequest.status', 'orderPlacement.status'];
@@ -31,7 +19,7 @@ export function useTimelineItem<T extends TimelineEntry>(
   options: UseTimelineItemOptions,
 ) {
   const { t, te } = useI18n();
-  const { titleNamespace, buildAttachmentUrl } = options;
+  const { titleNamespace } = options;
 
   const getIssueNumber = (issueId: string) => issueId.split('-').pop() || issueId;
 
@@ -76,17 +64,16 @@ export function useTimelineItem<T extends TimelineEntry>(
 
   const attachments = computed<TimelineAttachmentView[]>(() =>
     (props.item.attachments ?? []).flatMap((attachment) => {
-      const attachmentId = attachment.attachmentId;
-      if (!attachmentId) {
+      const { attachmentId, downloadUrl } = attachment;
+      if (!attachmentId || !downloadUrl) {
         return [];
       }
 
-      const fileName = attachment.fileName;
       return [{
         attachmentId,
         contentType: attachment.contentType,
-        downloadUrl: buildAttachmentUrl(attachment),
-        fileName,
+        downloadUrl,
+        fileName: attachment.fileName,
       }];
     }),
   );
