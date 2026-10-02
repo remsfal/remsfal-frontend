@@ -1,19 +1,41 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Select from 'primevue/select';
 import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
+import type { FormInstance } from '@primevue/forms';
 import { COUNTRIES, type Country } from '@/constants/countries';
 import { countryFlagEmoji, countryDisplayName } from '@/helper/countryHelper';
 
 const props = defineProps<{
   modelValue?: string;
+  /** Registers the field with the surrounding PrimeVue `<Form>`, like PrimeVue's own inputs. */
+  name?: string;
   disabled?: boolean;
+  invalid?: boolean;
   inputId?: string;
 }>();
 
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
+
+// PrimeVue's <Form> provides itself as `$pcForm`; `register` is the same hook its inputs use.
+type FieldProps = { onChange?: (event: { value: string }) => void; onBlur?: () => void };
+type PcForm = FormInstance & { register: (field: string, options?: object) => FieldProps };
+const pcForm = inject<PcForm | undefined>('$pcForm', undefined);
+
+let formField: FieldProps = {};
+watch(
+  () => props.name,
+  (name) => {
+    formField = (name && pcForm?.register(name)) || {};
+  },
+  { immediate: true },
+);
+
+const fieldState = computed(() => (props.name ? pcForm?.getFieldState(props.name) : undefined));
+const value = computed<string | undefined>(() => (fieldState.value ? fieldState.value.value : props.modelValue));
+const isInvalid = computed(() => props.invalid || !!fieldState.value?.invalid);
 
 const { locale } = useI18n();
 
@@ -54,18 +76,24 @@ function applyValue(value?: string) {
   _applyingExternal = false;
 }
 
-onMounted(() => applyValue(props.modelValue));
-watch(() => props.modelValue, applyValue);
+onMounted(() => applyValue(value.value));
+watch(value, applyValue);
 
 function emitCombined() {
   if (_applyingExternal) return;
   const digits = localNumber.value.replace(/\D/g, '');
-  emit('update:modelValue', digits ? selectedCountry.value.dialCode + digits : '');
+  const combined = digits ? selectedCountry.value.dialCode + digits : '';
+  emit('update:modelValue', combined);
+  formField.onChange?.({ value: combined });
 }
 
 function onLocalInput(val: string | undefined) {
   localNumber.value = (val ?? '').replace(/\D/g, '');
   emitCombined();
+}
+
+function onLocalBlur() {
+  formField.onBlur?.();
 }
 </script>
 
@@ -78,6 +106,7 @@ function onLocalInput(val: string | undefined) {
       filter
       :filterFields="['displayName', 'dialCode']"
       :disabled="disabled"
+      :invalid="isInvalid"
       class="w-28! min-w-0! flex-none!"
       :pt="{
         label: { style: 'padding-inline: 0.375rem' },
@@ -98,7 +127,9 @@ function onLocalInput(val: string | undefined) {
       type="tel"
       fluid
       :disabled="disabled"
+      :invalid="isInvalid"
       @update:modelValue="onLocalInput"
+      @blur="onLocalBlur"
     />
   </InputGroup>
 </template>

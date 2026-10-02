@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toISODateString } from '@/helper/dateHelper';
+import { phoneSchema, optionalEmailSchema } from '@/helper/validationHelper';
 
 // PrimeVue Components
 import Button from 'primevue/button';
@@ -45,29 +46,37 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-const phoneRegex = /^\+[1-9]\d{4,14}$/;
-
-// Zod Schema (name/email/place of birth only; phone numbers are handled outside the
-// PrimeVue Form via PhoneInput, which does not integrate with the Form's `name` binding)
 const schema = z.object({
   firstName: z.string().trim().min(1, { message: t('validation.required') }),
   lastName: z.string().trim().min(1, { message: t('validation.required') }),
-  email: z
-    .string()
-    .trim()
-    .email({ message: t('validation.email') })
-    .optional()
-    .or(z.literal('')),
+  email: optionalEmailSchema(t),
   placeOfBirth: z.string().trim().optional().or(z.literal('')),
+  mobilePhoneNumber: phoneSchema(t),
+  businessPhoneNumber: phoneSchema(t),
+  privatePhoneNumber: phoneSchema(t),
 });
 
 const resolver = zodResolver(schema);
+
+const formFields = [
+  'firstName',
+  'lastName',
+  'email',
+  'placeOfBirth',
+  'mobilePhoneNumber',
+  'businessPhoneNumber',
+  'privatePhoneNumber',
+];
+const phoneFields = ['mobilePhoneNumber', 'businessPhoneNumber', 'privatePhoneNumber'];
 
 const initialValues = computed(() => ({
   firstName: props.initialValues?.firstName ?? '',
   lastName: props.initialValues?.lastName ?? '',
   email: props.initialValues?.email ?? '',
   placeOfBirth: props.initialValues?.placeOfBirth ?? '',
+  mobilePhoneNumber: props.initialValues?.mobilePhoneNumber ?? '',
+  businessPhoneNumber: props.initialValues?.businessPhoneNumber ?? '',
+  privatePhoneNumber: props.initialValues?.privatePhoneNumber ?? '',
 }));
 
 const serverDateOfBirth = props.initialValues?.dateOfBirth
@@ -78,32 +87,10 @@ const dateOfBirthDirty = computed(
   () => toISODateString(dateOfBirthValue.value) !== toISODateString(serverDateOfBirth),
 );
 
-const serverPhones = {
-  mobile: props.initialValues?.mobilePhoneNumber ?? '',
-  business: props.initialValues?.businessPhoneNumber ?? '',
-  private: props.initialValues?.privatePhoneNumber ?? '',
-};
-const currentPhones = reactive({ ...serverPhones });
-
-const phoneDirty = computed(
-  () =>
-    currentPhones.mobile !== serverPhones.mobile ||
-    currentPhones.business !== serverPhones.business ||
-    currentPhones.private !== serverPhones.private,
-);
-
-function phoneFieldError(val: string) {
-  return val && !phoneRegex.test(val) ? t('validation.phone') : null;
-}
-const mobilePhoneError = computed(() => phoneFieldError(currentPhones.mobile));
-const businessPhoneError = computed(() => phoneFieldError(currentPhones.business));
-const privatePhoneError = computed(() => phoneFieldError(currentPhones.private));
-const hasPhoneError = computed(
-  () => !!mobilePhoneError.value || !!businessPhoneError.value || !!privatePhoneError.value,
-);
-
-function isSubmitDisabled($form: Record<string, { valid?: boolean; dirty?: boolean } | undefined>) {
-  if (hasPhoneError.value) return true;
+function isSubmitDisabled(
+  $form: Record<string, { valid?: boolean; invalid?: boolean; dirty?: boolean } | undefined>,
+) {
+  if (phoneFields.some(key => $form[key]?.invalid)) return true;
 
   if (props.mode !== 'edit') {
     // Create mode: require the mandatory fields to be both valid and dirty,
@@ -119,16 +106,14 @@ function isSubmitDisabled($form: Record<string, { valid?: boolean; dirty?: boole
   const requiredValid = !!$form.firstName?.valid && !!$form.lastName?.valid;
   if (!requiredValid) return true;
 
-  const fieldDirty = ['firstName', 'lastName', 'email', 'placeOfBirth'].some(
-    key => $form[key]?.dirty,
-  );
-  return !(fieldDirty || phoneDirty.value || dateOfBirthDirty.value);
+  const fieldDirty = formFields.some(key => $form[key]?.dirty);
+  return !(fieldDirty || dateOfBirthDirty.value);
 }
 
 // Form submission
 function onSubmit(event: FormSubmitEvent) {
   const formState = event.states;
-  if (!event.valid || hasPhoneError.value) return;
+  if (!event.valid) return;
 
   emit('submit', {
     firstName: formState.firstName?.value?.trim() || '',
@@ -136,9 +121,9 @@ function onSubmit(event: FormSubmitEvent) {
     email: formState.email?.value?.trim() || undefined,
     placeOfBirth: formState.placeOfBirth?.value?.trim() || undefined,
     dateOfBirth: toISODateString(dateOfBirthValue.value) || undefined,
-    mobilePhoneNumber: currentPhones.mobile || undefined,
-    businessPhoneNumber: currentPhones.business || undefined,
-    privatePhoneNumber: currentPhones.private || undefined,
+    mobilePhoneNumber: formState.mobilePhoneNumber?.value || undefined,
+    businessPhoneNumber: formState.businessPhoneNumber?.value || undefined,
+    privatePhoneNumber: formState.privatePhoneNumber?.value || undefined,
   }, props.initialValues?.id);
 }
 </script>
@@ -227,18 +212,14 @@ function onSubmit(event: FormSubmitEvent) {
             <label for="mobile-phone" class="font-medium">
               {{ t('tenantForm.mobilePhone') }}
             </label>
-            <PhoneInput
-              inputId="mobile-phone"
-              :modelValue="currentPhones.mobile"
-              @update:modelValue="(v) => (currentPhones.mobile = v)"
-            />
+            <PhoneInput inputId="mobile-phone" name="mobilePhoneNumber" />
             <Message
-              v-if="mobilePhoneError && currentPhones.mobile"
+              v-if="$form.mobilePhoneNumber?.invalid"
               severity="error"
               size="small"
               variant="simple"
             >
-              {{ mobilePhoneError }}
+              {{ $form.mobilePhoneNumber.error?.message }}
             </Message>
           </div>
 
@@ -247,18 +228,14 @@ function onSubmit(event: FormSubmitEvent) {
             <label for="business-phone" class="font-medium">
               {{ t('tenantForm.businessPhone') }}
             </label>
-            <PhoneInput
-              inputId="business-phone"
-              :modelValue="currentPhones.business"
-              @update:modelValue="(v) => (currentPhones.business = v)"
-            />
+            <PhoneInput inputId="business-phone" name="businessPhoneNumber" />
             <Message
-              v-if="businessPhoneError && currentPhones.business"
+              v-if="$form.businessPhoneNumber?.invalid"
               severity="error"
               size="small"
               variant="simple"
             >
-              {{ businessPhoneError }}
+              {{ $form.businessPhoneNumber.error?.message }}
             </Message>
           </div>
 
@@ -267,18 +244,14 @@ function onSubmit(event: FormSubmitEvent) {
             <label for="private-phone" class="font-medium">
               {{ t('tenantForm.privatePhone') }}
             </label>
-            <PhoneInput
-              inputId="private-phone"
-              :modelValue="currentPhones.private"
-              @update:modelValue="(v) => (currentPhones.private = v)"
-            />
+            <PhoneInput inputId="private-phone" name="privatePhoneNumber" />
             <Message
-              v-if="privatePhoneError && currentPhones.private"
+              v-if="$form.privatePhoneNumber?.invalid"
               severity="error"
               size="small"
               variant="simple"
             >
-              {{ privatePhoneError }}
+              {{ $form.privatePhoneNumber.error?.message }}
             </Message>
           </div>
 

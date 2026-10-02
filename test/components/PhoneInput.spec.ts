@@ -2,7 +2,12 @@
 import { describe, it, expect } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { defineComponent } from 'vue';
+import { Form } from '@primevue/forms';
+import type { FormSubmitEvent } from '@primevue/forms';
+import { zodResolver } from '@primevue/forms/resolvers/zod';
+import { z } from 'zod';
 import PhoneInput from '@/components/PhoneInput.vue';
+import { phoneSchema } from '@/helper/validationHelper';
 
 // Stub PrimeVue components to avoid complex rendering
 const InputTextStub = defineComponent({
@@ -174,6 +179,54 @@ describe('PhoneInput', () => {
 
       const input = wrapper.find('.phone-local-input');
       expect(input.attributes('disabled')).toBeDefined();
+    });
+  });
+
+  describe('PrimeVue Form integration', () => {
+    const t = ((key: string) => key) as unknown as Parameters<typeof phoneSchema>[0];
+
+    const FormHost = defineComponent({
+      components: { PForm: Form, PhoneInput },
+      props: { initialPhone: { type: String, default: '' } },
+      emits: ['submit'],
+      setup(props, { emit }) {
+        return {
+          initialValues: { phone: props.initialPhone },
+          resolver: zodResolver(z.object({ phone: phoneSchema(t) })),
+          onSubmit: (event: FormSubmitEvent) => emit('submit', event),
+        };
+      },
+      template: `
+        <PForm v-slot="$form" :initialValues :resolver @submit="onSubmit">
+          <PhoneInput name="phone" inputId="phone" />
+          <span v-if="$form.phone?.invalid" class="phone-error">{{ $form.phone.error?.message }}</span>
+        </PForm>`,
+    });
+
+    it('shows the initial form value', async () => {
+      const wrapper = mount(FormHost, { props: { initialPhone: '+43664123456' } });
+      await flushPromises();
+
+      expect((wrapper.find('#phone').element as HTMLInputElement).value).toBe('664123456');
+    });
+
+    it('writes the combined E.164 value into the form state', async () => {
+      const wrapper = mount(FormHost);
+      await wrapper.find('#phone').setValue('1511234567');
+      await wrapper.find('form').trigger('submit');
+      await flushPromises();
+
+      const event = wrapper.emitted('submit')![0][0] as FormSubmitEvent;
+      expect(event.valid).toBe(true);
+      expect(event.states.phone.value).toBe('+491511234567');
+    });
+
+    it('validates through the form resolver', async () => {
+      const wrapper = mount(FormHost);
+      await wrapper.find('#phone').setValue('12');
+      await flushPromises();
+
+      expect(wrapper.find('.phone-error').text()).toBe('validation.phone');
     });
   });
 });

@@ -13,6 +13,7 @@ import Button from 'primevue/button';
 import Message from 'primevue/message';
 import PhoneInput from '@/components/PhoneInput.vue';
 import BaseDialog from '@/components/BaseDialog.vue';
+import { phoneSchema } from '@/helper/validationHelper';
 import { organizationService } from '@/services/OrganizationService';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -36,8 +37,6 @@ const organizationsRouteName = computed(() =>
 
 const formKey = ref(0);
 const submitting = ref(false);
-const phoneValue = ref('');
-const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
 const emailOptions = computed<string[]>(() => {
   const primary = sessionStore.user?.email;
@@ -47,28 +46,26 @@ const emailOptions = computed<string[]>(() => {
 
 const emailValue = ref(sessionStore.user?.email ?? '');
 
-const initialValues = reactive({name: '', trade: '',});
-
-const phoneError = computed(() => {
-  if (!phoneValue.value) return null;
-  return phoneRegex.test(phoneValue.value) ? null : t('validation.phone');
+const initialValues = reactive({
+  name: '', trade: '', phone: ''
 });
 
 const schema = z.object({
   name: z.string().trim().min(3, { message: t('organization.validation.nameRequired') }),
   trade: z.string().trim().optional(),
+  phone: phoneSchema(t),
 });
 
 const resolver = zodResolver(schema);
 
 async function onSubmit(event: FormSubmitEvent) {
-  if (!event.valid || phoneError.value) return;
+  if (!event.valid) return;
   submitting.value = true;
   try {
     const previousIds = new Set(organizationStore.userOrganizations.map(o => o.id));
     await organizationService.createOrganization({
       name: event.states.name?.value || undefined,
-      phone: phoneValue.value || undefined,
+      phone: event.states.phone?.value || undefined,
       email: emailValue.value || undefined,
       trade: event.states.trade?.value || undefined,
     });
@@ -90,8 +87,9 @@ async function onSubmit(event: FormSubmitEvent) {
 }
 
 function onHide() {
-  Object.assign(initialValues, { name: '', trade: '' });
-  phoneValue.value = '';
+  Object.assign(initialValues, {
+    name: '', trade: '', phone: ''
+  });
   emailValue.value = sessionStore.user?.email ?? '';
   formKey.value++;
   emit('update:visible', false);
@@ -132,9 +130,9 @@ function onHide() {
 
         <div class="flex flex-col gap-1">
           <label for="org-phone" class="font-semibold">{{ t('organization.phone') }}</label>
-          <PhoneInput v-model="phoneValue" inputId="org-phone" />
-          <Message v-if="phoneError && phoneValue" severity="error" size="small" variant="simple">
-            {{ phoneError }}
+          <PhoneInput name="phone" inputId="org-phone" />
+          <Message v-if="$form.phone?.invalid" severity="error" size="small" variant="simple">
+            {{ $form.phone.error?.message }}
           </Message>
         </div>
 

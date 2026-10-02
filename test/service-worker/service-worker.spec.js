@@ -74,6 +74,7 @@ describe('Service Worker Tests', () => {
     const event = {
       request: new Request(absoluteUrl),
       respondWith: vi.fn(),
+      waitUntil: vi.fn(),
     };
 
     const fetchListener = globalThis.eventListeners.fetch[0];
@@ -83,8 +84,34 @@ describe('Service Worker Tests', () => {
     await new Promise((resolve) => setImmediate(resolve));
 
     expect(fetchStub).toHaveBeenCalledWith(event.request);
-    expect(cacheMock.put).toHaveBeenCalled();
-    expect(event.respondWith).toHaveBeenCalled();
+    expect(cacheMock.put).toHaveBeenCalledWith(event.request, expect.any(Response));
+    expect(event.waitUntil).toHaveBeenCalledOnce();
+    const result = await event.respondWith.mock.calls[0][0];
+    expect(await result.text()).toBe('mocked network response');
+  });
+
+  it('still returns the network response when the runtime cache write fails', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('network body'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    globalThis.caches.open.mockRejectedValueOnce(new Error('quota exceeded'));
+
+    const event = {
+      request: new Request('https://example.com/test-resource'),
+      respondWith: vi.fn(),
+      waitUntil: vi.fn(),
+    };
+
+    globalThis.eventListeners.fetch[0](event);
+
+    const result = await event.respondWith.mock.calls[0][0];
+    await event.waitUntil.mock.calls[0][0];
+
+    expect(await result.text()).toBe('network body');
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      '[Service Worker] Failed to update runtime cache:',
+      expect.any(Error),
+    );
+    consoleErrorSpy.mockRestore();
   });
 
   it('serves a matching cache entry when the network request fails', async () => {

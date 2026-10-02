@@ -25,12 +25,7 @@ describe('NewContractorButton', () => {
   const mountButton = (projectId = 'proj-1') =>
     mount(NewContractorButton, {
       props: { projectId },
-      global: {
-        stubs: {
-          PhoneInput: true,
-          BaseDialog: BaseDialogStub,
-        },
-      },
+      global: { stubs: { BaseDialog: BaseDialogStub } },
     });
 
   it('renders the button with label', () => {
@@ -72,9 +67,8 @@ describe('NewContractorButton', () => {
   it('shows phone validation error for invalid number', async () => {
     const wrapper = mountButton();
 
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', 'invalid-phone');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('12');
+    await flushPromises();
 
     expect(wrapper.text()).toContain('Telefonformat');
   });
@@ -82,9 +76,8 @@ describe('NewContractorButton', () => {
   it('does not show phone error when phone is empty', async () => {
     const wrapper = mountButton();
 
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', '');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('');
+    await flushPromises();
 
     expect(wrapper.text()).not.toContain('Telefonformat');
   });
@@ -92,13 +85,12 @@ describe('NewContractorButton', () => {
   it('clears phone error when phone becomes valid', async () => {
     const wrapper = mountButton();
 
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', 'invalid');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('12');
+    await flushPromises();
     expect(wrapper.text()).toContain('Telefonformat');
 
-    await phoneInput.vm.$emit('update:modelValue', '+4915123456789');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('15123456789');
+    await flushPromises();
     expect(wrapper.text()).not.toContain('Telefonformat');
   });
 

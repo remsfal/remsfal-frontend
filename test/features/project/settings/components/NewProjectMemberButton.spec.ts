@@ -99,7 +99,7 @@ describe('NewProjectMemberButton.vue', () => {
 
     const errorMessages = document.querySelectorAll('.p-message');
     const hasEmailError = Array.from(errorMessages).some((msg) =>
-      msg.textContent?.includes('projectSettings.newProjectMemberButton.invalidEmail'),
+      msg.textContent?.includes('validation.email'),
     );
     expect(hasEmailError).toBe(true);
   });

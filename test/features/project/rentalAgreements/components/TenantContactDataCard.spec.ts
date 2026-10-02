@@ -37,10 +37,7 @@ describe('TenantContactDataCard', () => {
   let wrapper: VueWrapper;
 
   const mountCard = () =>
-    mount(TenantContactDataCard, {
-      props: { projectId: 'project-1', tenantId: 'tenant-1' },
-      global: { stubs: { PhoneInput: true } },
-    });
+    mount(TenantContactDataCard, { props: { projectId: 'project-1', tenantId: 'tenant-1' } });
 
   beforeEach(() => {
     push.mockClear();
@@ -121,17 +118,12 @@ describe('TenantContactDataCard', () => {
   test('shows phone validation errors for invalid numbers and blocks submit', async () => {
     await flushPromises();
 
-    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
-    await phoneInputs[0].vm.$emit('update:modelValue', 'invalid');
+    await wrapper.find('#mobile-phone').setValue('12');
     await flushPromises();
 
     expect(wrapper.text()).toContain('Ungültiges Telefonformat');
 
-    const form = wrapper.findComponent(Form);
-    await form.vm.$emit('submit', {
-      valid: true,
-      states: {firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }},
-    });
+    await wrapper.find('form').trigger('submit');
     await flushPromises();
 
     expect(tenantService.updateTenant).not.toHaveBeenCalled();
@@ -190,9 +182,8 @@ describe('TenantContactDataCard', () => {
   test('updates the business and private phone numbers', async () => {
     await flushPromises();
 
-    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
-    await phoneInputs[1].vm.$emit('update:modelValue', '+491511234568');
-    await phoneInputs[2].vm.$emit('update:modelValue', '+491511234569');
+    await wrapper.find('#business-phone').setValue('1511234568');
+    await wrapper.find('#private-phone').setValue('1511234569');
     await flushPromises();
 
     expect(wrapper.text()).not.toContain('Ungültiges Telefonformat');
@@ -201,18 +192,13 @@ describe('TenantContactDataCard', () => {
   test('shows business and private phone validation errors for invalid numbers', async () => {
     await flushPromises();
 
-    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
-    await phoneInputs[1].vm.$emit('update:modelValue', 'invalid');
-    await phoneInputs[2].vm.$emit('update:modelValue', 'invalid');
+    await wrapper.find('#business-phone').setValue('12');
+    await wrapper.find('#private-phone').setValue('12');
     await flushPromises();
 
     expect(wrapper.text()).toContain('Ungültiges Telefonformat');
 
-    const form = wrapper.findComponent(Form);
-    await form.vm.$emit('submit', {
-      valid: true,
-      states: {firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }},
-    });
+    await wrapper.find('form').trigger('submit');
     await flushPromises();
 
     expect(tenantService.updateTenant).not.toHaveBeenCalled();
