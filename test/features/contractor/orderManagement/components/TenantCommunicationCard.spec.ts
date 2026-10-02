@@ -1,25 +1,51 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockInstance } from 'vitest';
+import { defineComponent } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import FileUpload from 'primevue/fileupload';
 import i18n from '@/i18n/i18n';
 import TenantCommunicationCard from '@/features/contractor/orderManagement/components/TenantCommunicationCard.vue';
-import { issueRequestService } from '@/features/contractor/orderManagement/services/IssueRequestService';
+import {issueRequestService,
+  type IssueRequestJson,} from '@/features/contractor/orderManagement/services/IssueRequestService';
 import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 import { useEventBus } from '@/stores/EventStore';
 
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
+// PrimeVue's real Dialog teleports its content and gates rendering behind transition
+// state, so BaseDialog is stubbed to render its slots directly whenever `visible` is true.
+const BaseDialogStub = defineComponent({
+  name: 'BaseDialog',
+  props: {
+    visible: { type: Boolean, default: false },
+    header: { type: String, default: '' },
+  },
+  emits: ['update:visible'],
+  template: `
+    <div v-if="visible" data-testid="withdraw-request-dialog">
+      <slot />
+      <slot name="footer" />
+    </div>
+  `,
+});
+
 const makeFile = (name: string, size = 3, lastModified = 1) =>
   new File(['x'.repeat(size)], name, { type: 'image/png', lastModified });
 
 describe('TenantCommunicationCard', () => {
+  let getRequestsSpy: MockInstance<typeof issueRequestService.getRequests>;
+
   beforeEach(() => {
+    vi.restoreAllMocks();
     vi.clearAllMocks();
+    getRequestsSpy = vi.spyOn(issueRequestService, 'getRequests').mockResolvedValue([]);
   });
 
   const mountCard = (request: QuotationRequestJson = { issueId: 'issue-1' }) =>
-    mount(TenantCommunicationCard, { props: { issueId: 'issue-1', request } });
+    mount(TenantCommunicationCard, {
+      props: { issueId: 'issue-1', request },
+      global: { stubs: { BaseDialog: BaseDialogStub } },
+    });
 
   describe('tenant and rental unit info', () => {
     it('renders tenant name and phone without email, preferring the mobile number', () => {
@@ -253,5 +279,135 @@ describe('TenantCommunicationCard', () => {
     await flushPromises();
 
     expect(messageInput(wrapper).attributes('disabled')).toBeUndefined();
+  });
+
+  describe('open requests', () => {
+    const openRequests: IssueRequestJson[] = [
+      {
+        issueRequestId: 'req-2', message: 'Zweite Anfrage', createdAt: '2026-10-02T10:00:00Z',
+      },
+      {
+        issueRequestId: 'req-1', message: 'Erste Anfrage', createdAt: '2026-10-01T10:00:00Z',
+        attachmentIds: ['att-1'],
+      },
+    ];
+
+    const entries = (wrapper: ReturnType<typeof mountCard>) =>
+      wrapper.findAll('[data-testid="open-request-entry"]');
+
+    it('loads the open requests of the issue and renders them oldest first with a withdraw button', async () => {
+      getRequestsSpy.mockResolvedValue(openRequests);
+      const wrapper = mountCard();
+      await flushPromises();
+
+      expect(getRequestsSpy).toHaveBeenCalledWith('issue-1');
+      const section = wrapper.get('[data-testid="open-requests"]');
+      expect(section.text()).toContain(i18n.global.t('orderManagement.tenantCommunication.openRequestsTitle'));
+      expect(entries(wrapper)[0].text()).toContain(i18n.global.t('orderManagement.tenantCommunication.openRequestTitle'));
+      expect(entries(wrapper)).toHaveLength(2);
+      expect(entries(wrapper)[0].text()).toContain('Erste Anfrage');
+      expect(entries(wrapper)[1].text()).toContain('Zweite Anfrage');
+      expect(wrapper.findAll('[data-testid="withdraw-request-button"]')).toHaveLength(2);
+      expect(section.find('span.w-40').exists()).toBe(false);
+    });
+
+    it('renders the attachments of a request as downloads', async () => {
+      getRequestsSpy.mockResolvedValue(openRequests);
+      const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const wrapper = mountCard();
+      await flushPromises();
+
+      const downloadLabel = i18n.global.t('orderManagement.timeline.downloadAttachmentLabel');
+      await entries(wrapper)[0].get(`button[aria-label="${downloadLabel}"]`).trigger('click');
+
+      expect(openSpy).toHaveBeenCalledWith(
+        '/ticketing/v1/order-management/issue-1/attachments/att-1/att-1',
+        '_blank',
+        'noopener,noreferrer',
+      );
+    });
+
+    it('hides the open requests section when there are none', async () => {
+      const wrapper = mountCard();
+      await flushPromises();
+
+      expect(wrapper.find('[data-testid="open-requests"]').exists()).toBe(false);
+    });
+
+    it('keeps the card usable when loading the open requests fails', async () => {
+      getRequestsSpy.mockRejectedValue(new Error('network'));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const wrapper = mountCard();
+      await flushPromises();
+
+      expect(wrapper.find('[data-testid="open-requests"]').exists()).toBe(false);
+      expect(wrapper.find('[data-testid="tenant-communication-message-input"]').exists()).toBe(true);
+      consoleSpy.mockRestore();
+    });
+
+    it('reloads the open requests after a request was sent', async () => {
+      vi.spyOn(issueRequestService, 'createRequest').mockResolvedValue(undefined);
+      const wrapper = mountCard();
+      await flushPromises();
+      getRequestsSpy.mockResolvedValue([openRequests[1]]);
+
+      await messageInput(wrapper).setValue('Erste Anfrage');
+      await submitButton(wrapper).trigger('click');
+      await flushPromises();
+
+      expect(getRequestsSpy).toHaveBeenCalledTimes(2);
+      expect(entries(wrapper)).toHaveLength(1);
+    });
+
+    it('withdraws a request after confirmation and removes it from the list', async () => {
+      getRequestsSpy.mockResolvedValue(openRequests);
+      const deleteSpy = vi.spyOn(issueRequestService, 'deleteRequest').mockResolvedValue(undefined);
+      const wrapper = mountCard();
+      await flushPromises();
+
+      expect(wrapper.find('[data-testid="withdraw-request-dialog"]').exists()).toBe(false);
+      await wrapper.findAll('[data-testid="withdraw-request-button"]')[0].trigger('click');
+      expect(wrapper.get('[data-testid="withdraw-request-dialog"]').text())
+        .toContain(i18n.global.t('orderManagement.tenantCommunication.withdrawRequestConfirm'));
+
+      await wrapper.get('[data-testid="withdraw-request-confirm"]').trigger('click');
+      await flushPromises();
+
+      expect(deleteSpy).toHaveBeenCalledWith('issue-1', 'req-1');
+      expect(entries(wrapper)).toHaveLength(1);
+      expect(entries(wrapper)[0].text()).toContain('Zweite Anfrage');
+      expect(wrapper.find('[data-testid="withdraw-request-dialog"]').exists()).toBe(false);
+      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
+    });
+
+    it('does not withdraw the request when the dialog is cancelled', async () => {
+      getRequestsSpy.mockResolvedValue(openRequests);
+      const deleteSpy = vi.spyOn(issueRequestService, 'deleteRequest').mockResolvedValue(undefined);
+      const wrapper = mountCard();
+      await flushPromises();
+
+      await wrapper.findAll('[data-testid="withdraw-request-button"]')[0].trigger('click');
+      await wrapper.get('[data-testid="withdraw-request-cancel"]').trigger('click');
+
+      expect(deleteSpy).not.toHaveBeenCalled();
+      expect(wrapper.find('[data-testid="withdraw-request-dialog"]').exists()).toBe(false);
+      expect(entries(wrapper)).toHaveLength(2);
+    });
+
+    it('shows an error toast and keeps the request when withdrawing fails', async () => {
+      getRequestsSpy.mockResolvedValue(openRequests);
+      vi.spyOn(issueRequestService, 'deleteRequest').mockRejectedValue(new Error('network'));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const wrapper = mountCard();
+      await flushPromises();
+
+      await wrapper.findAll('[data-testid="withdraw-request-button"]')[0].trigger('click');
+      await wrapper.get('[data-testid="withdraw-request-confirm"]').trigger('click');
+      await flushPromises();
+
+      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+      expect(entries(wrapper)).toHaveLength(2);
+      consoleSpy.mockRestore();
+    });
   });
 });

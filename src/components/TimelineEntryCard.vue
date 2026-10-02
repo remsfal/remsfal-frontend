@@ -26,12 +26,14 @@ interface Props {
    * bubble sits on the right with a light gray background (e.g. for IssueChatCard).
    */
   own?: boolean;
+  hideDate?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   attachments: () => [],
   testId: 'timeline-entry',
   own: false,
+  hideDate: false,
 });
 
 const { locale } = useI18n();
@@ -49,7 +51,7 @@ const openAttachmentDownload = (downloadUrl: string) => {
 
 <template>
   <div class="mb-2 flex items-start gap-3" :class="{ 'flex-row-reverse': own }">
-    <span class="w-40 shrink-0 text-sm text-gray-500" :class="{ 'text-right': own }">
+    <span v-if="!hideDate" class="w-40 shrink-0 text-sm text-gray-500" :class="{ 'text-right': own }">
       {{ formattedDate || '-' }}
     </span>
     <article
@@ -61,6 +63,7 @@ const openAttachmentDownload = (downloadUrl: string) => {
         <p class="text-lg font-semibold text-gray-900">
           {{ title }}
         </p>
+        <slot name="actions" />
       </div>
       <p v-if="message" class="text-gray-700 text-left whitespace-pre-line">
         {{ message }}

@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import FileUpload from 'primevue/fileupload';
 import BaseCard from '@/components/BaseCard.vue';
+import BaseDialog from '@/components/BaseDialog.vue';
+import TimelineEntryCard, { type TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
 import { useAppToast } from '@/composables/useAppToast';
 import { useTimelineComposer } from '@/composables/useTimeline';
+import { buildAttachmentDownloadUrl } from '@/composables/useTimelineItem';
 import { useEventBus } from '@/stores/EventStore';
-import { issueRequestService } from '@/features/contractor/orderManagement/services/IssueRequestService';
+import { issueRequestService, type IssueRequestJson } from '@/features/contractor/orderManagement/services/IssueRequestService';
 import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
 const props = defineProps<{ issueId: string; request: QuotationRequestJson }>();
@@ -75,11 +78,75 @@ const submit = async () => {
     resetComposer();
     // Backend copies the request into the contractor/tenant timeline on creation.
     eventBus.emit('issueRequest:created', { issueId: props.issueId });
+    await loadRequests();
   } catch (sendError) {
     console.error('Failed to create issue request:', sendError);
     appToast.error(t('orderManagement.tenantCommunication.sendError'));
   } finally {
     sending.value = false;
+  }
+};
+
+// Open requests: the backend deletes a request once the tenant answered it or it was withdrawn.
+const openRequests = ref<IssueRequestJson[]>([]);
+
+const sortedOpenRequests = computed(() =>
+  [...openRequests.value].sort((a, b) => (a.createdAt ?? '').localeCompare(b.createdAt ?? '')),
+);
+
+const loadRequests = async () => {
+  const issueId = props.issueId;
+  try {
+    const requests = await issueRequestService.getRequests(issueId);
+    if (issueId === props.issueId) {
+      openRequests.value = requests;
+    }
+  } catch (loadError) {
+    console.error('Failed to load issue requests:', loadError);
+    openRequests.value = [];
+  }
+};
+
+onMounted(loadRequests);
+watch(() => props.issueId, loadRequests);
+
+const buildAttachmentUrl = computed(() =>
+  buildAttachmentDownloadUrl(`/ticketing/v1/order-management/${encodeURIComponent(props.issueId)}`),
+);
+
+const requestAttachments = (request: IssueRequestJson): TimelineAttachmentView[] =>
+  (request.attachmentIds ?? []).map((attachmentId) => ({
+    attachmentId,
+    downloadUrl: buildAttachmentUrl.value({ attachmentId }),
+  }));
+
+const requestToWithdraw = ref<IssueRequestJson | null>(null);
+const withdrawing = ref(false);
+
+const withdrawDialogVisible = computed({
+  get: () => requestToWithdraw.value !== null,
+  set: (visible: boolean) => {
+    if (!visible && !withdrawing.value) {
+      requestToWithdraw.value = null;
+    }
+  },
+});
+
+const confirmWithdraw = async () => {
+  const requestId = requestToWithdraw.value?.issueRequestId;
+  if (!requestId) return;
+
+  withdrawing.value = true;
+  try {
+    await issueRequestService.deleteRequest(props.issueId, requestId);
+    openRequests.value = openRequests.value.filter((request) => request.issueRequestId !== requestId);
+    appToast.success(t('orderManagement.tenantCommunication.withdrawRequestSuccess'));
+  } catch (withdrawError) {
+    console.error('Failed to withdraw issue request:', withdrawError);
+    appToast.error(t('orderManagement.tenantCommunication.withdrawRequestError'));
+  } finally {
+    withdrawing.value = false;
+    requestToWithdraw.value = null;
   }
 };
 </script>
@@ -157,6 +224,55 @@ const submit = async () => {
           </div>
         </dl>
       </div>
+      <section v-if="sortedOpenRequests.length > 0" data-testid="open-requests" class="mb-4">
+        <TimelineEntryCard
+          v-for="openRequest in sortedOpenRequests"
+          :key="openRequest.issueRequestId"
+          hideDate
+          :title="t('orderManagement.tenantCommunication.openRequestTitle')"
+          :message="openRequest.message"
+          :attachments="requestAttachments(openRequest)"
+          :attachmentsLabel="t('orderManagement.timeline.attachmentsLabel')"
+          :downloadAttachmentLabel="t('orderManagement.timeline.downloadAttachmentLabel')"
+          testId="open-request-entry"
+        >
+          <template #actions>
+            <Button
+              data-testid="withdraw-request-button"
+              :label="t('orderManagement.tenantCommunication.withdrawRequest')"
+              icon="pi pi-times"
+              severity="danger"
+              :loading="withdrawing && requestToWithdraw?.issueRequestId === openRequest.issueRequestId"
+              @click="requestToWithdraw = openRequest"
+            />
+          </template>
+        </TimelineEntryCard>
+      </section>
+      <BaseDialog
+        v-model:visible="withdrawDialogVisible"
+        :header="t('orderManagement.tenantCommunication.withdrawRequest')"
+        data-testid="withdraw-request-dialog"
+      >
+        <p>{{ t('orderManagement.tenantCommunication.withdrawRequestConfirm') }}</p>
+        <template #footer>
+          <Button
+            data-testid="withdraw-request-cancel"
+            :label="t('button.cancel')"
+            severity="secondary"
+            text
+            :disabled="withdrawing"
+            @click="withdrawDialogVisible = false"
+          />
+          <Button
+            data-testid="withdraw-request-confirm"
+            :label="t('orderManagement.tenantCommunication.withdrawRequest')"
+            icon="pi pi-times"
+            severity="danger"
+            :loading="withdrawing"
+            @click="confirmWithdraw"
+          />
+        </template>
+      </BaseDialog>
       <div class="flex flex-col gap-2">
         <label for="tenant-communication-message" class="sr-only">
           {{ t('orderManagement.tenantCommunication.messagePlaceholder') }}
