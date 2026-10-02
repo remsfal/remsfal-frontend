@@ -490,10 +490,13 @@ export interface components {
       attachmentId?: components["schemas"]["UUID"];
       fileName?: string;
       contentType?: string;
-      objectName?: string;
-      uploaderId?: components["schemas"]["UUID"];
       uploadedBy?: string;
       createdAt?: components["schemas"]["Instant"];
+      /**
+       * Format: uri
+       * @description Root-relative URL to download the attachment for the requesting user
+       */
+      downloadUrl?: $Read<string>;
       issueId?: components["schemas"]["UUID"];
       uploaderContext?: components["schemas"]["UserContext"];
     };

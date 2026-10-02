@@ -8,7 +8,7 @@ import FileUpload from 'primevue/fileupload';
 import type { FileUploadUploaderEvent } from 'primevue/fileupload';
 import Image from 'primevue/image';
 import { issueService, type IssueAttachmentJson } from '@/features/project/issues/services/IssueService';
-import { isImageAttachment, getAttachmentTypeLabel, getIssueAttachmentUrl } from '@/helper/attachmentHelper';
+import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';
 
 const props = defineProps<{
   issueId: string;
@@ -34,10 +34,6 @@ const nonImageAttachmentGroups = computed(() => {
   }
   return Array.from(groups.entries()).map(([ext, count]) => ({ ext, count }));
 });
-
-function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
-  return getIssueAttachmentUrl(props.issueId, attachment);
-}
 
 async function handleUpload(event: FileUploadUploaderEvent) {
   const files = Array.isArray(event.files) ? event.files : [];
@@ -89,7 +85,7 @@ async function handleDelete(attachment: IssueAttachmentJson) {
           <Image
             v-for="attachment in imageAttachments"
             :key="attachment.attachmentId"
-            :src="getAttachmentDownloadUrl(attachment)"
+            :src="attachment.downloadUrl"
             :alt="attachment.fileName ?? 'issue-attachment'"
             preview
             imageClass="h-24 w-24 object-cover rounded"
@@ -115,7 +111,7 @@ async function handleDelete(attachment: IssueAttachmentJson) {
         >
           <div class="flex items-baseline gap-2 min-w-0">
             <a
-              :href="getAttachmentDownloadUrl(attachment)"
+              :href="attachment.downloadUrl"
               target="_blank"
               rel="noopener noreferrer"
               class="text-sm text-primary hover:underline truncate"
