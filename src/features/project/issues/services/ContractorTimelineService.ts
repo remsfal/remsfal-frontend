@@ -4,8 +4,11 @@ export type ContractorTimelineJson = Readable<ApiComponents['schemas']['Contract
 export type ContractorTimelineListJson = Readable<ApiComponents['schemas']['ContractorTimelineListJson']>;
 
 class ContractorTimelineService {
-  async getTimelineEntries(issueId: string): Promise<Required<ContractorTimelineListJson>> {
-    const options = { pathParams: { issueId } } as unknown as
+  async getTimelineEntries(issueId: string, organizationId?: string): Promise<Required<ContractorTimelineListJson>> {
+    const options = {
+      pathParams: { issueId },
+      ...(organizationId ? { params: { organizationId } } : {}),
+    } as unknown as
       RequestOptions<'/ticketing/v1/issues/{issueId}/contractor-timeline', 'get'>;
     const result = await apiClient.get(
       '/ticketing/v1/issues/{issueId}/contractor-timeline',
