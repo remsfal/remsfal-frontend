@@ -9,7 +9,6 @@ import BaseDialog from '@/components/BaseDialog.vue';
 import TimelineEntryCard, { type TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
 import { useAppToast } from '@/composables/useAppToast';
 import { useTimelineComposer } from '@/composables/useTimeline';
-import { buildAttachmentDownloadUrl } from '@/composables/useTimelineItem';
 import { useEventBus } from '@/stores/EventStore';
 import { issueRequestService, type IssueRequestJson } from '@/features/contractor/orderManagement/services/IssueRequestService';
 import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
@@ -109,15 +108,15 @@ const loadRequests = async () => {
 onMounted(loadRequests);
 watch(() => props.issueId, loadRequests);
 
-const buildAttachmentUrl = computed(() =>
-  buildAttachmentDownloadUrl(`/ticketing/v1/order-management/${encodeURIComponent(props.issueId)}`),
-);
-
 const requestAttachments = (request: IssueRequestJson): TimelineAttachmentView[] =>
-  (request.attachmentIds ?? []).map((attachmentId) => ({
-    attachmentId,
-    downloadUrl: buildAttachmentUrl.value({ attachmentId }),
-  }));
+  (request.attachmentIds ?? []).map((attachmentId) => {
+    const issueId = encodeURIComponent(props.issueId);
+    const encodedAttachmentId = encodeURIComponent(attachmentId);
+    return {
+      attachmentId,
+      downloadUrl: `/ticketing/v1/order-management/${issueId}/attachments/${encodedAttachmentId}/${encodedAttachmentId}`,
+    };
+  });
 
 const requestToWithdraw = ref<IssueRequestJson | null>(null);
 const withdrawing = ref(false);
