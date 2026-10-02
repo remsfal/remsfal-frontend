@@ -22,6 +22,15 @@ describe('ContractorTimelineService', () => {
     expect(result.timelines).toHaveLength(1);
   });
 
+  test('getTimelineEntries restricts the timeline to the given organization', async () => {
+    const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce({ timelines: [] });
+
+    await contractorTimelineService.getTimelineEntries('issue-1', 'org-1');
+
+    const [, options] = getSpy.mock.calls[0];
+    expect(options).toEqual({ pathParams: { issueId: 'issue-1' }, params: { organizationId: 'org-1' } });
+  });
+
   test('getTimelineEntries defaults to an empty list when the response is empty', async () => {
     vi.spyOn(apiClient, 'get').mockResolvedValueOnce({});
 

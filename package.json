@@ -71,9 +71,9 @@
     "primeicons": ">=7.0.0 <8.0.0",
     "primevue": ">=4.5.5 <5.0.0",
     "vue": "^3.5.43",
-    "vue-i18n": "^11.4.8",
+    "vue-i18n": "^11.4.12",
     "vue-router": "^5.2.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.2.0",
@@ -84,9 +84,9 @@
     "@primevue/auto-import-resolver": ">=4.5.5 <5.0.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@tsconfig/node-lts": "^24.0.0",
+    "@tsconfig/node-lts": "^24.0.1",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^26.6.2",
+    "@types/node": "^26.6.3",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vitest/coverage-istanbul": "^5.0.2",
     "@vue/test-utils": "^2.5.0",
