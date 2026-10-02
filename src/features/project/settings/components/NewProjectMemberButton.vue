@@ -11,6 +11,7 @@ import { useI18n } from 'vue-i18n';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import { type ProjectMemberWritableJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
 import BaseDialog from '@/components/BaseDialog.vue';
+import { emailSchema } from '@/helper/validationHelper';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newMember', email: string) => void>();
@@ -20,10 +21,7 @@ const { t } = useI18n();
 const visible = ref(false);
 
 const validationSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .email({ message: t('projectSettings.newProjectMemberButton.invalidEmail') }),
+  email: emailSchema(t),
   role: z
     .string()
     .min(1, { message: t('projectSettings.newProjectMemberButton.invalidRole') }),

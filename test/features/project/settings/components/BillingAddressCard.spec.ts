@@ -119,7 +119,7 @@ describe('BillingAddressCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(wrapper.text()).toContain('Nur Buchstaben und Leerzeichen erlaubt');
+    expect(wrapper.text()).toContain('Nur Buchstaben, Leerzeichen, Bindestriche und Apostrophe erlaubt');
     expect(projectService.updateProject).not.toHaveBeenCalled();
   });
 

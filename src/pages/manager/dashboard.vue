@@ -7,8 +7,10 @@ meta:
 
 <script setup lang="ts">
 import { ProjectsWelcomeMessage } from '@/features/manager/projects'
+import { ProjectDashboardIssueCard } from '@/features/project/issues'
 </script>
 
 <template>
   <ProjectsWelcomeMessage />
+  <ProjectDashboardIssueCard />
 </template>

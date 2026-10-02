@@ -11,22 +11,10 @@ const DialogStub = {
   emits: ['update:visible'],
 };
 
-const PhoneInputStub = {
-  name: 'PhoneInput',
-  template: '<div class="stub-phone" />',
-  props: ['modelValue'],
-  emits: ['update:modelValue'],
-};
-
 const mountDialog = (visible = true) =>
   mount(NewOrganizationDialog, {
     props: { visible },
-    global: {
-      stubs: {
-        Dialog: DialogStub,
-        PhoneInput: PhoneInputStub,
-      },
-    },
+    global: {stubs: {Dialog: DialogStub,},},
   });
 
 describe('NewOrganizationDialog', () => {
@@ -40,7 +28,7 @@ describe('NewOrganizationDialog', () => {
 
     it('renders the PhoneInput component', () => {
       const wrapper = mountDialog();
-      expect(wrapper.find('.stub-phone').exists()).toBe(true);
+      expect(wrapper.findComponent(PhoneInputComponent).exists()).toBe(true);
     });
 
     it('renders cancel and submit buttons', () => {
@@ -59,30 +47,27 @@ describe('NewOrganizationDialog', () => {
   describe('phone validation', () => {
     it('shows error message for invalid phone number', async () => {
       const wrapper = mountDialog();
-      const phoneInput = wrapper.findComponent(PhoneInputComponent);
 
-      await phoneInput.vm.$emit('update:modelValue', 'ungültig');
-      await wrapper.vm.$nextTick();
+      await wrapper.find('#org-phone').setValue('12');
+      await flushPromises();
 
       expect(wrapper.text()).toContain('Telefonformat');
     });
 
     it('shows no error when phone is empty', async () => {
       const wrapper = mountDialog();
-      const phoneInput = wrapper.findComponent(PhoneInputComponent);
 
-      await phoneInput.vm.$emit('update:modelValue', '');
-      await wrapper.vm.$nextTick();
+      await wrapper.find('#org-phone').setValue('');
+      await flushPromises();
 
       expect(wrapper.text()).not.toContain('Telefonformat');
     });
 
     it('shows no error for valid E.164 format', async () => {
       const wrapper = mountDialog();
-      const phoneInput = wrapper.findComponent(PhoneInputComponent);
 
-      await phoneInput.vm.$emit('update:modelValue', '+4915123456789');
-      await wrapper.vm.$nextTick();
+      await wrapper.find('#org-phone').setValue('15123456789');
+      await flushPromises();
 
       expect(wrapper.text()).not.toContain('Telefonformat');
     });
@@ -92,11 +77,11 @@ describe('NewOrganizationDialog', () => {
     it('does not call createOrganization when phone error is active', async () => {
       vi.spyOn(organizationService, 'createOrganization');
       const wrapper = mountDialog();
-      const phoneInput = wrapper.findComponent(PhoneInputComponent);
 
       // Set invalid phone
-      await phoneInput.vm.$emit('update:modelValue', 'ungueltig');
-      await wrapper.vm.$nextTick();
+      await wrapper.find('input[name="name"]').setValue('Test Organization');
+      await wrapper.find('#org-phone').setValue('12');
+      await flushPromises();
 
       // Try to submit the form
       await wrapper.find('form').trigger('submit');
@@ -151,17 +136,16 @@ describe('NewOrganizationDialog', () => {
 
     it('resets phone error after hide is triggered', async () => {
       const wrapper = mountDialog();
-      const phoneInput = wrapper.findComponent(PhoneInputComponent);
       const dialog = wrapper.findComponent(DialogStub);
 
       // Set invalid phone to trigger error
-      await phoneInput.vm.$emit('update:modelValue', 'invalid');
-      await wrapper.vm.$nextTick();
+      await wrapper.find('#org-phone').setValue('12');
+      await flushPromises();
       expect(wrapper.text()).toContain('Telefonformat');
 
-      // Trigger hide — phone value should reset
+      // Trigger hide — form is re-created, phone value resets
       await dialog.vm.$emit('update:visible', false);
-      await wrapper.vm.$nextTick();
+      await flushPromises();
 
       // Error disappears because phone is now empty
       expect(wrapper.text()).not.toContain('Telefonformat');

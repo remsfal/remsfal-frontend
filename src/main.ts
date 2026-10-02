@@ -83,10 +83,15 @@ app.component('FontAwesomeIcon', FontAwesomeIcon as Component);
 
 app.mount('#app');
 
-initDB(); // Initialize IndexedDB when the app starts
-
 // Register Service Worker
 registerServiceWorker();
 
 // Add Online Event Listener
 addOnlineEventListener();
+
+// Initialize IndexedDB when the app starts (last, so nothing above waits for it)
+try {
+  await initDB();
+} catch (error) {
+  console.error('IndexedDB initialization failed:', error);
+}

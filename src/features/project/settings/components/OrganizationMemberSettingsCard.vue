@@ -10,6 +10,7 @@ import { computed, onMounted, ref } from 'vue';
 import { type OrganizationMemberJson, organizationMemberService } from '@/services/OrganizationMemberService';
 import type { ProjectMemberJson } from '@/services/ProjectMemberService';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
+import { isValidUuid } from '@/helper/validationHelper';
 
 type OrganizationRow = { type: 'organization'; key: string; organization: OrganizationMemberJson };
 type MemberRow = { type: 'member'; key: string; member: ProjectMemberJson };
@@ -78,8 +79,7 @@ const updateOrganizationRole = async (org: OrganizationMemberJson) => {
 };
 
 const removeOrganization = async (organizationId: string) => {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(organizationId)) {
+  if (!isValidUuid(organizationId)) {
     console.error('Invalid organizationId format:', organizationId);
     return;
   }

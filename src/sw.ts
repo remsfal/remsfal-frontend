@@ -29,30 +29,44 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event: network-first strategy with fallback to the runtime cache
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const responseClone = response.clone();
-        caches.open(RUNTIME_CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
-        return response;
-      })
-      .catch(async () => {
-        const cached = await caches.match(event.request);
-        if (cached) {
-          return cached;
-        }
-        if (event.request.mode === 'navigate') {
-          const fallback = await caches.match('/index.html');
-          if (fallback) {
-            return fallback;
-          }
-        }
-        return Response.error();
-      }),
-  );
+  event.respondWith(networkFirst(event));
 });
+
+async function networkFirst(event: FetchEvent): Promise<Response> {
+  let response: Response;
+  try {
+    response = await fetch(event.request);
+  } catch {
+    return matchCachedResponse(event.request);
+  }
+  // Keep the SW alive until the cache write finishes; a failed write must not
+  // break the response, so errors are only logged.
+  event.waitUntil(updateRuntimeCache(event.request, response.clone()));
+  return response;
+}
+
+async function updateRuntimeCache(request: Request, response: Response) {
+  try {
+    const cache = await caches.open(RUNTIME_CACHE_NAME);
+    await cache.put(request, response);
+  } catch (error) {
+    console.error('[Service Worker] Failed to update runtime cache:', error);
+  }
+}
+
+async function matchCachedResponse(request: Request): Promise<Response> {
+  const cached = await caches.match(request);
+  if (cached) {
+    return cached;
+  }
+  if (request.mode === 'navigate') {
+    const fallback = await caches.match('/index.html');
+    if (fallback) {
+      return fallback;
+    }
+  }
+  return Response.error();
+}
 
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-projects') {

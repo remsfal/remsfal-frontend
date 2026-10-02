@@ -6,10 +6,7 @@ describe('TenantForm', () => {
   let wrapper: VueWrapper;
 
   const mountForm = (props: Record<string, unknown> = {}) =>
-    mount(TenantForm, {
-      props: { submitLabel: 'Mieter zur Liste hinzufügen', ...props },
-      global: { stubs: { PhoneInput: true } },
-    });
+    mount(TenantForm, { props: { submitLabel: 'Mieter zur Liste hinzufügen', ...props } });
 
   const submitButton = (w: VueWrapper) =>
     w.findAll('button').find((btn) => btn.attributes('type') === 'submit');
@@ -106,8 +103,8 @@ describe('TenantForm', () => {
     await wrapper.find('input[name="firstName"]').setValue('Erika');
     await wrapper.find('input[name="lastName"]').setValue('Musterfrau');
 
-    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
-    await phoneInputs[0].vm.$emit('update:modelValue', 'invalid');
+    // DE is preselected, so '12' becomes '+4912' — too short for E.164
+    await wrapper.find('#mobile-phone').setValue('12');
     await flushPromises();
 
     expect(wrapper.text()).toContain('Ungültiges Telefonformat');
@@ -118,8 +115,7 @@ describe('TenantForm', () => {
     await wrapper.find('input[name="firstName"]').setValue('Erika');
     await wrapper.find('input[name="lastName"]').setValue('Musterfrau');
 
-    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
-    await phoneInputs[0].vm.$emit('update:modelValue', '+491511234567');
+    await wrapper.find('#mobile-phone').setValue('1511234567');
     await flushPromises();
 
     await wrapper.find('form').trigger('submit');

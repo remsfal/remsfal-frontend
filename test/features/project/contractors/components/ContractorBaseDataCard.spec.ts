@@ -25,10 +25,7 @@ describe('ContractorBaseDataCard', () => {
   });
 
   const mountCard = () =>
-    mount(ContractorBaseDataCard, {
-      props: { projectId: 'proj-1', contractorId: 'c-1' },
-      global: { stubs: { PhoneInput: true } },
-    });
+    mount(ContractorBaseDataCard, {props: { projectId: 'proj-1', contractorId: 'c-1' },});
 
   it('calls getContractor with correct ids on mount', async () => {
     mountCard();
@@ -108,9 +105,8 @@ describe('ContractorBaseDataCard', () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', 'invalid-phone');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('12');
+    await flushPromises();
 
     expect(wrapper.text()).toContain('Telefonformat');
   });
@@ -119,9 +115,8 @@ describe('ContractorBaseDataCard', () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', '');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('');
+    await flushPromises();
 
     expect(wrapper.text()).not.toContain('Telefonformat');
   });
@@ -131,14 +126,13 @@ describe('ContractorBaseDataCard', () => {
     await flushPromises();
 
     // Valid phone - no error
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', '+491511234567');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('1511234567');
+    await flushPromises();
     expect(wrapper.text()).not.toContain('Telefonformat');
 
     // Invalid phone - error shows
-    await phoneInput.vm.$emit('update:modelValue', '12345');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('12');
+    await flushPromises();
     expect(wrapper.text()).toContain('Telefonformat');
   });
 
@@ -152,9 +146,8 @@ describe('ContractorBaseDataCard', () => {
       await nameInput.setValue('Updated Name');
     }
 
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', 'invalid');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('12');
+    await flushPromises();
 
     const button = wrapper.find('button[type="submit"]');
     expect(button.attributes('disabled')).toBeDefined();
@@ -204,19 +197,14 @@ describe('ContractorBaseDataCard', () => {
     expect(contractorService.updateContractor).not.toHaveBeenCalled();
   });
 
-  it('does not call updateContractor when phoneError is set', async () => {
+  it('does not call updateContractor when the phone number is invalid', async () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', 'invalid-phone');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#phone').setValue('12');
+    await flushPromises();
 
-    const form = wrapper.findComponent(Form);
-    await form.vm.$emit('submit', {
-      valid: true,
-      states: { companyName: { value: 'Updated GmbH' } },
-    });
+    await wrapper.find('form').trigger('submit');
     await flushPromises();
 
     expect(contractorService.updateContractor).not.toHaveBeenCalled();
