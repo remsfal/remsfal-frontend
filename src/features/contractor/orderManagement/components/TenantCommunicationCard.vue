@@ -242,6 +242,8 @@ const confirmWithdraw = async () => {
               :label="t('orderManagement.tenantCommunication.withdrawRequest')"
               icon="pi pi-times"
               severity="danger"
+              size="small"
+              text
               :loading="withdrawing && requestToWithdraw?.issueRequestId === openRequest.issueRequestId"
               @click="requestToWithdraw = openRequest"
             />

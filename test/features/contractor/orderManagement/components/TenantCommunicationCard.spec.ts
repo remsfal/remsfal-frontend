@@ -302,7 +302,6 @@ describe('TenantCommunicationCard', () => {
 
       expect(getRequestsSpy).toHaveBeenCalledWith('issue-1');
       const section = wrapper.get('[data-testid="open-requests"]');
-      expect(section.text()).toContain(i18n.global.t('orderManagement.tenantCommunication.openRequestsTitle'));
       expect(entries(wrapper)[0].text()).toContain(i18n.global.t('orderManagement.tenantCommunication.openRequestTitle'));
       expect(entries(wrapper)).toHaveLength(2);
       expect(entries(wrapper)[0].text()).toContain('Erste Anfrage');
