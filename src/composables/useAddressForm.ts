@@ -8,30 +8,16 @@ import { useAppToast } from '@/composables/useAppToast';
 import AddressService from '@/services/AddressService';
 import type { AddressJson } from '@/services/AddressService';
 import { COUNTRIES } from '@/constants/countries';
-
-export const streetRegex = /^(?=.*[A-Za-zÄÖÜäöüß])(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s./-]+$/;
-export const nameRegex = /^[A-Za-zÄÖÜäöüß\s-]+$/;
+import { nameSchema, streetSchema } from '@/helper/validationHelper';
 
 type Translate = ReturnType<typeof useI18n>['t'];
 
 export function buildAddressSchema(t: Translate, extra?: z.ZodRawShape) {
   return z.object({
-    street: z
-      .string()
-      .trim()
-      .min(1, { message: t('validation.required') })
-      .regex(streetRegex, { message: t('address.validation.streetInvalid') }),
+    street: streetSchema(t),
     zip: z.string().trim().min(1, { message: t('validation.required') }),
-    city: z
-      .string()
-      .trim()
-      .min(1, { message: t('validation.required') })
-      .regex(nameRegex, { message: t('address.validation.nameInvalid') }),
-    province: z
-      .string()
-      .trim()
-      .min(1, { message: t('validation.required') })
-      .regex(nameRegex, { message: t('address.validation.nameInvalid') }),
+    city: nameSchema(t),
+    province: nameSchema(t),
     countryCode: z.string().min(2, { message: t('address.validation.countryRequired') }),
     ...extra,
   });

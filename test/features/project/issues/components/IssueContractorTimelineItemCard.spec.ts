@@ -69,25 +69,15 @@ describe('IssueContractorTimelineItemCard component', () => {
     expect(props.message).toBe('SOME_UNKNOWN_STATUS');
   });
 
-  it('falls back to the attachment id as filename when fileName is missing', () => {
-    const wrapper = mountItemCard(
-      makeTimeline({ attachments: [{ attachmentId: 'fallback-att', contentType: 'application/pdf' }] }),
-    );
-
-    expect(entryCardProps(wrapper).attachments).toEqual([
-      expect.objectContaining({
-        attachmentId: 'fallback-att',
-        downloadUrl: '/ticketing/v1/issues/issue-1/attachments/fallback-att/fallback-att',
-      }),
-    ]);
-  });
-
-  it('builds the attachment download URL under the manager issue attachments path', () => {
+  it('passes the backend-provided attachment download URL through unchanged', () => {
     const wrapper = mountItemCard(
       makeTimeline({
         attachments: [
           {
-            attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf'
+            attachmentId: 'att-1',
+            fileName: 'report.pdf',
+            contentType: 'application/pdf',
+            downloadUrl: '/ticketing/v1/issues/issue-1/attachments/att-1/report.pdf',
           },
         ],
       }),

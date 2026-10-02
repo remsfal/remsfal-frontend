@@ -27,17 +27,15 @@ describe('TenantIssueTimelineItemCard component', () => {
     expect(props.testId).toBe('tenant-issue-timeline-entry');
   });
 
-  it('builds attachment download URLs, falling back to the attachment id as filename', () => {
+  it('passes the backend-provided attachment download URL through unchanged', () => {
     const wrapper = mountItemCard(
       makeTimeline({
-        attachments: [
-          {
-            attachmentId: 'att-1',
-            fileName: 'report.pdf',
-            contentType: 'application/pdf',
-          },
-          { attachmentId: 'fallback-att', contentType: 'application/pdf' },
-        ],
+        attachments: [{
+          attachmentId: 'att-1',
+          fileName: 'report.pdf',
+          contentType: 'application/pdf',
+          downloadUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-1/report.pdf',
+        }],
       }),
     );
 
@@ -46,27 +44,6 @@ describe('TenantIssueTimelineItemCard component', () => {
         attachmentId: 'att-1',
         downloadUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-1/report.pdf',
       }),
-      expect.objectContaining({
-        attachmentId: 'fallback-att',
-        downloadUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/fallback-att/fallback-att',
-      }),
     ]);
-  });
-
-  it('encodes issue, attachment and filename in the generated download URL', () => {
-    const wrapper = mountItemCard(
-      makeTimeline({
-        attachments: [{
-          attachmentId: 'att id/1',
-          fileName: 'file name #1.pdf',
-          contentType: 'application/pdf',
-        }],
-      }),
-      'issue id/ä',
-    );
-
-    expect(entryCardProps(wrapper).attachments?.[0]?.downloadUrl).toBe(
-      '/ticketing/v1/tenant-relations/issues/issue%20id%2F%C3%A4/attachments/att%20id%2F1/file%20name%20%231.pdf',
-    );
   });
 });

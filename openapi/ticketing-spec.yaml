@@ -494,14 +494,16 @@ components:
           type: string
         contentType:
           type: string
-        objectName:
-          type: string
-        uploaderId:
-          $ref: "#/components/schemas/UUID"
         uploadedBy:
           type: string
         createdAt:
           $ref: "#/components/schemas/Instant"
+        downloadUrl:
+          type: string
+          format: uri
+          description: Root-relative URL to download the attachment for the requesting
+            user
+          readOnly: true
         issueId:
           $ref: "#/components/schemas/UUID"
         uploaderContext:
@@ -2586,6 +2588,12 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
+      - description: Optional ID of the contractor organization to restrict the timeline
+          to
+        name: organizationId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: Timeline entries retrieved successfully
@@ -2598,7 +2606,8 @@ paths:
         "403":
           description: User does not have permission to access this request
         "404":
-          description: The quotation request does not exist
+          description: The quotation request does not exist or no contractor of the
+            given organization is assigned
       security:
       - SecurityScheme: []
     post:
@@ -3567,6 +3576,12 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
+      - description: Optional ID of the contractor organization to restrict the timeline
+          to
+        name: organizationId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: Timeline entries retrieved successfully
@@ -3579,7 +3594,8 @@ paths:
         "403":
           description: User does not have permission to access this request
         "404":
-          description: The quotation request does not exist
+          description: The quotation request does not exist or no contractor of the
+            given organization is assigned
       security:
       - SecurityScheme: []
     post:

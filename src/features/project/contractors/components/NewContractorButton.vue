@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
 import Button from 'primevue/button';
@@ -12,6 +12,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseDialog from '@/components/BaseDialog.vue';
 import PhoneInput from '@/components/PhoneInput.vue';
+import { phoneSchema, optionalEmailSchema } from '@/helper/validationHelper';
 import {type ContractorJson,
   type ContractorWritableJson,
   contractorService,} from '@/features/project/contractors/services/ContractorService';
@@ -22,21 +23,15 @@ const emit = defineEmits<(e: 'newContractor', contractor: ContractorJson) => voi
 const { t } = useI18n();
 const appToast = useAppToast();
 
-const phoneRegex = /^\+[1-9]\d{4,14}$/;
-
 const visible = ref(false);
-const phone = ref('');
 const initialValues = ref({
-  companyName: '', email: '', contactPerson: '', trade: '', remarks: ''
+  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: ''
 });
 
 const validationSchema = z.object({
   companyName: z.string().trim().min(1, { message: t('contractor.new.validation.name') }),
-  email: z
-    .string()
-    .trim()
-    .optional()
-    .refine((v) => !v || z.string().email().safeParse(v).success, {message: t('contractor.new.validation.email'),}),
+  email: optionalEmailSchema(t),
+  phone: phoneSchema(t),
   contactPerson: z.string().trim().optional(),
   trade: z.string().trim().optional(),
   remarks: z.string().trim().optional(),
@@ -44,20 +39,14 @@ const validationSchema = z.object({
 
 const resolver = zodResolver(validationSchema);
 
-const phoneError = computed(() => {
-  if (!phone.value) return null;
-  return phoneRegex.test(phone.value) ? null : t('validation.phone');
-});
-
 function resetForm() {
   initialValues.value = {
-    companyName: '', email: '', contactPerson: '', trade: '', remarks: ''
+    companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: ''
   };
-  phone.value = '';
 }
 
 const onSubmit = async (event: FormSubmitEvent) => {
-  if (!event.valid || phoneError.value) return;
+  if (!event.valid) return;
 
   const s = event.states;
   const companyName = s.companyName?.value?.trim() ?? '';
@@ -65,7 +54,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
   const contractor: ContractorWritableJson = {
     name: companyName,
     email: s.email?.value?.trim() || undefined,
-    phone: phone.value || undefined,
+    phone: s.phone?.value || undefined,
     contactPerson: s.contactPerson?.value?.trim() || undefined,
     trade: s.trade?.value?.trim() || undefined,
     remarks: s.remarks?.value?.trim() || undefined,
@@ -143,13 +132,9 @@ const onSubmit = async (event: FormSubmitEvent) => {
 
         <div class="flex flex-col gap-1">
           <label for="phone" class="font-semibold">{{ t('contractor.new.phone') }}</label>
-          <PhoneInput
-            :modelValue="phone"
-            inputId="phone"
-            @update:modelValue="(v) => (phone = v)"
-          />
-          <Message v-if="phoneError" severity="error" size="small" variant="simple">
-            {{ phoneError }}
+          <PhoneInput name="phone" inputId="phone" />
+          <Message v-if="$form.phone?.invalid" severity="error" size="small" variant="simple">
+            {{ $form.phone.error?.message }}
           </Message>
         </div>
 
@@ -175,7 +160,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
           type="submit"
           :label="t('button.add')"
           icon="pi pi-plus"
-          :disabled="!$form.companyName?.valid || !$form.companyName?.dirty || !!phoneError"
+          :disabled="!$form.companyName?.valid || !$form.companyName?.dirty || !!$form.phone?.invalid"
         />
       </div>
     </Form>
