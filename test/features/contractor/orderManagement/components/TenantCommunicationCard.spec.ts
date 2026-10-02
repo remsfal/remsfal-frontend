@@ -44,10 +44,10 @@ describe('TenantCommunicationCard', () => {
       const wrapper = mountCard({
         tenants: [
           {
-            id: 't-1', name: 'Max Mieter', businessPhoneNumber: '+49302222',
+            id: 't-1', name: 'Max Mieter', email: 'max@example.org', businessPhoneNumber: '+49302222',
           },
           {
-            id: 't-2', name: 'Erika Muster', privatePhoneNumber: '+49303333',
+            id: 't-2', name: 'Erika Muster', email: 'erika@example.org', privatePhoneNumber: '+49303333',
           },
         ],
       });
