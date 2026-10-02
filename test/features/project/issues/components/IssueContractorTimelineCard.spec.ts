@@ -87,6 +87,7 @@ describe('IssueContractorTimelineCard component', () => {
 
     const load = wrapper.getComponent(TimelineCard).props('load');
     expect(await load()).toEqual([makeTimeline({ organizationId: 'org-1' })]);
+    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-1', 'org-1');
   });
 
   it('treats multiple quotation requests to the same organization as a single contractor', async () => {
@@ -123,9 +124,12 @@ describe('IssueContractorTimelineCard component', () => {
     vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items: [] });
     vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValueOnce({ timelines: [] });
 
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockClear();
+
     const wrapper = await mountCardFull('issue-1');
 
     expect(wrapper.getComponent(TimelineCard).props('hideComposer')).toBe(true);
+    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-1', undefined);
   });
 
   it('shows one tab per requested contractor and scopes each timeline to its organization', async () => {
@@ -142,79 +146,42 @@ describe('IssueContractorTimelineCard component', () => {
       }),
     ];
     vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items });
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValue({
-      timelines: [
-        makeTimeline({ timelineId: 't-1', organizationId: 'org-1' }),
-        makeTimeline({ timelineId: 't-2', organizationId: 'org-2' }),
-      ],
-    });
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockReset();
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockImplementation(
+      async (_issueId, orgId) => ({ timelines: [makeTimeline({ timelineId: `t-${orgId}`, organizationId: orgId })] }),
+    );
 
     const wrapper = await mountCardFull('issue-1');
 
     expect(wrapper.find('[data-testid="contractor-tab-org-1"]').text()).toBe('ACME GmbH');
     expect(wrapper.find('[data-testid="contractor-tab-org-2"]').text()).toBe('Muster Bau');
 
-    const timelineCards = wrapper.findAllComponents(TimelineCard);
-    expect(timelineCards).toHaveLength(2);
-    expect(timelineCards[0].props('title')).toBe('ACME GmbH');
-    expect(timelineCards[1].props('title')).toBe('Muster Bau');
-
-    expect(await timelineCards[0].props('load')()).toEqual([makeTimeline({ timelineId: 't-1', organizationId: 'org-1' })]);
-    expect(await timelineCards[1].props('load')()).toEqual([makeTimeline({ timelineId: 't-2', organizationId: 'org-2' })]);
-    
+    // Tabs are lazy: only the active panel is mounted, so only its timeline is requested.
+    const firstCards = wrapper.findAllComponents(TimelineCard);
+    expect(firstCards).toHaveLength(1);
+    expect(firstCards[0].props('title')).toBe('ACME GmbH');
     expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
+    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-1', 'org-1');
+
+    await wrapper.find('[data-testid="contractor-tab-org-2"]').trigger('click');
+    await flushPromises();
+
+    const secondCards = wrapper.findAllComponents(TimelineCard);
+    expect(secondCards).toHaveLength(1);
+    expect(secondCards[0].props('title')).toBe('Muster Bau');
+    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledTimes(2);
+    expect(contractorTimelineService.getTimelineEntries).toHaveBeenLastCalledWith('issue-1', 'org-2');
+    expect(await secondCards[0].props('load')())
+      .toEqual([makeTimeline({ timelineId: 't-org-2', organizationId: 'org-2' })]);
 
     vi.mocked(contractorTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
-    await timelineCards[1].props('send')({ purpose: 'MESSAGE_SENT', message: 'Hi' }, []);
+    await secondCards[0].props('send')({ purpose: 'MESSAGE_SENT', message: 'Hi' }, []);
     expect(contractorTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
       'issue-1',
       'org-2',
       { purpose: 'MESSAGE_SENT', message: 'Hi' },
       [],
     );
-  });
-
-  it('requests the timeline only once for all contractor tabs and again after sending a message', async () => {
-    const items = [
-      makeQuotationRequest({ id: 'qr-1', organizationId: 'org-1' }),
-      makeQuotationRequest({ id: 'qr-2', organizationId: 'org-2' }),
-    ];
-    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items });
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockClear();
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValue({
-      timelines: [
-        makeTimeline({ timelineId: 't-1', organizationId: 'org-1' }),
-        makeTimeline({ timelineId: 't-2', organizationId: 'org-2' }),
-      ],
-    });
-
-    const wrapper = await mountCardFull('issue-1');
-
-    const timelineCards = wrapper.findAllComponents(TimelineCard);
-    expect(timelineCards).toHaveLength(2);
-    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
-
-    vi.mocked(contractorTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
-    await timelineCards[0].props('send')({ purpose: 'MESSAGE_SENT', message: 'Hi' }, []);
-    await timelineCards[0].props('load')();
-    await timelineCards[1].props('load')();
-
-    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledTimes(2);
-  });
-
-  it('does not cache a failed timeline request', async () => {
-    vi.mocked(quotationRequestService.getQuotationRequests)
-      .mockResolvedValueOnce({ items: [makeQuotationRequest()] });
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockReset();
-    vi.mocked(contractorTimelineService.getTimelineEntries)
-      .mockRejectedValueOnce(new Error('boom'))
-      .mockResolvedValueOnce({ timelines: [makeTimeline({ organizationId: 'org-1' })] });
-
-    const wrapper = await mountCardShallow('issue-1');
-    const load = wrapper.getComponent(TimelineCard).props('load');
-
-    await expect(load()).rejects.toThrow('boom');
-    expect(await load()).toEqual([makeTimeline({ organizationId: 'org-1' })]);
   });
 
   it('renders IssueContractorTimelineItemCard for each entry with item and issueId', async () => {

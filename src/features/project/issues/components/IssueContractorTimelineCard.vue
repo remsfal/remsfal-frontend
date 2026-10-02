@@ -29,25 +29,9 @@ const eventBus = useEventBus();
 const contractorsLoaded = ref(false);
 const contractors = ref<RequestedContractor[]>([]);
 
-let cachedTimeline: { issueId: string; request: Promise<ContractorTimelineJson[]> } | null = null;
-
-const invalidateTimeline = () => {
-  cachedTimeline = null;
-};
-
-const fetchTimeline = () => {
-  if (cachedTimeline?.issueId !== props.issueId) {
-    const request = contractorTimelineService.getTimelineEntries(props.issueId).then((result) => result.timelines ?? []);
-    request.catch(invalidateTimeline);
-    cachedTimeline = { issueId: props.issueId, request };
-  }
-  return cachedTimeline.request;
-};
-
 const loadRequestedContractors = async () => {
   contractorsLoaded.value = false;
   contractors.value = [];
-  invalidateTimeline();
   try {
     const result = await quotationRequestService.getQuotationRequests(props.issueId);
     const seen = new Map<string, string>();
@@ -70,15 +54,14 @@ watch(() => props.issueId, loadRequestedContractors);
 
 const unsubscribeQuotationRequestCreated = eventBus.on('quotationRequest:created', ({ issueId }) => {
   if (issueId === props.issueId) {
-    invalidateTimeline();
     loadRequestedContractors();
   }
 });
 onUnmounted(unsubscribeQuotationRequestCreated);
 
-const loadTimelineEntries = async (organizationId: string) => {
-  const timelines = await fetchTimeline();
-  return timelines.filter((entry) => entry.organizationId === organizationId);
+const loadTimelineEntries = async (organizationId?: string) => {
+  const result = await contractorTimelineService.getTimelineEntries(props.issueId, organizationId);
+  return result.timelines;
 };
 
 const sendTimelineEntry = async (organizationId: string, payload: TimelineWritableJson, files: File[]) => {
@@ -88,7 +71,6 @@ const sendTimelineEntry = async (organizationId: string, payload: TimelineWritab
     { purpose: payload.purpose, message: payload.message ?? '' },
     files,
   );
-  invalidateTimeline();
 };
 
 const sendHandlerFor = (organizationId: string) => (payload: TimelineWritableJson, files: File[]) =>
@@ -99,12 +81,8 @@ const sendToSoleContractor = async (payload: TimelineWritableJson, files: File[]
   await sendTimelineEntry(contractors.value[0].organizationId, payload, files);
 };
 
-const loadForSoleOrAllContractors = async () => {
-  if (contractors.value.length === 1) {
-    return loadTimelineEntries(contractors.value[0].organizationId);
-  }
-  return fetchTimeline();
-};
+const loadForSoleOrAllContractors = () =>
+  loadTimelineEntries(contractors.value.length === 1 ? contractors.value[0].organizationId : undefined);
 </script>
 
 <template>
@@ -117,7 +95,8 @@ const loadForSoleOrAllContractors = async () => {
         </div>
       </template>
       <template #content>
-        <Tabs :value="contractors[0].organizationId">
+        <!-- lazy: only the active panel is mounted, so only its timeline is requested -->
+        <Tabs :value="contractors[0].organizationId" lazy>
           <TabList>
             <Tab
               v-for="contractor in contractors"

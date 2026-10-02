@@ -183,7 +183,8 @@ scenarios.forEach((scenario) => {
       nextTimelineResponse: object = firstTimelineResponse,
     ) {
       let timelineRequestCount = 0;
-      cy.intercept('GET', `${scenario.timelineBase}/${scenario.timelineSegment}`, (req) => {
+      // Trailing '*' so this also matches the contractor scenario's '?organizationId=...' query string.
+      cy.intercept('GET', `${scenario.timelineBase}/${scenario.timelineSegment}*`, (req) => {
         timelineRequestCount += 1;
         req.reply({
           statusCode: 200,
@@ -256,7 +257,7 @@ scenarios.forEach((scenario) => {
     it('shows error state when timeline request fails', () => {
       cy.intercept(
         'GET',
-        `${scenario.timelineBase}/${scenario.timelineSegment}`,
+        `${scenario.timelineBase}/${scenario.timelineSegment}*`,
         { statusCode: 500, body: {} },
       ).as('getTimelineError');
 
@@ -378,27 +379,31 @@ describe('Contractor communication timeline (multiple contractors)', () => {
   });
 
   it('shows one tab per contractor, scopes timeline entries per organization, and sends to the active tab', () => {
-    cy.intercept('GET', contractorTimelineUrl, {
-      statusCode: 200,
-      body: {
-        timelines: [
-          {
-            timelineId: 'ct-1',
-            organizationId: 'org-1',
-            purpose: 'MESSAGE_SENT',
-            message: 'Nachricht an ACME',
-            createdAt: '2026-01-02T10:00:00.000Z',
-          },
-          {
-            timelineId: 'ct-2',
-            organizationId: 'org-2',
-            purpose: 'MESSAGE_SENT',
-            message: 'Nachricht an Muster Bau',
-            createdAt: '2026-01-02T10:05:00.000Z',
-          },
-        ],
-        visibleToTenant: false,
+    const timelines = [
+      {
+        timelineId: 'ct-1',
+        organizationId: 'org-1',
+        purpose: 'MESSAGE_SENT',
+        message: 'Nachricht an ACME',
+        createdAt: '2026-01-02T10:00:00.000Z',
       },
+      {
+        timelineId: 'ct-2',
+        organizationId: 'org-2',
+        purpose: 'MESSAGE_SENT',
+        message: 'Nachricht an Muster Bau',
+        createdAt: '2026-01-02T10:05:00.000Z',
+      },
+    ];
+    // The backend filters by the '?organizationId=...' query parameter, so reply with that organization's entries only.
+    cy.intercept('GET', `${contractorTimelineUrl}*`, (req) => {
+      req.reply({
+        statusCode: 200,
+        body: {
+          timelines: timelines.filter((entry) => entry.organizationId === req.query.organizationId),
+          visibleToTenant: false,
+        },
+      });
     }).as('getContractorTimeline');
     // Trailing '*' matches the '?organizationId=...' query string the create call appends.
     cy.intercept('POST', `${contractorTimelineUrl}*`, { statusCode: 201, body: {} }).as('createContractorTimeline');
@@ -406,7 +411,9 @@ describe('Contractor communication timeline (multiple contractors)', () => {
     cy.visit(`/projects/${projectId}/issues/${issueId}`);
     cy.wait('@getIssueDetail', { timeout: 10000 });
     cy.wait('@getQuotationRequests', { timeout: 10000 });
-    cy.wait('@getContractorTimeline', { timeout: 10000 });
+    // Tabs are lazy, so only the active tab (org-1) requests its timeline on load.
+    cy.wait('@getContractorTimeline', { timeout: 10000 })
+      .its('request.url').should('include', 'organizationId=org-1');
 
     cy.get('[data-testid="contractor-tab-org-1"]').should('contain.text', 'ACME GmbH');
     cy.get('[data-testid="contractor-tab-org-2"]').should('contain.text', 'Muster Bau');
@@ -414,9 +421,12 @@ describe('Contractor communication timeline (multiple contractors)', () => {
     // Org-1 is the active tab by default and only shows its own entry.
     cy.get('[data-testid="contractor-tab-panel-org-1"]').should('contain.text', 'Nachricht an ACME');
     cy.get('[data-testid="contractor-tab-panel-org-1"]').should('not.contain.text', 'Nachricht an Muster Bau');
+    cy.get('[data-testid="contractor-tab-panel-org-2"]').should('not.exist');
 
     cy.get('[data-testid="contractor-tab-org-2"]').click();
+    cy.wait('@getContractorTimeline').its('request.url').should('include', 'organizationId=org-2');
     cy.get('[data-testid="contractor-tab-panel-org-2"]').should('contain.text', 'Nachricht an Muster Bau');
+    cy.get('[data-testid="contractor-tab-panel-org-2"]').should('not.contain.text', 'Nachricht an ACME');
     cy.get('[data-testid="contractor-tab-panel-org-2"]')
       .find('[data-testid="timeline-message-input"]')
       .type('Antwort an Muster Bau');
