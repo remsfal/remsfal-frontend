@@ -83,7 +83,10 @@ app.component('FontAwesomeIcon', FontAwesomeIcon as Component);
 
 app.mount('#app');
 
-initDB(); // Initialize IndexedDB when the app starts
+// Initialize IndexedDB when the app starts
+initDB().catch((error: unknown) => {
+  console.error('IndexedDB initialization failed:', error);
+});
 
 // Register Service Worker
 registerServiceWorker();
