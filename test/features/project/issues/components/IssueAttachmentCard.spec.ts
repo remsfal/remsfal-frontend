@@ -179,7 +179,23 @@ describe('IssueAttachmentCard.vue', () => {
     expect(movTile?.text()).toContain('+1');
   });
 
-  test('renders fallback values for image preview and download url', async () => {
+  test('uses the backend-provided download url for image preview and link', async () => {
+    const wrapper = mountCard([
+      {
+        attachmentId: 'img-1',
+        fileName: 'photo.png',
+        contentType: 'image/png',
+        downloadUrl: '/ticketing/v1/issues/issue-1/attachments/img-1/photo.png',
+      },
+    ]);
+
+    await flushPromises();
+
+    expect(wrapper.find('a').attributes('href')).toBe('/ticketing/v1/issues/issue-1/attachments/img-1/photo.png');
+    expect(wrapper.find('img').attributes('src')).toBe('/ticketing/v1/issues/issue-1/attachments/img-1/photo.png');
+  });
+
+  test('renders fallback alt text when the image has no file name', async () => {
     const wrapper = mountCard([
       {
         attachmentId: undefined,
@@ -190,8 +206,6 @@ describe('IssueAttachmentCard.vue', () => {
 
     await flushPromises();
 
-    const links = wrapper.findAll('a');
-    expect(links[0].attributes('href')).toBe('/ticketing/v1/issues/issue-1/attachments//');
     expect(wrapper.find('img[alt="issue-attachment"]').exists()).toBe(true);
   });
 
