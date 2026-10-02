@@ -12,6 +12,7 @@ import Message from 'primevue/message';
 import Button from 'primevue/button';
 import BaseCard from '@/components/BaseCard.vue';
 import PhoneInput from '@/components/PhoneInput.vue';
+import { phoneSchema } from '@/helper/validationHelper';
 import { organizationService } from '@/services/OrganizationService';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -23,11 +24,10 @@ const appToast = useAppToast();
 const organizationStore = useOrganizationStore();
 const sessionStore = useUserSessionStore();
 
-const phoneRegex = /^\+[1-9]\d{4,14}$/;
-
 const schema = z.object({
   name: z.string().trim().min(3, { message: t('organization.validation.nameRequired') }),
   trade: z.string().trim().optional(),
+  phone: phoneSchema(t),
 });
 
 const resolver = zodResolver(schema);
@@ -44,7 +44,9 @@ const serverValues = reactive({
 const currentValues = reactive({
   name: '', phone: '', email: '', trade: '' 
 });
-const initialValues = ref({ name: '', trade: '' });
+const initialValues = ref({
+  name: '', trade: '', phone: ''
+});
 const formKey = ref(0);
 const isLoading = ref(true);
 
@@ -55,12 +57,6 @@ const isDirty = computed(
     currentValues.email !== serverValues.email ||
     currentValues.trade !== serverValues.trade,
 );
-
-const phoneError = computed(() => {
-  const v = currentValues.phone;
-  if (!v) return null;
-  return phoneRegex.test(v) ? null : t('validation.phone');
-});
 
 onMounted(async () => {
   try {
@@ -79,7 +75,9 @@ onMounted(async () => {
     currentValues.name = loaded.name;
     currentValues.phone = loaded.phone;
     currentValues.trade = loaded.trade;
-    initialValues.value = { name: loaded.name, trade: loaded.trade };
+    initialValues.value = {
+      name: loaded.name, trade: loaded.trade, phone: loaded.phone
+    };
     formKey.value++;
   } catch {
     // silently ignore load error — form stays empty
@@ -89,11 +87,11 @@ onMounted(async () => {
 });
 
 async function onSubmit(event: FormSubmitEvent) {
-  if (!event.valid || phoneError.value) return;
+  if (!event.valid) return;
   const s = event.states;
   const payload = {
     name: s.name?.value || undefined,
-    phone: currentValues.phone || undefined,
+    phone: s.phone?.value || undefined,
     email: currentValues.email || undefined,
     trade: s.trade?.value || undefined,
   };
@@ -107,7 +105,9 @@ async function onSubmit(event: FormSubmitEvent) {
     };
     Object.assign(serverValues, saved);
     Object.assign(currentValues, saved);
-    initialValues.value = { name: saved.name, trade: saved.trade };
+    initialValues.value = {
+      name: saved.name, trade: saved.trade, phone: saved.phone
+    };
     formKey.value++;
     organizationStore.setOrganization(updated);
     appToast.success(t('organization.saveSuccess'));
@@ -161,17 +161,17 @@ async function onSubmit(event: FormSubmitEvent) {
             <div class="flex flex-col gap-1">
               <label for="org-phone" class="font-medium">{{ t('organization.phone') }}</label>
               <PhoneInput
-                :modelValue="currentValues.phone"
+                name="phone"
                 inputId="org-phone"
                 @update:modelValue="(v) => (currentValues.phone = v)"
               />
               <Message
-                v-if="phoneError && currentValues.phone"
+                v-if="$form.phone?.invalid"
                 severity="error"
                 size="small"
                 variant="simple"
               >
-                {{ phoneError }}
+                {{ $form.phone.error?.message }}
               </Message>
             </div>
 
@@ -195,7 +195,7 @@ async function onSubmit(event: FormSubmitEvent) {
               type="submit"
               :label="t('button.save')"
               icon="pi pi-save"
-              :disabled="!isDirty || !!phoneError"
+              :disabled="!isDirty || !!$form.phone?.invalid"
             />
           </div>
         </div>

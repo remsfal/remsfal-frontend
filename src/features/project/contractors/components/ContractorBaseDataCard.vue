@@ -12,6 +12,7 @@ import Message from 'primevue/message';
 import Button from 'primevue/button';
 import BaseCard from '@/components/BaseCard.vue';
 import PhoneInput from '@/components/PhoneInput.vue';
+import { phoneSchema, optionalEmailSchema } from '@/helper/validationHelper';
 import { contractorService } from '@/features/project/contractors/services/ContractorService';
 
 const props = defineProps<{ projectId: string; contractorId: string }>();
@@ -19,15 +20,10 @@ const props = defineProps<{ projectId: string; contractorId: string }>();
 const { t } = useI18n();
 const appToast = useAppToast();
 
-const phoneRegex = /^\+[1-9]\d{4,14}$/;
-
 const schema = z.object({
   companyName: z.string().trim().min(1, { message: t('contractor.new.validation.name') }),
-  email: z
-    .string()
-    .trim()
-    .optional()
-    .refine((v) => !v || z.string().email().safeParse(v).success, {message: t('contractor.new.validation.email'),}),
+  email: optionalEmailSchema(t),
+  phone: phoneSchema(t),
   contactPerson: z.string().trim().optional(),
   trade: z.string().trim().optional(),
   remarks: z.string().trim().optional(),
@@ -53,12 +49,6 @@ const isDirty = computed(() =>
   ),
 );
 
-const phoneError = computed(() => {
-  const v = currentValues.phone;
-  if (!v) return null;
-  return phoneRegex.test(v) ? null : t('validation.phone');
-});
-
 onMounted(async () => {
   try {
     const c = await contractorService.getContractor(props.projectId, props.contractorId);
@@ -82,12 +72,12 @@ onMounted(async () => {
 });
 
 async function onSubmit(event: FormSubmitEvent) {
-  if (!event.valid || phoneError.value) return;
+  if (!event.valid) return;
   const s = event.states;
   const payload = {
     name: s.companyName?.value || undefined,
     email: currentValues.email || undefined,
-    phone: currentValues.phone || undefined,
+    phone: s.phone?.value || undefined,
     contactPerson: currentValues.contactPerson || undefined,
     trade: currentValues.trade || undefined,
     remarks: currentValues.remarks || undefined,
@@ -147,17 +137,17 @@ async function onSubmit(event: FormSubmitEvent) {
             <div class="flex flex-col gap-1">
               <label for="phone" class="font-medium">{{ t('contractor.detail.phone') }}</label>
               <PhoneInput
-                :modelValue="currentValues.phone"
+                name="phone"
                 inputId="phone"
                 @update:modelValue="(v) => (currentValues.phone = v)"
               />
               <Message
-                v-if="phoneError && currentValues.phone"
+                v-if="$form.phone?.invalid"
                 severity="error"
                 size="small"
                 variant="simple"
               >
-                {{ phoneError }}
+                {{ $form.phone.error?.message }}
               </Message>
             </div>
 
@@ -221,7 +211,7 @@ async function onSubmit(event: FormSubmitEvent) {
               type="submit"
               :label="t('button.save')"
               icon="pi pi-save"
-              :disabled="!isDirty || !!phoneError"
+              :disabled="!isDirty || !!$form.phone?.invalid"
             />
           </div>
         </div>

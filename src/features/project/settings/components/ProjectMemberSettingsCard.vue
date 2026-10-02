@@ -9,6 +9,7 @@ import DataTable from 'primevue/datatable';
 import { onMounted, ref } from 'vue';
 import { type ProjectMemberJson, projectMemberService } from '@/services/ProjectMemberService';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
+import { isValidUuid } from '@/helper/validationHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -48,8 +49,7 @@ const updateMemberRole = async (member: ProjectMemberJson) => {
 };
 
 const removeMember = async (memberId: string) => {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(memberId)) {
+  if (!isValidUuid(memberId)) {
     console.error('Invalid memberId format:', memberId);
     return;
   }

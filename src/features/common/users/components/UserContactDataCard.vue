@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, reactive } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
 import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import type { FormSubmitEvent, FormFieldState } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseCard from '@/components/BaseCard.vue';
@@ -14,40 +14,46 @@ import Button from 'primevue/button';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
 import Skeleton from 'primevue/skeleton';
-import BaseDialog from '@/components/BaseDialog.vue';
 import { userService } from '@/features/common/users/services/UserService';
 import { type Locale } from '@/i18n/i18n';
 import { toISODateString } from '@/helper/dateHelper';
+import { nameSchema, phoneSchema, optionalEmailSchema } from '@/helper/validationHelper';
 
 const { t } = useI18n();
 const i18n = useI18n();
 const appToast = useAppToast();
 
-const nameRegex = /^[A-Za-zÄÖÜäöüß\s]+$/;
-const phoneRegex = /^\+[1-9]\d{4,14}$/;
-
 const schema = z.object({
-  firstName: z
-    .string()
-    .trim()
-    .min(1, { message: t('validation.required') })
-    .regex(nameRegex, { message: t('accountSettings.validation.nameInvalid') }),
-  lastName: z
-    .string()
-    .trim()
-    .min(1, { message: t('validation.required') })
-    .regex(nameRegex, { message: t('accountSettings.validation.nameInvalid') }),
+  firstName: nameSchema(t),
+  lastName: nameSchema(t),
   placeOfBirth: z.string().trim().or(z.literal('')),
+  alternativeEmail: optionalEmailSchema(t),
+  mobilePhoneNumber: phoneSchema(t),
+  businessPhoneNumber: phoneSchema(t),
+  privatePhoneNumber: phoneSchema(t),
   locale: z.string(),
 });
 
 const resolver = zodResolver(schema);
 const formKey = ref(0);
-const formFields = ['firstName', 'lastName', 'placeOfBirth', 'locale'];
+const formFields = [
+  'firstName',
+  'lastName',
+  'placeOfBirth',
+  'alternativeEmail',
+  'mobilePhoneNumber',
+  'businessPhoneNumber',
+  'privatePhoneNumber',
+  'locale',
+];
 const initialValues = ref<Record<string, string>>({
   firstName: '',
   lastName: '',
   placeOfBirth: '',
+  alternativeEmail: '',
+  mobilePhoneNumber: '',
+  businessPhoneNumber: '',
+  privatePhoneNumber: '',
   locale: i18n.locale.value,
 });
 
@@ -58,39 +64,24 @@ const dateOfBirthDirty = computed(
   () => toISODateString(dateOfBirthValue.value) !== toISODateString(serverDateOfBirth.value),
 );
 
-// Phone fields tracked separately (not via PrimeVue Forms)
-const serverPhones = reactive({
-  mobile: '', business: '', private: '' 
-});
-const currentPhones = reactive({
-  mobile: '', business: '', private: '' 
-});
-
-const phoneDirty = computed(
-  () =>
-    currentPhones.mobile !== serverPhones.mobile ||
-    currentPhones.business !== serverPhones.business ||
-    currentPhones.private !== serverPhones.private,
-);
-
-function phoneFieldError(val: string) {
-  return val && !phoneRegex.test(val) ? t('validation.phone') : null;
-}
-const mobilePhoneError = computed(() => phoneFieldError(currentPhones.mobile));
-const businessPhoneError = computed(() => phoneFieldError(currentPhones.business));
-const privatePhoneError = computed(() => phoneFieldError(currentPhones.private));
-const hasPhoneError = computed(() => !!mobilePhoneError.value || !!businessPhoneError.value || !!privatePhoneError.value);
-
 const email = ref('');
-const additionalEmails = ref<string[]>([]);
-const altEmailDirty = ref(false);
+
+const serverAltEmail = ref('');
+const altEmailLocked = ref(false);
+const altEmailVerified = ref(false);
 const altEmailSuccess = ref(false);
 const altEmailError = ref(false);
 
-const dialogVisible = ref(false);
-const alternativeEmailInput = ref('');
-const isEmailInvalid = ref(false);
-const emailErrorMessage = ref('');
+const altEmailUnverified = computed(() => altEmailLocked.value && !altEmailVerified.value);
+
+function applyAltEmail(additionalEmails?: string[], verifiedAdditionalEmails?: string[]) {
+  serverAltEmail.value = additionalEmails?.[0] ?? '';
+  altEmailLocked.value = !!serverAltEmail.value;
+  altEmailVerified.value = !!verifiedAdditionalEmails?.some(
+    (verified) => verified.toLowerCase() === serverAltEmail.value.toLowerCase(),
+  );
+}
+
 const isLoading = ref(true);
 
 const localeOptions = [
@@ -110,6 +101,10 @@ onMounted(async () => {
       firstName: profile.firstName || '',
       lastName: profile.lastName || '',
       placeOfBirth: profile.placeOfBirth || '',
+      alternativeEmail: profile.additionalEmails?.[0] ?? '',
+      mobilePhoneNumber: profile.mobilePhoneNumber || '',
+      businessPhoneNumber: profile.businessPhoneNumber || '',
+      privatePhoneNumber: profile.privatePhoneNumber || '',
       locale: profile.locale ? validateLocale(profile.locale) : i18n.locale.value,
     };
     if (profile.locale) {
@@ -118,16 +113,7 @@ onMounted(async () => {
     serverDateOfBirth.value = dateOfBirthValue.value = profile.dateOfBirth
       ? new Date(profile.dateOfBirth)
       : null;
-    const phones = {
-      mobile: profile.mobilePhoneNumber || '',
-      business: profile.businessPhoneNumber || '',
-      private: profile.privatePhoneNumber || '',
-    };
-    Object.assign(serverPhones, phones);
-    Object.assign(currentPhones, phones);
-    additionalEmails.value = Array.isArray(profile.additionalEmails)
-      ? [...profile.additionalEmails]
-      : [];
+    applyAltEmail(profile.additionalEmails, profile.verifiedAdditionalEmails);
     formKey.value++;
   } catch (error) {
     console.error('Failed to load user profile', error);
@@ -136,71 +122,39 @@ onMounted(async () => {
   }
 });
 
-const displayAlternativeEmail = computed<string | null>(() =>
-  additionalEmails.value.length > 0 ? (additionalEmails.value[0] ?? null) : null,
-);
-
-function validateEmailFormat(emailStr: string) {
-  return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailStr);
-}
-
-function resetAltEmailDialog() {
-  alternativeEmailInput.value = '';
-  isEmailInvalid.value = false;
-  emailErrorMessage.value = '';
-}
-
-function saveAlternativeEmail() {
-  const entered = alternativeEmailInput.value.trim();
-  const primary = email.value.trim().toLowerCase();
-
-  if (!entered || !validateEmailFormat(entered)) {
-    isEmailInvalid.value = true;
-    emailErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidEmail');
-    return;
-  }
-  if (entered.toLowerCase() === primary) {
-    isEmailInvalid.value = true;
-    emailErrorMessage.value = t('accountSettings.userProfile.alternativeEmailNotEqualPrimary');
-    return;
-  }
-  isEmailInvalid.value = false;
-  emailErrorMessage.value = '';
-  additionalEmails.value = [entered];
-  altEmailDirty.value = true;
-  altEmailSuccess.value = false;
-  altEmailError.value = false;
-  dialogVisible.value = false;
-  alternativeEmailInput.value = '';
-}
-
-function deleteAlternativeEmail() {
-  additionalEmails.value = [];
-  altEmailDirty.value = true;
+function deleteAlternativeEmail(form: Record<string, FormFieldState>) {
+  if (form.alternativeEmail) form.alternativeEmail.value = '';
+  altEmailLocked.value = false;
   altEmailSuccess.value = false;
   altEmailError.value = false;
 }
 
 async function onSubmit(event: FormSubmitEvent) {
-  if (!event.valid || hasPhoneError.value) return;
+  if (!event.valid) return;
   const s = event.states;
+  const enteredAltEmail = (s.alternativeEmail?.value ?? '').trim();
+  const altEmailChanged = enteredAltEmail !== serverAltEmail.value;
   try {
     const updatedUser = await userService.updateUser({
       firstName: s.firstName?.value || undefined,
       lastName: s.lastName?.value || undefined,
       placeOfBirth: s.placeOfBirth?.value?.trim() || undefined,
       dateOfBirth: toISODateString(dateOfBirthValue.value) || undefined,
-      mobilePhoneNumber: currentPhones.mobile || undefined,
-      businessPhoneNumber: currentPhones.business || undefined,
-      privatePhoneNumber: currentPhones.private || undefined,
+      mobilePhoneNumber: s.mobilePhoneNumber?.value || undefined,
+      businessPhoneNumber: s.businessPhoneNumber?.value || undefined,
+      privatePhoneNumber: s.privatePhoneNumber?.value || undefined,
       locale: s.locale?.value || undefined,
-      additionalEmails: altEmailDirty.value ? additionalEmails.value : undefined,
+      additionalEmails: altEmailChanged ? (enteredAltEmail ? [enteredAltEmail] : []) : undefined,
     });
 
     initialValues.value = {
       firstName: updatedUser.firstName || '',
       lastName: updatedUser.lastName || '',
       placeOfBirth: updatedUser.placeOfBirth || '',
+      alternativeEmail: updatedUser.additionalEmails?.[0] ?? '',
+      mobilePhoneNumber: updatedUser.mobilePhoneNumber || '',
+      businessPhoneNumber: updatedUser.businessPhoneNumber || '',
+      privatePhoneNumber: updatedUser.privatePhoneNumber || '',
       locale: updatedUser.locale ? validateLocale(updatedUser.locale) : i18n.locale.value,
     };
     serverDateOfBirth.value = dateOfBirthValue.value = updatedUser.dateOfBirth
@@ -208,26 +162,21 @@ async function onSubmit(event: FormSubmitEvent) {
       : null;
     formKey.value++;
 
-    const savedPhones = {
-      mobile: updatedUser.mobilePhoneNumber || '',
-      business: updatedUser.businessPhoneNumber || '',
-      private: updatedUser.privatePhoneNumber || '',
-    };
-    Object.assign(serverPhones, savedPhones);
-    Object.assign(currentPhones, savedPhones);
+    appToast.success(t('accountSettings.userProfile.saveSuccess'), { summary: t('success.saved') });
 
-    additionalEmails.value = Array.isArray(updatedUser.additionalEmails)
-      ? [...updatedUser.additionalEmails]
-      : [];
-    altEmailDirty.value = false;
+    applyAltEmail(updatedUser.additionalEmails, updatedUser.verifiedAdditionalEmails);
     altEmailSuccess.value = true;
     altEmailError.value = false;
-
-    appToast.success(t('accountSettings.userProfile.saveSuccess'), { summary: t('success.saved') });
+    if (altEmailChanged && enteredAltEmail) {
+      appToast.success(t('accountSettings.userProfile.alternativeEmailSaveSuccess'), { summary: t('success.saved') });
+    }
   } catch (error) {
     console.error('Failed to update user profile', error);
     altEmailSuccess.value = false;
     altEmailError.value = true;
+    if (altEmailChanged) {
+      appToast.error(t('accountSettings.userProfile.alternativeEmailSaveError'));
+    }
   }
 }
 </script>
@@ -318,29 +267,46 @@ async function onSubmit(event: FormSubmitEvent) {
 
             <!-- Alternative Email -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium">
+              <label class="font-medium" for="alternativeEmail">
                 {{ t('accountSettings.userProfile.alternativeEmail') }}
               </label>
-              <div v-if="displayAlternativeEmail" class="flex items-center gap-2">
-                <InputText :value="displayAlternativeEmail" class="flex-1" disabled />
+              <div class="flex items-center gap-2">
+                <InputText
+                  id="alternativeEmail"
+                  name="alternativeEmail"
+                  :disabled="altEmailLocked"
+                  autocomplete="off"
+                  class="flex-1"
+                  inputmode="email"
+                  type="text"
+                />
                 <i v-if="altEmailSuccess" class="pi pi-check text-green-600 font-bold" />
                 <i v-if="altEmailError" class="pi pi-times text-red-600 font-bold" />
                 <Button
+                  v-if="altEmailLocked"
+                  :aria-label="t('button.delete')"
                   icon="pi pi-trash"
                   severity="secondary"
                   type="button"
-                  @click="deleteAlternativeEmail"
+                  @click="deleteAlternativeEmail($form)"
                 />
               </div>
-              <div>
-                <Button
-                  :disabled="!!displayAlternativeEmail"
-                  :label="t('accountSettings.userProfile.addAlternativeEmail')"
-                  icon="pi pi-plus"
-                  type="button"
-                  @click="dialogVisible = true"
-                />
-              </div>
+              <Message
+                v-if="$form.alternativeEmail?.invalid"
+                severity="error"
+                size="small"
+                variant="simple"
+              >
+                {{ $form.alternativeEmail.error?.message }}
+              </Message>
+              <Message
+                v-if="altEmailUnverified"
+                severity="warn"
+                size="small"
+                variant="simple"
+              >
+                {{ t('accountSettings.userProfile.alternativeEmailUnverified') }}
+              </Message>
             </div>
 
             <!-- Mobile Phone -->
@@ -348,18 +314,14 @@ async function onSubmit(event: FormSubmitEvent) {
               <label for="mobile-phone" class="font-medium">
                 {{ t('accountSettings.userProfile.mobilePhone') }}
               </label>
-              <PhoneInput
-                inputId="mobile-phone"
-                :modelValue="currentPhones.mobile"
-                @update:modelValue="(v) => (currentPhones.mobile = v)"
-              />
+              <PhoneInput inputId="mobile-phone" name="mobilePhoneNumber" />
               <Message
-                v-if="mobilePhoneError && currentPhones.mobile"
+                v-if="$form.mobilePhoneNumber?.invalid"
                 severity="error"
                 size="small"
                 variant="simple"
               >
-                {{ mobilePhoneError }}
+                {{ $form.mobilePhoneNumber.error?.message }}
               </Message>
             </div>
 
@@ -368,18 +330,14 @@ async function onSubmit(event: FormSubmitEvent) {
               <label for="business-phone" class="font-medium">
                 {{ t('accountSettings.userProfile.businessPhone') }}
               </label>
-              <PhoneInput
-                inputId="business-phone"
-                :modelValue="currentPhones.business"
-                @update:modelValue="(v) => (currentPhones.business = v)"
-              />
+              <PhoneInput inputId="business-phone" name="businessPhoneNumber" />
               <Message
-                v-if="businessPhoneError && currentPhones.business"
+                v-if="$form.businessPhoneNumber?.invalid"
                 severity="error"
                 size="small"
                 variant="simple"
               >
-                {{ businessPhoneError }}
+                {{ $form.businessPhoneNumber.error?.message }}
               </Message>
             </div>
 
@@ -388,18 +346,14 @@ async function onSubmit(event: FormSubmitEvent) {
               <label for="private-phone" class="font-medium">
                 {{ t('accountSettings.userProfile.privatePhone') }}
               </label>
-              <PhoneInput
-                inputId="private-phone"
-                :modelValue="currentPhones.private"
-                @update:modelValue="(v) => (currentPhones.private = v)"
-              />
+              <PhoneInput inputId="private-phone" name="privatePhoneNumber" />
               <Message
-                v-if="privatePhoneError && currentPhones.private"
+                v-if="$form.privatePhoneNumber?.invalid"
                 severity="error"
                 size="small"
                 variant="simple"
               >
-                {{ privatePhoneError }}
+                {{ $form.privatePhoneNumber.error?.message }}
               </Message>
             </div>
 
@@ -427,10 +381,7 @@ async function onSubmit(event: FormSubmitEvent) {
           <!-- Save Button -->
           <div class="flex justify-end">
             <Button
-              :disabled="
-                !(formFields.some(k => $form[k]?.dirty) || altEmailDirty || phoneDirty || dateOfBirthDirty) ||
-                  hasPhoneError
-              "
+              :disabled="!(formFields.some(k => $form[k]?.dirty) || dateOfBirthDirty) || !$form.valid"
               :label="t('button.save')"
               icon="pi pi-save"
               type="submit"
@@ -440,44 +391,4 @@ async function onSubmit(event: FormSubmitEvent) {
       </Form>
     </template>
   </BaseCard>
-
-  <!-- Alternative Email Dialog -->
-  <BaseDialog
-    v-model:visible="dialogVisible"
-    :header="t('accountSettings.userProfile.addAlternativeEmail')"
-    @hide="resetAltEmailDialog"
-  >
-    <div class="flex flex-col gap-4">
-      <div class="flex flex-col gap-1">
-        <label class="font-semibold" for="alt-email-input">
-          {{ t('accountSettings.userProfile.email') }}
-        </label>
-        <InputText
-          id="alt-email-input"
-          v-model="alternativeEmailInput"
-          :invalid="isEmailInvalid"
-          :placeholder="t('accountSettings.userProfile.alternativeEmail')"
-          autocomplete="off"
-          fluid
-          type="email"
-        />
-        <small v-if="isEmailInvalid" class="text-red-500">
-          {{ emailErrorMessage }}
-        </small>
-      </div>
-      <div class="flex justify-end gap-2">
-        <Button
-          :label="t('button.cancel')"
-          severity="secondary"
-          type="button"
-          @click="dialogVisible = false"
-        />
-        <Button
-          :label="t('button.add')"
-          type="button"
-          @click="saveAlternativeEmail"
-        />
-      </div>
-    </div>
-  </BaseDialog>
 </template>
