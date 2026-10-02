@@ -874,7 +874,10 @@ export interface paths {
     /** Retrieve the timeline entries for a contractor's communication about an issue. */
     get: {
       parameters: {
-        query?: never;
+        query?: {
+          /** @description Optional ID of the contractor organization to restrict the timeline to */
+          organizationId?: components["schemas"]["UUID"];
+        };
         header?: never;
         path: {
           /** @description ID of the issue */
@@ -907,7 +910,7 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description The quotation request does not exist */
+        /** @description The quotation request does not exist or no contractor of the given organization is assigned */
         404: {
           headers: {
             [name: string]: unknown;
@@ -2589,7 +2592,10 @@ export interface paths {
     /** Retrieve the timeline entries for a contractor's communication about an issue. */
     get: {
       parameters: {
-        query?: never;
+        query?: {
+          /** @description Optional ID of the contractor organization to restrict the timeline to */
+          organizationId?: components["schemas"]["UUID"];
+        };
         header?: never;
         path: {
           /** @description ID of the issue */
@@ -2622,7 +2628,7 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description The quotation request does not exist */
+        /** @description The quotation request does not exist or no contractor of the given organization is assigned */
         404: {
           headers: {
             [name: string]: unknown;

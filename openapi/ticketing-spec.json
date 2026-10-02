@@ -3234,6 +3234,13 @@
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
+        }, {
+          "description" : "Optional ID of the contractor organization to restrict the timeline to",
+          "name" : "organizationId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
         } ],
         "responses" : {
           "200" : {
@@ -3253,7 +3260,7 @@
             "description" : "User does not have permission to access this request"
           },
           "404" : {
-            "description" : "The quotation request does not exist"
+            "description" : "The quotation request does not exist or no contractor of the given organization is assigned"
           }
         },
         "security" : [ {
@@ -4647,6 +4654,13 @@
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
+        }, {
+          "description" : "Optional ID of the contractor organization to restrict the timeline to",
+          "name" : "organizationId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
         } ],
         "responses" : {
           "200" : {
@@ -4666,7 +4680,7 @@
             "description" : "User does not have permission to access this request"
           },
           "404" : {
-            "description" : "The quotation request does not exist"
+            "description" : "The quotation request does not exist or no contractor of the given organization is assigned"
           }
         },
         "security" : [ {
