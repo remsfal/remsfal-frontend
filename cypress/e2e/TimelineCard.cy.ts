@@ -274,7 +274,12 @@ scenarios.forEach((scenario) => {
           purpose: 'MESSAGE_SENT',
           message: 'Datei angehängt',
           createdAt: '2026-01-02T10:00:00.000Z',
-          attachments: [{ attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf' }],
+          attachments: [{
+            attachmentId: 'att-1',
+            fileName: 'report.pdf',
+            contentType: 'application/pdf',
+            downloadUrl: `${scenario.attachmentBase}/att-1/report.pdf`,
+          }],
         })],
       });
 

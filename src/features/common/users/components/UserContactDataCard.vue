@@ -134,6 +134,10 @@ async function onSubmit(event: FormSubmitEvent) {
   const s = event.states;
   const enteredAltEmail = (s.alternativeEmail?.value ?? '').trim();
   const altEmailChanged = enteredAltEmail !== serverAltEmail.value;
+  let additionalEmails: string[] | undefined;
+  if (altEmailChanged) {
+    additionalEmails = enteredAltEmail ? [enteredAltEmail] : [];
+  }
   try {
     const updatedUser = await userService.updateUser({
       firstName: s.firstName?.value || undefined,
@@ -144,7 +148,7 @@ async function onSubmit(event: FormSubmitEvent) {
       businessPhoneNumber: s.businessPhoneNumber?.value || undefined,
       privatePhoneNumber: s.privatePhoneNumber?.value || undefined,
       locale: s.locale?.value || undefined,
-      additionalEmails: altEmailChanged ? (enteredAltEmail ? [enteredAltEmail] : []) : undefined,
+      additionalEmails,
     });
 
     initialValues.value = {

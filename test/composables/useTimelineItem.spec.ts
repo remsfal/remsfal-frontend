@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
-import { buildAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
+import { useTimelineItem } from '@/composables/useTimelineItem';
 import type { TenantTimelineJson } from '@/composables/useTimeline';
 
 const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
@@ -19,12 +19,7 @@ const TestComponent = defineComponent({
     issueId: { type: String, required: true },
   },
   setup(props) {
-    return {
-      ...useTimelineItem(props, {
-        titleNamespace: 'tenantIssues.timeline',
-        buildAttachmentUrl: buildAttachmentDownloadUrl(`/base/${props.issueId}`),
-      }),
-    };
+    return useTimelineItem(props, { titleNamespace: 'tenantIssues.timeline' });
   },
   template: '<div></div>',
 });
@@ -110,25 +105,27 @@ describe('useTimelineItem', () => {
     expect(wrapper.vm.message).toBe('Hallo');
   });
 
-  it('builds a normalized attachment list under the given base path, ignoring entries without an id', () => {
+  it('builds a normalized attachment list from the backend download URLs, ignoring entries without id or URL', () => {
     const wrapper = mountTimelineItem(makeTimeline({
       attachments: [
         {
           attachmentId: 'att-1',
           fileName: 'report.pdf',
           contentType: 'application/pdf',
+          downloadUrl: '/backend/provided/att-1/report.pdf',
         },
-        { fileName: 'missing-id.txt' },
+        { fileName: 'missing-id.txt', downloadUrl: '/backend/provided/missing-id.txt' },
+        { attachmentId: 'att-2', fileName: 'missing-url.txt' },
       ],
     }));
 
     expect(wrapper.vm.attachments).toEqual([
-      expect.objectContaining({
+      {
         attachmentId: 'att-1',
         contentType: 'application/pdf',
         fileName: 'report.pdf',
-        downloadUrl: '/base/issue-1/attachments/att-1/report.pdf',
-      }),
+        downloadUrl: '/backend/provided/att-1/report.pdf',
+      },
     ]);
   });
 
