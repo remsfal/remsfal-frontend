@@ -14,11 +14,11 @@ export function registerServiceWorker() {
 
 export function enableBackgroundSync() {
   if ('serviceWorker' in navigator && 'SyncManager' in window) {
-    navigator.serviceWorker.ready.then((registration) => {
-      registration.sync.register('sync-projects').catch((error: unknown) => {
+    navigator.serviceWorker.ready
+      .then((registration) => registration.sync.register('sync-projects'))
+      .catch((error: unknown) => {
         console.error('[App] Background sync failed to register:', error);
       });
-    });
   }
 }
 

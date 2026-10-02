@@ -155,6 +155,48 @@ describe('IssueService with MSW (http)', () => {
     expect(capturedUrl?.searchParams.getAll('type')).toEqual([]);
   });
 
+  test('getLatestIssues returns a list of issues with default limit', async () => {
+    let capturedUrl: URL | undefined;
+    server.use(
+      http.get('/ticketing/v1/issues/latest', ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ issues: [{ id: 'latest-1', title: 'Latest Issue' }], size: 1 });
+      }),
+    );
+
+    const result = await issueService.getLatestIssues();
+
+    expect(capturedUrl?.searchParams.get('limit')).toBe('5');
+    expect(capturedUrl?.searchParams.getAll('status')).toEqual([]);
+    expect(result.issues).toHaveLength(1);
+    expect(result.issues?.[0]).toHaveProperty('id', 'latest-1');
+  });
+
+  test('getLatestIssues sends limit and status filters when provided', async () => {
+    let capturedUrl: URL | undefined;
+    server.use(
+      http.get('/ticketing/v1/issues/latest', ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ issues: [], size: 0 });
+      }),
+    );
+
+    await issueService.getLatestIssues(10, ['OPEN', 'IN_PROGRESS'] as IssueStatus[]);
+
+    expect(capturedUrl?.searchParams.get('limit')).toBe('10');
+    expect(capturedUrl?.searchParams.getAll('status')).toEqual(['OPEN', 'IN_PROGRESS']);
+  });
+
+  test('getLatestIssues fallback values are applied when data is missing', async () => {
+    server.use(
+      http.get('/ticketing/v1/issues/latest', () => HttpResponse.json({})),
+    );
+
+    const result = await issueService.getLatestIssues();
+    expect(result.size).toBe(0);
+    expect(result.issues).toEqual([]);
+  });
+
   test('deleteIssue resolves successfully', async () => {
     await expect(issueService.deleteIssue(issueId)).resolves.toBeDefined();
   });
