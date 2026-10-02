@@ -30,30 +30,17 @@ const mockProfile = {
   additionalEmails: [] as string[],
 };
 
-type UserContactDataCardVm = {
-  currentAltEmail: string;
-  altEmailLocked: boolean;
-  altEmailDirty: boolean;
-  altEmailSuccess: boolean;
-  altEmailError: boolean;
-};
-
 describe('UserContactDataCard', () => {
   let wrapper: VueWrapper;
 
-  const vm = (): UserContactDataCardVm => wrapper.vm as unknown as UserContactDataCardVm;
-
-  const mountCard = () => mount(UserContactDataCard, { global: { stubs: { PhoneInput: true } } });
+  const mountCard = () => mount(UserContactDataCard);
 
   const submitForm = async () => {
-    await wrapper.findComponent(Form).vm.$emit('submit', {
-      valid: true,
-      states: {
-        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' }
-      },
-    });
+    await wrapper.find('form').trigger('submit');
     await flushPromises();
   };
+
+  const saveButton = () => wrapper.find('button[type="submit"]');
 
   beforeEach(() => {
     vi.mocked(userService.getUser).mockResolvedValue({ ...mockProfile });
@@ -132,7 +119,7 @@ describe('UserContactDataCard', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(wrapper.text()).toContain('Nur Buchstaben und Leerzeichen erlaubt');
+    expect(wrapper.text()).toContain('Nur Buchstaben, Leerzeichen, Bindestriche und Apostrophe erlaubt');
     expect(userService.updateUser).not.toHaveBeenCalled();
   });
 
@@ -143,17 +130,30 @@ describe('UserContactDataCard', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(wrapper.text()).toContain('Nur Buchstaben und Leerzeichen erlaubt');
+    expect(wrapper.text()).toContain('Nur Buchstaben, Leerzeichen, Bindestriche und Apostrophe erlaubt');
     expect(userService.updateUser).not.toHaveBeenCalled();
+  });
+
+  test('accepts hyphenated names', async () => {
+    await flushPromises();
+
+    await wrapper.find('input[name="firstName"]').setValue('Hans-Peter');
+    await wrapper.find('input[name="lastName"]').setValue('Müller-Lüdenscheidt');
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.text()).not.toContain('Nur Buchstaben, Leerzeichen, Bindestriche und Apostrophe erlaubt');
+    expect(userService.updateUser).toHaveBeenCalledWith(
+      expect.objectContaining({ firstName: 'Hans-Peter', lastName: 'Müller-Lüdenscheidt' }),
+    );
   });
 
   test('updates the mobile, business and private phone numbers', async () => {
     await flushPromises();
 
-    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
-    await phoneInputs[0].vm.$emit('update:modelValue', '+491511234567');
-    await phoneInputs[1].vm.$emit('update:modelValue', '+491511234568');
-    await phoneInputs[2].vm.$emit('update:modelValue', '+491511234569');
+    await wrapper.find('#mobile-phone').setValue('1511234567');
+    await wrapper.find('#business-phone').setValue('1511234568');
+    await wrapper.find('#private-phone').setValue('1511234569');
     await flushPromises();
 
     expect(wrapper.text()).not.toContain('Ungültiges Telefonformat');
@@ -162,21 +162,14 @@ describe('UserContactDataCard', () => {
   test('shows phone validation errors for invalid numbers', async () => {
     await flushPromises();
 
-    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
-    await phoneInputs[0].vm.$emit('update:modelValue', 'invalid');
-    await phoneInputs[1].vm.$emit('update:modelValue', 'invalid');
-    await phoneInputs[2].vm.$emit('update:modelValue', 'invalid');
+    await wrapper.find('#mobile-phone').setValue('12');
+    await wrapper.find('#business-phone').setValue('12');
+    await wrapper.find('#private-phone').setValue('12');
     await flushPromises();
 
     expect(wrapper.text()).toContain('Ungültiges Telefonformat');
 
-    const form = wrapper.findComponent(Form);
-    await form.vm.$emit('submit', {
-      valid: true,
-      states: {
-        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' } 
-      },
-    });
+    await wrapper.find('form').trigger('submit');
     await flushPromises();
 
     expect(userService.updateUser).not.toHaveBeenCalled();
@@ -281,7 +274,6 @@ describe('UserContactDataCard', () => {
 
     await submitForm();
 
-    expect(vm().altEmailError).toBe(true);
     expect(wrapper.find('i.pi-times').exists()).toBe(true);
     consoleErrorSpy.mockRestore();
   });
@@ -371,7 +363,8 @@ describe('UserContactDataCard', () => {
     test('saves a new alternative email and locks the field afterwards', async () => {
       await flushPromises();
       await altInput().setValue('  alt@example.com  ');
-      expect(vm().altEmailDirty).toBe(true);
+      await flushPromises();
+      expect(saveButton().attributes('disabled')).toBeUndefined();
       vi.mocked(userService.updateUser).mockResolvedValue({
         ...mockProfile,
         additionalEmails: ['alt@example.com'],
@@ -382,10 +375,10 @@ describe('UserContactDataCard', () => {
       expect(userService.updateUser).toHaveBeenCalledWith(
         expect.objectContaining({ additionalEmails: ['alt@example.com'] }),
       );
-      expect(vm().altEmailLocked).toBe(true);
-      expect(vm().altEmailDirty).toBe(false);
+      expect((altInput().element as HTMLInputElement).value).toBe('alt@example.com');
       expect((altInput().element as HTMLInputElement).disabled).toBe(true);
       expect(trashButton().exists()).toBe(true);
+      expect(saveButton().attributes('disabled')).toBeDefined();
     });
 
     test('does not send additionalEmails when the field was not changed', async () => {
@@ -407,10 +400,11 @@ describe('UserContactDataCard', () => {
       await flushPromises();
 
       await trashButton().trigger('click');
+      await flushPromises();
 
-      expect(vm().currentAltEmail).toBe('');
-      expect(vm().altEmailLocked).toBe(false);
+      expect((altInput().element as HTMLInputElement).value).toBe('');
       expect((altInput().element as HTMLInputElement).disabled).toBe(false);
+      expect(saveButton().attributes('disabled')).toBeUndefined();
       expect(trashButton().exists()).toBe(false);
 
       await submitForm();
@@ -472,26 +466,29 @@ describe('UserContactDataCard', () => {
       consoleErrorSpy.mockRestore();
     });
 
-    test('saves the profile without an invalid alternative email and shows both toasts', async () => {
+    test('shows an inline error and blocks saving for an invalid alternative email', async () => {
       await flushPromises();
       await altInput().setValue('not-an-email');
+      await flushPromises();
+
+      expect(wrapper.text()).toContain('Bitte geben Sie eine gültige E-Mail-Adresse ein');
+      expect(saveButton().attributes('disabled')).toBeDefined();
 
       await submitForm();
 
-      expect(userService.updateUser).toHaveBeenCalledWith(
-        expect.objectContaining({ additionalEmails: undefined }),
-      );
-      expect(addMock).toHaveBeenCalledTimes(2);
-      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
-        severity: 'success',
-        detail: 'Profil wurde erfolgreich gespeichert.',
-      }));
-      expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
-        severity: 'error',
-        detail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
-      }));
-      expect(vm().currentAltEmail).toBe('not-an-email');
-      expect(vm().altEmailLocked).toBe(false);
+      expect(userService.updateUser).not.toHaveBeenCalled();
+      expect(addMock).not.toHaveBeenCalled();
+    });
+
+    test('clears the inline error once the alternative email becomes valid', async () => {
+      await flushPromises();
+      await altInput().setValue('not-an-email');
+      await flushPromises();
+      await altInput().setValue('alt@example.com');
+      await flushPromises();
+
+      expect(wrapper.text()).not.toContain('Bitte geben Sie eine gültige E-Mail-Adresse ein');
+      expect(saveButton().attributes('disabled')).toBeUndefined();
     });
   });
 });

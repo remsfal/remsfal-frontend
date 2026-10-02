@@ -11,6 +11,7 @@ import { useI18n } from 'vue-i18n';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
 import { type OrganizationEmployeeWritableJson, type EmployeeRole, organizationService } from '@/services/OrganizationService';
 import BaseDialog from '@/components/BaseDialog.vue';
+import { emailSchema } from '@/helper/validationHelper';
 
 const props = defineProps<{ organizationId: string }>();
 const emit = defineEmits<(e: 'newEmployee', email: string) => void>();
@@ -20,10 +21,7 @@ const { t } = useI18n();
 const visible = ref(false);
 
 const validationSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .email({ message: t('organization.newEmployeeButton.invalidEmail') }),
+  email: emailSchema(t),
   employeeRole: z
     .string()
     .min(1, { message: t('organization.newEmployeeButton.invalidRole') }),

@@ -25,10 +25,7 @@ describe('OrganizationBaseDataCard', () => {
   });
 
   const mountCard = () =>
-    mount(OrganizationBaseDataCard, {
-      props: { organizationId: 'org-123' },
-      global: {stubs: { PhoneInput: true },},
-    });
+    mount(OrganizationBaseDataCard, {props: { organizationId: 'org-123' },});
 
   it('calls getOrganization with the provided id on mount', async () => {
     mountCard();
@@ -66,7 +63,7 @@ describe('OrganizationBaseDataCard', () => {
     expect(wrapper.text()).toContain('E-Mail-Adresse');
   });
 
-  it('renders PhoneInput stub for phone field', async () => {
+  it('renders PhoneInput for phone field', async () => {
     const wrapper = mountCard();
     await flushPromises();
 
@@ -95,10 +92,8 @@ describe('OrganizationBaseDataCard', () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    // Simulate PhoneInput emitting an invalid value
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', 'not-a-phone');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#org-phone').setValue('12');
+    await flushPromises();
 
     expect(wrapper.text()).toContain('Telefonformat');
   });
@@ -107,9 +102,8 @@ describe('OrganizationBaseDataCard', () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', '');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#org-phone').setValue('');
+    await flushPromises();
 
     expect(wrapper.text()).not.toContain('Telefonformat');
   });
@@ -164,19 +158,14 @@ describe('OrganizationBaseDataCard', () => {
     expect(organizationService.updateOrganization).not.toHaveBeenCalled();
   });
 
-  it('does not call updateOrganization when phoneError is set', async () => {
+  it('does not call updateOrganization when the phone number is invalid', async () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    const phoneInput = wrapper.findComponent({ name: 'PhoneInput' });
-    await phoneInput.vm.$emit('update:modelValue', 'invalid-phone');
-    await wrapper.vm.$nextTick();
+    await wrapper.find('#org-phone').setValue('12');
+    await flushPromises();
 
-    const form = wrapper.findComponent(Form);
-    await form.vm.$emit('submit', {
-      valid: true,
-      states: { name: { value: 'Updated GmbH' }, trade: { value: '' } },
-    });
+    await wrapper.find('form').trigger('submit');
     await flushPromises();
 
     expect(organizationService.updateOrganization).not.toHaveBeenCalled();
