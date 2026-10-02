@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n';
 import type { TenantTimelineJson } from '@/features/project/issues/services/IssueTimelineService';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
-import { buildAttachmentDownloadUrl, useTimelineItem } from '@/composables/useTimelineItem';
+import { useTimelineItem } from '@/composables/useTimelineItem';
 
 const props = defineProps<{
   item: TenantTimelineJson;
@@ -11,10 +11,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const { title, attachments } = useTimelineItem(props, {
-  titleNamespace: 'tenantIssues.timeline',
-  buildAttachmentUrl: buildAttachmentDownloadUrl(`/ticketing/v1/issues/${encodeURIComponent(props.issueId)}`),
-});
+const { title, attachments } = useTimelineItem(props, { titleNamespace: 'tenantIssues.timeline' });
 </script>
 
 <template>

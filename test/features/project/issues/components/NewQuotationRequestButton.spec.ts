@@ -43,6 +43,7 @@ const mockAttachments = [
     attachmentId: 'att-img',
     fileName: 'schaden.jpg',
     contentType: 'image/jpeg',
+    downloadUrl: '/ticketing/v1/issues/issue-1/attachments/att-img/schaden.jpg',
   },
   {
     attachmentId: 'att-pdf',

@@ -17,7 +17,7 @@ import { quotationRequestService } from '@/features/project/issues/services/Quot
 import type { CreateQuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
 import type { IssueAttachmentJson } from '@/features/project/issues/services/IssueService';
 import { type ContractorJson, ContractorMultiSelect, NewContractorButton } from '@/features/project/contractors';
-import { isImageAttachment, getAttachmentTypeLabel, getIssueAttachmentUrl } from '@/helper/attachmentHelper';
+import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';
 
 const props = defineProps<{ projectId: string; issueId: string; attachments: IssueAttachmentJson[] }>();
 const emit = defineEmits<(e: 'created') => void>();
@@ -156,7 +156,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
             >
               <Image
                 v-if="isImageAttachment(attachment)"
-                :src="getIssueAttachmentUrl(issueId, attachment)"
+                :src="attachment.downloadUrl"
                 :alt="attachment.fileName ?? 'issue-attachment'"
                 preview
                 imageClass="h-24 w-24 object-cover rounded"

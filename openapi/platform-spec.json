@@ -643,17 +643,17 @@
           "contentType" : {
             "type" : "string"
           },
-          "objectName" : {
-            "type" : "string"
-          },
-          "uploaderId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
           "uploadedBy" : {
             "type" : "string"
           },
           "createdAt" : {
             "$ref" : "#/components/schemas/Instant"
+          },
+          "downloadUrl" : {
+            "type" : "string",
+            "format" : "uri",
+            "description" : "Root-relative URL to download the attachment for the requesting user",
+            "readOnly" : true
           },
           "issueId" : {
             "$ref" : "#/components/schemas/UUID"
