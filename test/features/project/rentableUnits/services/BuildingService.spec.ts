@@ -48,7 +48,7 @@ describe('BuildingService', () => {
         if (params.buildingId === 'cannot-delete') {
           return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
         }
-        return HttpResponse.json({}, { status: 204 });
+        return new HttpResponse(null, { status: 204 });
       }),
     );
   });

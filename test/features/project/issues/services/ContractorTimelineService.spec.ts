@@ -1,46 +1,74 @@
-import { afterEach, describe, expect, test, vi } from 'vitest';
-import { apiClient } from '@/services/ApiClient';
+import { describe, expect, test } from 'vitest';
+import { http, HttpResponse } from 'msw';
+import { server } from '../../../../mocks/server';
+import { parseMultipart, type MultipartPart } from '../../../../utils/testHelpers';
 import { contractorTimelineService } from '@/features/project/issues/services/ContractorTimelineService';
 
-describe('ContractorTimelineService', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
+const TIMELINE_URL = '/ticketing/v1/issues/:issueId/contractor-timeline';
 
+describe('ContractorTimelineService', () => {
   test('getTimelineEntries fetches entries for the given issue', async () => {
-    const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
-      timelines: [{
-        timelineId: 't-1', purpose: 'MESSAGE_SENT', message: 'Hi'
-      }],
-    });
+    let receivedIssueId: string | undefined;
+    let receivedOrganizationId: string | null = 'unset';
+    server.use(
+      http.get(TIMELINE_URL, ({ request, params }) => {
+        receivedIssueId = params.issueId as string;
+        receivedOrganizationId = new URL(request.url).searchParams.get('organizationId');
+        return HttpResponse.json({
+          timelines: [{
+            timelineId: 't-1', purpose: 'MESSAGE_SENT', message: 'Hi'
+          }],
+        });
+      }),
+    );
 
     const result = await contractorTimelineService.getTimelineEntries('issue-1');
 
-    const [path, options] = getSpy.mock.calls[0];
-    expect(path).toBe('/ticketing/v1/issues/{issueId}/contractor-timeline');
-    expect(options).toEqual({ pathParams: { issueId: 'issue-1' } });
+    expect(receivedIssueId).toBe('issue-1');
+    expect(receivedOrganizationId).toBeNull();
     expect(result.timelines).toHaveLength(1);
   });
 
   test('getTimelineEntries restricts the timeline to the given organization', async () => {
-    const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce({ timelines: [] });
+    let receivedOrganizationId: string | null = null;
+    server.use(
+      http.get(TIMELINE_URL, ({ request }) => {
+        receivedOrganizationId = new URL(request.url).searchParams.get('organizationId');
+        return HttpResponse.json({ timelines: [] });
+      }),
+    );
 
     await contractorTimelineService.getTimelineEntries('issue-1', 'org-1');
 
-    const [, options] = getSpy.mock.calls[0];
-    expect(options).toEqual({ pathParams: { issueId: 'issue-1' }, params: { organizationId: 'org-1' } });
+    expect(receivedOrganizationId).toBe('org-1');
   });
 
   test('getTimelineEntries defaults to an empty list when the response is empty', async () => {
-    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({});
+    server.use(http.get(TIMELINE_URL, () => HttpResponse.json({})));
 
     const result = await contractorTimelineService.getTimelineEntries('issue-1');
 
     expect(result).toEqual({ timelines: [] });
   });
 
+  test('getTimelineEntries rejects when the request fails', async () => {
+    server.use(http.get(TIMELINE_URL, () => HttpResponse.json({ message: 'Error' }, { status: 500 })));
+
+    await expect(contractorTimelineService.getTimelineEntries('issue-1')).rejects.toThrow();
+  });
+
   test('createTimelineEntryWithAttachments sends multipart form data with the organizationId query param', async () => {
-    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce(undefined);
+    let receivedIssueId: string | undefined;
+    let receivedOrganizationId: string | null = null;
+    let parts: Record<string, MultipartPart[]> = {};
+    server.use(
+      http.post(TIMELINE_URL, async ({ request, params }) => {
+        receivedIssueId = params.issueId as string;
+        receivedOrganizationId = new URL(request.url).searchParams.get('organizationId');
+        parts = await parseMultipart(request);
+        return new HttpResponse(null, { status: 201 });
+      }),
+    );
 
     await contractorTimelineService.createTimelineEntryWithAttachments(
       'issue-1',
@@ -49,16 +77,24 @@ describe('ContractorTimelineService', () => {
       [],
     );
 
-    const [path, payload, options] = postSpy.mock.calls[0];
-    expect(path).toBe('/ticketing/v1/issues/{issueId}/contractor-timeline');
-    expect(payload).toBeInstanceOf(FormData);
-    expect(options).toEqual({ pathParams: { issueId: 'issue-1' }, params: { organizationId: 'org-1' } });
+    expect(receivedIssueId).toBe('issue-1');
+    expect(receivedOrganizationId).toBe('org-1');
+    expect(parts.timeline).toHaveLength(1);
+    expect(parts.timeline[0].contentType).toBe('application/json');
+    expect(JSON.parse(parts.timeline[0].body)).toEqual({ purpose: 'MESSAGE_SENT', message: 'Hello' });
+    expect(parts.attachment).toBeUndefined();
+  });
 
-    const formData = payload as FormData;
-    const timelinePart = formData.get('timeline');
-    expect(timelinePart).toBeInstanceOf(Blob);
-    expect(await (timelinePart as Blob).text()).toBe(
-      JSON.stringify({ purpose: 'MESSAGE_SENT', message: 'Hello' }),
-    );
+  test('createTimelineEntryWithAttachments rejects when the request fails', async () => {
+    server.use(http.post(TIMELINE_URL, () => HttpResponse.json({ message: 'Error' }, { status: 500 })));
+
+    await expect(
+      contractorTimelineService.createTimelineEntryWithAttachments(
+        'issue-1',
+        'org-1',
+        { purpose: 'MESSAGE_SENT', message: 'Hello' },
+        [],
+      ),
+    ).rejects.toThrow();
   });
 });

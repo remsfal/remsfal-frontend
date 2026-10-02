@@ -123,7 +123,7 @@ describe('RentalAgreementService', () => {
     server.use(
       http.delete(
         `/api/v1/projects/${testProjectId}/rental-agreements/agreement-1/tenants/tenant-1`,
-        () => HttpResponse.json({}, { status: 204 }),
+        () => new HttpResponse(null, { status: 204 }),
       ),
     );
 
