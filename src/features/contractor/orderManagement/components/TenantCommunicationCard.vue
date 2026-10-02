@@ -87,7 +87,6 @@ const submit = async () => {
   }
 };
 
-// Open requests: the backend deletes a request once the tenant answered it or it was withdrawn.
 const openRequests = ref<IssueRequestJson[]>([]);
 
 const sortedOpenRequests = computed(() =>
