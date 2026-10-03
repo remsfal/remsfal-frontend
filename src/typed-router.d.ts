@@ -174,8 +174,8 @@ declare module 'vue-router/auto-routes' {
     'RentalAgreementDetails': RouteRecordInfo<
       'RentalAgreementDetails',
       '/projects/:projectId/agreements/:agreementId',
-      { projectId: ParamValue<true>, agreementId: ParamValue<true> },
-      { projectId: ParamValue<false>, agreementId: ParamValue<false> },
+      { agreementId: ParamValue<true>, projectId: ParamValue<true> },
+      { agreementId: ParamValue<false>, projectId: ParamValue<false> },
       | never
     >,
     'ProjectContractorList': RouteRecordInfo<
@@ -188,8 +188,8 @@ declare module 'vue-router/auto-routes' {
     'ProjectContractorDetail': RouteRecordInfo<
       'ProjectContractorDetail',
       '/projects/:projectId/contractors/:contractorId',
-      { projectId: ParamValue<true>, contractorId: ParamValue<true> },
-      { projectId: ParamValue<false>, contractorId: ParamValue<false> },
+      { contractorId: ParamValue<true>, projectId: ParamValue<true> },
+      { contractorId: ParamValue<false>, projectId: ParamValue<false> },
       | never
     >,
     'ProjectDashboard': RouteRecordInfo<
@@ -209,8 +209,8 @@ declare module 'vue-router/auto-routes' {
     'IssueDetails': RouteRecordInfo<
       'IssueDetails',
       '/projects/:projectId/issues/:issueId',
-      { projectId: ParamValue<true>, issueId: ParamValue<true> },
-      { projectId: ParamValue<false>, issueId: ParamValue<false> },
+      { issueId: ParamValue<true>, projectId: ParamValue<true> },
+      { issueId: ParamValue<false>, projectId: ParamValue<false> },
       | never
     >,
     'ProjectSettings': RouteRecordInfo<
