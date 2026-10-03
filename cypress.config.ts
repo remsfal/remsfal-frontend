@@ -7,7 +7,6 @@ export default defineConfig({
     baseUrl: 'http://localhost:4173',
     viewportWidth: 1280,
     viewportHeight: 900,
-    allowCypressEnv: false,
     setupNodeEvents(on, config) {
       codeCoverageTask(on, config);
       return config;
