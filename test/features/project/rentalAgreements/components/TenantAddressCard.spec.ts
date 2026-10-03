@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'vitest';
-import { mount, flushPromises } from '@vue/test-utils';
+import { describe, test, expect, vi } from 'vitest';
+import { mount } from '@vue/test-utils';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../../../mocks/server';
 import TenantAddressCard from '@/features/project/rentalAgreements/components/TenantAddressCard.vue';
@@ -31,7 +31,7 @@ describe('TenantAddressCard', () => {
     );
 
     const wrapper = mountCard();
-    await flushPromises();
+    await vi.waitFor(() => expect(wrapper.find('input[name="street"]').exists()).toBe(true));
 
     expect((wrapper.find('input[name="street"]').element as HTMLInputElement).value).toBe(
       'Musterstraße 1',
@@ -48,7 +48,7 @@ describe('TenantAddressCard', () => {
     );
 
     const wrapper = mountCard();
-    await flushPromises();
+    await vi.waitFor(() => expect(wrapper.find('input[name="street"]').exists()).toBe(true));
 
     expect((wrapper.find('input[name="street"]').element as HTMLInputElement).value).toBe('');
   });
@@ -69,11 +69,11 @@ describe('TenantAddressCard', () => {
     );
 
     const wrapper = mountCard();
-    await flushPromises();
+    await vi.waitFor(() => expect(wrapper.find('input[name="street"]').exists()).toBe(true));
 
     await wrapper.find('input[name="street"]').setValue('Neue Straße 2');
     await wrapper.find('form').trigger('submit');
-    await flushPromises();
+    await vi.waitFor(() => expect(receivedBody).toBeDefined());
 
     expect(receivedBody?.address).toMatchObject({ street: 'Neue Straße 2' });
     expect(receivedBody).toMatchObject({ firstName: 'Max', lastName: 'Mustermann' });

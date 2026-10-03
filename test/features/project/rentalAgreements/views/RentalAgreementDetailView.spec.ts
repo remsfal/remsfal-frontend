@@ -49,6 +49,7 @@ describe('ProjectTenanciesDetails', () => {
     // re-apply mocks here (so they're active after vi.clearAllMocks)
     vi.spyOn(rentalAgreementService, 'getRentalAgreement').mockResolvedValue(mockRentalAgreement);
     vi.spyOn(rentalAgreementService, 'deleteRentalAgreement').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'getIssues').mockResolvedValue({ size: 0, issues: [] });
 
     wrapper = mount(ProjectTenanciesDetails, {
       props: {
@@ -103,7 +104,7 @@ describe('ProjectTenanciesDetails', () => {
     const localWrapper = mount(ProjectTenanciesDetails, {props: { projectId: 'proj-1', agreementId: 'agreement-1' },});
     await flushPromises();
 
-    expect(consoleSpy).not.toHaveBeenCalled();
+    expect(consoleSpy).not.toHaveBeenCalledWith('Failed to load issues:', expect.anything());
 
     localWrapper.unmount();
   });

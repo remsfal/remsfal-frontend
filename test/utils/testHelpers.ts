@@ -104,6 +104,40 @@ export async function testErrorHandling(
   await expectToReject(serviceCall());
 }
 
+export interface MultipartPart {
+  filename?: string;
+  contentType?: string;
+  body: string;
+}
+
+/**
+ * Parses a multipart/form-data request body inside an MSW handler, grouped by part name.
+ * `request.formData()` cannot be used here: undici's parser fails in the jsdom test environment.
+ * @param request - The intercepted request
+ */
+export async function parseMultipart(request: Request): Promise<Record<string, MultipartPart[]>> {
+  const boundary = request.headers.get('content-type')?.match(/boundary=(.+)$/)?.[1];
+  if (!boundary) {
+    throw new Error('Request is not multipart/form-data');
+  }
+
+  const raw = await request.text();
+  const parts: Record<string, MultipartPart[]> = {};
+
+  for (const chunk of raw.split(`--${boundary}`).slice(1, -1)) {
+    const [head, ...rest] = chunk.replace(/^\r\n/, '').split('\r\n\r\n');
+    const body = rest.join('\r\n\r\n').replace(/\r\n$/, '');
+    const name = head.match(/name="([^"]*)"/)?.[1] ?? '';
+    const filename = head.match(/filename="([^"]*)"/)?.[1];
+    const contentType = head.match(/Content-Type: (.+)/i)?.[1].trim();
+    (parts[name] ??= []).push({
+      filename, contentType, body
+    });
+  }
+
+  return parts;
+}
+
 import type { ActivityFeedEntry } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
 
 /**

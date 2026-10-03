@@ -1,6 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../../../mocks/server';
+import { parseMultipart, type MultipartPart } from '../../../../utils/testHelpers';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 
 const issueId = 'test-issue';
@@ -62,7 +63,38 @@ describe('TenantIssueService with MSW (http)', () => {
     const createdIssue = await tenantIssueService.createIssueWithAttachment(newIssue, [file]);
 
     expect(createdIssue.id).toBeDefined();
-    expect((createdIssue as unknown as { attachmentCount: number }).attachmentCount).toBe(1);
+    expect(createdIssue).toMatchObject(newIssue);
+  });
+
+  test('createIssueWithAttachment sends the issue JSON part and the attachments', async () => {
+    let parts: Record<string, MultipartPart[]> = {};
+    server.use(
+      http.post('/ticketing/v1/tenant-relations/issues', async ({ request }) => {
+        parts = await parseMultipart(request);
+        return HttpResponse.json({ id: 'new-tenant-issue-id' }, { status: 201 });
+      }),
+    );
+    const newIssue: Partial<TenantIssueJson> = { title: 'Issue with attachment', type: 'DEFECT' };
+
+    await tenantIssueService.createIssueWithAttachment(newIssue, [
+      new File(['a'], 'a.png', { type: 'image/png' }),
+      new File(['b'], 'b.pdf', { type: 'application/pdf' }),
+    ]);
+
+    expect(parts.issue).toHaveLength(1);
+    expect(parts.issue[0].contentType).toBe('application/json');
+    expect(JSON.parse(parts.issue[0].body)).toEqual(newIssue);
+    expect(parts.attachment?.map(part => part.filename)).toEqual(['a.png', 'b.pdf']);
+  });
+
+  test('createIssueWithAttachment rejects when the request fails', async () => {
+    server.use(
+      http.post('/ticketing/v1/tenant-relations/issues', () =>
+        HttpResponse.json({ message: 'Error' }, { status: 500 }),
+      ),
+    );
+
+    await expect(tenantIssueService.createIssueWithAttachment({ title: 'X' }, [])).rejects.toThrow();
   });
 
   test('closeIssue resolves successfully', async () => {

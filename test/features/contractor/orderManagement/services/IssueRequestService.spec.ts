@@ -1,37 +1,54 @@
-import { afterEach, describe, expect, test, vi } from 'vitest';
-import { apiClient } from '@/services/ApiClient';
+import { describe, expect, test } from 'vitest';
+import { http, HttpResponse } from 'msw';
+import { server } from '../../../../mocks/server';
+import { parseMultipart, type MultipartPart } from '../../../../utils/testHelpers';
 import { issueRequestService } from '@/features/contractor/orderManagement/services/IssueRequestService';
 
-describe('IssueRequestService', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
+const REQUESTS_URL = '/ticketing/v1/order-management/:issueId/requests';
 
+describe('IssueRequestService', () => {
   test('createRequest sends multipart form data', async () => {
-    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce(undefined);
+    let receivedIssueId: string | undefined;
+    let parts: Record<string, MultipartPart[]> = {};
+    server.use(
+      http.post(REQUESTS_URL, async ({ request, params }) => {
+        receivedIssueId = params.issueId as string;
+        parts = await parseMultipart(request);
+        return new HttpResponse(null, { status: 201 });
+      }),
+    );
     const files = [new File(['a'], 'a.png', { type: 'image/png' })];
 
     await issueRequestService.createRequest('issue-1', { message: 'Bitte um Rückmeldung' }, files);
 
-    const [path, payload, options] = postSpy.mock.calls[0];
-    expect(path).toBe('/ticketing/v1/order-management/{issueId}/requests');
-    expect(payload).toBeInstanceOf(FormData);
-    expect(options).toEqual({ pathParams: { issueId: 'issue-1' } });
-
-    const formData = payload as FormData;
-    const requestPart = formData.get('request');
-    expect(requestPart).toBeInstanceOf(Blob);
-    expect(await (requestPart as Blob).text()).toBe(JSON.stringify({ message: 'Bitte um Rückmeldung' }));
-    expect(formData.getAll('attachment')).toHaveLength(1);
+    expect(receivedIssueId).toBe('issue-1');
+    expect(parts.request).toHaveLength(1);
+    expect(parts.request[0].contentType).toBe('application/json');
+    expect(JSON.parse(parts.request[0].body)).toEqual({ message: 'Bitte um Rückmeldung' });
+    expect(parts.attachment).toEqual([{
+      filename: 'a.png', contentType: 'image/png', body: 'a'
+    }]);
   });
 
   test('createRequest sends no attachment parts when no files are given', async () => {
-    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce(undefined);
+    let parts: Record<string, MultipartPart[]> = {};
+    server.use(
+      http.post(REQUESTS_URL, async ({ request }) => {
+        parts = await parseMultipart(request);
+        return new HttpResponse(null, { status: 201 });
+      }),
+    );
 
     await issueRequestService.createRequest('issue-1', { message: 'Nur Text' });
 
-    const formData = postSpy.mock.calls[0][1] as FormData;
-    expect(formData.getAll('attachment')).toHaveLength(0);
+    expect(parts.request).toHaveLength(1);
+    expect(parts.attachment).toBeUndefined();
+  });
+
+  test('createRequest rejects when the request fails', async () => {
+    server.use(http.post(REQUESTS_URL, () => HttpResponse.json({ message: 'Error' }, { status: 500 })));
+
+    await expect(issueRequestService.createRequest('issue-1', { message: 'Nur Text' })).rejects.toThrow();
   });
 
   test('getRequests returns the open requests of the issue', async () => {
