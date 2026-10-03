@@ -50,4 +50,40 @@ describe('IssueRequestService', () => {
 
     await expect(issueRequestService.createRequest('issue-1', { message: 'Nur Text' })).rejects.toThrow();
   });
+
+  test('getRequests returns the open requests of the issue', async () => {
+    const openRequest = { issueRequestId: 'req-1', message: 'Bitte um Rückmeldung' };
+    let receivedIssueId: string | undefined;
+    server.use(
+      http.get(REQUESTS_URL, ({ params }) => {
+        receivedIssueId = params.issueId as string;
+        return HttpResponse.json({ requests: [openRequest] });
+      }),
+    );
+
+    const requests = await issueRequestService.getRequests('issue-1');
+
+    expect(receivedIssueId).toBe('issue-1');
+    expect(requests).toEqual([openRequest]);
+  });
+
+  test('getRequests falls back to an empty list', async () => {
+    server.use(http.get(REQUESTS_URL, () => HttpResponse.json({})));
+
+    await expect(issueRequestService.getRequests('issue-1')).resolves.toEqual([]);
+  });
+
+  test('deleteRequest deletes the request of the issue', async () => {
+    let receivedParams: Record<string, unknown> = {};
+    server.use(
+      http.delete(`${REQUESTS_URL}/:requestId`, ({ params }) => {
+        receivedParams = { ...params };
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    await issueRequestService.deleteRequest('issue-1', 'req-1');
+
+    expect(receivedParams).toEqual({ issueId: 'issue-1', requestId: 'req-1' });
+  });
 });

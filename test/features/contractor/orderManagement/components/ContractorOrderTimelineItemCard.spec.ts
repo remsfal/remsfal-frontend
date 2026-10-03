@@ -30,6 +30,17 @@ describe('ContractorOrderTimelineItemCard component', () => {
     expect(props.testId).toBe('contractor-order-timeline-entry');
   });
 
+  it('renders a REQUEST_WITHDRAWN entry with its title and the original request text', () => {
+    const props = entryCardProps(mountItemCard(makeTimeline({
+      purpose: 'REQUEST_WITHDRAWN',
+      senderName: 'Max Handwerker',
+      message: 'Bitte um Rückmeldung',
+    })));
+
+    expect(props.title).toBe('Anfrage von Max Handwerker zurückgezogen');
+    expect(props.message).toBe('Bitte um Rückmeldung');
+  });
+
   it.each([
     ['WITHDRAWN', 'Zurückgezogen'],
     ['REJECTED', 'Abgelehnt'],

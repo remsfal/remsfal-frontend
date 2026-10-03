@@ -105,6 +105,25 @@ describe('ContractorOrderTimelineCard component', () => {
     wrapper.unmount();
   });
 
+  it('refetches the timeline when issueRequest:withdrawn fires for the same issue', async () => {
+    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockClear();
+    vi.mocked(contractorOrderTimelineService.getTimelineEntries).mockResolvedValue([]);
+
+    const wrapper = await mountCard();
+    await flushPromises();
+    expect(contractorOrderTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
+
+    useEventBus().emit('issueRequest:withdrawn', { issueId: 'other-issue' });
+    await flushPromises();
+    expect(contractorOrderTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
+
+    useEventBus().emit('issueRequest:withdrawn', { issueId: 'issue-1' });
+    await flushPromises();
+    expect(contractorOrderTimelineService.getTimelineEntries).toHaveBeenCalledTimes(2);
+
+    wrapper.unmount();
+  });
+
   it('sends messages with attachments for the given issue', async () => {
     vi.mocked(contractorOrderTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
 

@@ -24,6 +24,12 @@ const unsubscribeIssueRequestCreated = eventBus.on('issueRequest:created', ({ is
   }
 });
 onUnmounted(unsubscribeIssueRequestCreated);
+const unsubscribeIssueRequestWithdrawn = eventBus.on('issueRequest:withdrawn', ({ issueId }) => {
+  if (issueId === props.issueId) {
+    refreshTick.value += 1;
+  }
+});
+onUnmounted(unsubscribeIssueRequestWithdrawn);
 
 const loadTimelineEntries = () => contractorOrderTimelineService.getTimelineEntries(props.issueId);
 

@@ -61,7 +61,7 @@ watch(() => props.issueId, fetchRequest);
         :issueId="props.issueId"
         :title="t('tenantIssues.timeline.title')"
       />
-      <TenantCommunicationCard :issueId="props.issueId" />
+      <TenantCommunicationCard :issueId="props.issueId" :request="request" />
     </template>
   </div>
 </template>
