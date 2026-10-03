@@ -53,27 +53,37 @@ describe('IssueRequestService', () => {
 
   test('getRequests returns the open requests of the issue', async () => {
     const openRequest = { issueRequestId: 'req-1', message: 'Bitte um Rückmeldung' };
-    const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce({ requests: [openRequest] });
+    let receivedIssueId: string | undefined;
+    server.use(
+      http.get(REQUESTS_URL, ({ params }) => {
+        receivedIssueId = params.issueId as string;
+        return HttpResponse.json({ requests: [openRequest] });
+      }),
+    );
 
     const requests = await issueRequestService.getRequests('issue-1');
 
-    const pathParams = { issueId: 'issue-1' };
-    expect(getSpy).toHaveBeenCalledWith('/ticketing/v1/order-management/{issueId}/requests', { pathParams });
+    expect(receivedIssueId).toBe('issue-1');
     expect(requests).toEqual([openRequest]);
   });
 
   test('getRequests falls back to an empty list', async () => {
-    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({});
+    server.use(http.get(REQUESTS_URL, () => HttpResponse.json({})));
 
     await expect(issueRequestService.getRequests('issue-1')).resolves.toEqual([]);
   });
 
   test('deleteRequest deletes the request of the issue', async () => {
-    const deleteSpy = vi.spyOn(apiClient, 'delete').mockResolvedValueOnce(undefined);
+    let receivedParams: Record<string, unknown> = {};
+    server.use(
+      http.delete(`${REQUESTS_URL}/:requestId`, ({ params }) => {
+        receivedParams = { ...params };
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
 
     await issueRequestService.deleteRequest('issue-1', 'req-1');
 
-    const pathParams = { issueId: 'issue-1', requestId: 'req-1' };
-    expect(deleteSpy).toHaveBeenCalledWith('/ticketing/v1/order-management/{issueId}/requests/{requestId}', { pathParams });
+    expect(receivedParams).toEqual({ issueId: 'issue-1', requestId: 'req-1' });
   });
 });
