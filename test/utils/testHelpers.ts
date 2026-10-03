@@ -116,7 +116,7 @@ export interface MultipartPart {
  * @param request - The intercepted request
  */
 export async function parseMultipart(request: Request): Promise<Record<string, MultipartPart[]>> {
-  const boundary = request.headers.get('content-type')?.match(/boundary=(.+)$/)?.[1];
+  const boundary = /boundary=(.+)$/.exec(request.headers.get('content-type') ?? '')?.[1];
   if (!boundary) {
     throw new Error('Request is not multipart/form-data');
   }
@@ -127,10 +127,11 @@ export async function parseMultipart(request: Request): Promise<Record<string, M
   for (const chunk of raw.split(`--${boundary}`).slice(1, -1)) {
     const [head, ...rest] = chunk.replace(/^\r\n/, '').split('\r\n\r\n');
     const body = rest.join('\r\n\r\n').replace(/\r\n$/, '');
-    const name = head.match(/name="([^"]*)"/)?.[1] ?? '';
-    const filename = head.match(/filename="([^"]*)"/)?.[1];
-    const contentType = head.match(/Content-Type: (.+)/i)?.[1].trim();
-    (parts[name] ??= []).push({
+    const name = /name="([^"]*)"/.exec(head)?.[1] ?? '';
+    const filename = /filename="([^"]*)"/.exec(head)?.[1];
+    const contentType = /Content-Type: (.+)/i.exec(head)?.[1].trim();
+    parts[name] ??= [];
+    parts[name].push({
       filename, contentType, body
     });
   }
