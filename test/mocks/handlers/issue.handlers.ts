@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+import { parseMultipart } from '../../utils/testHelpers';
 
 const TICKETING_BASE = '/ticketing/v1';
 
@@ -132,7 +133,7 @@ export const issueHandlers = [
 
   // DELETE an issue relation (ticketing microservice)
   http.delete(`${TICKETING_BASE}/issues/:issueId/:relationType/:relatedIssueId`, () => {
-    return HttpResponse.json({}, { status: 204 });
+    return new HttpResponse(null, { status: 204 });
   }),
 
   // PUT set the parent issue (ticketing microservice)
@@ -182,18 +183,14 @@ export const issueHandlers = [
 
   // POST create a tenant issue with attachments (ticketing microservice) — multipart/form-data only
   // (the issue is sent as a JSON Blob part named 'issue' plus one or more 'attachment' file parts).
-  // Note: the multipart branch only counts 'attachment' parts by header, it does not decode the
-  // 'issue' JSON payload — jsdom's XHR/FormData/Blob stack does not faithfully transmit part
-  // bodies in this test environment (headers arrive, content does not), and undici's strict
-  // request.formData() parser rejects the anonymous (filename-less) Blob part the real service
-  // code sends. Counting parts via the raw header text sidesteps both limitations.
   http.post(`${TICKETING_BASE}/tenant-relations/issues`, async ({ request }) => {
-    const raw = await request.text();
-    const attachmentCount = (raw.match(/name="attachment"/g) || []).length;
+    const parts = await parseMultipart(request);
+    const issue = JSON.parse(parts.issue?.[0]?.body ?? '{}');
     return HttpResponse.json({
+      ...issue,
       id: 'new-tenant-issue-id',
-      attachmentCount,
-    });
+      status: 'OPEN',
+    }, { status: 201 });
   }),
 
   // DELETE (close) a tenant issue (ticketing microservice)

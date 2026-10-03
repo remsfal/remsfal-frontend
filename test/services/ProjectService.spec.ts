@@ -68,7 +68,7 @@ const handlers = [
   }),
 
   http.delete('/api/v1/projects/:projectId', () => {
-    return HttpResponse.json({}, { status: 204 });
+    return new HttpResponse(null, { status: 204 });
   }),
 ];
 

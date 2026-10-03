@@ -20,6 +20,14 @@ vi.mock('@/features/project/rentableUnits/components/CommercialDataCard.vue', ()
   },
 }));
 
+vi.mock('@/features/project/rentalAgreements/components/RentalAgreementListCard.vue', () => ({
+  default: {
+    name: 'RentalAgreementListCard',
+    props: ['projectId', 'rentalUnitId', 'rentalUnitType'],
+    template: '<div data-test="rental-agreement-list-card-stub" />',
+  },
+}));
+
 describe('CommercialPage', () => {
   it('renders UnitBreadcrumb and CommercialDataCard', () => {
     const wrapper = mount(CommercialPage);
