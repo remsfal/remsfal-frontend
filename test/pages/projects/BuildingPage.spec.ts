@@ -29,6 +29,14 @@ vi.mock('@/features/project/rentableUnits/components/FacilityAddressCard.vue', (
   },
 }));
 
+vi.mock('@/features/project/rentalAgreements/components/RentalAgreementListCard.vue', () => ({
+  default: {
+    name: 'RentalAgreementListCard',
+    props: ['projectId', 'rentalUnitId', 'rentalUnitType'],
+    template: '<div data-test="rental-agreement-list-card-stub" />',
+  },
+}));
+
 describe('BuildingPage', () => {
   it('renders UnitBreadcrumb, BuildingDataCard and FacilityAddressCard', () => {
     const wrapper = mount(BuildingPage);
