@@ -68,6 +68,9 @@ describe('ContractorMenu.vue', () => {
     const orgStore = useOrganizationStore();
     orgStore.initialized = false;
     const fetchSpy = vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
+    // createTestingPinia already wraps actions in a spy, so the call from the
+    // beforeEach mount may be recorded on it as well
+    fetchSpy.mockClear();
 
     mount(ContractorMenu);
 

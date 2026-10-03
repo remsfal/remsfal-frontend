@@ -68,6 +68,6 @@ export const projectHandlers = [
 
   // DELETE project
   http.delete(`${API_BASE}/projects/:projectId`, () => {
-    return HttpResponse.json({}, { status: 204 });
+    return new HttpResponse(null, { status: 204 });
   }),
 ];

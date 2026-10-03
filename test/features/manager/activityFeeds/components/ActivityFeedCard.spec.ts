@@ -1,5 +1,5 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../../../mocks/server';
 import ActivityFeedCard from '@/features/manager/activityFeeds/components/ActivityFeedCard.vue';
@@ -72,8 +72,16 @@ describe('ActivityFeedCard.vue', () => {
       }),
     );
 
+    // Wait for exactly this mount's initial fetch: the store is shared across tests,
+    // so polling isLoading/the rendered toolbar can race with fetches of earlier mounts.
+    const fetchSpy = vi.spyOn(store, 'fetchActivities');
     wrapper = mount(ActivityFeedCard);
+    await fetchSpy.mock.results[0]?.value;
     await flushPromises();
+  });
+
+  afterEach(() => {
+    wrapper.unmount();
   });
 
   it('calls fetchActivities on mount', async () => {
@@ -147,10 +155,8 @@ describe('ActivityFeedCard.vue', () => {
     );
 
     await toolbar.vm.$emit('mark-read-selected');
-    await new Promise(resolve => setTimeout(resolve, 0));
-    await wrapper.vm.$nextTick();
 
-    expect(store.selectedEntries).toHaveLength(0);
+    await vi.waitFor(() => expect(store.selectedEntries).toHaveLength(0));
   });
 
   it('handles delete for selected entries', async () => {
@@ -166,18 +172,15 @@ describe('ActivityFeedCard.vue', () => {
     );
 
     await toolbar.vm.$emit('delete-selected');
-    await new Promise(resolve => setTimeout(resolve, 0));
-    await wrapper.vm.$nextTick();
 
-    expect(store.selectedEntries).toHaveLength(0);
+    await vi.waitFor(() => expect(store.selectedEntries).toHaveLength(0));
   });
 
   it('handles navigation to issue', async () => {
     const entryList = wrapper.findComponent(ActivityFeedList);
     await entryList.vm.$emit('navigate', mockEntries[0]);
-    await flushPromises();
 
-    expect(mockPush).toHaveBeenCalled();
+    await vi.waitFor(() => expect(mockPush).toHaveBeenCalled());
   });
 
   it('marks entry as read before navigating to an unread entry', async () => {
