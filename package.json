@@ -129,7 +129,10 @@
     "workbox-window": "^7.4.1"
   },
   "overrides": {
-    "glob": "^13.0.6"
+    "glob": "^13.0.6",
+    "xcode": {
+      "uuid": "^11.1.1"
+    }
   },
   "allowScripts": {
     "@parcel/watcher": true,
