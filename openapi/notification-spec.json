@@ -960,7 +960,7 @@
       },
       "MessagePurpose" : {
         "type" : "string",
-        "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED", "ORDER_PLACED", "QUOTATION_REQUESTED", "REQUEST_CREATED", "REQUEST_ANSWERED" ]
+        "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED", "ORDER_PLACED", "QUOTATION_REQUESTED", "REQUEST_CREATED", "REQUEST_ANSWERED", "REQUEST_WITHDRAWN" ]
       },
       "OrderPlacementJson" : {
         "description" : "An order placement created by a manager based on a quotation",
