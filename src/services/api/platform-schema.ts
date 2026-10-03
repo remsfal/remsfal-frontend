@@ -5605,7 +5605,8 @@ export interface components {
       | "ORDER_PLACED"
       | "QUOTATION_REQUESTED"
       | "REQUEST_CREATED"
-      | "REQUEST_ANSWERED";
+      | "REQUEST_ANSWERED"
+      | "REQUEST_WITHDRAWN";
     /** @description An order placement created by a manager based on a quotation */
     OrderPlacementJson: {
       organizationId?: components["schemas"]["UUID"];

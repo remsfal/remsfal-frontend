@@ -826,6 +826,7 @@ components:
       - QUOTATION_REQUESTED
       - REQUEST_CREATED
       - REQUEST_ANSWERED
+      - REQUEST_WITHDRAWN
     OrderPlacementJson:
       description: An order placement created by a manager based on a quotation
       type: object
