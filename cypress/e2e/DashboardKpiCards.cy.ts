@@ -19,7 +19,9 @@ describe('Dashboard KPI Cards E2E Tests', () => {
         first: 0,
         size: 1,
         total: 1,
-        projects: [{ id: projectId, name: 'Test Project', memberRole: 'MANAGER' }],
+        projects: [{
+          id: projectId, name: 'Test Project', memberRole: 'MANAGER' 
+        }],
       },
     }).as('getProjects');
 
@@ -28,7 +30,9 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       body: {
         id: projectId,
         title: 'Test Project',
-        members: [{ id: 'user-123', email: 'test@example.com', role: 'MANAGER' }],
+        members: [{
+          id: 'user-123', email: 'test@example.com', role: 'MANAGER' 
+        }],
       },
     }).as('getProject');
 
@@ -44,7 +48,9 @@ describe('Dashboard KPI Cards E2E Tests', () => {
 
     cy.intercept('GET', '/ticketing/v1/activities*', {
       statusCode: 200,
-      body: { size: 0, nextCursor: null, activities: [] },
+      body: {
+        size: 0, nextCursor: null, activities: [] 
+      },
     }).as('getActivityFeeds');
   });
 
@@ -111,14 +117,16 @@ describe('Dashboard KPI Cards E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/dashboard`);
       cy.wait('@getUser');
-      cy.wait('@getIssues', { timeout: 10000 });
+      // Both cards fetch issues (urgent + recent); wait for both so neither is still loading.
+      cy.wait(['@getIssues', '@getIssues'], { timeout: 10000 });
 
+      // Retryable assertion: the empty-state text only renders once both cards left their skeleton.
+      cy.get('[data-testid="issue-dashboard-cards"]').should(($cards) => {
+        expect($cards.text().match(/Keine aktiven Aufgaben\./g)).to.have.length(2);
+      });
       cy.get('[data-testid="issue-dashboard-cards"]').within(() => {
         cy.get('[data-testid="issue-dashboard-urgent-row"]').should('not.exist');
         cy.get('[data-testid="issue-dashboard-recent-row"]').should('not.exist');
-      });
-      cy.get('[data-testid="issue-dashboard-cards"]').invoke('text').then((text) => {
-        expect(text.match(/Keine aktiven Aufgaben\./g)).to.have.length(2);
       });
     });
   });
@@ -199,7 +207,9 @@ describe('Dashboard KPI Cards E2E Tests', () => {
               tenants: [{
                 id: 'tenant-1', firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com',
               }],
-              rentalUnits: [{ id: 'apt-1', type: 'APARTMENT', title: 'Wohnung 1' }],
+              rentalUnits: [{
+                id: 'apt-1', type: 'APARTMENT', title: 'Wohnung 1' 
+              }],
               basicRent: 1000,
               heatingCostsPrepayment: 100,
               operatingCostsPrepayment: 50,
@@ -209,7 +219,9 @@ describe('Dashboard KPI Cards E2E Tests', () => {
               startOfRental: '2020-01-01',
               endOfRental: '2020-12-31',
               tenants: [],
-              rentalUnits: [{ id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 2' }],
+              rentalUnits: [{
+                id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 2' 
+              }],
               basicRent: 9999,
               heatingCostsPrepayment: 9999,
               operatingCostsPrepayment: 9999,
@@ -238,7 +250,9 @@ describe('Dashboard KPI Cards E2E Tests', () => {
               id: 'agreement-1',
               startOfRental: '2024-01-01',
               tenants: [],
-              rentalUnits: [{ id: 'apt-1', type: 'APARTMENT', title: 'Wohnung 1' }],
+              rentalUnits: [{
+                id: 'apt-1', type: 'APARTMENT', title: 'Wohnung 1' 
+              }],
               basicRent: 1000,
               heatingCostsPrepayment: 100,
               operatingCostsPrepayment: 50,

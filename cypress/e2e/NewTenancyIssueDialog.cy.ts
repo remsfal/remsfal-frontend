@@ -9,14 +9,18 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       city: 'Berlin',
     },
     rentalUnits: [
-      { id: 'unit-1', type: 'APARTMENT', title: 'Wohnung EG', location: 'Erdgeschoss' },
+      {
+        id: 'unit-1', type: 'APARTMENT', title: 'Wohnung EG', location: 'Erdgeschoss' 
+      },
     ],
   };
 
   const tenancy2 = {
     agreementId: 'agreement-2',
     projectTitle: 'Zweites Objekt',
-    address: { street: 'Teststraße 2', zip: '54321', city: 'München' },
+    address: {
+      street: 'Teststraße 2', zip: '54321', city: 'München' 
+    },
     rentalUnits: [],
   };
 
@@ -175,8 +179,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { agreements: [] },
       }).as('getEmptyTenancies');
 
-      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
+      cy.wait('@getEmptyTenancies');
       cy.get('[role="dialog"]').should('be.visible');
       cy.get('[role="dialog"]').should('contain.text', 'Keine aktiven Mietverhältnisse');
     });
@@ -187,8 +191,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { agreements: [] },
       }).as('getEmptyTenancies');
 
-      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
+      cy.wait('@getEmptyTenancies');
       cy.get('[role="dialog"]').within(() => {
         cy.get('.p-stepper').should('not.exist');
       });
@@ -308,6 +312,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { agreements: [tenancy1] },
       }).as('getSingleTenancy');
 
+      // Re-visit: the Step 1 beforeEach already opened the dialog with two tenancies.
       cy.visit('/tenant/issues');
       openDialog();
 
@@ -487,7 +492,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     it('should navigate back to Step 2 when Back is clicked', () => {
       navigateToStep3();
       // Scope to visible step panel to avoid matching hidden panels' back buttons
-      cy.get('.p-steppanel:visible').contains('button', /zurück/i).scrollIntoView().click();
+      cy.get('.p-steppanel:visible').contains('button', /zurück/i).scrollIntoView();
+      cy.get('.p-steppanel:visible').contains('button', /zurück/i).click();
       cy.get('.p-step').eq(1).should('have.class', 'p-step-active');
     });
 
@@ -548,7 +554,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     it('should display the selected tenancy address in the summary', () => {
       navigateToStep4();
       // Scope to visible panel – 'Musterstraße 1' also appears in the hidden Step 1 Select label
-      cy.get('.p-steppanel:visible').contains('Musterstraße 1').scrollIntoView().should('be.visible');
+      cy.get('.p-steppanel:visible').contains('Musterstraße 1').scrollIntoView();
+      cy.get('.p-steppanel:visible').contains('Musterstraße 1').should('be.visible');
     });
 
     it('should display the description entered in Step 2', () => {
@@ -558,7 +565,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
 
     it('should show "Keine Anhänge" when no files were attached', () => {
       navigateToStep4();
-      cy.contains('Keine Anhänge').scrollIntoView().should('be.visible');
+      cy.contains('Keine Anhänge').scrollIntoView();
+      cy.contains('Keine Anhänge').should('be.visible');
     });
 
     it('should display DEFECT-specific fields (causedBy, location) in the summary', () => {
@@ -577,7 +585,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     it('should navigate to Step 1 when the first "Bearbeiten" button is clicked', () => {
       navigateToStep4();
       cy.get('[role="dialog"]').within(() => {
-        cy.get('button').filter(':contains("Bearbeiten")').first().scrollIntoView().click();
+        cy.get('button').filter(':contains("Bearbeiten")').first().scrollIntoView();
+        cy.get('button').filter(':contains("Bearbeiten")').first().click();
       });
       cy.get('.p-step').first().should('have.class', 'p-step-active');
     });
@@ -585,7 +594,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     it('should navigate to Step 2 when the second "Bearbeiten" button is clicked', () => {
       navigateToStep4();
       cy.get('[role="dialog"]').within(() => {
-        cy.get('button').filter(':contains("Bearbeiten")').eq(1).scrollIntoView().click();
+        cy.get('button').filter(':contains("Bearbeiten")').eq(1).scrollIntoView();
+        cy.get('button').filter(':contains("Bearbeiten")').eq(1).click();
       });
       cy.get('.p-step').eq(1).should('have.class', 'p-step-active');
     });
@@ -593,20 +603,23 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     it('should navigate to Step 3 when the third "Bearbeiten" button is clicked', () => {
       navigateToStep4();
       cy.get('[role="dialog"]').within(() => {
-        cy.get('button').filter(':contains("Bearbeiten")').eq(2).scrollIntoView().click();
+        cy.get('button').filter(':contains("Bearbeiten")').eq(2).scrollIntoView();
+        cy.get('button').filter(':contains("Bearbeiten")').eq(2).click();
       });
       cy.get('.p-step').eq(2).should('have.class', 'p-step-active');
     });
 
     it('should navigate back to Step 3 when the Back button is clicked', () => {
       navigateToStep4();
-      cy.get('.p-steppanel:visible').contains('button', /zurück/i).scrollIntoView().click();
+      cy.get('.p-steppanel:visible').contains('button', /zurück/i).scrollIntoView();
+      cy.get('.p-steppanel:visible').contains('button', /zurück/i).click();
       cy.get('.p-step').eq(2).should('have.class', 'p-step-active');
     });
 
     it('should display the "Meldung erstellen" submit button', () => {
       navigateToStep4();
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().should('be.visible');
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').should('be.visible');
     });
   });
 
@@ -640,7 +653,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       }).as('createIssue');
 
       completeFormAndReachStep4();
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       cy.wait('@createIssue');
       cy.get('.p-toast-message-success').should('be.visible');
     });
@@ -652,7 +666,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       }).as('createIssue');
 
       completeFormAndReachStep4();
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       cy.wait('@createIssue');
       cy.get('[role="dialog"]').should('not.exist');
     });
@@ -665,7 +680,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       }).as('createIssueDelayed');
 
       completeFormAndReachStep4();
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       // The overlay spinner should be visible during the network request
       cy.get('[role="dialog"]').within(() => {
         cy.get('[role="progressbar"]').should('exist');
@@ -680,7 +696,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       }).as('createIssueFail');
 
       completeFormAndReachStep4();
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       cy.wait('@createIssueFail');
       cy.get('.p-toast-message-error').should('be.visible');
     });
@@ -692,7 +709,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       }).as('createIssueFail');
 
       completeFormAndReachStep4();
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       cy.wait('@createIssueFail');
       cy.get('[role="dialog"]').should('be.visible');
     });
@@ -710,7 +728,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.get('textarea[name="description"]').type('Test');
       cy.contains('button', /weiter zu anhängen/i).click();
       cy.contains('button', /weiter zur zusammenfassung/i).click();
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       cy.wait('@createIssueRequest');
     });
   });
@@ -725,8 +744,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { error: 'Server Error' },
       }).as('getTenanciesFail');
 
-      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
+      cy.wait('@getTenanciesFail');
       cy.get('[role="dialog"]').should('be.visible');
       cy.get('.p-toast-message-error').should('be.visible');
     });
@@ -737,8 +756,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { error: 'Server Error' },
       }).as('getTenanciesFail');
 
-      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
+      cy.wait('@getTenanciesFail');
       cy.get('[role="dialog"]').should('be.visible');
       // After the error the tenancies array stays empty → no-contracts message
       cy.get('[role="dialog"]').should('contain.text', 'Keine aktiven Mietverhältnisse');
@@ -762,7 +781,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.get('textarea[name="description"]').type('Kündigung');
       cy.contains('button', /weiter zu anhängen/i).click();
       cy.contains('button', /weiter zur zusammenfassung/i).click();
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       cy.wait('@createIssueReset');
       cy.get('[role="dialog"]').should('not.exist');
 
@@ -794,8 +814,10 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.contains('button', /weiter zur zusammenfassung/i).click();
 
       // Step 4 must display the rental unit label (scope to visible panel to avoid hidden Step 1 elements)
-      cy.get('.p-steppanel:visible').contains('Mieteinheit').scrollIntoView().should('be.visible');
-      cy.get('.p-steppanel:visible').contains('Wohnung EG').scrollIntoView().should('be.visible');
+      cy.get('.p-steppanel:visible').contains('Mieteinheit').scrollIntoView();
+      cy.get('.p-steppanel:visible').contains('Mieteinheit').should('be.visible');
+      cy.get('.p-steppanel:visible').contains('Wohnung EG').scrollIntoView();
+      cy.get('.p-steppanel:visible').contains('Wohnung EG').should('be.visible');
     });
 
     it('should reset the rental unit when the tenancy is changed', () => {
@@ -874,13 +896,19 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.get('.p-step').eq(3).should('have.class', 'p-step-active');
 
       // Step 4 – verify summary content
-      cy.contains('Wasserschaden bei Max Mustermann').scrollIntoView().should('be.visible');
-      cy.contains('Wasserschaden im Keller').scrollIntoView().should('be.visible');
-      cy.contains('Rohrbruch').scrollIntoView().should('be.visible');
-      cy.contains('Keller, Nordwand').scrollIntoView().should('be.visible');
-      cy.contains('Keine Anhänge').scrollIntoView().should('be.visible');
+      cy.contains('Wasserschaden bei Max Mustermann').scrollIntoView();
+      cy.contains('Wasserschaden bei Max Mustermann').should('be.visible');
+      cy.contains('Wasserschaden im Keller').scrollIntoView();
+      cy.contains('Wasserschaden im Keller').should('be.visible');
+      cy.contains('Rohrbruch').scrollIntoView();
+      cy.contains('Rohrbruch').should('be.visible');
+      cy.contains('Keller, Nordwand').scrollIntoView();
+      cy.contains('Keller, Nordwand').should('be.visible');
+      cy.contains('Keine Anhänge').scrollIntoView();
+      cy.contains('Keine Anhänge').should('be.visible');
 
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       cy.wait('@createDefectIssue');
       cy.get('.p-toast-message-success').should('be.visible');
       cy.get('[role="dialog"]').should('not.exist');
@@ -915,8 +943,10 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.contains('button', /weiter zur zusammenfassung/i).click();
 
       // Step 4
-      cy.contains('Wohnungsgeberbestätigung').scrollIntoView().should('be.visible');
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('Wohnungsgeberbestätigung').scrollIntoView();
+      cy.contains('Wohnungsgeberbestätigung').should('be.visible');
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       cy.wait('@createInquiryIssue');
       cy.get('.p-toast-message-success').should('be.visible');
       cy.get('[role="dialog"]').should('not.exist');
@@ -949,8 +979,10 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.contains('button', /weiter zur zusammenfassung/i).click();
 
       // Step 4 – verify title
-      cy.contains('Kündigung von Max Mustermann').scrollIntoView().should('be.visible');
-      cy.contains('button', 'Meldung erstellen').scrollIntoView().click();
+      cy.contains('Kündigung von Max Mustermann').scrollIntoView();
+      cy.contains('Kündigung von Max Mustermann').should('be.visible');
+      cy.contains('button', 'Meldung erstellen').scrollIntoView();
+      cy.contains('button', 'Meldung erstellen').click();
       cy.wait('@createTerminationIssue');
       cy.get('.p-toast-message-success').should('be.visible');
       cy.get('[role="dialog"]').should('not.exist');

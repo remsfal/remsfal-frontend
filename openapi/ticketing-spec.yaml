@@ -395,6 +395,8 @@ components:
           $ref: "#/components/schemas/UUID"
         senderName:
           type: string
+        senderRole:
+          $ref: "#/components/schemas/UserContext"
         purpose:
           $ref: "#/components/schemas/MessagePurpose"
         message:
@@ -409,10 +411,6 @@ components:
             \ own mount which already knows its own organization"
           type: string
           $ref: "#/components/schemas/UUID"
-        senderRole:
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/UserContext"
         attachments:
           type: array
           items:
@@ -1936,6 +1934,10 @@ components:
         senderName:
           type: string
           readOnly: true
+        senderRole:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UserContext"
         purpose:
           $ref: "#/components/schemas/MessagePurpose"
         message:
@@ -2641,6 +2643,8 @@ paths:
                       $ref: "#/components/schemas/UUID"
                     senderName:
                       type: string
+                    senderRole:
+                      $ref: "#/components/schemas/UserContext"
                     purpose:
                       $ref: "#/components/schemas/MessagePurpose"
                     message:
@@ -2656,10 +2660,6 @@ paths:
                         \ knows its own organization"
                       type: string
                       $ref: "#/components/schemas/UUID"
-                    senderRole:
-                      readOnly: true
-                      type: string
-                      $ref: "#/components/schemas/UserContext"
                     attachments:
                       type: array
                       items:
@@ -3075,6 +3075,10 @@ paths:
                     senderName:
                       type: string
                       readOnly: true
+                    senderRole:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UserContext"
                     purpose:
                       $ref: "#/components/schemas/MessagePurpose"
                     message:
@@ -3629,6 +3633,8 @@ paths:
                       $ref: "#/components/schemas/UUID"
                     senderName:
                       type: string
+                    senderRole:
+                      $ref: "#/components/schemas/UserContext"
                     purpose:
                       $ref: "#/components/schemas/MessagePurpose"
                     message:
@@ -3644,10 +3650,6 @@ paths:
                         \ knows its own organization"
                       type: string
                       $ref: "#/components/schemas/UUID"
-                    senderRole:
-                      readOnly: true
-                      type: string
-                      $ref: "#/components/schemas/UserContext"
                     attachments:
                       type: array
                       items:
@@ -4057,6 +4059,10 @@ paths:
                     senderName:
                       type: string
                       readOnly: true
+                    senderRole:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UserContext"
                     purpose:
                       $ref: "#/components/schemas/MessagePurpose"
                     message:

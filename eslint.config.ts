@@ -5,6 +5,7 @@ import vue from 'eslint-plugin-vue';
 import { importX } from 'eslint-plugin-import-x';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import i18n from '@intlify/eslint-plugin-vue-i18n';
+import pluginCypress from 'eslint-plugin-cypress';
 import type { Linter } from 'eslint';
 
 export default [
@@ -130,6 +131,24 @@ export default [
     rules: { 'import-x/extensions': 'off' },
   },
 
+  // cypress
+  { ...pluginCypress.configs.recommended, files: ['cypress/**/*.ts'] },
+  {
+    files: ['cypress/support/**/*.ts'],
+    // `declare global { namespace Cypress { ... } }` is the documented way to type custom commands
+    rules: { '@typescript-eslint/no-namespace': ['error', { allowDeclarations: true }] },
+  },
+
   // ignore files at the end of the config
-  {ignores: ['dist/**', 'node_modules/**', 'cypress/**', 'html/**', 'coverage/**', 'src/services/api/*-schema.ts'],},
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'cypress/screenshots/**',
+      'cypress/downloads/**',
+      'html/**',
+      'coverage/**',
+      'src/services/api/*-schema.ts',
+    ],
+  },
 ] satisfies Linter.Config[];

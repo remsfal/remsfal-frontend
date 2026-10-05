@@ -3,7 +3,9 @@ describe('RentableUnitsDialogs E2E Tests', () => {
   const propertyId = 'property-id-1';
   const buildingId = 'building-id-1';
 
-  const emptyTree = { properties: [], first: 0, size: 0, total: 0 };
+  const emptyTree = {
+    properties: [], first: 0, size: 0, total: 0 
+  };
 
   const treeWithProperty = {
     properties: [
@@ -55,7 +57,9 @@ describe('RentableUnitsDialogs E2E Tests', () => {
         first: 0,
         size: 1,
         total: 1,
-        projects: [{ id: projectId, name: 'Test Project', memberRole: 'MANAGER' }],
+        projects: [{
+          id: projectId, name: 'Test Project', memberRole: 'MANAGER' 
+        }],
       },
     }).as('getProjects');
 
@@ -64,13 +68,17 @@ describe('RentableUnitsDialogs E2E Tests', () => {
       body: {
         id: projectId,
         title: 'Test Project',
-        members: [{ id: 'user-123', email: 'test@example.com', role: 'MANAGER' }],
+        members: [{
+          id: 'user-123', email: 'test@example.com', role: 'MANAGER' 
+        }],
       },
     }).as('getProject');
 
     cy.intercept('GET', '/ticketing/v1/activities*', {
       statusCode: 200,
-      body: { size: 0, nextCursor: null, activities: [] },
+      body: {
+        size: 0, nextCursor: null, activities: [] 
+      },
     }).as('getActivityFeeds');
   });
 
@@ -85,7 +93,9 @@ describe('RentableUnitsDialogs E2E Tests', () => {
 
       cy.intercept('POST', `/api/v1/projects/${projectId}/properties`, {
         statusCode: 201,
-        body: { id: 'new-prop-1', title: 'Neue Liegenschaft', plotArea: 0 },
+        body: {
+          id: 'new-prop-1', title: 'Neue Liegenschaft', plotArea: 0 
+        },
       }).as('createProperty');
 
       cy.visit(`/projects/${projectId}/units`);
@@ -108,7 +118,8 @@ describe('RentableUnitsDialogs E2E Tests', () => {
     it('shows validation error for title shorter than 3 characters', () => {
       cy.contains('button', 'Grundstück hinzufügen').click();
       cy.get('.p-dialog').within(() => {
-        cy.get('#title').type('ab').trigger('blur');
+        cy.get('#title').type('ab');
+        cy.get('#title').trigger('blur');
       });
       cy.get('.p-message-error').should('be.visible');
     });

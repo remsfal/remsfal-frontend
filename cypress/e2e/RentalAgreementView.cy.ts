@@ -202,9 +202,7 @@ describe('ProjectTenancies E2E Tests', () => {
     // Mock properties for the dialog
     cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
       statusCode: 200,
-      body: {
-        properties: [],
-      },
+      body: {properties: [],},
     }).as('getProperties');
 
     cy.visit(`/projects/${projectId}/agreements`);
@@ -246,9 +244,7 @@ describe('ProjectTenancies E2E Tests', () => {
     // Mock properties for the dialog
     cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
       statusCode: 200,
-      body: {
-        properties: [],
-      },
+      body: {properties: [],},
     }).as('getProperties');
 
     // RentalAgreementUnitListCard resolves each apartmentRents entry via a follow-up
@@ -322,9 +318,8 @@ describe('ProjectTenancies E2E Tests', () => {
       },
     }).as('getRentalAgreementDetails');
 
-    cy.intercept('DELETE', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
-      statusCode: 204,
-    }).as('deleteRentalAgreement');
+    cy.intercept('DELETE', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {statusCode: 204})
+      .as('deleteRentalAgreement');
 
     // RentalAgreementUnitListCard resolves each apartmentRents entry via a follow-up
     // GET to the apartments endpoint on mount.
@@ -443,7 +438,9 @@ describe('ProjectTenancies E2E Tests', () => {
         properties: [
           {
             key: 'apt-999',
-            data: { id: 'apt-999', type: 'APARTMENT', title: 'Neue Wohnung' },
+            data: {
+              id: 'apt-999', type: 'APARTMENT', title: 'Neue Wohnung' 
+            },
           },
         ],
       },
@@ -668,7 +665,9 @@ describe('ProjectTenancies E2E Tests', () => {
         endOfRental: '2024-12-31',
         tenants: [],
         keys: [
-          { amountOfKeys: 3, keyDescription: 'Haustürschlüssel', issuedAt: '2024-01-01' },
+          {
+            amountOfKeys: 3, keyDescription: 'Haustürschlüssel', issuedAt: '2024-01-01' 
+          },
         ],
       },
     }).as('getRentalAgreementDetails');
@@ -728,7 +727,9 @@ describe('ProjectTenancies E2E Tests', () => {
         endOfRental: '2024-12-31',
         tenants: [],
         keys: [
-          { amountOfKeys: 2, keyDescription: 'Kellerschlüssel', issuedAt: '2024-01-01' },
+          {
+            amountOfKeys: 2, keyDescription: 'Kellerschlüssel', issuedAt: '2024-01-01' 
+          },
         ],
       },
     }).as('getRentalAgreementDetails');
@@ -780,8 +781,12 @@ describe('ProjectTenancies E2E Tests', () => {
         endOfRental: '2024-12-31',
         tenants: [],
         keys: [
-          { amountOfKeys: 3, keyDescription: 'Haustürschlüssel', issuedAt: '2024-01-01' },
-          { amountOfKeys: 1, keyDescription: 'Briefkastenschlüssel', issuedAt: '2024-02-01' },
+          {
+            amountOfKeys: 3, keyDescription: 'Haustürschlüssel', issuedAt: '2024-01-01' 
+          },
+          {
+            amountOfKeys: 1, keyDescription: 'Briefkastenschlüssel', issuedAt: '2024-02-01' 
+          },
         ],
       },
     }).as('getRentalAgreementDetails');
