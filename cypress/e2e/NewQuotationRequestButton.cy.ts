@@ -25,7 +25,9 @@ describe('NewQuotationRequestButton E2E Tests', () => {
 
     cy.intercept('GET', '/api/v1/projects?offset=0&limit=10', {
       statusCode: 200,
-      body: { first: 0, size: 0, total: 0, projects: [] },
+      body: {
+        first: 0, size: 0, total: 0, projects: [] 
+      },
     }).as('getProjects');
 
     cy.intercept('POST', '/api/v1/authentication/refresh', { statusCode: 204 });
