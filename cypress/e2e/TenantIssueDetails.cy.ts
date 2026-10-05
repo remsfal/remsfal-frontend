@@ -88,7 +88,9 @@ describe('TenantIssueDetails E2E Tests', () => {
   });
 
   it('hides cancel button when issue is CLOSED', () => {
-    const closedIssue = { ...baseIssue, id: 'issue-closed', status: 'CLOSED' };
+    const closedIssue = {
+      ...baseIssue, id: 'issue-closed', status: 'CLOSED' 
+    };
     setupIssueDetail(closedIssue);
 
     cy.visit('/tenant/issues/issue-closed');
@@ -98,7 +100,9 @@ describe('TenantIssueDetails E2E Tests', () => {
   });
 
   it('hides cancel button when issue is REJECTED', () => {
-    const rejectedIssue = { ...baseIssue, id: 'issue-rejected', status: 'REJECTED' };
+    const rejectedIssue = {
+      ...baseIssue, id: 'issue-rejected', status: 'REJECTED' 
+    };
     setupIssueDetail(rejectedIssue);
 
     cy.visit('/tenant/issues/issue-rejected');
@@ -108,7 +112,9 @@ describe('TenantIssueDetails E2E Tests', () => {
   });
 
   it('hides cancel button for TERMINATION issues', () => {
-    const terminationIssue = { ...baseIssue, id: 'issue-termination', type: 'TERMINATION' };
+    const terminationIssue = {
+      ...baseIssue, id: 'issue-termination', type: 'TERMINATION' 
+    };
     setupIssueDetail(terminationIssue);
 
     cy.visit('/tenant/issues/issue-termination');
@@ -134,7 +140,9 @@ describe('TenantIssueDetails E2E Tests', () => {
   });
 
   it('renders raw modifiedAt value for invalid date', () => {
-    const issueWithInvalidDate = { ...baseIssue, id: 'issue-invalid-date', modifiedAt: 'invalid-date' };
+    const issueWithInvalidDate = {
+      ...baseIssue, id: 'issue-invalid-date', modifiedAt: 'invalid-date' 
+    };
     setupIssueDetail(issueWithInvalidDate);
 
     cy.visit('/tenant/issues/issue-invalid-date');
