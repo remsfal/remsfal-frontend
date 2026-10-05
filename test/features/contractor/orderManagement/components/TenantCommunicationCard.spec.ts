@@ -3,6 +3,7 @@ import { defineComponent } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import FileUpload from 'primevue/fileupload';
 import i18n from '@/i18n/i18n';
+import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import TenantCommunicationCard from '@/features/contractor/orderManagement/components/TenantCommunicationCard.vue';
 import {issueRequestService,
   type IssueRequestJson,} from '@/features/contractor/orderManagement/services/IssueRequestService';
@@ -289,6 +290,12 @@ describe('TenantCommunicationCard', () => {
       {
         issueRequestId: 'req-1', message: 'Erste Anfrage', createdAt: '2026-10-01T10:00:00Z',
         attachmentIds: ['att-1'],
+        attachments: [{
+          attachmentId: 'att-1',
+          fileName: 'plan.pdf',
+          contentType: 'application/pdf',
+          downloadUrl: '/ticketing/v1/order-management/issue-1/attachments/att-1/plan.pdf',
+        }],
       },
     ];
 
@@ -320,10 +327,37 @@ describe('TenantCommunicationCard', () => {
       await entries(wrapper)[0].get(`button[aria-label="${downloadLabel}"]`).trigger('click');
 
       expect(openSpy).toHaveBeenCalledWith(
-        '/ticketing/v1/order-management/issue-1/attachments/att-1/att-1',
+        '/ticketing/v1/order-management/issue-1/attachments/att-1/plan.pdf',
         '_blank',
         'noopener,noreferrer',
       );
+    });
+
+    it('passes file name and content type from the backend so images get a preview', async () => {
+      getRequestsSpy.mockResolvedValue([{
+        issueRequestId: 'req-3', message: 'Foto', createdAt: '2026-10-03T10:00:00Z',
+        attachments: [
+          {
+            attachmentId: 'att-img',
+            fileName: 'schaden.jpg',
+            contentType: 'image/jpeg',
+            downloadUrl: '/ticketing/v1/order-management/issue-1/attachments/att-img/schaden.jpg',
+          },
+          {
+            attachmentId: 'att-no-url', fileName: 'missing.pdf', contentType: 'application/pdf' 
+          },
+        ],
+      }]);
+      const wrapper = mountCard();
+      await flushPromises();
+
+      expect(wrapper.getComponent(TimelineEntryCard).props('attachments')).toEqual([{
+        attachmentId: 'att-img',
+        contentType: 'image/jpeg',
+        downloadUrl: '/ticketing/v1/order-management/issue-1/attachments/att-img/schaden.jpg',
+        fileName: 'schaden.jpg',
+      }]);
+      expect(entries(wrapper)[0].find('img').exists()).toBe(true);
     });
 
     it('hides the open requests section when there are none', async () => {
