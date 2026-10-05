@@ -10,6 +10,8 @@ export interface UseTimelineItemProps<T extends TimelineEntry> {
 
 export interface UseTimelineItemOptions {
   titleNamespace: string;
+  /** Appends the sender's role (e.g. "Max (Hausverwaltung)") to the title, if the entry carries one. */
+  showSenderRole?: boolean;
 }
 
 const STATUS_NAMESPACES = ['quotationRequest.status', 'orderPlacement.status'];
@@ -19,13 +21,25 @@ export function useTimelineItem<T extends TimelineEntry>(
   options: UseTimelineItemOptions,
 ) {
   const { t, te } = useI18n();
-  const { titleNamespace } = options;
+  const { titleNamespace, showSenderRole = false } = options;
 
   const getIssueNumber = (issueId: string) => issueId.split('-').pop() || issueId;
 
+  const getSenderLabel = (timelineItem: T) => {
+    const name = timelineItem.senderName?.trim();
+    const role = showSenderRole && timelineItem.senderRole
+      ? t(`${titleNamespace}.senderRole.${timelineItem.senderRole}`)
+      : undefined;
+
+    if (name && role) {
+      return t(`${titleNamespace}.senderWithRole`, { senderName: name, role });
+    }
+    return name || role || t('common.notSet');
+  };
+
   const title = computed(() => {
     const timelineItem = props.item;
-    const senderName = timelineItem.senderName?.trim() || t('common.notSet');
+    const senderName = getSenderLabel(timelineItem);
     const issueNumber = getIssueNumber(timelineItem.issueId ?? props.issueId ?? '');
 
     switch (timelineItem.purpose) {

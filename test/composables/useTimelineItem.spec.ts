@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
-import { useTimelineItem } from '@/composables/useTimelineItem';
+import { useTimelineItem, type UseTimelineItemOptions } from '@/composables/useTimelineItem';
 import type { TenantTimelineJson } from '@/composables/useTimeline';
 
 const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
@@ -17,15 +17,24 @@ const TestComponent = defineComponent({
   props: {
     item: { type: Object as () => TenantTimelineJson, required: true },
     issueId: { type: String, required: true },
+    showSenderRole: { type: Boolean, default: false },
   },
   setup(props) {
-    return useTimelineItem(props, { titleNamespace: 'tenantIssues.timeline' });
+    const options: UseTimelineItemOptions = {
+      titleNamespace: 'tenantIssues.timeline',
+      showSenderRole: props.showSenderRole,
+    };
+    return useTimelineItem(props, options);
   },
   template: '<div></div>',
 });
 
-const mountTimelineItem = (item: TenantTimelineJson, issueId = 'issue-1') =>
-  mount(TestComponent, { props: { item, issueId } });
+const mountTimelineItem = (item: TenantTimelineJson, issueId = 'issue-1', showSenderRole = false) =>
+  mount(TestComponent, {
+    props: {
+      item, issueId, showSenderRole 
+    } 
+  });
 
 describe('useTimelineItem', () => {
   it.each([
@@ -81,6 +90,52 @@ describe('useTimelineItem', () => {
     expect(wrapper.vm.title).toBe(
       i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: i18n.global.t('common.notSet') }),
     );
+  });
+
+  it.each([
+    ['MANAGER', 'Alex (Hausverwaltung)'],
+    ['TENANT', 'Alex (Mieter)'],
+    ['CONTRACTOR', 'Alex (Dienstleister)'],
+  ] as const)('appends the %s sender role to the sender name when enabled', (senderRole, expected) => {
+    const wrapper = mountTimelineItem(
+      makeTimeline({
+        purpose: 'MESSAGE_SENT', senderName: 'Alex', senderRole 
+      }),
+      'issue-1',
+      true,
+    );
+
+    expect(wrapper.vm.title).toBe(i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: expected }));
+  });
+
+  it('shows only the sender role when the sender name is missing', () => {
+    const wrapper = mountTimelineItem(
+      makeTimeline({
+        purpose: 'MESSAGE_SENT', senderName: undefined, senderRole: 'MANAGER' 
+      }),
+      'issue-1',
+      true,
+    );
+
+    expect(wrapper.vm.title).toBe(
+      i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: 'Hausverwaltung' }),
+    );
+  });
+
+  it('keeps the plain sender name when the entry has no sender role', () => {
+    const wrapper = mountTimelineItem(makeTimeline({ purpose: 'MESSAGE_SENT', senderName: 'Alex' }), 'issue-1', true);
+
+    expect(wrapper.vm.title).toBe(i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: 'Alex' }));
+  });
+
+  it('ignores the sender role unless showSenderRole is enabled', () => {
+    const wrapper = mountTimelineItem(
+      makeTimeline({
+        purpose: 'MESSAGE_SENT', senderName: 'Alex', senderRole: 'MANAGER' 
+      }),
+    );
+
+    expect(wrapper.vm.title).toBe(i18n.global.t('tenantIssues.timeline.messageTitle', { senderName: 'Alex' }));
   });
 
   it.each([
