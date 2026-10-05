@@ -10,7 +10,6 @@ export interface UseTimelineItemProps<T extends TimelineEntry> {
 
 export interface UseTimelineItemOptions {
   titleNamespace: string;
-  /** Appends the sender's role (e.g. "Max (Hausverwaltung)") to the title, if the entry carries one. */
   showSenderRole?: boolean;
 }
 
