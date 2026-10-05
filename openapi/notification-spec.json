@@ -500,6 +500,9 @@
           "senderName" : {
             "type" : "string"
           },
+          "senderRole" : {
+            "$ref" : "#/components/schemas/UserContext"
+          },
           "purpose" : {
             "$ref" : "#/components/schemas/MessagePurpose"
           },
@@ -516,11 +519,6 @@
             "description" : "ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization",
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
-          },
-          "senderRole" : {
-            "readOnly" : true,
-            "type" : "string",
-            "$ref" : "#/components/schemas/UserContext"
           },
           "attachments" : {
             "type" : "array",
@@ -2349,6 +2347,11 @@
           "senderName" : {
             "type" : "string",
             "readOnly" : true
+          },
+          "senderRole" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UserContext"
           },
           "purpose" : {
             "$ref" : "#/components/schemas/MessagePurpose"
