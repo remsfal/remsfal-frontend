@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import FileUpload from 'primevue/fileupload';
+import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
+import i18n from '@/i18n/i18n';
 import TenantIssueRequestAnswerDialog from '@/features/tenant/tenantIssues/components/TenantIssueRequestAnswerDialog.vue';
 import { tenantIssueRequestService } from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
 import type { IssueRequestJson } from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
@@ -52,7 +54,50 @@ describe('TenantIssueRequestAnswerDialog', () => {
 
   it('renders the original request message', () => {
     const wrapper = mountDialog();
-    expect(wrapper.get('[data-testid="request-answer-original-message"]').text()).toBe('Bitte um Rückmeldung');
+    expect(wrapper.get('[data-testid="request-answer-original-message"]').text()).toContain('Bitte um Rückmeldung');
+  });
+
+  it('shows the attachments sent by the contractor with preview and download', async () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    const wrapper = mountDialog({
+      ...mockRequest,
+      attachments: [
+        {
+          attachmentId: 'att-img',
+          fileName: 'schaden.jpg',
+          contentType: 'image/jpeg',
+          downloadUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-img/schaden.jpg',
+        },
+        {
+          attachmentId: 'att-pdf',
+          fileName: 'plan.pdf',
+          contentType: 'application/pdf',
+          downloadUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-pdf/plan.pdf',
+        },
+      ],
+    });
+
+    expect(wrapper.getComponent(TimelineEntryCard).props('attachments')).toHaveLength(2);
+    const block = wrapper.get('[data-testid="request-answer-original-message"]');
+    expect(block.find('img').exists()).toBe(true);
+    expect(block.text()).toContain('PDF');
+
+    const downloadLabel = i18n.global.t('tenantIssues.timeline.downloadAttachment');
+    const pdfTile = block.findAll(`button[aria-label="${downloadLabel}"]`)
+      .find((button) => button.text().includes('PDF'));
+    await pdfTile!.trigger('click');
+    expect(openSpy).toHaveBeenCalledWith(
+      '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-pdf/plan.pdf',
+      '_blank',
+      'noopener,noreferrer',
+    );
+  });
+
+  it('shows no attachment block when the request has no attachments', () => {
+    const wrapper = mountDialog();
+
+    expect(wrapper.getComponent(TimelineEntryCard).props('attachments')).toEqual([]);
+    expect(wrapper.get('[data-testid="request-answer-original-message"]').find('img').exists()).toBe(false);
   });
 
   it('does not render the original message block when request is null', () => {
