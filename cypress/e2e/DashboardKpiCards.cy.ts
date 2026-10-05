@@ -111,14 +111,16 @@ describe('Dashboard KPI Cards E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/dashboard`);
       cy.wait('@getUser');
-      cy.wait('@getIssues', { timeout: 10000 });
+      // Both cards fetch issues (urgent + recent); wait for both so neither is still loading.
+      cy.wait(['@getIssues', '@getIssues'], { timeout: 10000 });
 
+      // Retryable assertion: the empty-state text only renders once both cards left their skeleton.
+      cy.get('[data-testid="issue-dashboard-cards"]').should(($cards) => {
+        expect($cards.text().match(/Keine aktiven Aufgaben\./g)).to.have.length(2);
+      });
       cy.get('[data-testid="issue-dashboard-cards"]').within(() => {
         cy.get('[data-testid="issue-dashboard-urgent-row"]').should('not.exist');
         cy.get('[data-testid="issue-dashboard-recent-row"]').should('not.exist');
-      });
-      cy.get('[data-testid="issue-dashboard-cards"]').invoke('text').then((text) => {
-        expect(text.match(/Keine aktiven Aufgaben\./g)).to.have.length(2);
       });
     });
   });
