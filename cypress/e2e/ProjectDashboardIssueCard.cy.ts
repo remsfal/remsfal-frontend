@@ -121,8 +121,30 @@ describe('ProjectDashboardIssueCard E2E Tests', () => {
       },
     }).as('getLatestIssues');
 
-    // The issue details page loads further data after navigation; stub it so it does not hit a backend.
-    cy.intercept('GET', '/ticketing/v1/issues/issue-1*', {
+    // The issue details page and the project shell load further data after navigation; stub all of it
+    // so nothing is proxied to a (non-existent) backend.
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, { statusCode: 200, body: { properties: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements`, {
+      statusCode: 200,
+      body: { rentalAgreements: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues?*', { statusCode: 200, body: { issues: [] } });
+    cy.intercept('GET', '/ticketing/v1/issues/issue-1/quotations', { statusCode: 200, body: { quotations: [] } });
+    cy.intercept('GET', '/ticketing/v1/issues/issue-1/quotation-request', {
+      statusCode: 200,
+      body: { quotationRequests: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues/issue-1/chat', { statusCode: 200, body: { messages: [] } });
+    cy.intercept('GET', '/ticketing/v1/issues/issue-1/contractor-timeline', {
+      statusCode: 200,
+      body: { timelines: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues/issue-1', {
       statusCode: 200,
       body: {
         id: 'issue-1', title: 'Heizung defekt', type: 'MAINTENANCE', status: 'OPEN', projectId,

@@ -175,8 +175,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { agreements: [] },
       }).as('getEmptyTenancies');
 
-      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
+      cy.wait('@getEmptyTenancies');
       cy.get('[role="dialog"]').should('be.visible');
       cy.get('[role="dialog"]').should('contain.text', 'Keine aktiven Mietverhältnisse');
     });
@@ -187,8 +187,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { agreements: [] },
       }).as('getEmptyTenancies');
 
-      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
+      cy.wait('@getEmptyTenancies');
       cy.get('[role="dialog"]').within(() => {
         cy.get('.p-stepper').should('not.exist');
       });
@@ -308,6 +308,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { agreements: [tenancy1] },
       }).as('getSingleTenancy');
 
+      // Re-visit: the Step 1 beforeEach already opened the dialog with two tenancies.
       cy.visit('/tenant/issues');
       openDialog();
 
@@ -725,8 +726,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { error: 'Server Error' },
       }).as('getTenanciesFail');
 
-      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
+      cy.wait('@getTenanciesFail');
       cy.get('[role="dialog"]').should('be.visible');
       cy.get('.p-toast-message-error').should('be.visible');
     });
@@ -737,8 +738,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { error: 'Server Error' },
       }).as('getTenanciesFail');
 
-      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
+      cy.wait('@getTenanciesFail');
       cy.get('[role="dialog"]').should('be.visible');
       // After the error the tenancies array stays empty → no-contracts message
       cy.get('[role="dialog"]').should('contain.text', 'Keine aktiven Mietverhältnisse');
