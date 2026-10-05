@@ -940,13 +940,13 @@ export interface paths {
               timelineId?: components["schemas"]["UUID"];
               senderId?: components["schemas"]["UUID"];
               senderName?: string;
+              senderRole?: components["schemas"]["UserContext"];
               purpose: components["schemas"]["MessagePurpose"];
               message: string;
               createdAt?: components["schemas"]["Instant"];
               modifiedAt?: components["schemas"]["Instant"];
               /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
               organizationId?: components["schemas"]["UUID"];
-              senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
             };
             /** @description One or more files to attach to the timeline entry */
@@ -1692,6 +1692,7 @@ export interface paths {
               timelineId?: $Read<components["schemas"]["UUID"]>;
               senderId?: $Read<components["schemas"]["UUID"]>;
               senderName?: $Read<string>;
+              senderRole?: $Read<components["schemas"]["UserContext"]>;
               purpose: components["schemas"]["MessagePurpose"];
               message: string;
               createdAt?: $Read<components["schemas"]["Instant"]>;
@@ -2658,13 +2659,13 @@ export interface paths {
               timelineId?: components["schemas"]["UUID"];
               senderId?: components["schemas"]["UUID"];
               senderName?: string;
+              senderRole?: components["schemas"]["UserContext"];
               purpose: components["schemas"]["MessagePurpose"];
               message: string;
               createdAt?: components["schemas"]["Instant"];
               modifiedAt?: components["schemas"]["Instant"];
               /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
               organizationId?: components["schemas"]["UUID"];
-              senderRole?: $Read<components["schemas"]["UserContext"]>;
               attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
             };
             /** @description One or more files to attach to the timeline entry */
@@ -3231,6 +3232,7 @@ export interface paths {
               timelineId?: $Read<components["schemas"]["UUID"]>;
               senderId?: $Read<components["schemas"]["UUID"]>;
               senderName?: $Read<string>;
+              senderRole?: $Read<components["schemas"]["UserContext"]>;
               purpose: components["schemas"]["MessagePurpose"];
               message: string;
               createdAt?: $Read<components["schemas"]["Instant"]>;
@@ -3472,13 +3474,13 @@ export interface components {
       timelineId?: components["schemas"]["UUID"];
       senderId?: components["schemas"]["UUID"];
       senderName?: string;
+      senderRole?: components["schemas"]["UserContext"];
       purpose: components["schemas"]["MessagePurpose"];
       message: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
       /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
       organizationId?: components["schemas"]["UUID"];
-      senderRole?: $Read<components["schemas"]["UserContext"]>;
       attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
     };
     /** @description A list of contractor timelines */
@@ -4207,6 +4209,7 @@ export interface components {
       timelineId?: $Read<components["schemas"]["UUID"]>;
       senderId?: $Read<components["schemas"]["UUID"]>;
       senderName?: $Read<string>;
+      senderRole?: $Read<components["schemas"]["UserContext"]>;
       purpose: components["schemas"]["MessagePurpose"];
       message: string;
       createdAt?: $Read<components["schemas"]["Instant"]>;
