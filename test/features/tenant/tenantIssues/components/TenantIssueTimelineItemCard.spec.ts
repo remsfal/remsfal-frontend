@@ -46,4 +46,14 @@ describe('TenantIssueTimelineItemCard component', () => {
       }),
     ]);
   });
+
+  it('shows the sender role next to the sender name in the title', () => {
+    const props = entryCardProps(
+      mountItemCard(makeTimeline({
+        purpose: 'MESSAGE_SENT', senderName: 'Max Muster', senderRole: 'MANAGER' 
+      })),
+    );
+
+    expect(props.title).toContain('Max Muster (Hausverwaltung)');
+  });
 });
