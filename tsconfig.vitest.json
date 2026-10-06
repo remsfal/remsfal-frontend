@@ -4,7 +4,6 @@
   "exclude": ["src/sw.ts", "src/types/sw-global.d.ts"],
   "compilerOptions": {
     "composite": true,
-    "lib": ["dom", "es2023"],
-    "types": ["node", "jsdom", "vite/client", "@vue/test-utils"]
+    "types": ["node", "jsdom"]
   }
 }

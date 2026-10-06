@@ -2,6 +2,8 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["./**/*", "../support/**/*"],
   "compilerOptions": {
+    "composite": true,
+    "noEmit": true,
     "isolatedModules": false,
     "types": ["cypress"]
   }
