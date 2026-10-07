@@ -109,13 +109,18 @@ onMounted(loadRequests);
 watch(() => props.issueId, loadRequests);
 
 const requestAttachments = (request: IssueRequestJson): TimelineAttachmentView[] =>
-  (request.attachmentIds ?? []).map((attachmentId) => {
-    const issueId = encodeURIComponent(props.issueId);
-    const encodedAttachmentId = encodeURIComponent(attachmentId);
-    return {
+  (request.attachments ?? []).flatMap((attachment) => {
+    const { attachmentId, downloadUrl } = attachment;
+    if (!attachmentId || !downloadUrl) {
+      return [];
+    }
+
+    return [{
       attachmentId,
-      downloadUrl: `/ticketing/v1/order-management/${issueId}/attachments/${encodedAttachmentId}/${encodedAttachmentId}`,
-    };
+      contentType: attachment.contentType,
+      downloadUrl,
+      fileName: attachment.fileName,
+    }];
   });
 
 const requestToWithdraw = ref<IssueRequestJson | null>(null);
