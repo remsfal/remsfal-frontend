@@ -27,8 +27,6 @@ export const mockClients = {
       billingAddress: mockOrganization.address,
     },
   ],
-  offset: 0,
-  total: 1,
 };
 
 export const mockEmployee = {

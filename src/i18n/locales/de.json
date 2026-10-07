@@ -1192,6 +1192,7 @@
   "contractorClients.list.title": "Übersicht aller Auftraggeber",
   "contractorClients.list.empty": "Keine Auftraggeber gefunden.",
   "contractorClients.list.columnProject": "Liegenschaft",
+  "contractorClients.list.columnOwner": "Besitzer",
   "contractorClients.list.columnBillingAddress": "Rechnungsadresse",
   "contractorClients.noOrganization": "Du bist in keiner Organisation tätig. Auftraggeber werden pro Organisation angezeigt.",
   "emailVerification.title": "E-Mail-Bestätigung",

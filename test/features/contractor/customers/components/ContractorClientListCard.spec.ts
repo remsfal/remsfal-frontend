@@ -39,7 +39,7 @@ describe('ContractorClientListCard', () => {
     await flushPromises();
     const headers = wrapper.findAll('thead th').map((th) => th.text());
     expect(wrapper.text()).toContain('Übersicht aller Auftraggeber');
-    expect(headers).toEqual(['Liegenschaft', 'Leistungsempfänger', 'Vertreten durch ("c/o")', 'Rechnungsadresse']);
+    expect(headers).toEqual(['Liegenschaft', 'Besitzer', 'Vertreten durch ("c/o")', 'Rechnungsadresse']);
   });
 
   it('renders the billing data of each project', async () => {

@@ -47,7 +47,7 @@ onMounted(async () => {
           <span class="text-muted-color">{{ t('contractorClients.list.empty') }}</span>
         </template>
         <Column field="title" :header="t('contractorClients.list.columnProject')" />
-        <Column field="owner" :header="t('projectSettings.billingAddress.owner')" />
+        <Column field="owner" :header="t('contractorClients.list.columnOwner')" />
         <Column field="careOf" :header="t('projectSettings.billingAddress.careOf')" />
         <Column :header="t('contractorClients.list.columnBillingAddress')">
           <template #body="{ data }">

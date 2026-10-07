@@ -1190,6 +1190,7 @@
   "contractorClients.list.title": "Overview of all clients",
   "contractorClients.list.empty": "No clients found.",
   "contractorClients.list.columnProject": "Property",
+  "contractorClients.list.columnOwner": "Owner",
   "contractorClients.list.columnBillingAddress": "Billing address",
   "contractorClients.noOrganization": "You are not part of any organization. Clients are listed per organization.",
   "emailVerification.title": "Email Verification",
