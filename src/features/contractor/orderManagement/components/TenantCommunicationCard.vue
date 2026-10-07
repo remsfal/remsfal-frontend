@@ -10,6 +10,7 @@ import TimelineEntryCard, { type TimelineAttachmentView } from '@/components/Tim
 import { useAppToast } from '@/composables/useAppToast';
 import { useTimelineComposer } from '@/composables/useTimeline';
 import { useEventBus } from '@/stores/EventStore';
+import { toAttachmentViews } from '@/helper/attachmentHelper';
 import { issueRequestService, type IssueRequestJson } from '@/features/contractor/orderManagement/services/IssueRequestService';
 import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
@@ -109,14 +110,7 @@ onMounted(loadRequests);
 watch(() => props.issueId, loadRequests);
 
 const requestAttachments = (request: IssueRequestJson): TimelineAttachmentView[] =>
-  (request.attachmentIds ?? []).map((attachmentId) => {
-    const issueId = encodeURIComponent(props.issueId);
-    const encodedAttachmentId = encodeURIComponent(attachmentId);
-    return {
-      attachmentId,
-      downloadUrl: `/ticketing/v1/order-management/${issueId}/attachments/${encodedAttachmentId}/${encodedAttachmentId}`,
-    };
-  });
+  toAttachmentViews(request.attachments);
 
 const requestToWithdraw = ref<IssueRequestJson | null>(null);
 const withdrawing = ref(false);

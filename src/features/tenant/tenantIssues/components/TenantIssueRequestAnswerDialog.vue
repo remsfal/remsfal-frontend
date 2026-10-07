@@ -5,8 +5,10 @@ import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import FileUpload from 'primevue/fileupload';
 import BaseDialog from '@/components/BaseDialog.vue';
+import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import { useAppToast } from '@/composables/useAppToast';
 import { useTimelineComposer } from '@/composables/useTimeline';
+import { toAttachmentViews } from '@/helper/attachmentHelper';
 import { tenantIssueRequestService, type IssueRequestJson }
   from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
 
@@ -27,6 +29,8 @@ const appToast = useAppToast();
 const { messageText, selectedFiles, fileUploadKey, onFilesSelected, resetComposer } =
   useTimelineComposer();
 const sending = ref(false);
+
+const requestAttachments = computed(() => toAttachmentViews(props.request?.attachments));
 
 const canSubmit = computed(
   () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) && !sending.value,
@@ -78,14 +82,16 @@ const submit = async () => {
     @update:visible="emit('update:visible', $event)"
   >
     <div class="flex flex-col gap-4">
-      <div v-if="request" class="flex flex-col gap-1">
-        <span class="text-sm font-semibold text-gray-700">
-          {{ t('tenantIssues.requests.originalMessageLabel') }}
-        </span>
-        <p class="whitespace-pre-line text-gray-900" data-testid="request-answer-original-message">
-          {{ request.message }}
-        </p>
-      </div>
+      <TimelineEntryCard
+        v-if="request"
+        :title="t('tenantIssues.requests.originalMessageLabel')"
+        :message="request.message"
+        :attachments="requestAttachments"
+        :attachmentsLabel="t('tenantIssues.timeline.attachmentsCount')"
+        :downloadAttachmentLabel="t('tenantIssues.timeline.downloadAttachment')"
+        hideDate
+        testId="request-answer-original-message"
+      />
 
       <div class="flex flex-col gap-2">
         <label for="request-answer-message" class="sr-only">

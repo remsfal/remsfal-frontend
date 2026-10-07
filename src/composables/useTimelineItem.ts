@@ -2,6 +2,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { TimelineEntry } from '@/composables/useTimeline';
 import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
+import { toAttachmentViews } from '@/helper/attachmentHelper';
 
 export interface UseTimelineItemProps<T extends TimelineEntry> {
   item: T;
@@ -77,21 +78,7 @@ export function useTimelineItem<T extends TimelineEntry>(
     return statusKey ? t(statusKey) : timelineItem.message;
   });
 
-  const attachments = computed<TimelineAttachmentView[]>(() =>
-    (props.item.attachments ?? []).flatMap((attachment) => {
-      const { attachmentId, downloadUrl } = attachment;
-      if (!attachmentId || !downloadUrl) {
-        return [];
-      }
-
-      return [{
-        attachmentId,
-        contentType: attachment.contentType,
-        downloadUrl,
-        fileName: attachment.fileName,
-      }];
-    }),
-  );
+  const attachments = computed<TimelineAttachmentView[]>(() => toAttachmentViews(props.item.attachments));
 
   return {
     title,
