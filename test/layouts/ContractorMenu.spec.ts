@@ -36,6 +36,7 @@ describe('ContractorMenu.vue', () => {
       'Offene Anfragen',
       'Laufende Aufträge',
       'Abgeschlossene Aufträge',
+      'Meine Auftraggeber',
       'Persönliche Daten',
       'Persönliche Einstellungen',
       'Organisationen anlegen',
@@ -62,6 +63,15 @@ describe('ContractorMenu.vue', () => {
 
     await wrapper.find('.pi-home').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith('/contractor/dashboard');
+  });
+
+  it('navigates to the client list when the clients menu item is clicked', async () => {
+    userSessionStore.user = { id: 'user-1', email: 'test@example.com' };
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
+
+    const clientsItem = wrapper.findAll('.layout-menuitem-text').find((item) => item.text() === 'Meine Auftraggeber');
+    await clientsItem!.trigger('click');
+    expect(pushSpy).toHaveBeenCalledWith('/contractor/clients');
   });
 
   it('calls fetchUserOrganization on mount when store is not initialized', async () => {
