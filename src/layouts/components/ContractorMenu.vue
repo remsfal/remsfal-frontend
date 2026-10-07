@@ -40,6 +40,11 @@ const model = computed<MenuItem[]>(() => {
           icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
           to: '/contractor/orders/closed',
         },
+        {
+          label: 'contractorMenu.orderManagement.clients',
+          icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+          to: '/contractor/clients',
+        },
       ],
     },
     {
