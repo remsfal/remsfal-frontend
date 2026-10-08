@@ -2467,8 +2467,8 @@ export interface paths {
               organizationId?: $Read<components["schemas"]["UUID"]>;
               agreementId?: $Read<components["schemas"]["UUID"]>;
               message: string;
-              /** @description IDs of the issue attachments the contractor has sent with this request */
-              attachmentIds?: $Read<string[]>;
+              /** @description Attachments the contractor has sent with this request, including download URLs */
+              attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
               createdAt?: $Read<components["schemas"]["Instant"]>;
               modifiedAt?: $Read<components["schemas"]["Instant"]>;
             };
@@ -3104,8 +3104,8 @@ export interface paths {
               organizationId?: $Read<components["schemas"]["UUID"]>;
               agreementId?: $Read<components["schemas"]["UUID"]>;
               message: string;
-              /** @description IDs of the issue attachments the contractor has sent with this request */
-              attachmentIds?: $Read<string[]>;
+              /** @description Attachments the contractor has sent with this request, including download URLs */
+              attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
               createdAt?: $Read<components["schemas"]["Instant"]>;
               modifiedAt?: $Read<components["schemas"]["Instant"]>;
             };
@@ -3410,6 +3410,21 @@ export interface components {
       /** @description Chat messages */
       messages?: $Read<components["schemas"]["ChatMessageJson"][]>;
     };
+    /** @description A project in which a contractor organization is registered, with its billing data */
+    ClientProjectJson: {
+      /** @description Unique identifier of the project */
+      id: components["schemas"]["UUID"];
+      title: string;
+      /** @description Billing recipient (Leistungsempfänger) of the project */
+      owner?: string;
+      /** @description Representative of the billing recipient (c/o) */
+      careOf?: string;
+      billingAddress?: components["schemas"]["AddressJson"];
+    };
+    /** @description A list of clients (projects with billing data) of a contractor organization */
+    ClientProjectListJson: {
+      projects: components["schemas"]["ClientProjectJson"][];
+    };
     /** @description Tenant information in a rental agreement */
     CoTenantJson: {
       id?: $Read<components["schemas"]["UUID"]>;
@@ -3638,8 +3653,8 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       agreementId?: $Read<components["schemas"]["UUID"]>;
       message: string;
-      /** @description IDs of the issue attachments the contractor has sent with this request */
-      attachmentIds?: $Read<string[]>;
+      /** @description Attachments the contractor has sent with this request, including download URLs */
+      attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
       createdAt?: $Read<components["schemas"]["Instant"]>;
       modifiedAt?: $Read<components["schemas"]["Instant"]>;
     };
