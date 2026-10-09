@@ -119,7 +119,7 @@
     "unplugin-vue-components": "^32.1.0",
     "vite": "^8.3.2",
     "vite-plugin-istanbul": "^9.0.1",
-    "vite-plugin-pwa": "^1.3.0",
+    "vite-plugin-pwa": "^2.0.0",
     "vite-plugin-vue-devtools": "^8.2.1",
     "vitest": "^5.0.1",
     "vue-eslint-parser": "^10.4.1",
