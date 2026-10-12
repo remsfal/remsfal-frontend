@@ -6,10 +6,11 @@ import { contractorTimelineService, type ContractorTimelineJson }
   from '@/features/project/issues/services/ContractorTimelineService';
 import { quotationRequestService, type QuotationRequestJson }
   from '@/features/project/issues/services/QuotationRequestService';
-import { setupResizeObserverMock } from '../../../../setup/issueTestHelpers';
+import { setupResizeObserverMock, waitForTabListTimersAfterAll } from '../../../../setup/issueTestHelpers';
 
 // PrimeVue TabList relies on ResizeObserver, which JSDOM does not implement.
 setupResizeObserverMock();
+waitForTabListTimersAfterAll();
 
 vi.mock('@/features/project/issues/services/ContractorTimelineService', async () => {
   const actual = await vi.importActual<typeof import('@/features/project/issues/services/ContractorTimelineService')>(
