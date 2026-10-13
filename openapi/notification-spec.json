@@ -330,6 +330,45 @@
           }
         }
       },
+      "ClientProjectJson" : {
+        "description" : "A project in which a contractor organization is registered, with its billing data",
+        "type" : "object",
+        "required" : [ "id", "title" ],
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier of the project",
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "Billing recipient (Leistungsempfänger) of the project"
+          },
+          "careOf" : {
+            "type" : "string",
+            "description" : "Representative of the billing recipient (c/o)"
+          },
+          "billingAddress" : {
+            "$ref" : "#/components/schemas/AddressJson"
+          }
+        }
+      },
+      "ClientProjectListJson" : {
+        "description" : "A list of clients (projects with billing data) of a contractor organization",
+        "type" : "object",
+        "required" : [ "projects" ],
+        "properties" : {
+          "projects" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ClientProjectJson"
+            }
+          }
+        }
+      },
       "CoTenantJson" : {
         "description" : "Tenant information in a rental agreement",
         "type" : "object",
@@ -897,14 +936,12 @@
             "type" : "string",
             "pattern" : "\\S"
           },
-          "attachmentIds" : {
+          "attachments" : {
             "type" : "array",
             "items" : {
-              "type" : "string",
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             },
-            "description" : "IDs of the issue attachments the contractor has sent with this request",
+            "description" : "Attachments the contractor has sent with this request, including download URLs",
             "readOnly" : true
           },
           "createdAt" : {
