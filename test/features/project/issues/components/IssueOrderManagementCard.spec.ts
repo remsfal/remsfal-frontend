@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import IssueOrderManagementCard from '@/features/project/issues/components/IssueOrderManagementCard.vue';
-import { setupResizeObserverMock } from '../../../../setup/issueTestHelpers';
+import { setupResizeObserverMock, waitForTabListTimersAfterAll } from '../../../../setup/issueTestHelpers';
 
 // PrimeVue TabList relies on ResizeObserver, which JSDOM does not implement.
 setupResizeObserverMock();
+waitForTabListTimersAfterAll();
 
 describe('IssueOrderManagementCard', () => {
   const mountCard = () =>
