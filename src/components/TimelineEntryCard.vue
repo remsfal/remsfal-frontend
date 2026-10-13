@@ -5,19 +5,16 @@ import Button from 'primevue/button';
 import Image from 'primevue/image';
 import { formatDateTime } from '@/helper/dateHelper';
 import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';
+import type { components as ticketingComponents, Readable } from '@/services/api/ticketing-schema';
 
-export interface TimelineAttachmentView {
-  attachmentId: string;
-  contentType?: string;
-  downloadUrl: string;
-  fileName?: string;
-}
+type IssueAttachmentJson = Readable<ticketingComponents['schemas']['IssueAttachmentJson']>;
+type DownloadableAttachment = IssueAttachmentJson & { attachmentId: string; downloadUrl: string };
 
 interface Props {
   date?: string;
   title: string;
   message?: string;
-  attachments?: TimelineAttachmentView[];
+  attachments?: IssueAttachmentJson[];
   attachmentsLabel?: string;
   downloadAttachmentLabel?: string;
   testId?: string;
@@ -40,9 +37,17 @@ const { locale } = useI18n();
 
 const formattedDate = computed(() => formatDateTime(props.date, locale.value));
 
-const imageAttachments = computed(() => props.attachments.filter(isImageAttachment));
+const downloadableAttachments = computed(() =>
+  props.attachments.filter(
+    (attachment): attachment is DownloadableAttachment => !!attachment.attachmentId && !!attachment.downloadUrl,
+  ),
+);
 
-const nonImageAttachments = computed(() => props.attachments.filter((attachment) => !isImageAttachment(attachment)));
+const imageAttachments = computed(() => downloadableAttachments.value.filter(isImageAttachment));
+
+const nonImageAttachments = computed(() =>
+  downloadableAttachments.value.filter((attachment) => !isImageAttachment(attachment)),
+);
 
 const openAttachmentDownload = (downloadUrl: string) => {
   window.open(downloadUrl, '_blank', 'noopener,noreferrer');
@@ -68,7 +73,7 @@ const openAttachmentDownload = (downloadUrl: string) => {
       <p v-if="message" class="text-gray-700 text-left whitespace-pre-line">
         {{ message }}
       </p>
-      <div v-if="attachments.length > 0" class="mt-3 rounded bg-gray-50 p-2 text-sm">
+      <div v-if="downloadableAttachments.length > 0" class="mt-3 rounded bg-gray-50 p-2 text-sm">
         <p class="mb-1 text-left text-gray-700">
           {{ attachmentsLabel }}
         </p>
