@@ -330,6 +330,45 @@
           }
         }
       },
+      "ClientProjectJson" : {
+        "description" : "A project in which a contractor organization is registered, with its billing data",
+        "type" : "object",
+        "required" : [ "id", "title" ],
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier of the project",
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "Billing recipient (Leistungsempfänger) of the project"
+          },
+          "careOf" : {
+            "type" : "string",
+            "description" : "Representative of the billing recipient (c/o)"
+          },
+          "billingAddress" : {
+            "$ref" : "#/components/schemas/AddressJson"
+          }
+        }
+      },
+      "ClientProjectListJson" : {
+        "description" : "A list of clients (projects with billing data) of a contractor organization",
+        "type" : "object",
+        "required" : [ "projects" ],
+        "properties" : {
+          "projects" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ClientProjectJson"
+            }
+          }
+        }
+      },
       "CoTenantJson" : {
         "description" : "Tenant information in a rental agreement",
         "type" : "object",
@@ -500,6 +539,9 @@
           "senderName" : {
             "type" : "string"
           },
+          "senderRole" : {
+            "$ref" : "#/components/schemas/UserContext"
+          },
           "purpose" : {
             "$ref" : "#/components/schemas/MessagePurpose"
           },
@@ -516,11 +558,6 @@
             "description" : "ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization",
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
-          },
-          "senderRole" : {
-            "readOnly" : true,
-            "type" : "string",
-            "$ref" : "#/components/schemas/UserContext"
           },
           "attachments" : {
             "type" : "array",
@@ -899,14 +936,12 @@
             "type" : "string",
             "pattern" : "\\S"
           },
-          "attachmentIds" : {
+          "attachments" : {
             "type" : "array",
             "items" : {
-              "type" : "string",
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             },
-            "description" : "IDs of the issue attachments the contractor has sent with this request",
+            "description" : "Attachments the contractor has sent with this request, including download URLs",
             "readOnly" : true
           },
           "createdAt" : {
@@ -2350,6 +2385,11 @@
             "type" : "string",
             "readOnly" : true
           },
+          "senderRole" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UserContext"
+          },
           "purpose" : {
             "$ref" : "#/components/schemas/MessagePurpose"
           },
@@ -3301,6 +3341,9 @@
                       "senderName" : {
                         "type" : "string"
                       },
+                      "senderRole" : {
+                        "$ref" : "#/components/schemas/UserContext"
+                      },
                       "purpose" : {
                         "$ref" : "#/components/schemas/MessagePurpose"
                       },
@@ -3317,11 +3360,6 @@
                         "description" : "ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization",
                         "type" : "string",
                         "$ref" : "#/components/schemas/UUID"
-                      },
-                      "senderRole" : {
-                        "readOnly" : true,
-                        "type" : "string",
-                        "$ref" : "#/components/schemas/UserContext"
                       },
                       "attachments" : {
                         "type" : "array",
@@ -3934,6 +3972,11 @@
                         "type" : "string",
                         "readOnly" : true
                       },
+                      "senderRole" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UserContext"
+                      },
                       "purpose" : {
                         "$ref" : "#/components/schemas/MessagePurpose"
                       },
@@ -4538,14 +4581,12 @@
                         "type" : "string",
                         "pattern" : "\\S"
                       },
-                      "attachmentIds" : {
+                      "attachments" : {
                         "type" : "array",
                         "items" : {
-                          "type" : "string",
-                          "format" : "uuid",
-                          "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                          "$ref" : "#/components/schemas/IssueAttachmentJson"
                         },
-                        "description" : "IDs of the issue attachments the contractor has sent with this request",
+                        "description" : "Attachments the contractor has sent with this request, including download URLs",
                         "readOnly" : true
                       },
                       "createdAt" : {
@@ -4721,6 +4762,9 @@
                       "senderName" : {
                         "type" : "string"
                       },
+                      "senderRole" : {
+                        "$ref" : "#/components/schemas/UserContext"
+                      },
                       "purpose" : {
                         "$ref" : "#/components/schemas/MessagePurpose"
                       },
@@ -4737,11 +4781,6 @@
                         "description" : "ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization",
                         "type" : "string",
                         "$ref" : "#/components/schemas/UUID"
-                      },
-                      "senderRole" : {
-                        "readOnly" : true,
-                        "type" : "string",
-                        "$ref" : "#/components/schemas/UserContext"
                       },
                       "attachments" : {
                         "type" : "array",
@@ -5161,14 +5200,12 @@
                         "type" : "string",
                         "pattern" : "\\S"
                       },
-                      "attachmentIds" : {
+                      "attachments" : {
                         "type" : "array",
                         "items" : {
-                          "type" : "string",
-                          "format" : "uuid",
-                          "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                          "$ref" : "#/components/schemas/IssueAttachmentJson"
                         },
-                        "description" : "IDs of the issue attachments the contractor has sent with this request",
+                        "description" : "Attachments the contractor has sent with this request, including download URLs",
                         "readOnly" : true
                       },
                       "createdAt" : {
@@ -5302,6 +5339,11 @@
                       "senderName" : {
                         "type" : "string",
                         "readOnly" : true
+                      },
+                      "senderRole" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UserContext"
                       },
                       "purpose" : {
                         "$ref" : "#/components/schemas/MessagePurpose"

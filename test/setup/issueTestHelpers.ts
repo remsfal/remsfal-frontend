@@ -2,7 +2,7 @@
  * Shared test utilities and helpers for Issue-related components
  * Reduces code duplication across test files
  */
-import { vi, expect, type Mock } from 'vitest';
+import { vi, expect, afterAll, type Mock } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 
 // ✅ Static imports (ESLint-friendly)
@@ -24,6 +24,18 @@ export class ResizeObserverMock {
  */
 export function setupResizeObserverMock() {
   global.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
+}
+
+/** Delay of the ink bar update that PrimeVue TabList schedules in `mounted` (primevue/tablist). */
+const TAB_LIST_INK_BAR_DELAY_MS = 150;
+
+/**
+ * Waits once after all tests of a file until pending PrimeVue TabList timers have fired.
+ * Otherwise the timer can fire after JSDOM was torn down and fail the run with
+ * "ReferenceError: HTMLElement is not defined" (an unhandled error outside of any test).
+ */
+export function waitForTabListTimersAfterAll() {
+  afterAll(() => new Promise((resolve) => setTimeout(resolve, TAB_LIST_INK_BAR_DELAY_MS + 50)));
 }
 
 /**

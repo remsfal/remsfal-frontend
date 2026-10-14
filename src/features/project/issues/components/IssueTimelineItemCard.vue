@@ -11,7 +11,10 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const { title, attachments } = useTimelineItem(props, { titleNamespace: 'tenantIssues.timeline' });
+const { title, attachments } = useTimelineItem(props, {
+  titleNamespace: 'tenantIssues.timeline',
+  showSenderRole: true,
+});
 </script>
 
 <template>

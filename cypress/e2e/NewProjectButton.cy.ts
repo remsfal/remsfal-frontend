@@ -47,16 +47,18 @@ describe('NewProjectButton E2E Tests', () => {
     // Mock activity feed to prevent errors in ManagerTopbar
     cy.intercept('GET', '/ticketing/v1/activities*', {
       statusCode: 200,
-      body: { size: 0, nextCursor: null, activities: [] },
+      body: {
+        size: 0, nextCursor: null, activities: [] 
+      },
     }).as('getActivityFeeds');
 
     // Mock project creation
     cy.intercept('POST', '/api/v1/projects', {
       statusCode: 201,
       body: {
-            id: newProjectId,
-            name: 'Trimmed Project',
-            memberRole: 'MANAGER'
+        id: newProjectId,
+        name: 'Trimmed Project',
+        memberRole: 'MANAGER'
       },
     }).as('createProject');
 
@@ -99,7 +101,10 @@ describe('NewProjectButton E2E Tests', () => {
 
   it('should show error when project title exceeds max length', () => {
     // Type the long title and trigger blur to validate
-    cy.get('#projectTitle').clear().invoke('val', longTitle).trigger('input').trigger('blur');
+    cy.get('#projectTitle').clear();
+    cy.get('#projectTitle').invoke('val', longTitle);
+    cy.get('#projectTitle').trigger('input');
+    cy.get('#projectTitle').trigger('blur');
 
     // Wait for validation to trigger - Message component should appear
     cy.get('.p-message-error').should('be.visible');
@@ -118,7 +123,8 @@ describe('NewProjectButton E2E Tests', () => {
   });
 
   it('should show error when trying to create project with whitespace only', () => {
-    cy.get('#projectTitle').type('     ').trigger('blur');
+    cy.get('#projectTitle').type('     ');
+    cy.get('#projectTitle').trigger('blur');
 
     // After blur, validation should trigger and show min length error (trimmed = empty = less than 3)
     cy.get('.p-message-error').should('be.visible');
@@ -144,13 +150,18 @@ describe('NewProjectButton E2E Tests', () => {
 
   it('should clear error message when fixing title length', () => {
     // Type long title and blur to trigger validation error
-    cy.get('#projectTitle').clear().invoke('val', longTitle).trigger('input').trigger('blur');
+    cy.get('#projectTitle').clear();
+    cy.get('#projectTitle').invoke('val', longTitle);
+    cy.get('#projectTitle').trigger('input');
+    cy.get('#projectTitle').trigger('blur');
 
     // Wait for error message to appear
     cy.get('.p-message-error').should('be.visible');
 
     // Clear and type valid title and blur
-    cy.get('#projectTitle').clear().type('Valid Title').trigger('blur');
+    cy.get('#projectTitle').clear();
+    cy.get('#projectTitle').type('Valid Title');
+    cy.get('#projectTitle').trigger('blur');
 
     // Error message should not be visible anymore
     cy.get('.p-message-error').should('not.exist');
@@ -167,15 +178,14 @@ describe('NewProjectButton E2E Tests', () => {
 
     // Ensure dialog is visible
     cy.get('[role="dialog"]').should('be.visible');
-    cy.get('#projectTitle').clear().type(projectName);
+    cy.get('#projectTitle').clear();
+    cy.get('#projectTitle').type(projectName);
 
     // Button should be enabled with valid input
     cy.contains('button', /create|erstellen/i).should('not.be.disabled');
     cy.contains('button', /create|erstellen/i).click();
 
-    cy.wait('@createProject').its('request.body').should('deep.include', {
-      title: 'Trimmed Project',
-    });
+    cy.wait('@createProject').its('request.body').should('deep.include', {title: 'Trimmed Project',});
   });
 
   it('should handle all input scenarios', () => {

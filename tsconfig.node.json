@@ -4,8 +4,8 @@
     "vite.config.*",
     "vitest.config.*",
     "cypress.config.*",
-    "nightwatch.conf.*",
-    "playwright.config.*"
+    "eslint.config.*",
+    "capacitor.config.*"
   ],
   "compilerOptions": {
     "composite": true,

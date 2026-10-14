@@ -22,6 +22,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Free disk space on runner
+        if: runner.environment == 'github-hosted'
         run: |
           echo "Before cleanup:"
           df -h /

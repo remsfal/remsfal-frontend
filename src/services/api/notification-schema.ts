@@ -384,6 +384,21 @@ export interface components {
       /** @description Chat messages */
       messages?: $Read<components["schemas"]["ChatMessageJson"][]>;
     };
+    /** @description A project in which a contractor organization is registered, with its billing data */
+    ClientProjectJson: {
+      /** @description Unique identifier of the project */
+      id: components["schemas"]["UUID"];
+      title: string;
+      /** @description Billing recipient (Leistungsempfänger) of the project */
+      owner?: string;
+      /** @description Representative of the billing recipient (c/o) */
+      careOf?: string;
+      billingAddress?: components["schemas"]["AddressJson"];
+    };
+    /** @description A list of clients (projects with billing data) of a contractor organization */
+    ClientProjectListJson: {
+      projects: components["schemas"]["ClientProjectJson"][];
+    };
     /** @description Tenant information in a rental agreement */
     CoTenantJson: {
       id?: $Read<components["schemas"]["UUID"]>;
@@ -448,13 +463,13 @@ export interface components {
       timelineId?: components["schemas"]["UUID"];
       senderId?: components["schemas"]["UUID"];
       senderName?: string;
+      senderRole?: components["schemas"]["UserContext"];
       purpose: components["schemas"]["MessagePurpose"];
       message: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
       /** @description ID of the contractor organization to address; required only when creating via the issue-level combined view, ignored by the contractor's own mount which already knows its own organization */
       organizationId?: components["schemas"]["UUID"];
-      senderRole?: $Read<components["schemas"]["UserContext"]>;
       attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
     };
     /** @description A list of contractor timelines */
@@ -612,8 +627,8 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       agreementId?: $Read<components["schemas"]["UUID"]>;
       message: string;
-      /** @description IDs of the issue attachments the contractor has sent with this request */
-      attachmentIds?: $Read<string[]>;
+      /** @description Attachments the contractor has sent with this request, including download URLs */
+      attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
       createdAt?: $Read<components["schemas"]["Instant"]>;
       modifiedAt?: $Read<components["schemas"]["Instant"]>;
     };
@@ -1183,6 +1198,7 @@ export interface components {
       timelineId?: $Read<components["schemas"]["UUID"]>;
       senderId?: $Read<components["schemas"]["UUID"]>;
       senderName?: $Read<string>;
+      senderRole?: $Read<components["schemas"]["UserContext"]>;
       purpose: components["schemas"]["MessagePurpose"];
       message: string;
       createdAt?: $Read<components["schemas"]["Instant"]>;

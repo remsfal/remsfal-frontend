@@ -289,12 +289,11 @@ describe('TenantCommunicationCard', () => {
       },
       {
         issueRequestId: 'req-1', message: 'Erste Anfrage', createdAt: '2026-10-01T10:00:00Z',
-        attachmentIds: ['att-1'],
         attachments: [{
           attachmentId: 'att-1',
           fileName: 'plan.pdf',
           contentType: 'application/pdf',
-          downloadUrl: '/ticketing/v1/order-management/issue-1/attachments/att-1/plan.pdf',
+          downloadUrl: '/ticketing/v1/attachments/att-1',
         }],
       },
     ];
@@ -327,7 +326,7 @@ describe('TenantCommunicationCard', () => {
       await entries(wrapper)[0].get(`button[aria-label="${downloadLabel}"]`).trigger('click');
 
       expect(openSpy).toHaveBeenCalledWith(
-        '/ticketing/v1/order-management/issue-1/attachments/att-1/plan.pdf',
+        '/ticketing/v1/attachments/att-1',
         '_blank',
         'noopener,noreferrer',
       );

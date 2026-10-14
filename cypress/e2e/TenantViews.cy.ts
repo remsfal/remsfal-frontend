@@ -151,10 +151,10 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenants');
 
       // Check first tenant card contains basic info
-      const card = cy.get('[data-testid="tenant-card"]').first();
-      card.should('contain', 'John Doe');
+      cy.get('[data-testid="tenant-card"]').first().as('firstCard');
+      cy.get('@firstCard').should('contain', 'John Doe');
       // Check for active tag
-      card.find('.p-tag').should('exist');
+      cy.get('@firstCard').find('.p-tag').should('exist');
     });
 
     it('should display active/inactive status tag', () => {
@@ -414,7 +414,8 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenant');
 
       // Clear required field
-      cy.get('input[name="firstName"]').clear().blur();
+      cy.get('input[name="firstName"]').clear();
+      cy.get('input[name="firstName"]').blur();
 
       // Error message should be displayed
       cy.get('.p-message-error').should('be.visible');
@@ -435,7 +436,8 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenant');
 
       // Clear the required ZIP field
-      cy.get('input[name="zip"]').clear().blur();
+      cy.get('input[name="zip"]').clear();
+      cy.get('input[name="zip"]').blur();
 
       // Error message should be displayed
       cy.get('.p-message-error').should('be.visible');
@@ -450,9 +452,7 @@ describe('Tenant Views E2E Tests', () => {
 
     it('should handle tenant not found', () => {
       // Mock 404 response (tenant not found)
-      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants/${tenantId}`, {
-        statusCode: 404,
-      }).as('getTenantNotFound');
+      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants/${tenantId}`, {statusCode: 404,}).as('getTenantNotFound');
 
       cy.visit(`/projects/${projectId}/tenants/${tenantId}`);
       cy.wait('@getTenantNotFound');

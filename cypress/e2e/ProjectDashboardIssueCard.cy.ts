@@ -19,7 +19,9 @@ describe('ProjectDashboardIssueCard E2E Tests', () => {
         first: 0,
         size: 1,
         total: 1,
-        projects: [{ id: projectId, name: 'Musterliegenschaft', memberRole: 'MANAGER' }],
+        projects: [{
+          id: projectId, name: 'Musterliegenschaft', memberRole: 'MANAGER' 
+        }],
       },
     }).as('getProjects');
 
@@ -37,7 +39,9 @@ describe('ProjectDashboardIssueCard E2E Tests', () => {
     // Mock activity feed to prevent errors in ManagerTopbar
     cy.intercept('GET', '/ticketing/v1/activities*', {
       statusCode: 200,
-      body: { size: 0, nextCursor: null, activities: [] },
+      body: {
+        size: 0, nextCursor: null, activities: [] 
+      },
     }).as('getActivityFeeds');
   });
 

@@ -34,7 +34,9 @@ describe('IssueChatCard E2E Tests', () => {
         first: 0,
         size: 1,
         total: 1,
-        projects: [{ id: projectId, name: 'Test Project', memberRole: 'MANAGER' }],
+        projects: [{
+          id: projectId, name: 'Test Project', memberRole: 'MANAGER' 
+        }],
       },
     }).as('getProjects');
 
@@ -43,7 +45,9 @@ describe('IssueChatCard E2E Tests', () => {
       body: {
         id: projectId,
         title: 'Test Project',
-        members: [{ id: 'user-123', email: 'manager@example.com', role: 'MANAGER' }],
+        members: [{
+          id: 'user-123', email: 'manager@example.com', role: 'MANAGER' 
+        }],
       },
     }).as('getProject');
 

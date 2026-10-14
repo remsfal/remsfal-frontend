@@ -6,11 +6,10 @@ import Textarea from 'primevue/textarea';
 import FileUpload from 'primevue/fileupload';
 import BaseCard from '@/components/BaseCard.vue';
 import BaseDialog from '@/components/BaseDialog.vue';
-import TimelineEntryCard, { type TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
+import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import { useAppToast } from '@/composables/useAppToast';
 import { useTimelineComposer } from '@/composables/useTimeline';
 import { useEventBus } from '@/stores/EventStore';
-import { toAttachmentViews } from '@/helper/attachmentHelper';
 import { issueRequestService, type IssueRequestJson } from '@/features/contractor/orderManagement/services/IssueRequestService';
 import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
@@ -108,9 +107,6 @@ const loadRequests = async () => {
 
 onMounted(loadRequests);
 watch(() => props.issueId, loadRequests);
-
-const requestAttachments = (request: IssueRequestJson): TimelineAttachmentView[] =>
-  toAttachmentViews(request.attachments);
 
 const requestToWithdraw = ref<IssueRequestJson | null>(null);
 const withdrawing = ref(false);
@@ -224,7 +220,7 @@ const confirmWithdraw = async () => {
           hideDate
           :title="t('orderManagement.tenantCommunication.openRequestTitle')"
           :message="openRequest.message"
-          :attachments="requestAttachments(openRequest)"
+          :attachments="openRequest.attachments"
           :attachmentsLabel="t('orderManagement.timeline.attachmentsLabel')"
           :downloadAttachmentLabel="t('orderManagement.timeline.downloadAttachmentLabel')"
           testId="open-request-entry"

@@ -37,7 +37,9 @@ function setupAuthIntercepts() {
 
   cy.intercept('GET', '/api/v1/projects?offset=0&limit=10', {
     statusCode: 200,
-    body: { first: 0, size: 0, total: 0, projects: [] },
+    body: {
+      first: 0, size: 0, total: 0, projects: [] 
+    },
   }).as('getProjects');
 
   // Background session-refresh call; unmocked it 401s against the static preview
@@ -82,7 +84,9 @@ const scenarios: Scenario[] = [
       setupAuthIntercepts();
       cy.intercept('GET', `/api/v1/projects/${projectId}`, {
         statusCode: 200,
-        body: { id: projectId, title: 'Test Project', members: [] },
+        body: {
+          id: projectId, title: 'Test Project', members: [] 
+        },
       }).as('getProject');
       // The project layout (menu, sidebar) always loads these, regardless of which
       // project page is shown — must be mocked so the layout itself doesn't 401/redirect.
@@ -139,7 +143,9 @@ const scenarios: Scenario[] = [
       setupAuthIntercepts();
       cy.intercept('GET', `/api/v1/projects/${projectId}`, {
         statusCode: 200,
-        body: { id: projectId, title: 'Test Project', members: [] },
+        body: {
+          id: projectId, title: 'Test Project', members: [] 
+        },
       }).as('getProject');
       cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
       cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, { statusCode: 200, body: { organizations: [] } });
@@ -161,7 +167,11 @@ const scenarios: Scenario[] = [
       // enabled), the same shape the generic scenario tests below assume.
       cy.intercept('GET', `/ticketing/v1/issues/${issueId}/quotation-request`, {
         statusCode: 200,
-        body: { items: [{ id: 'qr-1', organizationId: 'org-1', contractorName: 'ACME GmbH' }] },
+        body: {
+          items: [{
+            id: 'qr-1', organizationId: 'org-1', contractorName: 'ACME GmbH' 
+          }] 
+        },
       }).as('getQuotationRequests');
       // visibleToTenants: false keeps IssueTimelineCard from rendering alongside this card — both
       // use the shared TimelineCard component with the same hardcoded 'timeline' testIdPrefix, so
@@ -347,7 +357,9 @@ describe('Contractor communication timeline (multiple contractors)', () => {
     setupAuthIntercepts();
     cy.intercept('GET', `/api/v1/projects/${projectId}`, {
       statusCode: 200,
-      body: { id: projectId, title: 'Test Project', members: [] },
+      body: {
+        id: projectId, title: 'Test Project', members: [] 
+      },
     }).as('getProject');
     cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
     cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, { statusCode: 200, body: { organizations: [] } });
@@ -366,8 +378,12 @@ describe('Contractor communication timeline (multiple contractors)', () => {
       statusCode: 200,
       body: {
         items: [
-          { id: 'qr-1', organizationId: 'org-1', contractorName: 'ACME GmbH' },
-          { id: 'qr-2', organizationId: 'org-2', contractorName: 'Muster Bau' },
+          {
+            id: 'qr-1', organizationId: 'org-1', contractorName: 'ACME GmbH' 
+          },
+          {
+            id: 'qr-2', organizationId: 'org-2', contractorName: 'Muster Bau' 
+          },
         ],
       },
     }).as('getQuotationRequests');
