@@ -350,12 +350,19 @@ describe('TenantCommunicationCard', () => {
       const wrapper = mountCard();
       await flushPromises();
 
-      expect(wrapper.getComponent(TimelineEntryCard).props('attachments')).toEqual([{
-        attachmentId: 'att-img',
-        contentType: 'image/jpeg',
-        downloadUrl: '/ticketing/v1/order-management/issue-1/attachments/att-img/schaden.jpg',
-        fileName: 'schaden.jpg',
-      }]);
+      expect(wrapper.getComponent(TimelineEntryCard).props('attachments')).toEqual([
+        {
+          attachmentId: 'att-img',
+          contentType: 'image/jpeg',
+          downloadUrl: '/ticketing/v1/order-management/issue-1/attachments/att-img/schaden.jpg',
+          fileName: 'schaden.jpg',
+        },
+        {
+          attachmentId: 'att-no-url',
+          contentType: 'application/pdf',
+          fileName: 'missing.pdf',
+        },
+      ]);
       expect(entries(wrapper)[0].find('img').exists()).toBe(true);
     });
 

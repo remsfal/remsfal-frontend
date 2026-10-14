@@ -1,5 +1,3 @@
-import type { TimelineAttachmentView } from '@/components/TimelineEntryCard.vue';
-
 export interface AttachmentLike {
   contentType?: string;
   fileName?: string;
@@ -24,11 +22,16 @@ export interface AttachmentSource extends AttachmentLike {
   downloadUrl?: string;
 }
 
+export interface DownloadableAttachment extends AttachmentSource {
+  attachmentId: string;
+  downloadUrl: string;
+}
+
 /**
  * Maps backend attachments to the view model of TimelineEntryCard, skipping entries
  * without id or download URL (they cannot be previewed or downloaded).
  */
-export function toAttachmentViews(attachments?: AttachmentSource[]): TimelineAttachmentView[] {
+export function toAttachmentViews(attachments?: AttachmentSource[]): DownloadableAttachment[] {
   return (attachments ?? []).flatMap((attachment) => {
     const { attachmentId, downloadUrl } = attachment;
     if (!attachmentId || !downloadUrl) {
