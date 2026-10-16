@@ -86,7 +86,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@tsconfig/node-lts": "^24.0.1",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@vitejs/plugin-vue": "^6.0.9",
     "@vitest/coverage-istanbul": "^5.0.2",
     "@vue/test-utils": "^2.5.1",
