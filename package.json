@@ -92,7 +92,7 @@
     "@vue/test-utils": "^2.5.1",
     "@vue/tsconfig": "^0.9.1",
     "autoprefixer": "^10.6.1",
-    "baseline-browser-mapping": "^2.11.27",
+    "baseline-browser-mapping": "^2.11.28",
     "chai": "^6.3.0",
     "cypress": "^16.1.1",
     "eslint": "^10.12.0",
