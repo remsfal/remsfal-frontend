@@ -10,6 +10,7 @@ jobs:
   run-tests:
     name: Node.js ${{ matrix.node-version }} Build
     runs-on: ubuntu-latest
+    if: github.repository == 'remsfal/remsfal-frontend' || github.ref != 'refs/heads/main'
     permissions:
       contents: read
     strategy:
@@ -22,6 +23,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Free disk space on runner
+        if: runner.environment == 'github-hosted'
         run: |
           echo "Before cleanup:"
           df -h /

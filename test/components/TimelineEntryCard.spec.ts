@@ -110,6 +110,36 @@ describe('TimelineEntryCard component', () => {
     openSpy.mockRestore();
   });
 
+  it('ignores attachments without id or download URL', () => {
+    const wrapper = mount(TimelineEntryCard, {
+      props: {
+        title: 'Titel',
+        attachmentsLabel: 'Anhänge',
+        attachments: [
+          {
+            attachmentId: 'att-1', fileName: 'a.pdf', contentType: 'application/pdf', downloadUrl: '/att-1',
+          },
+          { fileName: 'missing-id.txt', downloadUrl: '/missing-id.txt' },
+          { attachmentId: 'att-2', fileName: 'missing-url.txt' },
+        ],
+      },
+    });
+
+    expect(wrapper.findAll('button.cursor-pointer')).toHaveLength(1);
+  });
+
+  it('renders nothing attachment-related when no attachment has id and download URL', () => {
+    const wrapper = mount(TimelineEntryCard, {
+      props: {
+        title: 'Titel',
+        attachmentsLabel: 'Anhänge',
+        attachments: [{ attachmentId: 'att-2', fileName: 'missing-url.txt' }],
+      },
+    });
+
+    expect(wrapper.text()).not.toContain('Anhänge');
+  });
+
   it('renders non-image attachments as a labeled tile and triggers download on click', async () => {
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
     const wrapper = mount(TimelineEntryCard, {

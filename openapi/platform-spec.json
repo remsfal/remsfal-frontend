@@ -209,6 +209,18 @@
           }
         }
       },
+      "AppleNotificationJson" : {
+        "description" : "Server-to-server notification of Sign in with Apple",
+        "type" : "object",
+        "required" : [ "payload" ],
+        "properties" : {
+          "payload" : {
+            "type" : "string",
+            "description" : "JWT signed by Apple that carries the event in its events claim",
+            "pattern" : "\\S"
+          }
+        }
+      },
       "BillingCycle" : {
         "type" : "string",
         "enum" : [ "WEEKLY", "MONTHLY" ]
@@ -327,6 +339,45 @@
             },
             "description" : "Chat messages",
             "readOnly" : true
+          }
+        }
+      },
+      "ClientProjectJson" : {
+        "description" : "A project in which a contractor organization is registered, with its billing data",
+        "type" : "object",
+        "required" : [ "id", "title" ],
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier of the project",
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "Billing recipient (Leistungsempfänger) of the project"
+          },
+          "careOf" : {
+            "type" : "string",
+            "description" : "Representative of the billing recipient (c/o)"
+          },
+          "billingAddress" : {
+            "$ref" : "#/components/schemas/AddressJson"
+          }
+        }
+      },
+      "ClientProjectListJson" : {
+        "description" : "A list of clients (projects with billing data) of a contractor organization",
+        "type" : "object",
+        "required" : [ "projects" ],
+        "properties" : {
+          "projects" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ClientProjectJson"
+            }
           }
         }
       },
@@ -616,6 +667,34 @@
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             },
             "description" : "IDs of existing issue attachments to share with the contractors"
+          }
+        }
+      },
+      "EmailSettingsJson" : {
+        "description" : "Email preferences of the authenticated user",
+        "type" : "object",
+        "properties" : {
+          "userId" : {
+            "description" : "Unique identifier of the user",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "issueCreated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when a new issue is created"
+          },
+          "issueUpdated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when an issue is updated"
+          },
+          "issueAssigned" : {
+            "type" : "boolean",
+            "description" : "Receive an email when an issue is assigned"
+          },
+          "issueMessageCreated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when a new message is posted in an issue"
           }
         }
       },
@@ -918,14 +997,12 @@
             "type" : "string",
             "pattern" : "\\S"
           },
-          "attachmentIds" : {
+          "attachments" : {
             "type" : "array",
             "items" : {
-              "type" : "string",
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
             },
-            "description" : "IDs of the issue attachments the contractor has sent with this request",
+            "description" : "Attachments the contractor has sent with this request, including download URLs",
             "readOnly" : true
           },
           "createdAt" : {
@@ -2617,7 +2694,8 @@
     },
     "/api/v1/authentication/login" : {
       "get" : {
-        "summary" : "Login user via oauth flow.",
+        "summary" : "Login user via oauth flow of the default identity provider (Google).",
+        "description" : "Kept for backward compatibility, use the provider specific login endpoints instead.",
         "parameters" : [ {
           "name" : "route",
           "in" : "query",
@@ -2633,12 +2711,80 @@
         }
       }
     },
+    "/api/v1/authentication/login/apple" : {
+      "get" : {
+        "summary" : "Login user via Sign in with Apple oauth flow.",
+        "parameters" : [ {
+          "name" : "route",
+          "in" : "query",
+          "schema" : {
+            "type" : "string",
+            "default" : "/"
+          }
+        } ],
+        "responses" : {
+          "302" : {
+            "description" : "Redirect user to Apple"
+          },
+          "503" : {
+            "description" : "Sign in with Apple is not configured"
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/login/google" : {
+      "get" : {
+        "summary" : "Login user via Google oauth flow.",
+        "parameters" : [ {
+          "name" : "route",
+          "in" : "query",
+          "schema" : {
+            "type" : "string",
+            "default" : "/"
+          }
+        } ],
+        "responses" : {
+          "302" : {
+            "description" : "Redirect user to Google"
+          }
+        }
+      }
+    },
     "/api/v1/authentication/logout" : {
       "get" : {
         "summary" : "Logout user identified by the session cookie.",
         "responses" : {
           "302" : {
             "description" : "Redirect user to the logout page"
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/notifications/apple" : {
+      "post" : {
+        "summary" : "Receive server-to-server notifications of Sign in with Apple.",
+        "description" : "Handles the events consent-revoked, account-delete, email-disabled and email-enabled.",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AppleNotificationJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Notification processed",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Notification payload is invalid"
           }
         }
       }
@@ -2665,7 +2811,9 @@
     },
     "/api/v1/authentication/session" : {
       "get" : {
-        "summary" : "Start user session via oauth flow.",
+        "summary" : "Start user session via Google oauth flow (Google callback).",
+        "description" : "Kept for backward compatibility, use /session/google instead.",
+        "deprecated" : true,
         "parameters" : [ {
           "name" : "code",
           "in" : "query",
@@ -2682,13 +2830,85 @@
           "name" : "state",
           "in" : "query",
           "schema" : {
-            "type" : "string",
-            "default" : "/"
+            "type" : "string"
           }
         } ],
         "responses" : {
           "302" : {
             "description" : "Redirect user to the frontend spa"
+          },
+          "401" : {
+            "description" : "Authentication failed or state does not match"
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/session/apple" : {
+      "post" : {
+        "summary" : "Start user session via Sign in with Apple oauth flow (Apple form_post callback).",
+        "description" : "The user form field is only sent by Apple on the first authorization and carries the name of the user as JSON.",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "code" : {
+                    "type" : "string"
+                  },
+                  "state" : {
+                    "type" : "string"
+                  },
+                  "user" : {
+                    "type" : "string"
+                  },
+                  "error" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "302" : {
+            "description" : "Redirect user to the frontend spa"
+          },
+          "401" : {
+            "description" : "Authentication failed or state does not match"
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/session/google" : {
+      "get" : {
+        "summary" : "Start user session via Google oauth flow (Google callback).",
+        "parameters" : [ {
+          "name" : "code",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "error",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "302" : {
+            "description" : "Redirect user to the frontend spa"
+          },
+          "401" : {
+            "description" : "Authentication failed or state does not match"
           }
         }
       }
@@ -2696,6 +2916,7 @@
     "/api/v1/authentication/token" : {
       "post" : {
         "summary" : "Login user via app token directly.",
+        "description" : "For app_id=apple the app_token is the identity token of ASAuthorizationAppleIDProvider. The raw nonce is required, the token must carry its SHA-256 hash. The authorization code and the name are optional; Apple provides the name only on the first authorization.",
         "requestBody" : {
           "content" : {
             "application/x-www-form-urlencoded" : {
@@ -2712,6 +2933,18 @@
                   "dev_services" : {
                     "type" : "boolean",
                     "default" : "false"
+                  },
+                  "authorization_code" : {
+                    "type" : "string"
+                  },
+                  "nonce" : {
+                    "type" : "string"
+                  },
+                  "given_name" : {
+                    "type" : "string"
+                  },
+                  "family_name" : {
+                    "type" : "string"
                   }
                 }
               }
@@ -2725,6 +2958,12 @@
           },
           "401" : {
             "description" : "Unauthorized - Invalid token"
+          },
+          "501" : {
+            "description" : "The app is not supported"
+          },
+          "503" : {
+            "description" : "Sign in with Apple is not configured"
           }
         }
       }
@@ -3063,6 +3302,41 @@
           },
           "403" : {
             "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/clients" : {
+      "get" : {
+        "description" : "Retrieve the clients of a contractor organization: the projects in which the organization is registered as contractor, with their billing recipient and billing address",
+        "parameters" : [ {
+          "description" : "Id of the contractor organization",
+          "required" : true,
+          "name" : "organizationId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of projects with their clients was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ClientProjectListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "The user is not an employee of the organization"
           }
         },
         "security" : [ {

@@ -172,6 +172,16 @@ components:
         space:
           type: number
           format: float
+    AppleNotificationJson:
+      description: Server-to-server notification of Sign in with Apple
+      type: object
+      required:
+      - payload
+      properties:
+        payload:
+          type: string
+          description: JWT signed by Apple that carries the event in its events claim
+          pattern: \S
     BillingCycle:
       type: string
       enum:
@@ -266,6 +276,39 @@ components:
             $ref: "#/components/schemas/ChatMessageJson"
           description: Chat messages
           readOnly: true
+    ClientProjectJson:
+      description: "A project in which a contractor organization is registered, with\
+        \ its billing data"
+      type: object
+      required:
+      - id
+      - title
+      properties:
+        id:
+          description: Unique identifier of the project
+          type: string
+          $ref: "#/components/schemas/UUID"
+        title:
+          type: string
+        owner:
+          type: string
+          description: Billing recipient (Leistungsempfänger) of the project
+        careOf:
+          type: string
+          description: Representative of the billing recipient (c/o)
+        billingAddress:
+          $ref: "#/components/schemas/AddressJson"
+    ClientProjectListJson:
+      description: A list of clients (projects with billing data) of a contractor
+        organization
+      type: object
+      required:
+      - projects
+      properties:
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClientProjectJson"
     CoTenantJson:
       description: Tenant information in a rental agreement
       type: object
@@ -471,6 +514,27 @@ components:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
           description: IDs of existing issue attachments to share with the contractors
+    EmailSettingsJson:
+      description: Email preferences of the authenticated user
+      type: object
+      properties:
+        userId:
+          description: Unique identifier of the user
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        issueCreated:
+          type: boolean
+          description: Receive an email when a new issue is created
+        issueUpdated:
+          type: boolean
+          description: Receive an email when an issue is updated
+        issueAssigned:
+          type: boolean
+          description: Receive an email when an issue is assigned
+        issueMessageCreated:
+          type: boolean
+          description: Receive an email when a new message is posted in an issue
     EmployeeRole:
       type: string
       enum:
@@ -747,14 +811,12 @@ components:
         message:
           type: string
           pattern: \S
-        attachmentIds:
+        attachments:
           type: array
           items:
-            type: string
-            format: uuid
-            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-          description: IDs of the issue attachments the contractor has sent with this
-            request
+            $ref: "#/components/schemas/IssueAttachmentJson"
+          description: "Attachments the contractor has sent with this request, including\
+            \ download URLs"
           readOnly: true
         createdAt:
           readOnly: true
@@ -3499,14 +3561,12 @@ paths:
                     message:
                       type: string
                       pattern: \S
-                    attachmentIds:
+                    attachments:
                       type: array
                       items:
-                        type: string
-                        format: uuid
-                        pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-                      description: IDs of the issue attachments the contractor has
-                        sent with this request
+                        $ref: "#/components/schemas/IssueAttachmentJson"
+                      description: "Attachments the contractor has sent with this\
+                        \ request, including download URLs"
                       readOnly: true
                     createdAt:
                       readOnly: true
@@ -3955,14 +4015,12 @@ paths:
                     message:
                       type: string
                       pattern: \S
-                    attachmentIds:
+                    attachments:
                       type: array
                       items:
-                        type: string
-                        format: uuid
-                        pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-                      description: IDs of the issue attachments the contractor has
-                        sent with this request
+                        $ref: "#/components/schemas/IssueAttachmentJson"
+                      description: "Attachments the contractor has sent with this\
+                        \ request, including download URLs"
                       readOnly: true
                     createdAt:
                       readOnly: true
