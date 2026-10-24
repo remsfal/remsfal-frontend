@@ -209,6 +209,18 @@
           }
         }
       },
+      "AppleNotificationJson" : {
+        "description" : "Server-to-server notification of Sign in with Apple",
+        "type" : "object",
+        "required" : [ "payload" ],
+        "properties" : {
+          "payload" : {
+            "type" : "string",
+            "description" : "JWT signed by Apple that carries the event in its events claim",
+            "pattern" : "\\S"
+          }
+        }
+      },
       "BillingCycle" : {
         "type" : "string",
         "enum" : [ "WEEKLY", "MONTHLY" ]
@@ -634,6 +646,34 @@
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             },
             "description" : "IDs of existing issue attachments to share with the contractors"
+          }
+        }
+      },
+      "EmailSettingsJson" : {
+        "description" : "Email preferences of the authenticated user",
+        "type" : "object",
+        "properties" : {
+          "userId" : {
+            "description" : "Unique identifier of the user",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "issueCreated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when a new issue is created"
+          },
+          "issueUpdated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when an issue is updated"
+          },
+          "issueAssigned" : {
+            "type" : "boolean",
+            "description" : "Receive an email when an issue is assigned"
+          },
+          "issueMessageCreated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when a new message is posted in an issue"
           }
         }
       },
@@ -2693,6 +2733,72 @@
         },
         "summary" : "Test New Employment",
         "tags" : [ "Mailing Resource" ]
+      }
+    },
+    "/notification/v1/settings/issues/emails" : {
+      "patch" : {
+        "summary" : "Update the issue email preferences of the authenticated manager.",
+        "description" : "Only the provided flags are changed, omitted flags keep their current value.",
+        "requestBody" : {
+          "description" : "Email preferences to change",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/EmailSettingsJson"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Email preferences updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EmailSettingsJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request message"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "The caller is not a manager of any project"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "get" : {
+        "summary" : "Retrieve the issue email preferences of the authenticated manager.",
+        "description" : "Returns which issue emails the caller receives. Without stored preferences, all emails are enabled. Mandatory emails (e.g. project admission) are not configurable and not listed.",
+        "responses" : {
+          "200" : {
+            "description" : "Email preferences retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EmailSettingsJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "The caller is not a manager of any project"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     }
   },
