@@ -17,6 +17,18 @@ export const mockOrganization = {
   },
 };
 
+export const mockClients = {
+  projects: [
+    {
+      id: 'project-1',
+      title: 'Wohnanlage Musterstraße',
+      owner: 'WEG Musterstraße',
+      careOf: 'Test GmbH',
+      billingAddress: mockOrganization.address,
+    },
+  ],
+};
+
 export const mockEmployee = {
   id: 'emp-1',
   organizationId: 'org-123',
@@ -36,6 +48,11 @@ export const organizationHandlers = [
   // GET /organizations/contractors — must come before /:organizationId
   http.get(`${API_BASE}/organizations/contractors`, () => {
     return HttpResponse.json({ organizations: [mockOrganization], total: 1 }, { status: 200 });
+  }),
+
+  // GET /organizations/:organizationId/clients
+  http.get(`${API_BASE}/organizations/:organizationId/clients`, () => {
+    return HttpResponse.json(mockClients, { status: 200 });
   }),
 
   // GET /organizations (all owned)

@@ -34,3 +34,11 @@ export async function deleteProject(key: number) {
   await db.delete('projects', key);
   console.info('Project deleted from IndexedDB:', key);
 }
+
+// Clears the store instead of deleting the database: other connections opened via
+// initDB() stay open, which would leave a deleteDB() call blocked indefinitely.
+export async function clearProjects() {
+  const db = await initDB();
+  await db.clear('projects');
+  db.close();
+}

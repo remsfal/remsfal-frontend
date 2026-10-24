@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.json",
-  "include": ["src/sw.ts", "src/types/sw-global.d.ts", "src/helper/indexeddb.ts"],
+  "include": ["src/sw.ts", "src/types/sw-global.d.ts", "src/helper/indexeddb.ts", "src/helper/clientDataCleanup.ts"],
   "compilerOptions": {
     "composite": true,
     "noEmit": true,
