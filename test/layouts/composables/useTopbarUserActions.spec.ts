@@ -63,17 +63,24 @@ describe('useTopbarUserActions', () => {
     template: '<div></div>',
   });
 
-  it('login uses redirect query param when present', () => {
+  it('login navigates to the login page keeping the redirect query param', () => {
     currentQuery = { redirect: '/dashboard' };
     const wrapper = mount(TestComponent);
     wrapper.vm.login();
-    expect(globalThis.location.href).toBe('/api/v1/authentication/login?route=%2Fdashboard');
+    expect(mockPush).toHaveBeenCalledWith({ name: 'Login', query: { redirect: '/dashboard' } });
   });
 
-  it('login falls back to current fullPath when no redirect param', () => {
+  it('login uses the current fullPath as redirect when no redirect param', () => {
+    currentPath = '/verify-additional-email';
     const wrapper = mount(TestComponent);
     wrapper.vm.login();
-    expect(globalThis.location.href).toBe('/api/v1/authentication/login?route=%2F');
+    expect(mockPush).toHaveBeenCalledWith({ name: 'Login', query: { redirect: '/verify-additional-email' } });
+  });
+
+  it('login omits the redirect when on the root path', () => {
+    const wrapper = mount(TestComponent);
+    wrapper.vm.login();
+    expect(mockPush).toHaveBeenCalledWith({ name: 'Login', query: { redirect: undefined } });
   });
 
   it('logout clears user client data before navigating to the logout URL', async () => {

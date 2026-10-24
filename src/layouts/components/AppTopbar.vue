@@ -46,7 +46,7 @@ onUnmounted(() => {
     <div class="layout-topbar">
       <div class="layout-topbar-logo-container">
         <RouterLink to="/" class="layout-topbar-logo">
-          <img src="@/assets/logo.svg" alt="logo">
+          <img src="@/assets/remsfal-logo.svg" alt="logo">
         </RouterLink>
       </div>
 
