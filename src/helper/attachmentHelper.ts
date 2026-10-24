@@ -16,3 +16,33 @@ export function getAttachmentTypeLabel(attachment: AttachmentLike): string {
   const extension = fileName.split('.').pop();
   return extension ? extension.toUpperCase() : 'FILE';
 }
+
+export interface AttachmentSource extends AttachmentLike {
+  attachmentId?: string;
+  downloadUrl?: string;
+}
+
+export interface DownloadableAttachment extends AttachmentSource {
+  attachmentId: string;
+  downloadUrl: string;
+}
+
+/**
+ * Maps backend attachments to the view model of TimelineEntryCard, skipping entries
+ * without id or download URL (they cannot be previewed or downloaded).
+ */
+export function toAttachmentViews(attachments?: AttachmentSource[]): DownloadableAttachment[] {
+  return (attachments ?? []).flatMap((attachment) => {
+    const { attachmentId, downloadUrl } = attachment;
+    if (!attachmentId || !downloadUrl) {
+      return [];
+    }
+
+    return [{
+      attachmentId,
+      contentType: attachment.contentType,
+      downloadUrl,
+      fileName: attachment.fileName,
+    }];
+  });
+}
