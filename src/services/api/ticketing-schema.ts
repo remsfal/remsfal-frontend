@@ -3519,6 +3519,19 @@ export interface components {
       /** @description IDs of existing issue attachments to share with the contractors */
       attachmentIds?: string[];
     };
+    /** @description Email preferences of the authenticated user */
+    EmailSettingsJson: {
+      /** @description Unique identifier of the user */
+      userId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Receive an email when a new issue is created */
+      issueCreated?: boolean;
+      /** @description Receive an email when an issue is updated */
+      issueUpdated?: boolean;
+      /** @description Receive an email when an issue is assigned */
+      issueAssigned?: boolean;
+      /** @description Receive an email when a new message is posted in an issue */
+      issueMessageCreated?: boolean;
+    };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
     /**

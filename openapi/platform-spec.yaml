@@ -518,6 +518,27 @@ components:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
           description: IDs of existing issue attachments to share with the contractors
+    EmailSettingsJson:
+      description: Email preferences of the authenticated user
+      type: object
+      properties:
+        userId:
+          description: Unique identifier of the user
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        issueCreated:
+          type: boolean
+          description: Receive an email when a new issue is created
+        issueUpdated:
+          type: boolean
+          description: Receive an email when an issue is updated
+        issueAssigned:
+          type: boolean
+          description: Receive an email when an issue is assigned
+        issueMessageCreated:
+          type: boolean
+          description: Receive an email when a new message is posted in an issue
     EmployeeRole:
       type: string
       enum:
@@ -2174,7 +2195,9 @@ paths:
               schema: {}
   /api/v1/authentication/login:
     get:
-      summary: Login user via oauth flow.
+      summary: Login user via oauth flow of the default identity provider (Google).
+      description: "Kept for backward compatibility, use the provider specific login\
+        \ endpoints instead."
       parameters:
       - name: route
         in: query
@@ -2184,6 +2207,18 @@ paths:
       responses:
         "302":
           description: Redirect user to the identity provider
+  /api/v1/authentication/login/google:
+    get:
+      summary: Login user via Google oauth flow.
+      parameters:
+      - name: route
+        in: query
+        schema:
+          type: string
+          default: /
+      responses:
+        "302":
+          description: Redirect user to Google
   /api/v1/authentication/logout:
     get:
       summary: Logout user identified by the session cookie.
@@ -2205,7 +2240,7 @@ paths:
           description: Unauthorized - Invalid or missing refresh token
   /api/v1/authentication/session:
     get:
-      summary: Start user session via oauth flow.
+      summary: Start user session via Google oauth flow (Google callback).
       parameters:
       - name: code
         in: query
@@ -2219,10 +2254,11 @@ paths:
         in: query
         schema:
           type: string
-          default: /
       responses:
         "302":
           description: Redirect user to the frontend spa
+        "401":
+          description: Authentication failed or state does not match
   /api/v1/authentication/token:
     post:
       summary: Login user via app token directly.

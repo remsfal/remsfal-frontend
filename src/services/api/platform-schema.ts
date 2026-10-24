@@ -182,7 +182,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Login user via oauth flow. */
+    /**
+     * Login user via oauth flow of the default identity provider (Google).
+     * @description Kept for backward compatibility, use the provider specific login endpoints instead.
+     */
     get: {
       parameters: {
         query?: {
@@ -195,6 +198,42 @@ export interface paths {
       requestBody?: never;
       responses: {
         /** @description Redirect user to the identity provider */
+        302: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/authentication/login/google": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Login user via Google oauth flow. */
+    get: {
+      parameters: {
+        query?: {
+          route?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Redirect user to Google */
         302: {
           headers: {
             [name: string]: unknown;
@@ -295,7 +334,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Start user session via oauth flow. */
+    /** Start user session via Google oauth flow (Google callback). */
     get: {
       parameters: {
         query?: {
@@ -311,6 +350,13 @@ export interface paths {
       responses: {
         /** @description Redirect user to the frontend spa */
         302: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Authentication failed or state does not match */
+        401: {
           headers: {
             [name: string]: unknown;
           };
@@ -5502,6 +5548,19 @@ export interface components {
       scopeOfWork?: string;
       /** @description IDs of existing issue attachments to share with the contractors */
       attachmentIds?: string[];
+    };
+    /** @description Email preferences of the authenticated user */
+    EmailSettingsJson: {
+      /** @description Unique identifier of the user */
+      userId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Receive an email when a new issue is created */
+      issueCreated?: boolean;
+      /** @description Receive an email when an issue is updated */
+      issueUpdated?: boolean;
+      /** @description Receive an email when an issue is assigned */
+      issueAssigned?: boolean;
+      /** @description Receive an email when a new message is posted in an issue */
+      issueMessageCreated?: boolean;
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";

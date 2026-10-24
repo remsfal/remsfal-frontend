@@ -658,6 +658,34 @@
           }
         }
       },
+      "EmailSettingsJson" : {
+        "description" : "Email preferences of the authenticated user",
+        "type" : "object",
+        "properties" : {
+          "userId" : {
+            "description" : "Unique identifier of the user",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "issueCreated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when a new issue is created"
+          },
+          "issueUpdated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when an issue is updated"
+          },
+          "issueAssigned" : {
+            "type" : "boolean",
+            "description" : "Receive an email when an issue is assigned"
+          },
+          "issueMessageCreated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when a new message is posted in an issue"
+          }
+        }
+      },
       "EmployeeRole" : {
         "type" : "string",
         "enum" : [ "OWNER", "MANAGER", "STAFF" ]
@@ -2654,7 +2682,8 @@
     },
     "/api/v1/authentication/login" : {
       "get" : {
-        "summary" : "Login user via oauth flow.",
+        "summary" : "Login user via oauth flow of the default identity provider (Google).",
+        "description" : "Kept for backward compatibility, use the provider specific login endpoints instead.",
         "parameters" : [ {
           "name" : "route",
           "in" : "query",
@@ -2666,6 +2695,24 @@
         "responses" : {
           "302" : {
             "description" : "Redirect user to the identity provider"
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/login/google" : {
+      "get" : {
+        "summary" : "Login user via Google oauth flow.",
+        "parameters" : [ {
+          "name" : "route",
+          "in" : "query",
+          "schema" : {
+            "type" : "string",
+            "default" : "/"
+          }
+        } ],
+        "responses" : {
+          "302" : {
+            "description" : "Redirect user to Google"
           }
         }
       }
@@ -2702,7 +2749,7 @@
     },
     "/api/v1/authentication/session" : {
       "get" : {
-        "summary" : "Start user session via oauth flow.",
+        "summary" : "Start user session via Google oauth flow (Google callback).",
         "parameters" : [ {
           "name" : "code",
           "in" : "query",
@@ -2719,13 +2766,15 @@
           "name" : "state",
           "in" : "query",
           "schema" : {
-            "type" : "string",
-            "default" : "/"
+            "type" : "string"
           }
         } ],
         "responses" : {
           "302" : {
             "description" : "Redirect user to the frontend spa"
+          },
+          "401" : {
+            "description" : "Authentication failed or state does not match"
           }
         }
       }

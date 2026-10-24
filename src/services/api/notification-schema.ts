@@ -264,6 +264,108 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/notification/v1/settings/issues/emails": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve the issue email preferences of the authenticated manager.
+     * @description Returns which issue emails the caller receives. Without stored preferences, all emails are enabled. Mandatory emails (e.g. project admission) are not configurable and not listed.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Email preferences retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["EmailSettingsJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The caller is not a manager of any project */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Update the issue email preferences of the authenticated manager.
+     * @description Only the provided flags are changed, omitted flags keep their current value.
+     */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      /** @description Email preferences to change */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["EmailSettingsJson"];
+        };
+      };
+      responses: {
+        /** @description Email preferences updated successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["EmailSettingsJson"];
+          };
+        };
+        /** @description Invalid request message */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The caller is not a manager of any project */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -492,6 +594,19 @@ export interface components {
       scopeOfWork?: string;
       /** @description IDs of existing issue attachments to share with the contractors */
       attachmentIds?: string[];
+    };
+    /** @description Email preferences of the authenticated user */
+    EmailSettingsJson: {
+      /** @description Unique identifier of the user */
+      userId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Receive an email when a new issue is created */
+      issueCreated?: boolean;
+      /** @description Receive an email when an issue is updated */
+      issueUpdated?: boolean;
+      /** @description Receive an email when an issue is assigned */
+      issueAssigned?: boolean;
+      /** @description Receive an email when a new message is posted in an issue */
+      issueMessageCreated?: boolean;
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";

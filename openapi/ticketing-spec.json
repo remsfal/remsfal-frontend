@@ -637,6 +637,34 @@
           }
         }
       },
+      "EmailSettingsJson" : {
+        "description" : "Email preferences of the authenticated user",
+        "type" : "object",
+        "properties" : {
+          "userId" : {
+            "description" : "Unique identifier of the user",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "issueCreated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when a new issue is created"
+          },
+          "issueUpdated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when an issue is updated"
+          },
+          "issueAssigned" : {
+            "type" : "boolean",
+            "description" : "Receive an email when an issue is assigned"
+          },
+          "issueMessageCreated" : {
+            "type" : "boolean",
+            "description" : "Receive an email when a new message is posted in an issue"
+          }
+        }
+      },
       "EmployeeRole" : {
         "type" : "string",
         "enum" : [ "OWNER", "MANAGER", "STAFF" ]
