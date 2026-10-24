@@ -1,5 +1,6 @@
 import { precacheAndRoute } from 'workbox-precaching';
 import { getAllProjects, deleteProject } from '@/helper/indexeddb';
+import { RUNTIME_CACHE_PREFIX } from '@/helper/clientDataCleanup';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -8,8 +9,9 @@ precacheAndRoute(self.__WB_MANIFEST);
 // Workbox owns its own precache cache (prefixed "workbox-precache-") and cleans it up
 // via its own activate listener, so this handler must only ever touch caches under
 // our own runtime-cache prefix, never sweep every cache indiscriminately.
-const RUNTIME_CACHE_PREFIX = 'remsfal-runtime-';
-const RUNTIME_CACHE_NAME = `${RUNTIME_CACHE_PREFIX}v1`;
+// v1 also stored personal API responses — bumping the version makes the activate
+// handler below purge it on existing installations.
+const RUNTIME_CACHE_NAME = `${RUNTIME_CACHE_PREFIX}v2`;
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
@@ -27,10 +29,25 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// Fetch event: network-first strategy with fallback to the runtime cache
+// Fetch event: network-first strategy with fallback to the runtime cache.
+// Requests that must not be cached are not intercepted at all, so the browser
+// handles them as if no service worker was installed.
 self.addEventListener('fetch', (event) => {
+  if (!isCacheableRequest(event.request)) {
+    return;
+  }
   event.respondWith(networkFirst(event));
 });
+
+// API responses contain personal data and must never outlive the session, so only
+// same-origin GET requests for the app itself are cached.
+function isCacheableRequest(request: Request): boolean {
+  if (request.method !== 'GET') {
+    return false;
+  }
+  const url = new URL(request.url);
+  return url.origin === self.location.origin && !url.pathname.startsWith('/api/');
+}
 
 async function networkFirst(event: FetchEvent): Promise<Response> {
   let response: Response;
@@ -39,9 +56,11 @@ async function networkFirst(event: FetchEvent): Promise<Response> {
   } catch {
     return matchCachedResponse(event.request);
   }
-  // Keep the SW alive until the cache write finishes; a failed write must not
-  // break the response, so errors are only logged.
-  event.waitUntil(updateRuntimeCache(event.request, response.clone()));
+  if (response.ok) {
+    // Keep the SW alive until the cache write finishes; a failed write must not
+    // break the response, so errors are only logged.
+    event.waitUntil(updateRuntimeCache(event.request, response.clone()));
+  }
   return response;
 }
 

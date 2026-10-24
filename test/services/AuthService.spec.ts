@@ -1,60 +1,52 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
 import { authService } from '@/services/AuthService';
 
 describe('AuthService with MSW', () => {
   describe('refreshTokens', () => {
-    it('should return true on 204 response', async () => {
+    it('should return "refreshed" on 204 response', async () => {
       const result = await authService.refreshTokens();
 
-      expect(result).toBe(true);
+      expect(result).toBe('refreshed');
     });
 
-    it('should return false on 401 response', async () => {
+    it.each([401, 403])('should return "expired" on %i response', async (status) => {
       server.use(
         http.post('/api/v1/authentication/refresh', () => {
-          return new HttpResponse(null, { status: 401 });
+          return new HttpResponse(null, { status });
         }),
       );
 
       const result = await authService.refreshTokens();
 
-      expect(result).toBe(false);
+      expect(result).toBe('expired');
     });
 
-    it('should return false on 403 response', async () => {
+    it.each([500, 502, 503])('should return "unavailable" on %i response', async (status) => {
       server.use(
         http.post('/api/v1/authentication/refresh', () => {
-          return new HttpResponse(null, { status: 403 });
+          return new HttpResponse(null, { status });
         }),
       );
 
       const result = await authService.refreshTokens();
 
-      expect(result).toBe(false);
+      expect(result).toBe('unavailable');
     });
 
-    it('should return false on 500 response', async () => {
-      server.use(
-        http.post('/api/v1/authentication/refresh', () => {
-          return new HttpResponse(null, { status: 500 });
-        }),
-      );
-
-      const result = await authService.refreshTokens();
-
-      expect(result).toBe(false);
-    });
-
-    it('should propagate network errors', async () => {
+    it('should return "unavailable" on network errors instead of throwing', async () => {
       server.use(
         http.post('/api/v1/authentication/refresh', () => {
           return HttpResponse.error();
         }),
       );
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-      await expect(authService.refreshTokens()).rejects.toThrow();
+      const result = await authService.refreshTokens();
+
+      expect(result).toBe('unavailable');
+      warnSpy.mockRestore();
     });
   });
 

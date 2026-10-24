@@ -195,26 +195,30 @@ function createAxiosInstance() {
       originalConfig!._retry = true;
       isRefreshing = true;
 
-      let refreshed: boolean;
-      try {
-        refreshed = await authService.refreshTokens();
-      } catch (e) {
-        processQueue(e);
-        isRefreshing = false;
-        useEventBus().emit('auth:session-expired', {});
-        throw e;
-      }
+      const refreshResult = await authService.refreshTokens();
+      isRefreshing = false;
 
-      if (refreshed) {
+      if (refreshResult === 'refreshed') {
         processQueue(null);
-        isRefreshing = false;
         return instance(originalConfig!);
-      } else {
+      }
+      if (refreshResult === 'expired') {
         processQueue(error);
-        isRefreshing = false;
         useEventBus().emit('auth:session-expired', {});
         throw error;
       }
+      // Server not reachable: the session may still be valid, so this must not end it.
+      // The thrown error deliberately carries no `response`, so callers checking for a
+      // 401 (e.g. UserSession.refreshSessionState) don't treat the user as logged out.
+      const unavailableError = new Error('Token refresh unavailable', { cause: error });
+      processQueue(unavailableError);
+      reportError('[token refresh unavailable]', error, {
+        'http.method': originalConfig?.method ?? 'unknown',
+        'http.status_code': 401,
+        'url.path': originalConfig?.url ?? 'unknown',
+      });
+      emitToast('error', 'error.general', 'error.apiResponse');
+      throw unavailableError;
     }
 
     reportError('[response error]', error, {

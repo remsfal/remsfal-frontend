@@ -12,6 +12,7 @@ globalThis.self = {
     globalThis.eventListeners[event].push(handler);
   }),
   clients: { claim: vi.fn().mockResolvedValue(undefined) },
+  location: { origin: 'https://example.com' },
 };
 
 globalThis.caches = {
