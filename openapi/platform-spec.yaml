@@ -172,6 +172,16 @@ components:
         space:
           type: number
           format: float
+    AppleNotificationJson:
+      description: Server-to-server notification of Sign in with Apple
+      type: object
+      required:
+      - payload
+      properties:
+        payload:
+          type: string
+          description: JWT signed by Apple that carries the event in its events claim
+          pattern: \S
     BillingCycle:
       type: string
       enum:
@@ -2207,6 +2217,20 @@ paths:
       responses:
         "302":
           description: Redirect user to the identity provider
+  /api/v1/authentication/login/apple:
+    get:
+      summary: Login user via Sign in with Apple oauth flow.
+      parameters:
+      - name: route
+        in: query
+        schema:
+          type: string
+          default: /
+      responses:
+        "302":
+          description: Redirect user to Apple
+        "503":
+          description: Sign in with Apple is not configured
   /api/v1/authentication/login/google:
     get:
       summary: Login user via Google oauth flow.
@@ -2225,6 +2249,25 @@ paths:
       responses:
         "302":
           description: Redirect user to the logout page
+  /api/v1/authentication/notifications/apple:
+    post:
+      summary: Receive server-to-server notifications of Sign in with Apple.
+      description: "Handles the events consent-revoked, account-delete, email-disabled\
+        \ and email-enabled."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppleNotificationJson"
+        required: true
+      responses:
+        "200":
+          description: Notification processed
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Notification payload is invalid
   /api/v1/authentication/refresh:
     post:
       summary: Refresh the access and refresh tokens using the refresh token cookie.
@@ -2239,6 +2282,55 @@ paths:
         "401":
           description: Unauthorized - Invalid or missing refresh token
   /api/v1/authentication/session:
+    get:
+      summary: Start user session via Google oauth flow (Google callback).
+      description: "Kept for backward compatibility, use /session/google instead."
+      deprecated: true
+      parameters:
+      - name: code
+        in: query
+        schema:
+          type: string
+      - name: error
+        in: query
+        schema:
+          type: string
+      - name: state
+        in: query
+        schema:
+          type: string
+      responses:
+        "302":
+          description: Redirect user to the frontend spa
+        "401":
+          description: Authentication failed or state does not match
+  /api/v1/authentication/session/apple:
+    post:
+      summary: Start user session via Sign in with Apple oauth flow (Apple form_post
+        callback).
+      description: The user form field is only sent by Apple on the first authorization
+        and carries the name of the user as JSON.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                state:
+                  type: string
+                user:
+                  type: string
+                error:
+                  type: string
+        required: true
+      responses:
+        "302":
+          description: Redirect user to the frontend spa
+        "401":
+          description: Authentication failed or state does not match
+  /api/v1/authentication/session/google:
     get:
       summary: Start user session via Google oauth flow (Google callback).
       parameters:
@@ -2262,6 +2354,10 @@ paths:
   /api/v1/authentication/token:
     post:
       summary: Login user via app token directly.
+      description: "For app_id=apple the app_token is the identity token of ASAuthorizationAppleIDProvider.\
+        \ The raw nonce is required, the token must carry its SHA-256 hash. The authorization\
+        \ code and the name are optional; Apple provides the name only on the first\
+        \ authorization."
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -2277,12 +2373,24 @@ paths:
                 dev_services:
                   type: boolean
                   default: "false"
+                authorization_code:
+                  type: string
+                nonce:
+                  type: string
+                given_name:
+                  type: string
+                family_name:
+                  type: string
         required: true
       responses:
         "204":
           description: Tokens are set as cookies
         "401":
           description: Unauthorized - Invalid token
+        "501":
+          description: The app is not supported
+        "503":
+          description: Sign in with Apple is not configured
   /api/v1/authentication/verify-additional-email:
     get:
       summary: Verify an additional user email address using a verification token.

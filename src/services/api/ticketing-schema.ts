@@ -3368,6 +3368,11 @@ export interface components {
       /** Format: float */
       space?: number;
     };
+    /** @description Server-to-server notification of Sign in with Apple */
+    AppleNotificationJson: {
+      /** @description JWT signed by Apple that carries the event in its events claim */
+      payload: string;
+    };
     /** @enum {string} */
     BillingCycle: "WEEKLY" | "MONTHLY";
     /** @description A building as part of a property */

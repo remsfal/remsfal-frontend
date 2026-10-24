@@ -172,6 +172,16 @@ components:
         space:
           type: number
           format: float
+    AppleNotificationJson:
+      description: Server-to-server notification of Sign in with Apple
+      type: object
+      required:
+      - payload
+      properties:
+        payload:
+          type: string
+          description: JWT signed by Apple that carries the event in its events claim
+          pattern: \S
     BillingCycle:
       type: string
       enum:
