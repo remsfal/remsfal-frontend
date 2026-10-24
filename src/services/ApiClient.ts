@@ -96,8 +96,17 @@ export function replacePlaceholders(
 function emitToast(severity: string, summary: string, detail: string) {
   const bus = useEventBus();
   bus.emit('toast:translate', {
-    severity, summary, detail 
+    severity, summary, detail
   });
+}
+
+// Telemetry attributes describing the failed request, shared by all response error reports.
+function requestAttributes(config: InternalAxiosRequestConfig | undefined, status: number) {
+  return {
+    'http.method': config?.method ?? 'unknown',
+    'http.status_code': status,
+    'url.path': config?.url ?? 'unknown',
+  };
 }
 /**
  * Axios interceptors
@@ -212,20 +221,12 @@ function createAxiosInstance() {
       // 401 (e.g. UserSession.refreshSessionState) don't treat the user as logged out.
       const unavailableError = new Error('Token refresh unavailable', { cause: error });
       processQueue(unavailableError);
-      reportError('[token refresh unavailable]', error, {
-        'http.method': originalConfig?.method ?? 'unknown',
-        'http.status_code': 401,
-        'url.path': originalConfig?.url ?? 'unknown',
-      });
+      reportError('[token refresh unavailable]', error, requestAttributes(originalConfig, 401));
       emitToast('error', 'error.general', 'error.apiResponse');
       throw unavailableError;
     }
 
-    reportError('[response error]', error, {
-      'http.method': error.config?.method ?? 'unknown',
-      'http.status_code': error.response?.status ?? 0,
-      'url.path': error.config?.url ?? 'unknown',
-    });
+    reportError('[response error]', error, requestAttributes(error.config, error.response?.status ?? 0));
     emitToast('error', 'error.general', 'error.apiResponse');
     throw error;
   };
