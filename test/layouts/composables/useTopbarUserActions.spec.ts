@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useTopbarUserActions } from '@/layouts/composables/useTopbarUserActions';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
+import { clearUserClientData } from '@/helper/clientDataCleanup';
 
 let currentPath = '/';
 let currentQuery: Record<string, string> = {};
@@ -25,6 +26,8 @@ vi.mock('vue-router', async (importOriginal) => {
 
 // Mock useI18n
 vi.mock('vue-i18n', () => ({useI18n: () => ({ t: (key: string) => key }),}));
+
+vi.mock('@/helper/clientDataCleanup', () => ({ clearUserClientData: vi.fn() }));
 
 // Mock globalThis location
 const originalLocation = globalThis.location;
@@ -73,9 +76,17 @@ describe('useTopbarUserActions', () => {
     expect(globalThis.location.href).toBe('/api/v1/authentication/login?route=%2F');
   });
 
-  it('logout navigates to correct URL', () => {
+  it('logout clears user client data before navigating to the logout URL', async () => {
+    let pathnameDuringCleanup: string | undefined;
+    vi.mocked(clearUserClientData).mockImplementation(async () => {
+      pathnameDuringCleanup = globalThis.location.pathname;
+    });
     const wrapper = mount(TestComponent);
-    wrapper.vm.logout();
+
+    await wrapper.vm.logout();
+
+    expect(clearUserClientData).toHaveBeenCalledOnce();
+    expect(pathnameDuringCleanup).toBe('');
     expect(globalThis.location.pathname).toBe('/api/v1/authentication/logout');
   });
 

@@ -91,6 +91,16 @@ describe('UserSession Store', () => {
       expect(consoleSpy).toHaveBeenCalledWith('Invalid user session:', error500);
     });
 
+    it('should keep user when the token refresh is unavailable (error without response)', async () => {
+      // Shape of the error ApiClient throws when the refresh endpoint is not reachable
+      vi.mocked(apiClient.get).mockRejectedValue(new Error('Token refresh unavailable'));
+      store.user = { email: 'existing@example.com' } as User;
+
+      await store.refreshSessionState();
+
+      expect(store.user).not.toBeNull();
+    });
+
     it('should set sessionInitialized to true even on non-401 errors', async () => {
       const error500 = { response: { status: 500 } };
       vi.mocked(apiClient.get).mockRejectedValue(error500);

@@ -3,12 +3,13 @@ import {useRoute, useRouter} from 'vue-router';
 import {useI18n} from 'vue-i18n';
 import {useUserSessionStore} from '@/stores/UserSession';
 import {shouldShowDevLogin} from '@/helper/platform';
+import {clearUserClientData} from '@/helper/clientDataCleanup';
 
 export function useTopbarUserActions(): {
     t: ReturnType<typeof useI18n>['t'];
     sessionStore: ReturnType<typeof useUserSessionStore>;
     onAccountSettingsClick: () => void;
-    logout: () => void;
+    logout: () => Promise<void>;
     login: () => void;
     loginDev: () => Promise<void>;
     showDevLoginButton: import("vue").ComputedRef<boolean>;
@@ -28,7 +29,8 @@ export function useTopbarUserActions(): {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await clearUserClientData();
     globalThis.location.pathname = '/api/v1/authentication/logout';
   };
 
