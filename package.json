@@ -94,7 +94,7 @@
     "autoprefixer": "^10.6.1",
     "baseline-browser-mapping": "^2.11.28",
     "chai": "^6.3.0",
-    "cypress": "^16.1.1",
+    "cypress": "^16.2.0",
     "eslint": "^10.13.0",
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-cypress": "^7.0.2",
