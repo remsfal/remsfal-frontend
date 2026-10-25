@@ -108,6 +108,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'Login': RouteRecordInfo<
+      'Login',
+      '/login',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     'ManagerAccountData': RouteRecordInfo<
       'ManagerAccountData',
       '/manager/account-data',
@@ -421,6 +428,14 @@ declare module 'vue-router/auto-routes' {
     'src/pages/contractor/organizations/new.vue': {
       routes:
         | 'ContractorOrganizations'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/login.vue': {
+      routes:
+        | 'Login'
       views:
         | never
       pathParamNames:

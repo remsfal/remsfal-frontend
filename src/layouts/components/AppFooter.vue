@@ -8,7 +8,7 @@ const { t } = useI18n();
   <footer>
     <div class="layout-footer flex items-end">
       <div class="pb-2">
-        <img src="@/assets/logo.svg" alt="Logo" class="mr-2">
+        <img src="@/assets/remsfal-logo.svg" alt="Logo" class="mr-2">
       </div>
       <div>
         {{ t('footer.poweredBy') }}

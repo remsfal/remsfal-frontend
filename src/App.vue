@@ -14,8 +14,9 @@ import ProjectLayout from '@/layouts/project.vue'
 import TenantLayout from '@/layouts/tenant.vue'
 import ContractorLayout from '@/layouts/contractor.vue'
 import PublicLayout from '@/layouts/public.vue'
+import AuthLayout from '@/layouts/auth.vue'
 
-type LayoutKey = 'manager' | 'project' | 'tenant' | 'contractor' | 'public'
+type LayoutKey = 'manager' | 'project' | 'tenant' | 'contractor' | 'public' | 'auth'
 
 const layouts: Record<LayoutKey, Component> = {
   manager: ManagerLayout,
@@ -23,6 +24,7 @@ const layouts: Record<LayoutKey, Component> = {
   tenant: TenantLayout,
   contractor: ContractorLayout,
   public: PublicLayout,
+  auth: AuthLayout,
 }
 
 const route = useRoute()
@@ -62,7 +64,7 @@ bus.on('auth:session-expired', () => {
   })
   const targetPath = router.currentRoute.value.fullPath
   router.push({
-    name: 'LandingPage',
+    name: 'Login',
     query: { redirect: targetPath !== '/' ? targetPath : undefined },
   })
 })

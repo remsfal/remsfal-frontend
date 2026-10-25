@@ -133,7 +133,7 @@ describe('App.vue', () => {
     expect(clearUserClientData).toHaveBeenCalled();
   });
 
-  it('redirects to LandingPage on auth:session-expired when the current route requires auth', () => {
+  it('redirects to Login on auth:session-expired when the current route requires auth', () => {
     mockRoute.meta = { requiresAuth: true };
     mockRoute.fullPath = '/manager/account-settings';
     mount(App, {
@@ -150,7 +150,7 @@ describe('App.vue', () => {
     const bus = useEventBus();
     bus.emit('auth:session-expired', {});
 
-    expect(pushMock).toHaveBeenCalledWith({ name: 'LandingPage', query: { redirect: '/manager/account-settings' } });
+    expect(pushMock).toHaveBeenCalledWith({ name: 'Login', query: { redirect: '/manager/account-settings' } });
     expect(clearUserClientData).toHaveBeenCalled();
   });
 });
