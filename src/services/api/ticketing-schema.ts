@@ -3524,6 +3524,23 @@ export interface components {
       /** @description IDs of existing issue attachments to share with the contractors */
       attachmentIds?: string[];
     };
+    /** @description Request of a one-time login code that is sent to the given email address */
+    EmailLoginRequestJson: {
+      /** @example user@example.com */
+      email: string;
+      /**
+       * @description Language of the login email if the address is not registered yet
+       * @example de
+       */
+      locale?: string;
+    };
+    /** @description Email address and the one-time login code sent to it */
+    EmailSessionJson: {
+      /** @example user@example.com */
+      email: string;
+      /** @example 12345678 */
+      code: string;
+    };
     /** @description Email preferences of the authenticated user */
     EmailSettingsJson: {
       /** @description Unique identifier of the user */

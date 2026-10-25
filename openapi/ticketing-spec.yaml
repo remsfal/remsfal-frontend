@@ -514,6 +514,44 @@ components:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
           description: IDs of existing issue attachments to share with the contractors
+    EmailLoginRequestJson:
+      description: Request of a one-time login code that is sent to the given email
+        address
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          examples:
+          - user@example.com
+          pattern: \S
+          maxLength: 254
+        locale:
+          type: string
+          description: Language of the login email if the address is not registered
+            yet
+          examples:
+          - de
+          maxLength: 2
+    EmailSessionJson:
+      description: Email address and the one-time login code sent to it
+      type: object
+      required:
+      - email
+      - code
+      properties:
+        email:
+          type: string
+          examples:
+          - user@example.com
+          pattern: \S
+          maxLength: 254
+        code:
+          type: string
+          examples:
+          - "12345678"
+          pattern: "^\\d{8}$"
     EmailSettingsJson:
       description: Email preferences of the authenticated user
       type: object

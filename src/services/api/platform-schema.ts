@@ -257,6 +257,61 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/authentication/login/email": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Login user via passwordless email login.
+     * @description Sends a one-time code to the email address that is valid for a short time. The response is the same whether or not the address is registered. A new request invalidates older codes.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["EmailLoginRequestJson"];
+        };
+      };
+      responses: {
+        /** @description The login code is sent if the request is accepted */
+        202: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The email address is invalid */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Too many login requests for this email address or client */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/authentication/login/google": {
     parameters: {
       query?: never;
@@ -509,6 +564,68 @@ export interface paths {
         };
         /** @description Authentication failed or state does not match */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/authentication/session/email": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Start user session via passwordless email login.
+     * @description Validates the one-time code sent to the email address. On the first login a new user is created or an existing user with this verified email address is linked.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["EmailSessionJson"];
+        };
+      };
+      responses: {
+        /** @description Tokens are set as cookies */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The email address or the code is malformed */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The code is invalid, expired or already used */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Too many login attempts from this client */
+        429: {
           headers: {
             [name: string]: unknown;
           };
@@ -5769,6 +5886,23 @@ export interface components {
       scopeOfWork?: string;
       /** @description IDs of existing issue attachments to share with the contractors */
       attachmentIds?: string[];
+    };
+    /** @description Request of a one-time login code that is sent to the given email address */
+    EmailLoginRequestJson: {
+      /** @example user@example.com */
+      email: string;
+      /**
+       * @description Language of the login email if the address is not registered yet
+       * @example de
+       */
+      locale?: string;
+    };
+    /** @description Email address and the one-time login code sent to it */
+    EmailSessionJson: {
+      /** @example user@example.com */
+      email: string;
+      /** @example 12345678 */
+      code: string;
     };
     /** @description Email preferences of the authenticated user */
     EmailSettingsJson: {
