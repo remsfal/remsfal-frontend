@@ -528,6 +528,44 @@ components:
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
           description: IDs of existing issue attachments to share with the contractors
+    EmailLoginRequestJson:
+      description: Request of a one-time login code that is sent to the given email
+        address
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          examples:
+          - user@example.com
+          pattern: \S
+          maxLength: 254
+        locale:
+          type: string
+          description: Language of the login email if the address is not registered
+            yet
+          examples:
+          - de
+          maxLength: 2
+    EmailSessionJson:
+      description: Email address and the one-time login code sent to it
+      type: object
+      required:
+      - email
+      - code
+      properties:
+        email:
+          type: string
+          examples:
+          - user@example.com
+          pattern: \S
+          maxLength: 254
+        code:
+          type: string
+          examples:
+          - "12345678"
+          pattern: "^\\d{8}$"
     EmailSettingsJson:
       description: Email preferences of the authenticated user
       type: object
@@ -2231,6 +2269,25 @@ paths:
           description: Redirect user to Apple
         "503":
           description: Sign in with Apple is not configured
+  /api/v1/authentication/login/email:
+    post:
+      summary: Login user via passwordless email login.
+      description: Sends a one-time code to the email address that is valid for a
+        short time. The response is the same whether or not the address is registered.
+        A new request invalidates older codes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailLoginRequestJson"
+        required: true
+      responses:
+        "202":
+          description: The login code is sent if the request is accepted
+        "400":
+          description: The email address is invalid
+        "429":
+          description: Too many login requests for this email address or client
   /api/v1/authentication/login/google:
     get:
       summary: Login user via Google oauth flow.
@@ -2330,6 +2387,27 @@ paths:
           description: Redirect user to the frontend spa
         "401":
           description: Authentication failed or state does not match
+  /api/v1/authentication/session/email:
+    post:
+      summary: Start user session via passwordless email login.
+      description: Validates the one-time code sent to the email address. On the first
+        login a new user is created or an existing user with this verified email address
+        is linked.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailSessionJson"
+        required: true
+      responses:
+        "204":
+          description: Tokens are set as cookies
+        "400":
+          description: The email address or the code is malformed
+        "401":
+          description: "The code is invalid, expired or already used"
+        "429":
+          description: Too many login attempts from this client
   /api/v1/authentication/session/google:
     get:
       summary: Start user session via Google oauth flow (Google callback).

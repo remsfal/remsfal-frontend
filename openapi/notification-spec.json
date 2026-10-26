@@ -649,6 +649,43 @@
           }
         }
       },
+      "EmailLoginRequestJson" : {
+        "description" : "Request of a one-time login code that is sent to the given email address",
+        "type" : "object",
+        "required" : [ "email" ],
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "examples" : [ "user@example.com" ],
+            "pattern" : "\\S",
+            "maxLength" : 254
+          },
+          "locale" : {
+            "type" : "string",
+            "description" : "Language of the login email if the address is not registered yet",
+            "examples" : [ "de" ],
+            "maxLength" : 2
+          }
+        }
+      },
+      "EmailSessionJson" : {
+        "description" : "Email address and the one-time login code sent to it",
+        "type" : "object",
+        "required" : [ "email", "code" ],
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "examples" : [ "user@example.com" ],
+            "pattern" : "\\S",
+            "maxLength" : 254
+          },
+          "code" : {
+            "type" : "string",
+            "examples" : [ "12345678" ],
+            "pattern" : "^\\d{8}$"
+          }
+        }
+      },
       "EmailSettingsJson" : {
         "description" : "Email preferences of the authenticated user",
         "type" : "object",
@@ -2708,6 +2745,30 @@
           }
         },
         "summary" : "Test Issue Updated",
+        "tags" : [ "Mailing Resource" ]
+      }
+    },
+    "/notification/test/login-code" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "to",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          }
+        },
+        "summary" : "Test Login Code",
         "tags" : [ "Mailing Resource" ]
       }
     },

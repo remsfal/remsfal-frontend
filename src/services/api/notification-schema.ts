@@ -226,6 +226,44 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/notification/test/login-code": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Test Login Code */
+    get: {
+      parameters: {
+        query: {
+          to: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": unknown;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/notification/test/new-employment": {
     parameters: {
       query?: never;
@@ -599,6 +637,23 @@ export interface components {
       scopeOfWork?: string;
       /** @description IDs of existing issue attachments to share with the contractors */
       attachmentIds?: string[];
+    };
+    /** @description Request of a one-time login code that is sent to the given email address */
+    EmailLoginRequestJson: {
+      /** @example user@example.com */
+      email: string;
+      /**
+       * @description Language of the login email if the address is not registered yet
+       * @example de
+       */
+      locale?: string;
+    };
+    /** @description Email address and the one-time login code sent to it */
+    EmailSessionJson: {
+      /** @example user@example.com */
+      email: string;
+      /** @example 12345678 */
+      code: string;
     };
     /** @description Email preferences of the authenticated user */
     EmailSettingsJson: {
