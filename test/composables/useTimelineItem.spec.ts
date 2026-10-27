@@ -160,28 +160,18 @@ describe('useTimelineItem', () => {
     expect(wrapper.vm.message).toBe('Hallo');
   });
 
-  it('builds a normalized attachment list from the backend download URLs, ignoring entries without id or URL', () => {
-    const wrapper = mountTimelineItem(makeTimeline({
-      attachments: [
-        {
-          attachmentId: 'att-1',
-          fileName: 'report.pdf',
-          contentType: 'application/pdf',
-          downloadUrl: '/backend/provided/att-1/report.pdf',
-        },
-        { fileName: 'missing-id.txt', downloadUrl: '/backend/provided/missing-id.txt' },
-        { attachmentId: 'att-2', fileName: 'missing-url.txt' },
-      ],
-    }));
-
-    expect(wrapper.vm.attachments).toEqual([
+  it('passes the backend attachments through unchanged', () => {
+    const attachments = [
       {
         attachmentId: 'att-1',
-        contentType: 'application/pdf',
         fileName: 'report.pdf',
+        contentType: 'application/pdf',
         downloadUrl: '/backend/provided/att-1/report.pdf',
       },
-    ]);
+    ];
+    const wrapper = mountTimelineItem(makeTimeline({ attachments }));
+
+    expect(wrapper.vm.attachments).toEqual(attachments);
   });
 
   it('recomputes title and attachments when the item prop changes', async () => {

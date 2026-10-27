@@ -183,7 +183,7 @@ describe('ApiClient', () => {
           return HttpResponse.json({ message: 'retry success' });
         }),
       );
-      vi.mocked(authService.refreshTokens).mockResolvedValue(true);
+      vi.mocked(authService.refreshTokens).mockResolvedValue('refreshed');
 
       // Intentionally-fake test path.
       const result = await apiClient.get('/api/v1/retry-test' as unknown as PathsForMethod<'get'>);
@@ -198,39 +198,48 @@ describe('ApiClient', () => {
           return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }),
       );
-      vi.mocked(authService.refreshTokens).mockResolvedValue(false);
+      vi.mocked(authService.refreshTokens).mockResolvedValue('expired');
 
       const bus = useEventBus();
       const sessionExpiredHandler = vi.fn();
       bus.on('auth:session-expired', sessionExpiredHandler);
 
       // Intentionally-fake test path.
-      await expect(
-        apiClient.get('/api/v1/retry-test' as unknown as PathsForMethod<'get'>),
-      ).rejects.toBeDefined();
+      const error = await apiClient
+        .get('/api/v1/retry-test' as unknown as PathsForMethod<'get'>)
+        .catch((e: unknown) => e);
 
       expect(authService.refreshTokens).toHaveBeenCalledOnce();
       expect(sessionExpiredHandler).toHaveBeenCalledOnce();
+      expect((error as { response?: { status: number } }).response?.status).toBe(401);
     });
 
-    it('should emit auth:session-expired when refresh throws an error', async () => {
+    it('should not emit auth:session-expired when the refresh endpoint is unavailable', async () => {
       server.use(
         http.get('/api/v1/retry-test', () => {
           return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }),
       );
-      vi.mocked(authService.refreshTokens).mockRejectedValue(new Error('Network error'));
+      vi.mocked(authService.refreshTokens).mockResolvedValue('unavailable');
 
       const bus = useEventBus();
       const sessionExpiredHandler = vi.fn();
+      const toastHandler = vi.fn();
       bus.on('auth:session-expired', sessionExpiredHandler);
+      bus.on('toast:translate', toastHandler);
 
       // Intentionally-fake test path.
-      await expect(
-        apiClient.get('/api/v1/retry-test' as unknown as PathsForMethod<'get'>),
-      ).rejects.toBeDefined();
+      const error = await apiClient
+        .get('/api/v1/retry-test' as unknown as PathsForMethod<'get'>)
+        .catch((e: unknown) => e);
 
-      expect(sessionExpiredHandler).toHaveBeenCalledOnce();
+      expect(sessionExpiredHandler).not.toHaveBeenCalled();
+      expect(toastHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ severity: 'error', detail: 'error.apiResponse' }),
+      );
+      // No `response` on the error, so callers don't mistake it for a definitive 401.
+      expect(error).toBeInstanceOf(Error);
+      expect(error).not.toHaveProperty('response');
     });
 
     it('should not retry a request that already has _retry flag set', async () => {
@@ -239,7 +248,7 @@ describe('ApiClient', () => {
           return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }),
       );
-      vi.mocked(authService.refreshTokens).mockResolvedValue(true);
+      vi.mocked(authService.refreshTokens).mockResolvedValue('refreshed');
 
       const bus = useEventBus();
       const sessionExpiredHandler = vi.fn();
@@ -396,7 +405,7 @@ describe('ApiClient', () => {
             return HttpResponse.json({ message: 'success after refresh' });
           }),
         );
-        return true;
+        return 'refreshed' as const;
       });
 
       // Intentionally-fake test path.
@@ -410,7 +419,7 @@ describe('ApiClient', () => {
       expect(second).toEqual({ message: 'success after refresh' });
     });
 
-    it('should reject a queued concurrent request when the in-flight refresh fails', async () => {
+    it.each(['expired', 'unavailable'] as const)('rejects a queued request when the refresh is %s', async (refreshResult) => {
       server.use(
         http.get('/api/v1/concurrent-fail-test', () => {
           return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -419,7 +428,7 @@ describe('ApiClient', () => {
 
       vi.mocked(authService.refreshTokens).mockImplementation(async () => {
         await new Promise((resolve) => setTimeout(resolve, 20));
-        return false;
+        return refreshResult;
       });
 
       // Intentionally-fake test path.

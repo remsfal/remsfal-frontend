@@ -2467,8 +2467,8 @@ export interface paths {
               organizationId?: $Read<components["schemas"]["UUID"]>;
               agreementId?: $Read<components["schemas"]["UUID"]>;
               message: string;
-              /** @description IDs of the issue attachments the contractor has sent with this request */
-              attachmentIds?: $Read<string[]>;
+              /** @description Attachments the contractor has sent with this request, including download URLs */
+              attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
               createdAt?: $Read<components["schemas"]["Instant"]>;
               modifiedAt?: $Read<components["schemas"]["Instant"]>;
             };
@@ -3104,8 +3104,8 @@ export interface paths {
               organizationId?: $Read<components["schemas"]["UUID"]>;
               agreementId?: $Read<components["schemas"]["UUID"]>;
               message: string;
-              /** @description IDs of the issue attachments the contractor has sent with this request */
-              attachmentIds?: $Read<string[]>;
+              /** @description Attachments the contractor has sent with this request, including download URLs */
+              attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
               createdAt?: $Read<components["schemas"]["Instant"]>;
               modifiedAt?: $Read<components["schemas"]["Instant"]>;
             };
@@ -3368,6 +3368,11 @@ export interface components {
       /** Format: float */
       space?: number;
     };
+    /** @description Server-to-server notification of Sign in with Apple */
+    AppleNotificationJson: {
+      /** @description JWT signed by Apple that carries the event in its events claim */
+      payload: string;
+    };
     /** @enum {string} */
     BillingCycle: "WEEKLY" | "MONTHLY";
     /** @description A building as part of a property */
@@ -3409,6 +3414,21 @@ export interface components {
     ChatMessageListJson: {
       /** @description Chat messages */
       messages?: $Read<components["schemas"]["ChatMessageJson"][]>;
+    };
+    /** @description A project in which a contractor organization is registered, with its billing data */
+    ClientProjectJson: {
+      /** @description Unique identifier of the project */
+      id: components["schemas"]["UUID"];
+      title: string;
+      /** @description Billing recipient (Leistungsempfänger) of the project */
+      owner?: string;
+      /** @description Representative of the billing recipient (c/o) */
+      careOf?: string;
+      billingAddress?: components["schemas"]["AddressJson"];
+    };
+    /** @description A list of clients (projects with billing data) of a contractor organization */
+    ClientProjectListJson: {
+      projects: components["schemas"]["ClientProjectJson"][];
     };
     /** @description Tenant information in a rental agreement */
     CoTenantJson: {
@@ -3503,6 +3523,36 @@ export interface components {
       scopeOfWork?: string;
       /** @description IDs of existing issue attachments to share with the contractors */
       attachmentIds?: string[];
+    };
+    /** @description Request of a one-time login code that is sent to the given email address */
+    EmailLoginRequestJson: {
+      /** @example user@example.com */
+      email: string;
+      /**
+       * @description Language of the login email if the address is not registered yet
+       * @example de
+       */
+      locale?: string;
+    };
+    /** @description Email address and the one-time login code sent to it */
+    EmailSessionJson: {
+      /** @example user@example.com */
+      email: string;
+      /** @example 12345678 */
+      code: string;
+    };
+    /** @description Email preferences of the authenticated user */
+    EmailSettingsJson: {
+      /** @description Unique identifier of the user */
+      userId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Receive an email when a new issue is created */
+      issueCreated?: boolean;
+      /** @description Receive an email when an issue is updated */
+      issueUpdated?: boolean;
+      /** @description Receive an email when an issue is assigned */
+      issueAssigned?: boolean;
+      /** @description Receive an email when a new message is posted in an issue */
+      issueMessageCreated?: boolean;
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
@@ -3638,8 +3688,8 @@ export interface components {
       organizationId?: $Read<components["schemas"]["UUID"]>;
       agreementId?: $Read<components["schemas"]["UUID"]>;
       message: string;
-      /** @description IDs of the issue attachments the contractor has sent with this request */
-      attachmentIds?: $Read<string[]>;
+      /** @description Attachments the contractor has sent with this request, including download URLs */
+      attachments?: $Read<components["schemas"]["IssueAttachmentJson"][]>;
       createdAt?: $Read<components["schemas"]["Instant"]>;
       modifiedAt?: $Read<components["schemas"]["Instant"]>;
     };

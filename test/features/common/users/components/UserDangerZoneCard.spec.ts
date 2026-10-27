@@ -2,9 +2,12 @@ import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import UserDangerZoneCard from '@/features/common/users/components/UserDangerZoneCard.vue';
 import { userService } from '@/features/common/users/services/UserService';
+import { clearUserClientData } from '@/helper/clientDataCleanup';
 
 // ---- Mocks ----
 const addMock = vi.fn();
+
+vi.mock('@/helper/clientDataCleanup', () => ({ clearUserClientData: vi.fn() }));
 
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
@@ -22,6 +25,7 @@ describe('UserDangerZoneCard.vue', () => {
     vi.clearAllMocks();
 
     vi.spyOn(userService, 'deleteUser').mockResolvedValue();
+    vi.mocked(clearUserClientData).mockResolvedValue(undefined);
 
     Object.defineProperty(window, 'location', { value: { pathname: '' }, writable: true });
 
@@ -65,6 +69,7 @@ describe('UserDangerZoneCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(
       expect.objectContaining({ severity: 'success' }),
     );
+    expect(clearUserClientData).toHaveBeenCalledOnce();
     expect(window.location.pathname).toBe('/api/v1/authentication/logout');
   });
 
@@ -82,6 +87,7 @@ describe('UserDangerZoneCard.vue', () => {
 
     expect(userService.deleteUser).toHaveBeenCalled();
     expect(addMock).not.toHaveBeenCalled();
+    expect(clearUserClientData).not.toHaveBeenCalled();
     expect(consoleErrorSpy).toHaveBeenCalled();
     consoleErrorSpy.mockRestore();
   });
