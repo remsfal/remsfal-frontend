@@ -8,6 +8,13 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 20
+    groups:
+      fortawesome:
+        patterns:
+          - "@fortawesome/*"
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
     ignore:
       - dependency-name: "primevue"
         update-types: ["version-update:semver-major"]

@@ -52,6 +52,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ContractorClientList': RouteRecordInfo<
+      'ContractorClientList',
+      '/contractor/clients',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     'ContractorDashboard': RouteRecordInfo<
       'ContractorDashboard',
       '/contractor/dashboard',
@@ -97,6 +104,13 @@ declare module 'vue-router/auto-routes' {
     'ContractorOrganizations': RouteRecordInfo<
       'ContractorOrganizations',
       '/contractor/organizations/new',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'Login': RouteRecordInfo<
+      'Login',
+      '/login',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -355,6 +369,14 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    'src/pages/contractor/clients/index.vue': {
+      routes:
+        | 'ContractorClientList'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     'src/pages/contractor/dashboard.vue': {
       routes:
         | 'ContractorDashboard'
@@ -406,6 +428,14 @@ declare module 'vue-router/auto-routes' {
     'src/pages/contractor/organizations/new.vue': {
       routes:
         | 'ContractorOrganizations'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/login.vue': {
+      routes:
+        | 'Login'
       views:
         | never
       pathParamNames:
