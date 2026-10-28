@@ -48,6 +48,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Determine version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
       - name: Run build
         run: npm run build
 
@@ -65,7 +69,10 @@ jobs:
           images: ${{ vars.REGISTRY_HOST || 'ghcr.io' }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
+            type=raw,value=${{ steps.version.outputs.version }}
             type=sha
+          labels: |
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
         # Should we use cache-from and cache-to here for speed up?
       - name: Build and push Docker image
@@ -76,6 +83,7 @@ jobs:
             file: ./docker/Dockerfile
             push: true
             tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
       - name: Generate artifact attestation
         # Artifact attestations for private repositories require GitHub Enterprise Cloud
         if: ${{ !github.event.repository.private }}
