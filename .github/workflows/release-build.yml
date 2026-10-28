@@ -120,7 +120,7 @@ jobs:
           
           # 5. Commit the new development version (npm version also updates package-lock.json)
           git add package.json package-lock.json
-          git commit -m "Set next development version to $NEW_DEV_VERSION [skip ci]"
+          git commit -m "Set next development version to $NEW_DEV_VERSION"
           
           # 6. Push the new development version commit back to the branch
           git push
