@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import type { Component } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import Toast from 'primevue/toast'
@@ -15,6 +15,7 @@ import TenantLayout from '@/layouts/tenant.vue'
 import ContractorLayout from '@/layouts/contractor.vue'
 import PublicLayout from '@/layouts/public.vue'
 import AuthLayout from '@/layouts/auth.vue'
+import { registerPush } from '@/features/common/push'
 
 type LayoutKey = 'manager' | 'project' | 'tenant' | 'contractor' | 'public' | 'auth'
 
@@ -35,6 +36,23 @@ const { t } = useI18n()
 const toast = useToast()
 const bus = useEventBus()
 const sessionStore = useUserSessionStore()
+
+watch(
+  () => sessionStore.user,
+  (user) => {
+    if (!user) return
+    registerPush()
+      .then((result) => {
+        if (result === 'registered') {
+          console.log('[push] registered')
+        } else {
+          console.warn('[push] not registered, reason:', result)
+        }
+      })
+      .catch((error) => console.warn('[push] auto registration failed', error))
+  },
+  { immediate: true },
+)
 
 bus.on('toast:translate', ({ severity, summary, detail }) => {
   bus.emit('toast:show', {
