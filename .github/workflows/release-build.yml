@@ -92,13 +92,24 @@ jobs:
           git push
           git push origin ${{ steps.determine_version.outputs.RELEASE_TAG }}
 
+      - name: Determine Release Version
+        id: release_version
+        env:
+          RELEASE_TAG: ${{ steps.determine_version.outputs.RELEASE_TAG }}
+        # The images and packages are tagged without the leading 'v'
+        run: echo "version=${RELEASE_TAG#v}" >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.determine_version.outputs.RELEASE_TAG }}
-          # Simple release notes body
+          # The generated notes list the merged pull requests and contributors since the previous release
+          generate_release_notes: true
           body: |
-            Release version ${{ steps.determine_version.outputs.RELEASE_TAG }}
+            Release ${{ steps.release_version.outputs.version }} of the REMSFAL frontend, started by ${{ github.actor }}.
+
+            - npm package: [`@${{ github.repository_owner }}/remsfal-frontend@${{ steps.release_version.outputs.version }}`](https://github.com/orgs/${{ github.repository_owner }}/packages?repo_name=${{ github.event.repository.name }})
+            - Container image: `ghcr.io/${{ github.repository }}:${{ steps.release_version.outputs.version }}` (built by the CD Build of the release commit)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
