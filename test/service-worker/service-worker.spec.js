@@ -4,6 +4,18 @@ import './setupMocks';
 const mockPrecacheAndRoute = vi.hoisted(() => vi.fn());
 vi.mock('workbox-precaching', () => ({precacheAndRoute: mockPrecacheAndRoute,}));
 
+// Firebase Messaging requires browser APIs that are not available in Vitest's
+// service-worker simulation. The service worker only needs the SDK in a real browser,
+// so use a test double here and keep the cache/sync behaviour under test.
+const mockInitializeApp = vi.hoisted(() => vi.fn());
+const mockGetMessaging = vi.hoisted(() => vi.fn());
+const mockOnBackgroundMessage = vi.hoisted(() => vi.fn());
+vi.mock('firebase/app', () => ({initializeApp: mockInitializeApp,}));
+vi.mock('firebase/messaging/sw', () => ({
+  getMessaging: mockGetMessaging,
+  onBackgroundMessage: mockOnBackgroundMessage,
+}));
+
 const mockGetAllProjects = vi.hoisted(() => vi.fn());
 const mockDeleteProject = vi.hoisted(() => vi.fn());
 vi.mock('@/helper/indexeddb', () => ({
