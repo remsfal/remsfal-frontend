@@ -1,6 +1,8 @@
 import { precacheAndRoute } from 'workbox-precaching';
 import { getAllProjects, deleteProject } from '@/helper/indexeddb';
 import { RUNTIME_CACHE_PREFIX } from '@/helper/clientDataCleanup';
+import { initializeApp } from 'firebase/app';
+import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -12,6 +14,27 @@ precacheAndRoute(self.__WB_MANIFEST);
 // v1 also stored personal API responses — bumping the version makes the activate
 // handler below purge it on existing installations.
 const RUNTIME_CACHE_NAME = `${RUNTIME_CACHE_PREFIX}v2`;
+
+const firebaseApp = initializeApp({
+  apiKey: 'AIzaSyD4NEv5CPRskeRXJm0rzPs-Ix52qZx5BWw',
+  authDomain: 'remsfal-fcb-notification.firebaseapp.com',
+  projectId: 'remsfal-fcb-notification',
+  storageBucket: 'remsfal-fcb-notification.firebasestorage.app',
+  messagingSenderId: '156263737138',
+  appId: '1:156263737138:web:e66c4c6c854634ab20d92b',
+  measurementId: 'G-S1PJW7645W',
+});
+
+const messaging = getMessaging(firebaseApp);
+
+onBackgroundMessage(messaging, (payload) => {
+  console.log('[push] background message received', payload);
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(self.clients.openWindow('/'));
+});
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(

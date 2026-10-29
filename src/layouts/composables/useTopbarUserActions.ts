@@ -2,6 +2,7 @@ import {useRoute, useRouter} from 'vue-router';
 import {useI18n} from 'vue-i18n';
 import {useUserSessionStore} from '@/stores/UserSession';
 import {clearUserClientData} from '@/helper/clientDataCleanup';
+import {unregisterPush} from '@/services/PushSubscriptionService';
 
 export function useTopbarUserActions(): {
     t: ReturnType<typeof useI18n>['t'];
@@ -26,6 +27,7 @@ export function useTopbarUserActions(): {
   };
 
   const logout = async () => {
+    await Promise.race([unregisterPush(), new Promise((resolve) => setTimeout(resolve, 2000))]);
     await clearUserClientData();
     globalThis.location.pathname = '/api/v1/authentication/logout';
   };

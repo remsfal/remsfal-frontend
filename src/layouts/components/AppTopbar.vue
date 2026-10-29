@@ -3,6 +3,8 @@ import { useLayout } from '@/layouts/composables/layout';
 import { RouterLink, useRoute } from 'vue-router';
 import Button from 'primevue/button';
 import { ref, watch, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue';
+import { PushNotificationButtons } from '@/features/common/push';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 const { toggleDarkMode, isDarkTheme } = useLayout();
 const route = useRoute();
@@ -10,6 +12,7 @@ const route = useRoute();
 const isMobileMenuOpen = ref(false);
 const menuButtonRef = ref<ComponentPublicInstance>();
 const menuRef = ref<HTMLElement>();
+const sessionStore = useUserSessionStore();
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
@@ -51,6 +54,9 @@ onUnmounted(() => {
       </div>
 
       <div class="layout-topbar-actions">
+        <div v-if="sessionStore.user">
+          <PushNotificationButtons />
+        </div>
         <div class="layout-config-menu">
           <Button type="button" class="layout-topbar-action" @click="toggleDarkMode">
             <i class="pi" :class="[{ 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]" />
