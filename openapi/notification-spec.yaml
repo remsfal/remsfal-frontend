@@ -2343,7 +2343,7 @@ paths:
       - SecurityScheme: []
 info:
   title: remsfal-notification API
-  version: 1.0.16
+  version: 1.0.17-SNAPSHOT
 servers:
 - url: http://localhost:8082
   description: Auto generated value

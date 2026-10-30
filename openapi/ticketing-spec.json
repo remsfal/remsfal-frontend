@@ -5495,7 +5495,7 @@
   },
   "info" : {
     "title" : "remsfal-ticketing API",
-    "version" : "1.0.16"
+    "version" : "1.0.17-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "http://localhost:8081",
