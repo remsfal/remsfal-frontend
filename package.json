@@ -106,7 +106,7 @@
     "npm-run-all2": "^9.0.4",
     "nyc": "^18.0.0",
     "openapi-typescript": "^7.13.0",
-    "postcss": "^8.5.31",
+    "postcss": "^8.5.32",
     "sass": "^1.106.1",
     "start-server-and-test": "^3.0.13",
     "stylelint": "^17.16.0",
