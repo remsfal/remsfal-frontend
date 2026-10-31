@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router';
+import BaseDialog from '@/components/BaseDialog.vue';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
@@ -7,7 +9,12 @@ import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 const { t } = useI18n();
 const organizationStore = useOrganizationStore();
-const { userOrganizations, initialized } = storeToRefs(organizationStore);
+const { userOrganizations, userEmployments, hasOrganization, initialized } = storeToRefs(organizationStore);
+const ordersDisabled = computed(() => !hasOrganization.value && userEmployments.value.length === 0);
+const showOrganizationNotice = ref(false);
+const showDisabledNotice = () => {
+  showOrganizationNotice.value = true;
+};
 
 onMounted(() => {
   if (!initialized.value) {
@@ -29,16 +36,22 @@ const model = computed<MenuItem[]>(() => {
           label: 'contractorMenu.orderManagement.open',
           icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
           to: '/contractor/orders/open',
+          disabled: ordersDisabled.value,
+          disabledCommand: showDisabledNotice,
         },
         {
           label: 'contractorMenu.orderManagement.ongoing',
           icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
           to: '/contractor/orders/ongoing',
+          disabled: ordersDisabled.value,
+          disabledCommand: showDisabledNotice,
         },
         {
           label: 'contractorMenu.orderManagement.closed',
           icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
           to: '/contractor/orders/closed',
+          disabled: ordersDisabled.value,
+          disabledCommand: showDisabledNotice,
         },
         {
           label: 'contractorMenu.orderManagement.clients',
@@ -102,4 +115,17 @@ const model = computed<MenuItem[]>(() => {
       </template>
     </ul>
   </div>
+  <BaseDialog
+    v-model:visible="showOrganizationNotice"
+    :header="t('contractorMenu.orderManagement')"
+  >
+    <p>{{ t('contractorDashboard.organization.emptyState.text') }}</p>
+    <RouterLink
+      to="/contractor/organizations/new"
+      class="font-semibold underline"
+      @click="showOrganizationNotice = false"
+    >
+      {{ t('contractorDashboard.organization.emptyState.link') }}
+    </RouterLink>
+  </BaseDialog>
 </template>
