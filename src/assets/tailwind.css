@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tailwindcss-primeui";
 
+/* Bind dark: to the app-dark class set by the dark mode toggle */
+@custom-variant dark (&:where(.app-dark, .app-dark *));
+
 /*
  * Interaction contract for clickable list rows (DataView items, custom lists).
  * Mirrors DataTable `rowHover`, whose row.hoverBackground/hoverColor resolve to the
