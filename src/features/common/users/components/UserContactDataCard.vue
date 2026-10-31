@@ -23,7 +23,7 @@ const { t } = useI18n();
 const i18n = useI18n();
 const appToast = useAppToast();
 
-const schema = z.object({
+const schema = computed(() => z.object({
   firstName: nameSchema(t),
   lastName: nameSchema(t),
   placeOfBirth: z.string().trim().or(z.literal('')),
@@ -32,9 +32,9 @@ const schema = z.object({
   businessPhoneNumber: phoneSchema(t),
   privatePhoneNumber: phoneSchema(t),
   locale: z.string(),
-});
+}));
 
-const resolver = zodResolver(schema);
+const resolver = computed(() => zodResolver(schema.value));
 const formKey = ref(0);
 const formFields = [
   'firstName',
@@ -161,6 +161,9 @@ async function onSubmit(event: FormSubmitEvent) {
       privatePhoneNumber: updatedUser.privatePhoneNumber || '',
       locale: updatedUser.locale ? validateLocale(updatedUser.locale) : i18n.locale.value,
     };
+    if (updatedUser.locale) {
+      i18n.locale.value = validateLocale(updatedUser.locale);
+    }
     serverDateOfBirth.value = dateOfBirthValue.value = updatedUser.dateOfBirth
       ? new Date(updatedUser.dateOfBirth)
       : null;
@@ -373,7 +376,6 @@ async function onSubmit(event: FormSubmitEvent) {
                 name="locale"
                 optionLabel="language"
                 optionValue="value"
-                @change="(e) => (i18n.locale.value = e.value)"
               />
             </div>
           </div>
