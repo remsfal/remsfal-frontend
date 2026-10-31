@@ -66,6 +66,7 @@
     "@primevue/forms": ">=4.5.5 <5.0.0",
     "@primevue/themes": ">=4.5.4 <5.0.0",
     "axios": "^1.21.0",
+    "firebase": "^13.1.0",
     "idb": "^8.0.4",
     "pinia": "^4.1.0",
     "primeicons": ">=7.0.0 <8.0.0",
