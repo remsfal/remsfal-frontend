@@ -289,7 +289,8 @@ describe('AppMenuItem.vue', () => {
         label: 'managerMenu.myData.overview', to: '/manager/dashboard', command, disabled: true 
       };
       const wrapper = mountItem(item);
-      await wrapper.find('.router-link-stub').trigger('click');
+      expect(wrapper.find('.router-link-stub').exists()).toBe(false);
+      await wrapper.get('a').trigger('click');
       expect(command).not.toHaveBeenCalled();
     });
 
@@ -299,8 +300,34 @@ describe('AppMenuItem.vue', () => {
         label: 'managerMenu.myData.overview', to: '/manager/dashboard', navigate, disabled: true 
       };
       const wrapper = mountItem(item);
-      await wrapper.find('.router-link-stub').trigger('click');
+      expect(wrapper.find('.router-link-stub').exists()).toBe(false);
+      await wrapper.get('a').trigger('click');
       expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it.each(['click', 'keydown.enter', 'keydown.space'])('shows the disabled notice on %s without navigating or changing menu state', async (event) => {
+      const command = vi.fn();
+      const navigate = vi.fn();
+      const disabledCommand = vi.fn();
+      layout.layoutState.activeMenuItem = '1';
+      layout.layoutState.overlayMenuActive = true;
+      const wrapper = mountItem({
+        label: 'managerMenu.myData.overview',
+        to: '/manager/dashboard',
+        disabled: true,
+        command,
+        navigate,
+        disabledCommand,
+      });
+
+      expect(wrapper.find('.router-link-stub').exists()).toBe(false);
+      await wrapper.get('a').trigger(event);
+
+      expect(disabledCommand).toHaveBeenCalledTimes(1);
+      expect(command).not.toHaveBeenCalled();
+      expect(navigate).not.toHaveBeenCalled();
+      expect(layout.layoutState.activeMenuItem).toBe('1');
+      expect(layout.layoutState.overlayMenuActive).toBe(true);
     });
 
   });
