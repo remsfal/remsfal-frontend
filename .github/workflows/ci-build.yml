@@ -52,7 +52,9 @@ jobs:
     needs: check-branches
     # check-branches only runs for pull requests and is skipped on push
     if: ${{ !cancelled() && (needs.check-branches.result == 'success' || needs.check-branches.result == 'skipped') }}
-    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    # CI_TEST_RUNNER lets a repository pin the test job (vite dev + Cypress) to specific
+    # self-hosted runners while other jobs keep using CI_RUNNER.
+    runs-on: ${{ vars.CI_TEST_RUNNER || vars.CI_RUNNER || 'ubuntu-latest' }}
     permissions:
       contents: read
     strategy:

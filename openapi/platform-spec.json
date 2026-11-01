@@ -1960,7 +1960,8 @@
           "amountOfKeys" : {
             "type" : "integer",
             "format" : "int32",
-            "description" : "Number of keys of this type"
+            "description" : "Number of keys of this type",
+            "minimum" : 0
           },
           "issuedAt" : {
             "description" : "Date the key(s) were issued to the tenant",
@@ -7313,7 +7314,7 @@
   },
   "info" : {
     "title" : "remsfal-platform API",
-    "version" : "1.0.15-SNAPSHOT"
+    "version" : "1.0.17-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "http://localhost:8080",

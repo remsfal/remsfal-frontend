@@ -5,7 +5,6 @@ on:
     branches: ["main"]
 
 env:
-  REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 permissions:
@@ -17,9 +16,12 @@ permissions:
 jobs:
   build-and-push-to-registry:
     name: Build and Deploy Docker Image
-    runs-on: ubuntu-latest
-    # Only run this workflow for the official REMSFAL repository
-    if: github.repository == 'remsfal/remsfal-frontend'
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    # Only run in repositories of the REMSFAL organization, not in personal forks
+    if: github.repository_owner == 'remsfal'
+    # Repositories with their own registry set CD_ENVIRONMENT (e.g. staging), which provides
+    # REGISTRY_HOST, REGISTRY_USERNAME and REGISTRY_PASSWORD. Without it, images go to ghcr.io.
+    environment: ${{ vars.CD_ENVIRONMENT }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -46,24 +48,31 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Determine version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
       - name: Run build
         run: npm run build
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v4.6.0
+      - name: Login to Container Registry
+        uses: docker/login-action@v4.7.0
         with:
-            registry: ${{ env.REGISTRY }}
-            username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+            registry: ${{ vars.REGISTRY_HOST || 'ghcr.io' }}
+            username: ${{ vars.REGISTRY_USERNAME || github.actor }}
+            password: ${{ secrets.REGISTRY_PASSWORD || secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v6.2.0
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ vars.REGISTRY_HOST || 'ghcr.io' }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
+            type=raw,value=${{ steps.version.outputs.version }}
             type=sha
+          labels: |
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
         # Should we use cache-from and cache-to here for speed up?
       - name: Build and push Docker image
@@ -74,10 +83,38 @@ jobs:
             file: ./docker/Dockerfile
             push: true
             tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
+      - name: Install cosign
+        # Only repositories whose environment provides a cosign key pair (see online-terraform) sign their images
+        if: ${{ vars.COSIGN_PUBLIC_KEY != '' }}
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with:
+          # cosign v2 writes the classic .sig signature, which Harbor shows as signed
+          cosign-release: 'v2.6.5'
+      - name: Sign image with cosign
+        if: ${{ vars.COSIGN_PUBLIC_KEY != '' }}
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PUBLIC_KEY: ${{ vars.COSIGN_PUBLIC_KEY }}
+          IMAGE: ${{ vars.REGISTRY_HOST || 'ghcr.io' }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}
+        run: |
+          KEY_DIR=$(mktemp -d)
+          trap 'rm -rf "$KEY_DIR"' EXIT
+          # cosign only signs with its own encrypted key format, so import the PEM key with a throwaway password
+          export COSIGN_PASSWORD=$(openssl rand -hex 32)
+          printf '%s\n' "$COSIGN_PRIVATE_KEY" > "$KEY_DIR/cosign.pem"
+          printf '%s\n' "$COSIGN_PUBLIC_KEY" > "$KEY_DIR/cosign.pub.pem"
+          cosign import-key-pair --key "$KEY_DIR/cosign.pem" --output-key-prefix "$KEY_DIR/cosign" -y
+          # --tlog-upload=false keeps the signature out of the public Rekor transparency log
+          cosign sign --key "$KEY_DIR/cosign.key" --tlog-upload=false -y "$IMAGE"
+          cosign verify --key "$KEY_DIR/cosign.pub.pem" --insecure-ignore-tlog=true "$IMAGE" > /dev/null
+          echo "Signed $IMAGE"
       - name: Generate artifact attestation
+        # Artifact attestations for private repositories require GitHub Enterprise Cloud
+        if: ${{ !github.event.repository.private }}
         id: attest
         uses: actions/attest-build-provenance@v4
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-name: ${{ vars.REGISTRY_HOST || 'ghcr.io' }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
