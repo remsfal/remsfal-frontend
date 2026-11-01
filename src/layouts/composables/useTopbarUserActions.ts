@@ -1,17 +1,14 @@
-import {computed} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useI18n} from 'vue-i18n';
 import {useUserSessionStore} from '@/stores/UserSession';
-import {shouldShowDevLogin} from '@/helper/platform';
+import {clearUserClientData} from '@/helper/clientDataCleanup';
 
 export function useTopbarUserActions(): {
     t: ReturnType<typeof useI18n>['t'];
     sessionStore: ReturnType<typeof useUserSessionStore>;
     onAccountSettingsClick: () => void;
-    logout: () => void;
+    logout: () => Promise<void>;
     login: () => void;
-    loginDev: () => Promise<void>;
-    showDevLoginButton: import("vue").ComputedRef<boolean>;
     } {
   const router = useRouter();
   const route = useRoute();
@@ -28,26 +25,16 @@ export function useTopbarUserActions(): {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await clearUserClientData();
     globalThis.location.pathname = '/api/v1/authentication/logout';
   };
 
   const login = () => {
     const redirect = route.query.redirect as string | undefined;
     const target = redirect || route.fullPath;
-    globalThis.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(target)}`;
+    router.push({ name: 'Login', query: { redirect: target !== '/' ? target : undefined } });
   };
-
-  const loginDev = async () => {
-    const success = await sessionStore.loginDev();
-    if (success) {
-      router.push('/projects');
-    }
-  };
-
-  const showDevLoginButton = computed(() => {
-    return sessionStore.user == null && shouldShowDevLogin();
-  });
 
   return {
     t,
@@ -55,7 +42,5 @@ export function useTopbarUserActions(): {
     onAccountSettingsClick,
     logout,
     login,
-    loginDev,
-    showDevLoginButton,
   };
 }

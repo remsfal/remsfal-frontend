@@ -53,6 +53,11 @@ const model = computed<MenuItem[]>(() => {
           disabled: ordersDisabled.value,
           disabledCommand: showDisabledNotice,
         },
+        {
+          label: 'contractorMenu.orderManagement.clients',
+          icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+          to: '/contractor/clients',
+        },
       ],
     },
     {
