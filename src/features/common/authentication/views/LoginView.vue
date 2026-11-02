@@ -55,6 +55,9 @@ const {
       <div v-else class="flex flex-col gap-4">
         <LoginProviderButton provider="google" @click="loginWith('google')" />
         <LoginProviderButton provider="apple" @click="loginWith('apple')" />
+        <p class="text-xs text-surface-500 dark:text-surface-400 text-center leading-relaxed">
+          {{ t('login.description') }}
+        </p>
 
         <Divider align="center">
           <span class="text-sm text-surface-500 dark:text-surface-400">{{ t('login.or') }}</span>
@@ -80,11 +83,7 @@ const {
         </template>
       </div>
 
-      <p class="text-xs text-surface-500 dark:text-surface-400 text-center leading-relaxed mt-8">
-        {{ t('login.description') }}
-      </p>
-
-      <div class="text-center mt-6">
+      <div class="text-center mt-8">
         <RouterLink
           :to="{ name: 'LandingPage' }"
           class="text-sm font-medium text-primary hover:underline"

@@ -93,7 +93,7 @@ const otpPassThrough = {
     <Button
       type="submit"
       data-test="login-code-submit"
-      class="w-full h-12 !rounded-full"
+      class="w-full h-12"
       :label="t('login.email.verify')"
       :loading="loading"
       :disabled="!isComplete"

@@ -37,10 +37,11 @@ const providerConfig = computed(() => {
 <template>
   <Button
     :data-test="`login-${provider}`"
-    class="w-full h-12 !rounded-full !font-medium"
+    class="w-full h-12 !font-medium"
     :class="providerConfig.buttonClass"
   >
     <img :src="providerConfig.logo" alt="" class="w-5 h-5" :class="providerConfig.logoClass">
-    <span>{{ providerConfig.label }}</span>
+    <!-- Trim the line box to cap height/baseline so the label is optically centered next to the logo -->
+    <span class="[text-box:trim-both_cap_alphabetic]">{{ providerConfig.label }}</span>
   </Button>
 </template>
