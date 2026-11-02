@@ -222,15 +222,6 @@ const { t } = useI18n();
           </div>
         </div>
       </section>
-
-      <!-- Disclaimer Section -->
-      <section class="py-8 border-t border-surface-200 dark:border-surface-700">
-        <div class="container mx-auto px-6">
-          <p class="text-xs text-surface-500 dark:text-surface-400 text-center leading-relaxed">
-            {{ t('landingPage.login-description') }}
-          </p>
-        </div>
-      </section>
     </main>
   </div>
 </template>

@@ -1,4 +1,4 @@
-import { onScopeDispose, ref, type Ref } from 'vue';
+import { computed, onScopeDispose, ref, type ComputedRef, type Ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -6,6 +6,8 @@ import { authService } from '@/services/AuthService';
 import { safeRedirectPath } from '@/helper/redirectHelper';
 
 export type EmailLoginStep = 'email' | 'code';
+
+type EmailLoginError = 'invalidEmail' | 'invalidCode' | 'rateLimited' | 'tooManyAttempts' | 'unavailable';
 
 /** Seconds the user has to wait before another code can be requested. */
 export const RESEND_COOLDOWN_SECONDS = 60;
@@ -19,7 +21,8 @@ export function useEmailLogin(): {
   step: Ref<EmailLoginStep>;
   email: Ref<string>;
   loading: Ref<boolean>;
-  error: Ref<string | null>;
+  /** Translated message of an error returned by the server */
+  error: ComputedRef<string | null>;
   cooldownSeconds: Ref<number>;
   requestCode: (address: string) => Promise<void>;
   resendCode: () => Promise<void>;
@@ -28,14 +31,33 @@ export function useEmailLogin(): {
   } {
   const route = useRoute();
   const router = useRouter();
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const sessionStore = useUserSessionStore();
 
   const step = ref<EmailLoginStep>('email');
   const email = ref(typeof route.query.email === 'string' ? route.query.email : '');
   const loading = ref(false);
-  const error = ref<string | null>(null);
+  const errorCode = ref<EmailLoginError | null>(null);
   const cooldownSeconds = ref(0);
+
+  // Translated here so that every key appears literally in t('…') (checked by no-unused-keys).
+  // The computed re-evaluates on a locale switch, so the message stays in the current language.
+  const error = computed(() => {
+    switch (errorCode.value) {
+      case 'invalidEmail':
+        return t('login.email.errors.invalidEmail');
+      case 'invalidCode':
+        return t('login.email.errors.invalidCode');
+      case 'rateLimited':
+        return t('login.email.errors.rateLimited');
+      case 'tooManyAttempts':
+        return t('login.email.errors.tooManyAttempts');
+      case 'unavailable':
+        return t('login.email.errors.unavailable');
+      default:
+        return null;
+    }
+  });
 
   let cooldownTimer: ReturnType<typeof setInterval> | undefined;
 
@@ -61,7 +83,7 @@ export function useEmailLogin(): {
 
   const sendCode = async (address: string): Promise<boolean> => {
     loading.value = true;
-    error.value = null;
+    errorCode.value = null;
     try {
       const result = await authService.requestEmailLoginCode(address, locale.value);
       switch (result.status) {
@@ -69,14 +91,14 @@ export function useEmailLogin(): {
           startCooldown(RESEND_COOLDOWN_SECONDS);
           return true;
         case 'invalid':
-          error.value = 'login.email.errors.invalidEmail';
+          errorCode.value = 'invalidEmail';
           return false;
         case 'rateLimited':
-          error.value = 'login.email.errors.rateLimited';
+          errorCode.value = 'rateLimited';
           startCooldown(result.retryAfter ?? RESEND_COOLDOWN_SECONDS);
           return false;
         default:
-          error.value = 'login.email.errors.unavailable';
+          errorCode.value = 'unavailable';
           return false;
       }
     } finally {
@@ -104,7 +126,7 @@ export function useEmailLogin(): {
       return false;
     }
     loading.value = true;
-    error.value = null;
+    errorCode.value = null;
     try {
       const result = await sessionStore.loginWithEmailCode(email.value, code);
       switch (result.status) {
@@ -113,13 +135,13 @@ export function useEmailLogin(): {
           return true;
         case 'invalidCode':
         case 'invalid':
-          error.value = 'login.email.errors.invalidCode';
+          errorCode.value = 'invalidCode';
           return false;
         case 'rateLimited':
-          error.value = 'login.email.errors.tooManyAttempts';
+          errorCode.value = 'tooManyAttempts';
           return false;
         default:
-          error.value = 'login.email.errors.unavailable';
+          errorCode.value = 'unavailable';
           return false;
       }
     } finally {
@@ -128,7 +150,7 @@ export function useEmailLogin(): {
   };
 
   const changeEmail = () => {
-    error.value = null;
+    errorCode.value = null;
     step.value = 'email';
   };
 

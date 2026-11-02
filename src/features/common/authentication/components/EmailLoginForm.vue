@@ -11,7 +11,7 @@ import { emailSchema } from '@/helper/validationHelper';
 const props = defineProps<{
   initialEmail?: string;
   loading?: boolean;
-  /** i18n key of an error returned by the server */
+  /** Translated message of an error returned by the server */
   error?: string | null;
 }>();
 
@@ -51,7 +51,7 @@ const onSubmit = (event: FormSubmitEvent) => {
         type="email"
         autocomplete="email"
         inputmode="email"
-        class="h-12 !rounded-full !px-5"
+        class="h-12 !px-5"
         :placeholder="t('login.email.placeholder')"
         :invalid="!!$form.email?.invalid"
         fluid
@@ -62,16 +62,17 @@ const onSubmit = (event: FormSubmitEvent) => {
     </div>
 
     <Message v-if="error" data-test="login-email-error" severity="error" size="small">
-      {{ t(error) }}
+      {{ error }}
     </Message>
 
     <Button
       type="submit"
       data-test="login-email-submit"
-      class="w-full h-12 !rounded-full"
+      class="w-full h-12"
       icon="pi pi-envelope"
       :label="t('login.email.submit')"
       :loading="loading"
+      :pt="{ label: { class: '[text-box:trim-both_cap_alphabetic]' } }"
     />
   </Form>
 </template>

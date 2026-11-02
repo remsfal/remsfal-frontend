@@ -9,7 +9,7 @@ import { EMAIL_LOGIN_CODE_LENGTH } from '@/services/AuthService';
 const props = defineProps<{
   email: string;
   loading?: boolean;
-  /** i18n key of an error returned by the server */
+  /** Translated message of an error returned by the server */
   error?: string | null;
   cooldownSeconds: number;
 }>();
@@ -87,13 +87,13 @@ const otpPassThrough = {
       size="small"
       class="w-full"
     >
-      {{ t(error) }}
+      {{ error }}
     </Message>
 
     <Button
       type="submit"
       data-test="login-code-submit"
-      class="w-full h-12 !rounded-full"
+      class="w-full h-12"
       :label="t('login.email.verify')"
       :loading="loading"
       :disabled="!isComplete"

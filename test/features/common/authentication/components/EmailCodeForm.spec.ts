@@ -60,9 +60,9 @@ describe('EmailCodeForm', () => {
     expect(wrapper.emitted('changeEmail')).toHaveLength(1);
   });
 
-  it('shows the server error passed as i18n key', () => {
-    const props = { ...defaultProps, error: 'login.email.errors.invalidCode' };
+  it('shows the server error message', () => {
+    const props = { ...defaultProps, error: 'Der Code ist ungültig.' };
     const wrapper = mount(EmailCodeForm, { props });
-    expect(wrapper.find('[data-test="login-code-error"]').text()).toContain('ungültig');
+    expect(wrapper.find('[data-test="login-code-error"]').text()).toBe('Der Code ist ungültig.');
   });
 });
