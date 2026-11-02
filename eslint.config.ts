@@ -182,6 +182,7 @@ export default [
       'html/**',
       'coverage/**',
       'src/services/api/*-schema.ts',
+      'android/**',
     ],
   },
 ] satisfies Linter.Config[];
