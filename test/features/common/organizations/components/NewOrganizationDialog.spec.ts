@@ -40,7 +40,7 @@ describe('NewOrganizationDialog', () => {
 
     it('renders the required fields note', () => {
       const wrapper = mountDialog();
-      expect(wrapper.text()).toContain('Plichtfelder');
+      expect(wrapper.text()).toContain('Pflichtfelder');
     });
   });
 
