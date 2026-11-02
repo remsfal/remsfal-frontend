@@ -3,6 +3,7 @@ import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
 import { userService } from '@/features/common/users/services/UserService';
 import DangerZoneCard from '@/components/DangerZoneCard.vue';
+import { clearUserClientData } from '@/helper/clientDataCleanup';
 
 const { t } = useI18n();
 const appToast = useAppToast();
@@ -11,6 +12,7 @@ const deleteUser = async () => {
   try {
     await userService.deleteUser();
     appToast.success(t('accountSettings.dangerZone.deleteSuccess'), { summary: t('success.saved') });
+    await clearUserClientData();
     window.location.pathname = '/api/v1/authentication/logout';
   } catch (err) {
     console.error('Error deleting user account:', err);

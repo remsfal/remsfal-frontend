@@ -2,6 +2,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import App from '@/App.vue';
 import { useEventBus } from '@/stores/EventStore';
+import { clearUserClientData } from '@/helper/clientDataCleanup';
+
+vi.mock('@/helper/clientDataCleanup', () => ({ clearUserClientData: vi.fn().mockResolvedValue(undefined) }));
 
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
@@ -126,9 +129,11 @@ describe('App.vue', () => {
 
     expect(pushMock).not.toHaveBeenCalled();
     expect(addMock).not.toHaveBeenCalled();
+    // User data is cleared even on public routes
+    expect(clearUserClientData).toHaveBeenCalled();
   });
 
-  it('redirects to LandingPage on auth:session-expired when the current route requires auth', () => {
+  it('redirects to Login on auth:session-expired when the current route requires auth', () => {
     mockRoute.meta = { requiresAuth: true };
     mockRoute.fullPath = '/manager/account-settings';
     mount(App, {
@@ -145,6 +150,7 @@ describe('App.vue', () => {
     const bus = useEventBus();
     bus.emit('auth:session-expired', {});
 
-    expect(pushMock).toHaveBeenCalledWith({ name: 'LandingPage', query: { redirect: '/manager/account-settings' } });
+    expect(pushMock).toHaveBeenCalledWith({ name: 'Login', query: { redirect: '/manager/account-settings' } });
+    expect(clearUserClientData).toHaveBeenCalled();
   });
 });

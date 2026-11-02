@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useTopbarUserActions } from '@/layouts/composables/useTopbarUserActions';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
+import { clearUserClientData } from '@/helper/clientDataCleanup';
 
 let currentPath = '/';
 let currentQuery: Record<string, string> = {};
@@ -25,6 +26,8 @@ vi.mock('vue-router', async (importOriginal) => {
 
 // Mock useI18n
 vi.mock('vue-i18n', () => ({useI18n: () => ({ t: (key: string) => key }),}));
+
+vi.mock('@/helper/clientDataCleanup', () => ({ clearUserClientData: vi.fn() }));
 
 // Mock globalThis location
 const originalLocation = globalThis.location;
@@ -60,22 +63,37 @@ describe('useTopbarUserActions', () => {
     template: '<div></div>',
   });
 
-  it('login uses redirect query param when present', () => {
+  it('login navigates to the login page keeping the redirect query param', () => {
     currentQuery = { redirect: '/dashboard' };
     const wrapper = mount(TestComponent);
     wrapper.vm.login();
-    expect(globalThis.location.href).toBe('/api/v1/authentication/login?route=%2Fdashboard');
+    expect(mockPush).toHaveBeenCalledWith({ name: 'Login', query: { redirect: '/dashboard' } });
   });
 
-  it('login falls back to current fullPath when no redirect param', () => {
+  it('login uses the current fullPath as redirect when no redirect param', () => {
+    currentPath = '/verify-additional-email';
     const wrapper = mount(TestComponent);
     wrapper.vm.login();
-    expect(globalThis.location.href).toBe('/api/v1/authentication/login?route=%2F');
+    expect(mockPush).toHaveBeenCalledWith({ name: 'Login', query: { redirect: '/verify-additional-email' } });
   });
 
-  it('logout navigates to correct URL', () => {
+  it('login omits the redirect when on the root path', () => {
     const wrapper = mount(TestComponent);
-    wrapper.vm.logout();
+    wrapper.vm.login();
+    expect(mockPush).toHaveBeenCalledWith({ name: 'Login', query: { redirect: undefined } });
+  });
+
+  it('logout clears user client data before navigating to the logout URL', async () => {
+    let pathnameDuringCleanup: string | undefined;
+    vi.mocked(clearUserClientData).mockImplementation(async () => {
+      pathnameDuringCleanup = globalThis.location.pathname;
+    });
+    const wrapper = mount(TestComponent);
+
+    await wrapper.vm.logout();
+
+    expect(clearUserClientData).toHaveBeenCalledOnce();
+    expect(pathnameDuringCleanup).toBe('');
     expect(globalThis.location.pathname).toBe('/api/v1/authentication/logout');
   });
 

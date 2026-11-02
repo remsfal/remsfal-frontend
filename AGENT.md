@@ -884,6 +884,24 @@ npm run test:e2e -- --spec "cypress/e2e/project.cy.ts"
 2. Import `useI18n` and destructure `t` in `<script setup>`
 3. Use `t('your.key')` in component
 
+**Keys must appear literally in `t('…')`:** ESLint (`@intlify/vue-i18n/no-unused-keys`) only finds keys written as literals inside `t('…')`. Keys stored as plain strings (`error.value = 'a.b.c'`) or built at runtime (`` t(`a.${x}`) ``) look unused and fail the lint. Do **not** solve this by adding an `ignores` entry in `eslint.config.ts`: an ignore pattern also hides keys that really are unused. Those entries are a last resort for keys that cannot be written literally (e.g. strings sent through the `toast:translate` event).
+
+**Translate lazily, never store translated text:** `t()` called once and stored in a `ref` (or a schema built once) keeps the old language after a locale switch. Preferred patterns:
+- **State that maps to a message** (e.g. a server error): store a typed code, expose the text as a `computed` with one literal `t('…')` per case. `t()` reads the reactive locale, so the `computed` re-translates on a locale switch:
+  ```ts
+  type EmailLoginError = 'invalidEmail' | 'unavailable';
+  const errorCode = ref<EmailLoginError | null>(null);
+  const error = computed(() => {
+    switch (errorCode.value) {
+      case 'invalidEmail': return t('login.email.errors.invalidEmail');
+      case 'unavailable': return t('login.email.errors.unavailable');
+      default: return null;
+    }
+  });
+  ```
+  Child components then receive the translated text as prop and render `{{ error }}` — not an i18n key they pass to `t()` (see `useEmailLogin.ts`).
+- **Zod messages:** pass a function, `{ error: () => t('validation.required') }`, so the message is translated when the check fails (see `helper/validationHelper.ts`).
+
 **App-wide domain enums** use flat namespaced keys (not feature-prefixed), so they can be reused across features:
 - `issuePriority.*` — `urgent`, `high`, `medium`, `low`, `unclassified`
 - `issueType.*` — `application`, `task`, `defect`, `maintenance`, `termination`, `inquiry` (singular in German: "Antrag", "Aufgabe", "Mangel", …)

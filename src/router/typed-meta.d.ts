@@ -2,7 +2,7 @@ import 'vue-router'
 
 declare module 'vue-router' {
   interface RouteMeta {
-    layout?: 'manager' | 'project' | 'tenant' | 'contractor' | 'public'
+    layout?: 'manager' | 'project' | 'tenant' | 'contractor' | 'public' | 'auth'
     requiresAuth?: boolean
   }
 }

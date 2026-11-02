@@ -9,6 +9,7 @@ const mockDeleteProject = vi.hoisted(() => vi.fn());
 vi.mock('@/helper/indexeddb', () => ({
   getAllProjects: mockGetAllProjects,
   deleteProject: mockDeleteProject,
+  clearProjects: vi.fn(),
 }));
 
 import '../../src/sw';
@@ -37,8 +38,8 @@ describe('Service Worker Tests', () => {
   it('deletes stale runtime caches during activate but preserves the Workbox precache', async () => {
     const cachesKeysStub = globalThis.caches.keys;
     cachesKeysStub.mockResolvedValue([
-      'remsfal-runtime-v0',
       'remsfal-runtime-v1',
+      'remsfal-runtime-v2',
       'workbox-precache-v2-https://example.com/',
     ]);
 
@@ -56,7 +57,7 @@ describe('Service Worker Tests', () => {
     // Assertions
     expect(cachesKeysStub).toHaveBeenCalledOnce();
     expect(deleteStub).toHaveBeenCalledOnce();
-    expect(deleteStub).toHaveBeenCalledWith('remsfal-runtime-v0');
+    expect(deleteStub).toHaveBeenCalledWith('remsfal-runtime-v1');
     expect(activateEvent.waitUntil).toHaveBeenCalledTimes(2);
     expect(globalThis.self.clients.claim).toHaveBeenCalledOnce();
   });
@@ -114,13 +115,51 @@ describe('Service Worker Tests', () => {
     consoleErrorSpy.mockRestore();
   });
 
+  it('does not cache non-ok responses but still returns them', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('server error', { status: 500 }));
+
+    const event = {
+      request: new Request('https://example.com/test-resource'),
+      respondWith: vi.fn(),
+      waitUntil: vi.fn(),
+    };
+
+    globalThis.eventListeners.fetch[0](event);
+
+    const result = await event.respondWith.mock.calls[0][0];
+
+    expect(result.status).toBe(500);
+    expect(event.waitUntil).not.toHaveBeenCalled();
+    expect(globalThis.caches.open).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['same-origin API GET request', new Request('https://example.com/api/v1/projects')],
+    ['POST request', new Request('https://example.com/test-resource', { method: 'POST' })],
+    ['cross-origin GET request', new Request('https://cdn.example.org/font.woff2')],
+  ])('does not intercept a %s', (_label, request) => {
+    const fetchStub = vi.spyOn(globalThis, 'fetch');
+    const event = {
+      request, respondWith: vi.fn(), waitUntil: vi.fn(),
+    };
+
+    globalThis.eventListeners.fetch[0](event);
+
+    expect(event.respondWith).not.toHaveBeenCalled();
+    expect(event.waitUntil).not.toHaveBeenCalled();
+    expect(fetchStub).not.toHaveBeenCalled();
+    expect(globalThis.caches.open).not.toHaveBeenCalled();
+  });
+
   it('serves a matching cache entry when the network request fails', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline'));
     const cachedResponse = new Response('cached body');
     globalThis.caches.match.mockResolvedValue(cachedResponse);
 
     const event = {
-      request: { mode: 'no-cors' },
+      request: {
+        method: 'GET', url: 'https://example.com/assets/app.js', mode: 'no-cors',
+      },
       respondWith: vi.fn(),
     };
 
@@ -143,7 +182,9 @@ describe('Service Worker Tests', () => {
     );
 
     const event = {
-      request: { mode: 'navigate' },
+      request: {
+        method: 'GET', url: 'https://example.com/manager/projects', mode: 'navigate',
+      },
       respondWith: vi.fn(),
     };
 
@@ -162,7 +203,9 @@ describe('Service Worker Tests', () => {
     globalThis.caches.match.mockResolvedValue(null);
 
     const event = {
-      request: { mode: 'navigate' },
+      request: {
+        method: 'GET', url: 'https://example.com/manager/projects', mode: 'navigate',
+      },
       respondWith: vi.fn(),
     };
 
@@ -181,7 +224,9 @@ describe('Service Worker Tests', () => {
     globalThis.caches.match.mockResolvedValue(null);
 
     const event = {
-      request: { mode: 'cors' },
+      request: {
+        method: 'GET', url: 'https://example.com/assets/app.js', mode: 'cors',
+      },
       respondWith: vi.fn(),
     };
 

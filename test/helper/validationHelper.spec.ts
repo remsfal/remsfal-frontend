@@ -98,4 +98,29 @@ describe('validationHelper', () => {
       expect(result.error?.issues[0].message).toBe('validation.email');
     });
   });
+
+  describe('lazy translation', () => {
+    it('translates messages when validating, not when the schema is built', () => {
+      let language = 'de';
+      const translate = ((key: string) => `${language}:${key}`) as unknown as Parameters<typeof phoneSchema>[0];
+      const schemas = {
+        name: nameSchema(translate),
+        street: streetSchema(translate),
+        phone: phoneSchema(translate),
+        email: emailSchema(translate),
+        optionalEmail: optionalEmailSchema(translate),
+      };
+
+      language = 'en';
+
+      expect(schemas.name.safeParse('').error?.issues[0].message).toBe('en:validation.required');
+      expect(schemas.name.safeParse('123').error?.issues[0].message).toBe('en:validation.name');
+      expect(schemas.street.safeParse('').error?.issues[0].message).toBe('en:validation.required');
+      expect(schemas.street.safeParse('Hauptstraße').error?.issues[0].message)
+        .toBe('en:address.validation.streetInvalid');
+      expect(schemas.phone.safeParse('12').error?.issues[0].message).toBe('en:validation.phone');
+      expect(schemas.email.safeParse('nope').error?.issues[0].message).toBe('en:validation.email');
+      expect(schemas.optionalEmail.safeParse('nope').error?.issues[0].message).toBe('en:validation.email');
+    });
+  });
 });

@@ -14,10 +14,6 @@ vi.mock('vue-router', () => ({
 }));
 
 
-// Mock platform helper to NOT show dev login by default, but allow overriding
-const platformMocks = vi.hoisted(() => ({shouldShowDevLogin: vi.fn(() => false),}));
-vi.mock('@/helper/platform', () => ({ shouldShowDevLogin: platformMocks.shouldShowDevLogin }));
-
 // Mock AccountDataView to prevent loading it (and its side effects/imports)
 vi.mock('@/features/common/users/views/AccountDataView.vue', () => ({ default: { template: '<div>Mocked View</div>' } }));
 
@@ -73,27 +69,22 @@ describe('TopbarUserActions.vue', () => {
     await accountButton?.trigger('click');
   });
 
-  it('calls login when login button clicked', async () => {
+  it('navigates to the login page when login button clicked', async () => {
     const { wrapper } = mountWrapper(null);
     await flushPromises();
-
-    // Mock globalThis.location
-    const originalLocation = globalThis.location;
-    Object.defineProperty(globalThis, 'location', {
-      value: { href: '' } as unknown as Location,
-      writable: true,
-    });
 
     const loginButton = wrapper.findAllComponents({ name: 'Button' }).find(b => b.text().includes('Anmelden'));
     expect(loginButton).toBeDefined();
 
     await loginButton?.trigger('click');
-    expect(globalThis.location.href).toContain('/api/v1/authentication/login');
+    expect(mockPush).toHaveBeenCalledWith({ name: 'Login', query: { redirect: undefined } });
+  });
 
-    // Cleanup
-    Object.defineProperty(globalThis, 'location', {
-      value: originalLocation,
-      writable: true,
-    });
+  it('shows only a single login button when logged out', async () => {
+    const { wrapper } = mountWrapper(null);
+    await flushPromises();
+
+    expect(wrapper.findAllComponents({ name: 'Button' })).toHaveLength(1);
+    expect(wrapper.text()).not.toContain('Dev Login');
   });
 });

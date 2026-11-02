@@ -9,6 +9,8 @@ describe('IndexedDB Helper Functions', () => {
     add: ReturnType<typeof vi.fn>;
     getAll: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
+    clear: ReturnType<typeof vi.fn>;
+    close: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
@@ -17,6 +19,8 @@ describe('IndexedDB Helper Functions', () => {
       add: vi.fn(),
       getAll: vi.fn(),
       delete: vi.fn(),
+      clear: vi.fn(),
+      close: vi.fn(),
     };
 
     // Mock the implementation of openDB to return the mock database
@@ -70,5 +74,14 @@ describe('IndexedDB Helper Functions', () => {
     expect(openDB).toHaveBeenCalled();
     expect(mockDb.delete).toHaveBeenCalledWith('projects', projectKey);
     expect(mockDb.delete).toHaveBeenCalledTimes(1); // Ensure delete method is called once
+  });
+
+  it('should clear all queued projects and close the connection', async () => {
+    mockDb.clear.mockResolvedValue(undefined);
+
+    await idbHelper.clearProjects();
+
+    expect(mockDb.clear).toHaveBeenCalledWith('projects');
+    expect(mockDb.close).toHaveBeenCalledOnce();
   });
 });

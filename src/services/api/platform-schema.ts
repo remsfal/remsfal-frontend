@@ -182,7 +182,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Login user via oauth flow. */
+    /**
+     * Login user via oauth flow of the default identity provider (Google).
+     * @description Kept for backward compatibility, use the provider specific login endpoints instead.
+     */
     get: {
       parameters: {
         query?: {
@@ -195,6 +198,140 @@ export interface paths {
       requestBody?: never;
       responses: {
         /** @description Redirect user to the identity provider */
+        302: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/authentication/login/apple": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Login user via Sign in with Apple oauth flow. */
+    get: {
+      parameters: {
+        query?: {
+          route?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Redirect user to Apple */
+        302: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Sign in with Apple is not configured */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/authentication/login/email": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Login user via passwordless email login.
+     * @description Sends a one-time code to the email address that is valid for a short time. The response is the same whether or not the address is registered. A new request invalidates older codes.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["EmailLoginRequestJson"];
+        };
+      };
+      responses: {
+        /** @description The login code is sent if the request is accepted */
+        202: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The email address is invalid */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Too many login requests for this email address or client */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/authentication/login/google": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Login user via Google oauth flow. */
+    get: {
+      parameters: {
+        query?: {
+          route?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Redirect user to Google */
         302: {
           headers: {
             [name: string]: unknown;
@@ -239,6 +376,56 @@ export interface paths {
     };
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/authentication/notifications/apple": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Receive server-to-server notifications of Sign in with Apple.
+     * @description Handles the events consent-revoked, account-delete, email-disabled and email-enabled.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["AppleNotificationJson"];
+        };
+      };
+      responses: {
+        /** @description Notification processed */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": unknown;
+          };
+        };
+        /** @description Notification payload is invalid */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
     delete?: never;
     options?: never;
     head?: never;
@@ -295,7 +482,11 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Start user session via oauth flow. */
+    /**
+     * Start user session via Google oauth flow (Google callback).
+     * @deprecated
+     * @description Kept for backward compatibility, use /session/google instead.
+     */
     get: {
       parameters: {
         query?: {
@@ -311,6 +502,173 @@ export interface paths {
       responses: {
         /** @description Redirect user to the frontend spa */
         302: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Authentication failed or state does not match */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/authentication/session/apple": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Start user session via Sign in with Apple oauth flow (Apple form_post callback).
+     * @description The user form field is only sent by Apple on the first authorization and carries the name of the user as JSON.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/x-www-form-urlencoded": {
+            code?: string;
+            state?: string;
+            user?: string;
+            error?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Redirect user to the frontend spa */
+        302: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Authentication failed or state does not match */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/authentication/session/email": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Start user session via passwordless email login.
+     * @description Validates the one-time code sent to the email address. On the first login a new user is created or an existing user with this verified email address is linked.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["EmailSessionJson"];
+        };
+      };
+      responses: {
+        /** @description Tokens are set as cookies */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The email address or the code is malformed */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The code is invalid, expired or already used */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Too many login attempts from this client */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/authentication/session/google": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Start user session via Google oauth flow (Google callback). */
+    get: {
+      parameters: {
+        query?: {
+          code?: string;
+          error?: string;
+          state?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Redirect user to the frontend spa */
+        302: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Authentication failed or state does not match */
+        401: {
           headers: {
             [name: string]: unknown;
           };
@@ -335,7 +693,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Login user via app token directly. */
+    /**
+     * Login user via app token directly.
+     * @description For app_id=apple the app_token is the identity token of ASAuthorizationAppleIDProvider. The raw nonce is required, the token must carry its SHA-256 hash. The authorization code and the name are optional; Apple provides the name only on the first authorization.
+     */
     post: {
       parameters: {
         query?: never;
@@ -350,6 +711,10 @@ export interface paths {
             app_token?: string;
             /** @default false */
             dev_services?: boolean;
+            authorization_code?: string;
+            nonce?: string;
+            given_name?: string;
+            family_name?: string;
           };
         };
       };
@@ -363,6 +728,20 @@ export interface paths {
         };
         /** @description Unauthorized - Invalid token */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The app is not supported */
+        501: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Sign in with Apple is not configured */
+        503: {
           headers: {
             [name: string]: unknown;
           };
@@ -5344,6 +5723,11 @@ export interface components {
       /** Format: float */
       space?: number;
     };
+    /** @description Server-to-server notification of Sign in with Apple */
+    AppleNotificationJson: {
+      /** @description JWT signed by Apple that carries the event in its events claim */
+      payload: string;
+    };
     /** @enum {string} */
     BillingCycle: "WEEKLY" | "MONTHLY";
     /** @description A building as part of a property */
@@ -5502,6 +5886,36 @@ export interface components {
       scopeOfWork?: string;
       /** @description IDs of existing issue attachments to share with the contractors */
       attachmentIds?: string[];
+    };
+    /** @description Request of a one-time login code that is sent to the given email address */
+    EmailLoginRequestJson: {
+      /** @example user@example.com */
+      email: string;
+      /**
+       * @description Language of the login email if the address is not registered yet
+       * @example de
+       */
+      locale?: string;
+    };
+    /** @description Email address and the one-time login code sent to it */
+    EmailSessionJson: {
+      /** @example user@example.com */
+      email: string;
+      /** @example 12345678 */
+      code: string;
+    };
+    /** @description Email preferences of the authenticated user */
+    EmailSettingsJson: {
+      /** @description Unique identifier of the user */
+      userId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Receive an email when a new issue is created */
+      issueCreated?: boolean;
+      /** @description Receive an email when an issue is updated */
+      issueUpdated?: boolean;
+      /** @description Receive an email when an issue is assigned */
+      issueAssigned?: boolean;
+      /** @description Receive an email when a new message is posted in an issue */
+      issueMessageCreated?: boolean;
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
