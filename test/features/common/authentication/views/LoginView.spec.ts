@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import LoginView from '@/features/common/authentication/views/LoginView.vue';
+import { authService } from '@/services/AuthService';
 
 const loginMocks = vi.hoisted(() => ({
   loginWith: vi.fn(),
@@ -57,6 +58,30 @@ describe('LoginView', () => {
     expect(wrapper.find('[data-test="login-dev"]').exists()).toBe(true);
     await wrapper.find('[data-test="login-dev"]').trigger('click');
     expect(loginMocks.loginDev).toHaveBeenCalled();
+  });
+
+  it('shows the email login form below the provider buttons', () => {
+    const wrapper = mount(LoginView);
+    expect(wrapper.find('[data-test="login-email-input"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="login-code-input"]').exists()).toBe(false);
+  });
+
+  it('switches to the code entry after requesting a code and back again', async () => {
+    const spy = vi.spyOn(authService, 'requestEmailLoginCode').mockResolvedValue({ status: 'sent' });
+    const wrapper = mount(LoginView);
+
+    await wrapper.find('[data-test="login-email-input"]').setValue('user@example.com');
+    await wrapper.find('form').trigger('submit');
+
+    await vi.waitFor(() => expect(wrapper.find('[data-test="login-code-input"]').exists()).toBe(true));
+    expect(spy).toHaveBeenCalledWith('user@example.com', 'de');
+    expect(wrapper.find('[data-test="login-google"]').exists()).toBe(false);
+    expect(wrapper.find('[data-test="login-code-sent-to"]').text()).toContain('user@example.com');
+
+    await wrapper.find('[data-test="login-code-change-email"]').trigger('click');
+    expect(wrapper.find<HTMLInputElement>('[data-test="login-email-input"]').element.value)
+      .toBe('user@example.com');
+    spy.mockRestore();
   });
 
   it('links back to the landing page', () => {

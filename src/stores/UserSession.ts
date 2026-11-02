@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 // this store is loaded eagerly at app boot (see main.ts), and the barrel also re-exports
 // route-level view components, which would otherwise stay in their own lazy chunks.
 import { userService, type UserJson } from '@/features/common/users/services/UserService';
+import { authService, type EmailLoginVerifyResult } from '@/services/AuthService';
 import i18n, { toSupportedLocale } from '@/i18n/i18n';
 
 export type User = UserJson;
@@ -69,6 +70,14 @@ export const useUserSessionStore = defineStore('user-session', {
         console.error('Dev Login error:', error);
         return false;
       }
+    },
+
+    async loginWithEmailCode(email: string, code: string): Promise<EmailLoginVerifyResult> {
+      const result = await authService.verifyEmailLoginCode(email, code);
+      if (result.status === 'success') {
+        await this.refreshSessionState();
+      }
+      return result;
     },
 
     async loginWithToken(token: string) {

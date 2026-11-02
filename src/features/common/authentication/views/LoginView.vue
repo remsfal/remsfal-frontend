@@ -4,10 +4,24 @@ import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 import LoginProviderButton from '../components/LoginProviderButton.vue';
+import EmailLoginForm from '../components/EmailLoginForm.vue';
+import EmailCodeForm from '../components/EmailCodeForm.vue';
 import { useLogin } from '../composables/useLogin';
+import { useEmailLogin } from '../composables/useEmailLogin';
 
 const { t } = useI18n();
 const { loginWith, loginDev, showDevLogin } = useLogin();
+const {
+  step,
+  email,
+  loading,
+  error,
+  cooldownSeconds,
+  requestCode,
+  resendCode,
+  submitCode,
+  changeEmail,
+} = useEmailLogin();
 </script>
 
 <template>
@@ -26,9 +40,32 @@ const { loginWith, loginDev, showDevLogin } = useLogin();
         </p>
       </div>
 
-      <div class="flex flex-col gap-4">
+      <div v-if="step === 'code'">
+        <EmailCodeForm
+          :email
+          :loading
+          :error
+          :cooldownSeconds
+          @submit="submitCode"
+          @resend="resendCode"
+          @changeEmail="changeEmail"
+        />
+      </div>
+
+      <div v-else class="flex flex-col gap-4">
         <LoginProviderButton provider="google" @click="loginWith('google')" />
         <LoginProviderButton provider="apple" @click="loginWith('apple')" />
+
+        <Divider align="center">
+          <span class="text-sm text-surface-500 dark:text-surface-400">{{ t('login.or') }}</span>
+        </Divider>
+
+        <EmailLoginForm
+          :initialEmail="email"
+          :loading
+          :error
+          @submit="requestCode"
+        />
 
         <template v-if="showDevLogin">
           <Divider />

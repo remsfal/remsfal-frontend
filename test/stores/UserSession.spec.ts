@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
 import { apiClient } from '@/services/ApiClient';
+import { authService } from '@/services/AuthService';
 import i18n from '@/i18n/i18n';
-
 
 describe('UserSession Store', () => {
   let store: ReturnType<typeof useUserSessionStore>;
@@ -20,7 +20,6 @@ describe('UserSession Store', () => {
     // Mock apiClient.get
     vi.spyOn(apiClient, 'get');
   });
-
 
   afterEach(() => {
     // Restore original fetch
@@ -214,6 +213,30 @@ describe('UserSession Store', () => {
       const result = await store.loginDev();
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('loginWithEmailCode', () => {
+    it('should verify the code and refresh the session on success', async () => {
+      const verifySpy = vi.spyOn(authService, 'verifyEmailLoginCode').mockResolvedValue({ status: 'success' });
+      const mockUser = { email: 'user@example.com' };
+      vi.mocked(apiClient.get).mockResolvedValue(mockUser);
+
+      const result = await store.loginWithEmailCode('user@example.com', '12345678');
+
+      expect(result).toEqual({ status: 'success' });
+      expect(verifySpy).toHaveBeenCalledWith('user@example.com', '12345678');
+      expect(store.user).toEqual(mockUser);
+    });
+
+    it('should return the failure without refreshing the session', async () => {
+      vi.spyOn(authService, 'verifyEmailLoginCode').mockResolvedValue({ status: 'invalidCode' });
+
+      const result = await store.loginWithEmailCode('user@example.com', '00000000');
+
+      expect(result).toEqual({ status: 'invalidCode' });
+      expect(apiClient.get).not.toHaveBeenCalled();
+      expect(store.user).toBeNull();
     });
   });
 
