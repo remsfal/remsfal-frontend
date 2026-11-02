@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { defineComponent } from 'vue';
+import { defineComponent, nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
+import i18n from '@/i18n/i18n';
 import { useEmailLogin, RESEND_COOLDOWN_SECONDS } from '@/features/common/authentication/composables/useEmailLogin';
 import { authService } from '@/services/AuthService';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -33,6 +34,7 @@ describe('useEmailLogin', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.useRealTimers();
+    i18n.global.locale.value = 'de';
   });
 
   it('starts on the email step and prefills the email from the query', () => {
@@ -65,7 +67,7 @@ describe('useEmailLogin', () => {
     await wrapper.vm.requestCode('user@example.com');
 
     expect(wrapper.vm.step).toBe('email');
-    expect(wrapper.vm.error).toBe(errorKey);
+    expect(wrapper.vm.error).toBe(i18n.global.t(errorKey));
   });
 
   it('uses Retry-After as cooldown when rate limited', async () => {
@@ -75,7 +77,7 @@ describe('useEmailLogin', () => {
     await wrapper.vm.requestCode('user@example.com');
 
     expect(wrapper.vm.step).toBe('email');
-    expect(wrapper.vm.error).toBe('login.email.errors.rateLimited');
+    expect(wrapper.vm.error).toBe(i18n.global.t('login.email.errors.rateLimited'));
     expect(wrapper.vm.cooldownSeconds).toBe(900);
   });
 
@@ -137,9 +139,22 @@ describe('useEmailLogin', () => {
 
     await expect(wrapper.vm.submitCode('12345678')).resolves.toBe(false);
 
-    expect(wrapper.vm.error).toBe(errorKey);
+    expect(wrapper.vm.error).toBe(i18n.global.t(errorKey));
     expect(wrapper.vm.loading).toBe(false);
     expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it('translates the error again after a locale switch', async () => {
+    const store = useUserSessionStore();
+    vi.spyOn(store, 'loginWithEmailCode').mockResolvedValue({ status: 'invalidCode' });
+    const wrapper = mount(TestComponent);
+    await wrapper.vm.submitCode('00000000');
+    expect(wrapper.vm.error).toContain('ungültig');
+
+    i18n.global.locale.value = 'en';
+    await nextTick();
+
+    expect(wrapper.vm.error).toBe('The code is invalid, expired or has already been used.');
   });
 
   it('changeEmail returns to the email step and clears the error', async () => {

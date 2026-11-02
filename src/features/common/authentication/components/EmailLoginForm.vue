@@ -11,7 +11,7 @@ import { emailSchema } from '@/helper/validationHelper';
 const props = defineProps<{
   initialEmail?: string;
   loading?: boolean;
-  /** i18n key of an error returned by the server */
+  /** Translated message of an error returned by the server */
   error?: string | null;
 }>();
 
@@ -62,7 +62,7 @@ const onSubmit = (event: FormSubmitEvent) => {
     </div>
 
     <Message v-if="error" data-test="login-email-error" severity="error" size="small">
-      {{ t(error) }}
+      {{ error }}
     </Message>
 
     <Button

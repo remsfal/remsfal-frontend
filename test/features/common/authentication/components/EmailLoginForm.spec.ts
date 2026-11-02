@@ -27,8 +27,8 @@ describe('EmailLoginForm', () => {
     expect(wrapper.emitted('submit')).toBeUndefined();
   });
 
-  it('shows the server error passed as i18n key', () => {
-    const wrapper = mount(EmailLoginForm, { props: { error: 'login.email.errors.rateLimited' } });
-    expect(wrapper.find('[data-test="login-email-error"]').text()).toContain('Zu viele Anfragen');
+  it('shows the server error message', () => {
+    const wrapper = mount(EmailLoginForm, { props: { error: 'Zu viele Anfragen.' } });
+    expect(wrapper.find('[data-test="login-email-error"]').text()).toBe('Zu viele Anfragen.');
   });
 });
