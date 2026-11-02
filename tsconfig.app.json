@@ -9,7 +9,8 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["vue-router/unplugin"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@upstream/*": ["./src/*"]
     }
   }
 }

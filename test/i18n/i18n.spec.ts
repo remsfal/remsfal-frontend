@@ -44,3 +44,37 @@ describe('i18n browser locale detection', () => {
   });
 
 });
+
+describe('withExtensionMessages', () => {
+
+  test('adds and overrides messages from the extension file of the locale', async () => {
+    const { withExtensionMessages } = await loadI18n();
+    const extensions = {
+      '/src/extensions/locales/de.json': { 'footer.poweredBy': 'Downstream', 'downstream.key': 'Neu' },
+      '/src/extensions/locales/en.json': { 'footer.poweredBy': 'English' },
+    };
+
+    const messages = withExtensionMessages('de', { 'footer.poweredBy': 'Upstream', 'other.key': 'Bleibt' }, extensions);
+
+    expect(messages).toEqual({
+      'footer.poweredBy': 'Downstream',
+      'downstream.key': 'Neu',
+      'other.key': 'Bleibt',
+    });
+  });
+
+  test('keeps the upstream messages if the locale has no extension file', async () => {
+    const { withExtensionMessages } = await loadI18n();
+    const upstream = { 'footer.poweredBy': 'Upstream' };
+
+    expect(withExtensionMessages('en', upstream, {})).toEqual(upstream);
+  });
+
+  test('loads the upstream locale files unchanged when no extensions exist', async () => {
+    const { default: i18n } = await loadI18n();
+    const { default: de } = await import('@/i18n/locales/de.json');
+
+    expect(i18n.global.getLocaleMessage('de')).toEqual(de);
+  });
+
+});
