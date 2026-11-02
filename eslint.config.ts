@@ -91,7 +91,7 @@ export default [
   {
     settings: {
       'vue-i18n': {
-        localeDir: './src/i18n/locales/*.json',
+        localeDir: ['./src/i18n/locales/*.json', './src/extensions/locales/*.json'],
         messageSyntaxVersion: '^11.0.0',
       },
     },
@@ -135,7 +135,7 @@ export default [
   // i18n locale files: every key must exist in all locales and must be used somewhere.
   // Translations are single-line strings, so max-len does not apply.
   {
-    files: ['src/i18n/locales/*.json'],
+    files: ['src/i18n/locales/*.json', 'src/extensions/locales/*.json'],
     languageOptions: { parser: jsoncParser },
     rules: {
       '@intlify/vue-i18n/no-missing-keys-in-other-locales': 'error',

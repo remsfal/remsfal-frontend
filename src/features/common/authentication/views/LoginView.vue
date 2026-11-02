@@ -26,10 +26,10 @@ const {
 
 <template>
   <div
-    class="w-full max-w-lg rounded-[3.5rem] p-[0.3rem]
+    class="w-full max-w-lg rounded-[1.5rem] p-[0.3rem]
       bg-[linear-gradient(180deg,var(--p-primary-color)_10%,transparent_30%)]"
   >
-    <div class="w-full rounded-[3.3rem] bg-surface-0 dark:bg-surface-900 py-16 px-8 sm:px-16">
+    <div class="w-full rounded-[1.3rem] bg-surface-0 dark:bg-surface-900 py-16 px-8 sm:px-16">
       <div class="flex flex-col items-center text-center mb-10">
         <img src="@/assets/remsfal-logo.svg" alt="REMSFAL Icon" class="w-70 h-20 mb-6">
         <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-3">

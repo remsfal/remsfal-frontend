@@ -5,6 +5,20 @@ import datetimeFormats from '@/i18n/datetimeFormats';
 import de from '@/i18n/locales/de.json';
 import en from '@/i18n/locales/en.json';
 
+// Downstream projects add or override messages in src/extensions/locales/<locale>.json (see AGENT.md).
+const extensionMessages = import.meta.glob<Record<string, string>>(
+  '/src/extensions/locales/*.json', { eager: true, import: 'default' },
+);
+
+/** Merges the downstream extension messages of a locale over the upstream messages. */
+export function withExtensionMessages<T extends Record<string, string>>(
+  locale: string,
+  messages: T,
+  extensions: Record<string, Record<string, string>> = extensionMessages,
+): T {
+  return { ...messages, ...extensions[`/src/extensions/locales/${locale}.json`] };
+}
+
 export type Locale = 'en' | 'de';
 
 export const locales: Locale[] = ['en', 'de'];
@@ -27,8 +41,8 @@ const i18n = createI18n({
   locale,
   fallback: 'en',
   messages: {
-    de,
-    en,
+    de: withExtensionMessages('de', de),
+    en: withExtensionMessages('en', en),
   },
   numberFormats: numberFormats,
   datetimeFormats: datetimeFormats,

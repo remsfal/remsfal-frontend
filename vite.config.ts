@@ -7,6 +7,7 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
 import VueRouter from 'vue-router/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import extensionOverrides from './plugins/vite-plugin-extension-overrides.ts';
 
 // Proxy-Configurations-Factory
 function createProxyConfig(target: string, backendName: string): ProxyOptions {
@@ -34,8 +35,15 @@ function createProxyConfig(target: string, backendName: string): ProxyOptions {
 export default defineConfig({
   optimizeDeps: {noDiscovery: true,},
   plugins: [
+    // Downstream projects replace upstream files via src/extensions/overrides/ (see AGENT.md "Downstream Extensions").
+    // Unit tests keep testing the upstream originals; the check for orphaned overrides runs everywhere.
+    extensionOverrides({
+      srcDir: fileURLToPath(new URL('./src', import.meta.url)),
+      shadowing: !process.env.VITEST,
+    }),
     VueRouter({
-      routesFolder: 'src/pages',
+      // src/extensions/pages/ holds additional routes of downstream projects
+      routesFolder: ['src/pages', 'src/extensions/pages'],
       dts: 'src/typed-router.d.ts',
     }),
     vue(),
