@@ -2,7 +2,7 @@ import {useRoute, useRouter} from 'vue-router';
 import {useI18n} from 'vue-i18n';
 import {useUserSessionStore} from '@/stores/UserSession';
 import {clearUserClientData} from '@/helper/clientDataCleanup';
-import {unregisterPush} from '@/services/PushSubscriptionService';
+import {unregisterPush} from '@/features/common/push/index';
 
 export function useTopbarUserActions(): {
     t: ReturnType<typeof useI18n>['t'];

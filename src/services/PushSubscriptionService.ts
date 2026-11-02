@@ -50,7 +50,7 @@ export async function registerPush(askPermission = false): Promise<PushRegistrat
   unsubscribe?.()
   unsubscribe = onRegistered(messaging, async (fid) => {
     currentFid = fid
-    await apiClient.post('/notification/v1/push-subscriptions', { fid, platform: 'WEB' })
+    await apiClient.post('/notification/v1/push-subscriptions', { fidToken: currentFid, platform: 'WEB' })
   })
 
   await register(messaging, {
@@ -65,7 +65,7 @@ export async function unregisterPush(): Promise<void> {
   const fid = currentFid
   currentFid = null
   try {
-    await apiClient.delete('/notification/v1/push-subscriptions/{fid}', { pathParams: { fid } })
+    await apiClient.delete('/notification/v1/push-subscriptions/{fidToken}', { pathParams: { fidToken: fid } })
   } catch (error) {
     console.warn('[push] unregister failed', error)
   }

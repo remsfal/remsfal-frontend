@@ -92,6 +92,7 @@
   "push.result.unsupported": "Dieser Browser unterstützt keine Benachrichtigungen.",
   "push.result.no-session": "Bitte zuerst anmelden.",
   "push.result.needs-permission": "Die Berechtigung fehlt noch.",
+  "push.testSent": "Test-Benachrichtigung wurde gesendet.",
   "push.result.failed": "Die Registrierung ist fehlgeschlagen.",
   "push.testFailed": "Test-Benachrichtigung konnte nicht angezeigt werden.",
   "landingPage.sub-title": "Die erste Open-Source-Software für ganzheitliches, digitales Facility Management",

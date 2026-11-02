@@ -93,6 +93,7 @@
   "push.result.no-session": "Please sign in first.",
   "push.result.needs-permission": "Permission is still missing.",
   "push.result.failed": "Registration failed.",
+  "push.testSent": "Test notification sent.",
   "push.testFailed": "Sending the test notification failed.",
   "landingPage.sub-title": "The first open-source software for holistic, digital facility management",
   "landingPage.description": "An end-to-end solution that seamlessly unites all relevant stakeholders – from tenants to property managers to contractors – in one transparent process. REMSFAL provides a holistic process model that digitalizes the entire lifecycle of a defect report.",

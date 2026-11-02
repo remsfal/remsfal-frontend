@@ -1521,13 +1521,13 @@
         }
       },
       "PushSubscriptionJson" : {
-        "description" : "Firebase Installation ID eines Geräts für Push-Benachrichtigungen",
+        "description" : "Firebase Installation ID oder FCM-Token eines Geräts für Push-Benachrichtigungen",
         "type" : "object",
-        "required" : [ "fid", "platform" ],
+        "required" : [ "fidToken", "platform" ],
         "properties" : {
-          "fid" : {
+          "fidToken" : {
             "type" : "string",
-            "description" : "Firebase Installation ID",
+            "description" : "Firebase Installation ID oder FCM-Registrierungstoken",
             "pattern" : "\\S"
           },
           "platform" : {
@@ -2817,7 +2817,7 @@
     },
     "/notification/v1/push-subscriptions" : {
       "post" : {
-        "summary" : "Registriert die FID des aktuellen Geräts für Push-Benachrichtigungen.",
+        "summary" : "Registriert die Firebase-Zielkennung des aktuellen Geräts für Push-Benachrichtigungen.",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -2830,7 +2830,7 @@
         },
         "responses" : {
           "201" : {
-            "description" : "FID registriert"
+            "description" : "FID/FCM-Token registriert"
           },
           "400" : {
             "description" : "Ungültige Anfrage"
@@ -2866,11 +2866,11 @@
         } ]
       }
     },
-    "/notification/v1/push-subscriptions/{fid}" : {
+    "/notification/v1/push-subscriptions/{fidToken}" : {
       "delete" : {
-        "summary" : "Removes the push subscription of the current user for the given FID",
+        "summary" : "Removes the push subscription of the current user for the given FID or Token",
         "parameters" : [ {
-          "name" : "fid",
+          "name" : "fidToken",
           "in" : "path",
           "required" : true,
           "schema" : {

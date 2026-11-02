@@ -293,7 +293,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Registriert die FID des aktuellen Geräts für Push-Benachrichtigungen. */
+        /** Registriert die Firebase-Zielkennung des aktuellen Geräts für Push-Benachrichtigungen. */
         post: {
             parameters: {
                 query?: never;
@@ -307,7 +307,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description FID registriert */
+                /** @description FID/FCM-Token registriert */
                 201: {
                     headers: {
                         [name: string]: unknown;
@@ -391,7 +391,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/notification/v1/push-subscriptions/{fid}": {
+    "/notification/v1/push-subscriptions/{fidToken}": {
         parameters: {
             query?: never;
             header?: never;
@@ -401,13 +401,13 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Removes the push subscription of the current user for the given FID */
+        /** Removes the push subscription of the current user for the given FID or Token */
         delete: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    fid: string;
+                    fidToken: string;
                 };
                 cookie?: never;
             };
@@ -1096,10 +1096,10 @@ export interface components {
         PropertyListJson: {
             properties?: $Read<components["schemas"]["RentalUnitTreeNodeJson"][]>;
         };
-        /** @description Firebase Installation ID eines Geräts für Push-Benachrichtigungen */
+        /** @description Firebase Installation ID oder FCM-Token eines Geräts für Push-Benachrichtigungen */
         PushSubscriptionJson: {
-            /** @description Firebase Installation ID */
-            fid: string;
+            /** @description Firebase Installation ID oder FCM-Registrierungstoken */
+            fidToken: string;
             /**
              * @description Plattform des Geräts
              * @enum {string}
