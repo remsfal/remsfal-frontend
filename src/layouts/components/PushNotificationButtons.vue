@@ -63,12 +63,7 @@ const onSendTest = async () => {
 
 <template>
   <div class="flex gap-2">
-    <Button
-      icon="pi pi-bell"
-      :aria-label="t('push.register')"
-      :title="t('push.register')"
-      @click="onRegister"
-    />
+    <Button icon="pi pi-bell" @click="onRegister"/>
     <Button
       class="push-test-button"
       :label="t('push.sendTest')"

@@ -59,7 +59,7 @@ export async function unregisterNativePush(): Promise<void> {
 
   try {
     await apiClient.delete('/notification/v1/push-subscriptions/{fidToken}', {pathParams: { fidToken }})
-    currentToken = null // erst nach erfolgreichem DELETE;
+    currentToken = null // erst hier, nach erfolgreichem DELETE;
     // sonst kann Token bei einem Netzwerkfehler nicht mehr erneut abgemeldet werden
   } catch (error) {
     console.warn('[native-push] unregister failed', error)

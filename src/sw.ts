@@ -28,6 +28,10 @@ const firebaseApp = initializeApp({
 const messaging = getMessaging(firebaseApp);
 
 onBackgroundMessage(messaging, (payload) => {
+  void self.registration.showNotification(
+    payload.notification?.title ?? 'REMSFAL',
+    { body: payload.notification?.body ?? '' },
+  )
   console.log('[push] background message received', payload);
 });
 

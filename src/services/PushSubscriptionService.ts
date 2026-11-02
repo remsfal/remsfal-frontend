@@ -36,21 +36,34 @@ export async function registerPush(askPermission = false): Promise<PushRegistrat
   if (permission === 'default') {
     if (!askPermission) return 'needs-permission'
     permission = await Notification.requestPermission()
+    console.log('[push] permission:', permission);
   }
   if (permission !== 'granted') return 'denied'
 
   const messaging = getMessaging(app)
   unsubscribeMessage?.()
   unsubscribeMessage = onMessage(messaging, async (payload) => {
-    const registration = await navigator.serviceWorker.ready
-    await registration.showNotification(payload.notification?.title ?? 'REMSFAL', {body: payload.notification?.body,})
+    try{
+      const registration = await navigator.serviceWorker.ready
+      await registration.showNotification(payload.notification?.title ?? 'REMSFAL', {body: payload.notification?.body,})
+      console.log('[push] notification shown');
+    }
+    catch(error){
+      console.warn('[push] notification failed', error)
+    }
   })
 
   const serviceWorkerRegistration = await navigator.serviceWorker.ready
+  console.log('[push] sw ready:', serviceWorkerRegistration.active?.scriptURL);
   unsubscribe?.()
   unsubscribe = onRegistered(messaging, async (fid) => {
     currentFid = fid
-    await apiClient.post('/notification/v1/push-subscriptions', { fidToken: currentFid, platform: 'WEB' })
+    try{
+      await apiClient.post('/notification/v1/push-subscriptions', { fidToken: currentFid, platform: 'WEB' })
+    }
+    catch(error){
+      console.warn('[push] registration failed', error)
+    }
   })
 
   await register(messaging, {
