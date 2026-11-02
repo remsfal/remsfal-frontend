@@ -860,7 +860,7 @@
   "tenantDashboard.field.heatingCosts": "Heizkosten",
   "tenantDashboard.field.totalRent": "Gesamtmiete (warm)",
   "tenantDashboard.section.coTenants": "Mitmieter",
-  "tenantDashboard.section.allDates": "Begin und Ende",
+  "tenantDashboard.section.allDates": "Beginn und Ende",
   "tenantDashboard.status.active": "Aktiv",
   "tenantDashboard.status.expired": "Abgelaufen",
   "address.title": "Adresse",
