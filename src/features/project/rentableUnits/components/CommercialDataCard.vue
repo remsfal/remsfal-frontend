@@ -104,8 +104,8 @@ const heatingSpaceKey = computed(() =>
 
 const heatingSpaceMatchLabel = computed(() =>
   din277Mode.value === 'total'
-    ? 'commercial.heatingSpaceMatchesNetFloorArea'
-    : 'commercial.heatingSpaceMatchesUsableFloorArea',
+    ? t('commercial.heatingSpaceMatchesNetFloorArea')
+    : t('commercial.heatingSpaceMatchesUsableFloorArea'),
 );
 
 watch(heatingSpaceMatchesArea, (checked) => {
@@ -344,7 +344,7 @@ async function onSubmit(event: FormSubmitEvent) {
               <div class="flex items-center gap-2 mt-1">
                 <Checkbox v-model="heatingSpaceMatchesArea" inputId="heatingSpaceMatchesArea" binary />
                 <label for="heatingSpaceMatchesArea" class="text-sm text-surface-600">
-                  {{ t(heatingSpaceMatchLabel) }}
+                  {{ heatingSpaceMatchLabel }}
                 </label>
               </div>
               <Message
