@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { normalizePath, type Plugin } from 'vite';
+import { build, normalizePath, type Plugin } from 'vite';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import extensionOverrides, { collectOverrides, findOrphanedOverrides, type ExtensionOverridesOptions }
   from '../../plugins/vite-plugin-extension-overrides';
@@ -83,6 +83,14 @@ describe('collectOverrides', () => {
       'views/LandingPageView.vue',
     ]);
   });
+
+  it('ignores nested placeholders and empty directories', () => {
+    writeFile('src/extensions/overrides/views/.gitkeep');
+    writeFile('src/extensions/overrides/views/README.md');
+    fs.mkdirSync(`${overridesDir}/empty`);
+
+    expect(collectOverrides(overridesDir)).toEqual([]);
+  });
 });
 
 describe('findOrphanedOverrides', () => {
@@ -119,6 +127,33 @@ describe('extensionOverrides plugin', () => {
       writeFile('custom/views/Renamed.vue');
 
       expect(() => createPlugin({ overridesDir: `${root}/custom` }).buildStart()).toThrow(/Renamed\.vue/);
+    });
+
+    it('refreshes overrides when a build restarts after files are added or removed', async () => {
+      const { buildStart, resolveId } = createPlugin();
+      buildStart();
+      await expect(resolveId('@/views/LandingPageView.vue')).resolves.toBeNull();
+
+      writeFile('src/extensions/overrides/views/LandingPageView.vue');
+      buildStart();
+      expect(idOf(await resolveId('@/views/LandingPageView.vue')))
+        .toBe(`${overridesDir}/views/LandingPageView.vue`);
+
+      fs.unlinkSync(`${overridesDir}/views/LandingPageView.vue`);
+      buildStart();
+      await expect(resolveId('@/views/LandingPageView.vue')).resolves.toBeNull();
+    });
+
+    it('reports all orphaned overrides with migration guidance', () => {
+      writeFile('src/extensions/overrides/views/Renamed.vue');
+      writeFile('src/extensions/overrides/views/Removed.vue');
+
+      expect(() => createPlugin().buildStart()).toThrow(
+        `Extension override(s) without an upstream counterpart in ${srcDir}:\n`
+        + '  - views/Removed.vue\n  - views/Renamed.vue\n'
+        + 'The upstream file was probably renamed or moved. Move the override accordingly, or place new '
+        + 'downstream code in src/extensions/features/ instead of src/extensions/overrides/.',
+      );
     });
   });
 
@@ -183,6 +218,18 @@ describe('extensionOverrides plugin', () => {
       it('resolves @upstream/ to the original even if an override exists', async () => {
         expect(idOf(await plugin.resolveId('@upstream/views/LandingPageView.vue', override())))
           .toBe(`${srcDir}/views/LandingPageView.vue`);
+        expect(resolveMock).toHaveBeenLastCalledWith(
+          `${srcDir}/views/LandingPageView.vue`, override(), { skipSelf: true },
+        );
+      });
+
+      it('skips itself when delegating normal imports to the resolver chain', async () => {
+        const importer = `${srcDir}/pages/index.vue`;
+        await plugin.resolveId('@/views/LandingPageView.vue', importer);
+
+        expect(resolveMock).toHaveBeenCalledWith(
+          '@/views/LandingPageView.vue', importer, { skipSelf: true },
+        );
       });
 
       it('passes through virtual, external and unresolved modules', async () => {
@@ -195,6 +242,17 @@ describe('extensionOverrides plugin', () => {
         const source = `${root}/node_modules/lib/index.js`;
         expect(idOf(await plugin.resolveId(source))).toBe(source);
       });
+    });
+
+    it('redirects imports to a custom overrides folder and preserves self-imports', async () => {
+      writeFile('custom/views/LandingPageView.vue');
+      const { buildStart, resolveId } = createPlugin({ overridesDir: `${root}/custom` });
+      buildStart();
+
+      expect(idOf(await resolveId('@/views/LandingPageView.vue')))
+        .toBe(`${root}/custom/views/LandingPageView.vue`);
+      expect(idOf(await resolveId('@/views/LandingPageView.vue', `${root}/custom/views/LandingPageView.vue`)))
+        .toBe(`${srcDir}/views/LandingPageView.vue`);
     });
 
     it('does not redirect when shadowing is disabled, but still resolves @upstream/', async () => {
@@ -239,6 +297,89 @@ describe('extensionOverrides plugin', () => {
       (createPlugin({ shadowing: false }).plugin.configureServer as (s: unknown) => void)(server);
 
       expect(server.watcher.add).not.toHaveBeenCalled();
+      expect(server.watcher.on).not.toHaveBeenCalled();
+    });
+
+    it('only restarts for events inside the configured override directory', () => {
+      const { server, handlers } = createServer();
+      (createPlugin({ overridesDir: `${root}/custom` }).plugin.configureServer as (s: unknown) => void)(server);
+
+      expect(server.watcher.add).toHaveBeenCalledWith(`${root}/custom`);
+      for (const event of ['add', 'unlink']) {
+        handlers[event](`${overridesDir}/views/LandingPageView.vue`);
+        handlers[event](`${root}/custom-other/views/LandingPageView.vue`);
+        expect(server.restart).not.toHaveBeenCalled();
+      }
+      handlers.add(`${root}/custom/views/LandingPageView.vue`);
+      handlers.unlink(`${root}/custom/views/LandingPageView.vue`);
+      expect(server.restart).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('Vite build integration', () => {
+    async function bundle(shadowing = true) {
+      const result = await build({
+        configFile: false,
+        root,
+        logLevel: 'silent',
+        plugins: [extensionOverrides({ srcDir, shadowing })],
+        resolve: { alias: { '@': srcDir } },
+        build: {
+          write: false,
+          minify: false,
+          lib: { entry: `${srcDir}/entry.ts`, formats: ['es'] },
+        },
+      });
+      const outputs = Array.isArray(result) ? result : [result];
+      return outputs.flatMap((output) => {
+        if (!('output' in output)) throw new Error('Expected build output, not a watcher');
+        return output.output;
+      })
+        .filter((output) => output.type === 'chunk')
+        .map((chunk) => chunk.code).join('\n');
+    }
+
+    beforeEach(() => {
+      writeFile('src/features/greeting/index.ts', "export { default } from './message';");
+      writeFile('src/features/greeting/message.ts', "export default 'upstream-message';");
+      writeFile('src/extensions/overrides/features/greeting/message.ts', `
+        import original from '@upstream/features/greeting/message';
+        export default 'downstream-' + original;
+      `);
+      writeFile('src/entry.ts', `
+        export { default as aliased } from '@/features/greeting/message';
+        export { default as barrel } from '@/features/greeting';
+        export { default as absolute } from '${srcDir}/features/greeting/message.ts';
+        export { default as original } from '@upstream/features/greeting/message';
+      `);
+    });
+
+    it.each([
+      ['aliased', '@/features/greeting/message'],
+      ['barrel', '@/features/greeting'],
+      ['absolute', () => `${srcDir}/features/greeting/message.ts`],
+    ] as const)('bundles %s imports through an override that wraps its original', async (_kind, source) => {
+      const importPath = typeof source === 'function' ? source() : source;
+      writeFile('src/entry.ts', `export { default } from '${importPath}';`);
+
+      const code = await bundle();
+
+      expect(code).toContain('upstream-message');
+      expect(code).toContain('downstream-');
+      expect(code).not.toContain('@upstream/');
+    });
+
+    it('bundles only upstream code when shadowing is disabled', async () => {
+      const code = await bundle(false);
+
+      expect(code).toContain('upstream-message');
+      expect(code).not.toContain('downstream-');
+    });
+
+    it('rejects orphaned overrides through the real build lifecycle', async () => {
+      writeFile('src/extensions/overrides/features/greeting/removed.ts');
+
+      await expect(bundle()).rejects.toThrow(/features\/greeting\/removed\.ts/);
     });
   });
 });
