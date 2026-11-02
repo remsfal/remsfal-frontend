@@ -23,7 +23,7 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 const code = ref('');
-const isComplete = computed(() => new RegExp(`^\\d{${EMAIL_LOGIN_CODE_LENGTH}}$`).test(code.value));
+const isComplete = computed(() => new RegExp(String.raw`^\d{${EMAIL_LOGIN_CODE_LENGTH}}$`).test(code.value));
 
 const submit = () => {
   if (isComplete.value && !props.loading) {
@@ -65,9 +65,10 @@ const otpPassThrough = {
       </p>
     </div>
 
-    <label id="login-code-label" class="sr-only">{{ t('login.email.codeLabel') }}</label>
+    <span id="login-code-label" class="sr-only">{{ t('login.email.codeLabel') }}</span>
     <InputOtp
       data-test="login-code-input"
+      role="group"
       :modelValue="code"
       :length="EMAIL_LOGIN_CODE_LENGTH"
       :disabled="loading"
