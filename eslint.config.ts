@@ -148,18 +148,17 @@ export default [
         // Keep this list minimal: an ignore pattern also hides keys that really are unused.
         ignores: [
           // menu items: label: 'projectMenu.xyz' is translated later in AppMenuItem.vue
-          '/^\\["(managerMenu|projectMenu|tenantMenu|contractorMenu)\\./',
+          String.raw`/^\["(managerMenu|projectMenu|tenantMenu|contractorMenu)\./`,
           // dynamic keys, e.g. t(`unitTypes.${type}`)
-          '/^\\["(unitTypes|roles|toast)\\./',
-          '/^\\["(quotation|quotationRequest|orderPlacement)\\.status\\./',
-          '/^\\["tenantIssue\\.types\\./',
-          '/^\\["managerSettings\\.employments\\.role\\./',
+          String.raw`/^\["(unitTypes|roles|toast)\./`,
+          String.raw`/^\["(quotation|quotationRequest|orderPlacement)\.status\./`,
+          String.raw`/^\["tenantIssue\.types\./`,
+          String.raw`/^\["managerSettings\.employments\.role\./`,
           // timeline titles built as t(`${titleNamespace}.messageTitle`) in useTimelineItem.ts
-          '/^\\["(tenantIssues\\.timeline|issueContractorTimeline|orderManagement\\.timeline)\\.'
-            + '(\\w+Title|senderWithRole|senderRole\\.\\w+)"\\]$/',
+          String.raw`/^\["(tenantIssues\.timeline|issueContractorTimeline|orderManagement\.timeline)\.`
+            + String.raw`(\w+Title|senderWithRole|senderRole\.\w+)"\]$/`,
           // keys passed as strings via the 'toast:translate' event and translated in App.vue
-          '/^\\["(auth\\.sessionExpired(Summary|Detail)|error\\.api(Request|Response))"\\]$/',
-        ],
+          String.raw`/^\["(auth\.sessionExpired(Summary|Detail)|error\.api(Request|Response))"\]$/`,        ],
       }],
       'max-len': 'off',
     },
