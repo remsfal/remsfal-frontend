@@ -5,6 +5,7 @@ import DatePicker from 'primevue/datepicker';
 import UserContactDataCard from '@/features/common/users/components/UserContactDataCard.vue';
 import { userService } from '@/features/common/users/services/UserService';
 import i18n from '@/i18n/i18n';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 vi.mock('@/features/common/users/services/UserService', () => ({
   userService: {
@@ -218,6 +219,21 @@ describe('UserContactDataCard', () => {
     expect(i18n.global.locale.value).toBe('en');
     expect(saveButton().text()).toBe('Save');
     expect(saveButton().attributes('disabled')).toBeDefined();
+  });
+
+  test('syncs the saved profile into the user session store', async () => {
+    await flushPromises();
+    const savedProfile = {
+      ...mockProfile,
+      locale: 'en',
+      additionalEmails: ['alt@example.com'],
+    };
+    vi.mocked(userService.updateUser).mockResolvedValueOnce(savedProfile);
+
+    await wrapper.get('input[name="firstName"]').setValue('Moritz');
+    await submitForm();
+
+    expect(useUserSessionStore().user).toEqual(savedProfile);
   });
 
   test('keeps the current language when saving the selected language fails', async () => {

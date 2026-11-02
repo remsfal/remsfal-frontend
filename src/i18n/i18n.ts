@@ -9,6 +9,11 @@ export type Locale = 'en' | 'de';
 
 export const locales: Locale[] = ['en', 'de'];
 
+/** Maps an arbitrary locale string (e.g. from the backend) to a supported locale, falling back to 'en'. */
+export function toSupportedLocale(value: string): Locale {
+  return locales.includes(value as Locale) ? (value as Locale) : 'en';
+}
+
 const browserLocale =
   navigator.languages?.[0] ||
   navigator.language ||

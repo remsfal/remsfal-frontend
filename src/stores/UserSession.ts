@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 // route-level view components, which would otherwise stay in their own lazy chunks.
 import { userService, type UserJson } from '@/features/common/users/services/UserService';
 import { authService, type EmailLoginVerifyResult } from '@/services/AuthService';
-import i18n from '@/i18n/i18n';
+import i18n, { toSupportedLocale } from '@/i18n/i18n';
 
 export type User = UserJson;
 
@@ -12,14 +12,23 @@ export const useUserSessionStore = defineStore('user-session', {
   state: () => ({ user: null as User | null, sessionInitialized: false }),
 
   actions: {
+    /**
+     * Stores the given user as the active session user and applies the user's preferred locale.
+     * Call this whenever fresh user data arrives from the backend (e.g. after saving the profile),
+     * so the session never holds stale data.
+     */
+    setUser(user: User) {
+      this.user = user;
+      if (user.locale) {
+        i18n.global.locale.value = toSupportedLocale(user.locale);
+      }
+    },
+
     async refreshSessionState() {
       try {
         const user = await userService.getUser();
-        this.user = user;
         console.log('Active user session:', user);
-        if (user?.locale) {
-          i18n.global.locale.value = user.locale;
-        }
+        this.setUser(user);
       } catch (error: unknown) {
         console.log('Invalid user session:', error);
         if (

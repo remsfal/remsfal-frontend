@@ -3,7 +3,7 @@ import { setActivePinia, createPinia } from 'pinia';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
 import { apiClient } from '@/services/ApiClient';
 import { authService } from '@/services/AuthService';
-
+import i18n from '@/i18n/i18n';
 
 describe('UserSession Store', () => {
   let store: ReturnType<typeof useUserSessionStore>;
@@ -20,7 +20,6 @@ describe('UserSession Store', () => {
     // Mock apiClient.get
     vi.spyOn(apiClient, 'get');
   });
-
 
   afterEach(() => {
     // Restore original fetch
@@ -109,6 +108,38 @@ describe('UserSession Store', () => {
       await store.refreshSessionState();
 
       expect(store.sessionInitialized).toBe(true);
+    });
+  });
+
+  describe('setUser', () => {
+    afterEach(() => {
+      i18n.global.locale.value = 'de';
+    });
+
+    it('stores the user and applies a supported locale', () => {
+      i18n.global.locale.value = 'de';
+      const user = { email: 'test@example.com', locale: 'en' } as User;
+
+      store.setUser(user);
+
+      expect(store.user).toEqual(user);
+      expect(i18n.global.locale.value).toBe('en');
+    });
+
+    it('falls back to English for an unsupported locale', () => {
+      i18n.global.locale.value = 'de';
+
+      store.setUser({ email: 'test@example.com', locale: 'fr' } as User);
+
+      expect(i18n.global.locale.value).toBe('en');
+    });
+
+    it('keeps the current locale when the user has none', () => {
+      i18n.global.locale.value = 'de';
+
+      store.setUser({ email: 'test@example.com' } as User);
+
+      expect(i18n.global.locale.value).toBe('de');
     });
   });
 
