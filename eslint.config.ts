@@ -6,6 +6,7 @@ import { importX } from 'eslint-plugin-import-x';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import i18n from '@intlify/eslint-plugin-vue-i18n';
 import pluginCypress from 'eslint-plugin-cypress';
+import * as jsoncParser from 'jsonc-eslint-parser';
 import type { Linter } from 'eslint';
 
 export default [
@@ -129,6 +130,39 @@ export default [
   {
     files: ['*.config.ts'],
     rules: { 'import-x/extensions': 'off' },
+  },
+
+  // i18n locale files: every key must exist in all locales and must be used somewhere.
+  // Translations are single-line strings, so max-len does not apply.
+  {
+    files: ['src/i18n/locales/*.json'],
+    languageOptions: { parser: jsoncParser },
+    rules: {
+      '@intlify/vue-i18n/no-missing-keys-in-other-locales': 'error',
+      '@intlify/vue-i18n/no-unused-keys': ['error', {
+        src: './src',
+        extensions: ['.ts', '.vue'],
+        // Keys the rule cannot see because they are built at runtime or passed around as plain strings.
+        // Our locale files use flat keys ("a.b.c": "..."), so the plugin matches against the
+        // key path in the form ["a.b.c"] — the patterns therefore start with \[" .
+        // Keep this list minimal: an ignore pattern also hides keys that really are unused.
+        ignores: [
+          // menu items: label: 'projectMenu.xyz' is translated later in AppMenuItem.vue
+          '/^\\["(managerMenu|projectMenu|tenantMenu|contractorMenu)\\./',
+          // dynamic keys, e.g. t(`unitTypes.${type}`)
+          '/^\\["(unitTypes|roles|toast)\\./',
+          '/^\\["(quotation|quotationRequest|orderPlacement)\\.status\\./',
+          '/^\\["tenantIssue\\.types\\./',
+          '/^\\["managerSettings\\.employments\\.role\\./',
+          // timeline titles built as t(`${titleNamespace}.messageTitle`) in useTimelineItem.ts
+          '/^\\["(tenantIssues\\.timeline|issueContractorTimeline|orderManagement\\.timeline)\\.'
+            + '(\\w+Title|senderWithRole|senderRole\\.\\w+)"\\]$/',
+          // keys passed as strings via the 'toast:translate' event and translated in App.vue
+          '/^\\["(auth\\.sessionExpired(Summary|Detail)|error\\.api(Request|Response))"\\]$/',
+        ],
+      }],
+      'max-len': 'off',
+    },
   },
 
   // cypress
