@@ -42,7 +42,7 @@ function onConfirm() {
     </template>
     <template #content>
       <div class="flex flex-col gap-4">
-        <p class="text-gray-700">
+        <p class="text-muted-color">
           {{ props.description }}
         </p>
         <div>
