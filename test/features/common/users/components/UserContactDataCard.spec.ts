@@ -1,10 +1,10 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
+import { mount, flushPromises, VueWrapper, DOMWrapper } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
-import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
 import UserContactDataCard from '@/features/common/users/components/UserContactDataCard.vue';
 import { userService } from '@/features/common/users/services/UserService';
+import i18n from '@/i18n/i18n';
 
 vi.mock('@/features/common/users/services/UserService', () => ({
   userService: {
@@ -43,9 +43,15 @@ describe('UserContactDataCard', () => {
   const saveButton = () => wrapper.find('button[type="submit"]');
 
   beforeEach(() => {
+    i18n.global.locale.value = 'de';
     vi.mocked(userService.getUser).mockResolvedValue({ ...mockProfile });
     vi.mocked(userService.updateUser).mockResolvedValue({ ...mockProfile });
     wrapper = mountCard();
+  });
+
+  afterEach(() => {
+    wrapper.unmount();
+    i18n.global.locale.value = 'de';
   });
 
   test('renders without errors', () => {
@@ -175,14 +181,122 @@ describe('UserContactDataCard', () => {
     expect(userService.updateUser).not.toHaveBeenCalled();
   });
 
-  test('changes the locale via the language select', async () => {
+  test('keeps the current language and enables saving when another language is selected', async () => {
+    await flushPromises();
+    expect(saveButton().attributes('disabled')).toBeDefined();
+
+    await wrapper.get('[role="combobox"][name="locale"]').trigger('click');
+    await new DOMWrapper(document.body).get('[role="option"][aria-label="English"]').trigger('mousedown');
     await flushPromises();
 
-    const select = wrapper.findComponent(Select);
-    await select.vm.$emit('change', { value: 'en' });
+    expect(wrapper.get('[role="combobox"][name="locale"]').text()).toContain('English');
+    expect(i18n.global.locale.value).toBe('de');
+    expect(saveButton().text()).toBe('Speichern');
+    expect(saveButton().attributes('disabled')).toBeUndefined();
+    expect(userService.updateUser).not.toHaveBeenCalled();
+  });
+
+  test('changes the language only after saving succeeds', async () => {
+    await flushPromises();
+    let resolveUpdate!: (profile: typeof mockProfile) => void;
+    vi.mocked(userService.updateUser).mockReturnValueOnce(new Promise<typeof mockProfile>((resolve) => {
+      resolveUpdate = resolve;
+    }));
+
+    await wrapper.get('[role="combobox"][name="locale"]').trigger('click');
+    await new DOMWrapper(document.body).get('[role="option"][aria-label="English"]').trigger('mousedown');
+    await flushPromises();
+    await submitForm();
+
+    expect(userService.updateUser).toHaveBeenCalledWith(expect.objectContaining({ locale: 'en' }));
+    expect(i18n.global.locale.value).toBe('de');
+    expect(saveButton().text()).toBe('Speichern');
+
+    resolveUpdate({ ...mockProfile, locale: 'en' });
     await flushPromises();
 
-    expect(wrapper.exists()).toBe(true);
+    expect(i18n.global.locale.value).toBe('en');
+    expect(saveButton().text()).toBe('Save');
+    expect(saveButton().attributes('disabled')).toBeDefined();
+  });
+
+  test('keeps the current language when saving the selected language fails', async () => {
+    await flushPromises();
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.mocked(userService.updateUser).mockRejectedValueOnce(new Error('save failed'));
+
+    await wrapper.get('[role="combobox"][name="locale"]').trigger('click');
+    await new DOMWrapper(document.body).get('[role="option"][aria-label="English"]').trigger('mousedown');
+    await flushPromises();
+    await submitForm();
+
+    expect(userService.updateUser).toHaveBeenCalledWith(expect.objectContaining({ locale: 'en' }));
+    expect(i18n.global.locale.value).toBe('de');
+    expect(saveButton().text()).toBe('Speichern');
+    expect(wrapper.get('[role="combobox"][name="locale"]').text()).toContain('English');
+    expect(saveButton().attributes('disabled')).toBeUndefined();
+    consoleErrorSpy.mockRestore();
+  });
+
+  test.each(['firstName', 'lastName'])(
+    'shows English required-field validation for %s after saving English',
+    async (field) => {
+      await flushPromises();
+      vi.mocked(userService.updateUser).mockResolvedValueOnce({ ...mockProfile, locale: 'en' });
+
+      await wrapper.get('[role="combobox"][name="locale"]').trigger('click');
+      await new DOMWrapper(document.body).get('[role="option"][aria-label="English"]').trigger('mousedown');
+      await flushPromises();
+      await submitForm();
+      expect(i18n.global.locale.value).toBe('en');
+
+      const input = wrapper.get(`input[name="${field}"]`);
+      await input.setValue('');
+      await submitForm();
+
+      expect(input.element.parentElement?.textContent).toContain('This field is required');
+      expect(saveButton().attributes('disabled')).toBeDefined();
+      expect(userService.updateUser).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  test.each(['firstName', 'lastName'])(
+    'shows English required-field validation for %s when the loaded profile changes the language',
+    async (field) => {
+      await flushPromises();
+      wrapper.unmount();
+      vi.mocked(userService.getUser).mockResolvedValueOnce({ ...mockProfile, locale: 'en' });
+      wrapper = mountCard();
+      await flushPromises();
+      expect(i18n.global.locale.value).toBe('en');
+
+      const input = wrapper.get(`input[name="${field}"]`);
+      await input.setValue('');
+      await submitForm();
+
+      expect(input.element.parentElement?.textContent).toContain('This field is required');
+      expect(userService.updateUser).not.toHaveBeenCalled();
+    },
+  );
+
+  test('shows English format validation after saving English', async () => {
+    await flushPromises();
+    vi.mocked(userService.updateUser).mockResolvedValueOnce({ ...mockProfile, locale: 'en' });
+
+    await wrapper.get('[role="combobox"][name="locale"]').trigger('click');
+    await new DOMWrapper(document.body).get('[role="option"][aria-label="English"]').trigger('mousedown');
+    await flushPromises();
+    await submitForm();
+
+    await wrapper.get('input[name="firstName"]').setValue('123');
+    await wrapper.get('input#alternativeEmail').setValue('not-an-email');
+    await wrapper.get('#mobile-phone').setValue('12');
+    await submitForm();
+
+    expect(wrapper.text()).toContain('Only letters, spaces, hyphens and apostrophes allowed');
+    expect(wrapper.text()).toContain('Please enter a valid email address');
+    expect(wrapper.text()).toContain('Invalid phone format (e.g. +491234567890)');
+    expect(userService.updateUser).toHaveBeenCalledTimes(1);
   });
 
   test('updates the date of birth via the date picker', async () => {
