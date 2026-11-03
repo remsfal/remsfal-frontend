@@ -162,6 +162,12 @@ src/
 ├── helper/                       # Utility functions
 ├── constants/                    # App-wide constants
 │
+├── extensions/                   # Reserved for downstream projects — empty upstream (see "Downstream Extensions")
+│   ├── overrides/                # Mirror of src/: replaces the upstream file with the same relative path
+│   ├── pages/                    # Additional routes (second routesFolder)
+│   ├── features/                 # New downstream code
+│   └── locales/                  # de.json / en.json merged over the upstream messages
+│
 ├── App.vue                      # Root: resolves route.meta.layout → renders <component>
 ├── main.ts                      # Bootstrap only
 └── mocks/                       # MSW service worker
@@ -872,7 +878,7 @@ npm run test:e2e -- --spec "cypress/e2e/project.cy.ts"
 
 - Default language: German (de)
 - Fallback language: English (en)
-- Translation files: `src/i18n/locales/{de,en}.json`
+- Translation files: `src/i18n/locales/{de,en}.json` (downstream additions go to `src/extensions/locales/`, see "Downstream Extensions")
 - Use `$t('key')` in templates or `t('key')` in composition functions
 - Translation keys should be hierarchical and descriptive
 - **Currency and numeric output:** Use `vue-i18n` number formatting (`n()` / `$n()`) with named formats from `src/i18n/numberFormats.ts` (for example `n(amount, 'currency')`) for all user-facing money values.
@@ -883,6 +889,24 @@ npm run test:e2e -- --spec "cypress/e2e/project.cy.ts"
 1. Add key to both `de.json` and `en.json`
 2. Import `useI18n` and destructure `t` in `<script setup>`
 3. Use `t('your.key')` in component
+
+**Keys must appear literally in `t('…')`:** ESLint (`@intlify/vue-i18n/no-unused-keys`) only finds keys written as literals inside `t('…')`. Keys stored as plain strings (`error.value = 'a.b.c'`) or built at runtime (`` t(`a.${x}`) ``) look unused and fail the lint. Do **not** solve this by adding an `ignores` entry in `eslint.config.ts`: an ignore pattern also hides keys that really are unused. Those entries are a last resort for keys that cannot be written literally (e.g. strings sent through the `toast:translate` event).
+
+**Translate lazily, never store translated text:** `t()` called once and stored in a `ref` (or a schema built once) keeps the old language after a locale switch. Preferred patterns:
+- **State that maps to a message** (e.g. a server error): store a typed code, expose the text as a `computed` with one literal `t('…')` per case. `t()` reads the reactive locale, so the `computed` re-translates on a locale switch:
+  ```ts
+  type EmailLoginError = 'invalidEmail' | 'unavailable';
+  const errorCode = ref<EmailLoginError | null>(null);
+  const error = computed(() => {
+    switch (errorCode.value) {
+      case 'invalidEmail': return t('login.email.errors.invalidEmail');
+      case 'unavailable': return t('login.email.errors.unavailable');
+      default: return null;
+    }
+  });
+  ```
+  Child components then receive the translated text as prop and render `{{ error }}` — not an i18n key they pass to `t()` (see `useEmailLogin.ts`).
+- **Zod messages:** pass a function, `{ error: () => t('validation.required') }`, so the message is translated when the check fails (see `helper/validationHelper.ts`).
 
 **App-wide domain enums** use flat namespaced keys (not feature-prefixed), so they can be reused across features:
 - `issuePriority.*` — `urgent`, `high`, `medium`, `low`, `unclassified`
@@ -957,6 +981,45 @@ Key environment variables in `.env`:
 ### Path Aliases
 - `@` → `./src` (configured in `vite.config.ts` and `tsconfig.json`)
 - Use `@/components/...` instead of relative paths
+- `@upstream` → `./src`, bypassing extension overrides — only for use inside `src/extensions/overrides/` (see below)
+
+### Downstream Extensions
+
+Downstream projects (e.g. the commercial `remsfal/online-frontend`) merge `main` regularly. Every upstream file they
+modify causes merge conflicts sooner or later. They therefore put **all** their code into `src/extensions/` and only
+**add** files there. Upstream ships the folder empty (`.gitkeep` + `README.md`) and never adds content to it.
+
+| Folder | Mechanism | Rules |
+|---|---|---|
+| `overrides/` | File-shadowing via `plugins/vite-plugin-extension-overrides.ts` | Mirrors `src/`: `overrides/views/LandingPageView.vue` replaces `src/views/LandingPageView.vue` for **every** import (aliased, relative, barrel, generated routes). Each override **must** have an upstream counterpart, otherwise build and unit tests fail. |
+| `pages/` | Second `routesFolder` of the vue-router plugin | Same conventions as `src/pages/` (`<route>` block, layout meta). Only for routes that do not exist upstream. |
+| `features/` | Plain code | Same structure as `src/features/`; imported via `@/extensions/features/...`. No upstream counterpart needed. |
+| `locales/` | Merged in `src/i18n/i18n.ts` (`withExtensionMessages`) | `de.json` / `en.json` with flat keys. Keys are added to — and may override — the upstream messages. Linted like the upstream locale files. |
+
+**Writing an override:**
+- Keep the public interface of the original (props, emits, exposed members, named exports): callers are upstream code
+  and `vue-tsc` checks them against the original file, not against the override.
+- Reuse upstream parts by importing them normally (`@/features/...`). The original of the overridden file itself is
+  available via `@upstream/<path>`, e.g. to wrap it:
+  ```vue
+  <script setup lang="ts">
+  import UpstreamLandingPageView from '@upstream/views/LandingPageView.vue';
+  </script>
+  <template>
+    <DownstreamBanner />
+    <UpstreamLandingPageView />
+  </template>
+  ```
+- Prefer overriding views/components over `src/pages/*.vue`: the router reads the `<route>` block of the original page.
+- An override is a fork of that one file — upstream changes to it no longer reach the downstream project. If an override
+  would copy more than half of the original, ask upstream for a dedicated extension point instead.
+- Adding or removing an override restarts the dev server automatically.
+
+**Testing:** Unit tests run **without** shadowing, so upstream specs keep testing the originals. Downstream tests live in
+`test/extensions/...` and import overrides directly (`@/extensions/overrides/...`).
+
+**Upstream responsibilities:** never put content into `src/extensions/`; when renaming or moving a file, keep in mind
+that downstream overrides of it break (with a clear build error) and mention it in the PR.
 
 ### Data Flow for API Calls
 1. Component → Store action (if shared state) or direct service call

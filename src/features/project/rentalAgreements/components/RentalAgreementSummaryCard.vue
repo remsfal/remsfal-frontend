@@ -112,8 +112,8 @@ function formatCurrency(value: number | null | undefined): string {
   return n(value, 'currency');
 }
 
-function formatLabel(key: string): string {
-  return `${t(key)}:`;
+function formatLabel(label: string): string {
+  return `${label}:`;
 }
 
 const isEndDateValid = computed(() => {
@@ -158,7 +158,7 @@ async function confirmTerminate(): Promise<void> {
         <div>
           <span class="text-xl font-semibold">{{ t('projectTenancies.table.title', { tenant: tenantTitleLabel }) }}</span>
           <p class="text-base text-gray-500 font-normal mt-1">
-            {{ formatLabel('projectTenancies.table.tenancyNumber') }} {{ rentalAgreement.id || '—' }}
+            {{ formatLabel(t('projectTenancies.table.tenancyNumber')) }} {{ rentalAgreement.id || '—' }}
           </p>
         </div>
         <div class="flex items-end justify-end">
@@ -176,7 +176,7 @@ async function confirmTerminate(): Promise<void> {
         <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('projectTenancies.table.rentalStart') }}
+              {{ formatLabel(t('projectTenancies.table.rentalStart')) }}
             </dt>
             <dd class="text-gray-900">
               {{ formatDateLabel(rentalAgreement.startOfRental) }}
@@ -184,7 +184,7 @@ async function confirmTerminate(): Promise<void> {
           </div>
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('projectTenancies.table.rentalEnd') }}
+              {{ formatLabel(t('projectTenancies.table.rentalEnd')) }}
             </dt>
             <dd class="text-gray-900">
               {{ formatDateLabel(rentalAgreement.endOfRental) }}
@@ -192,7 +192,7 @@ async function confirmTerminate(): Promise<void> {
           </div>
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('projectTenancies.table.tenants') }}
+              {{ formatLabel(t('projectTenancies.table.tenants')) }}
             </dt>
             <dd class="text-gray-900">
               {{ tenantCount }}
@@ -202,7 +202,7 @@ async function confirmTerminate(): Promise<void> {
         <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('rentalAgreement.common.basicRent') }}
+              {{ formatLabel(t('rentalAgreement.common.basicRent')) }}
             </dt>
             <dd class="text-gray-900">
               {{ formatCurrency(totalBasicRent) }}
@@ -210,7 +210,7 @@ async function confirmTerminate(): Promise<void> {
           </div>
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('rentalAgreement.common.operatingCosts') }}
+              {{ formatLabel(t('rentalAgreement.common.operatingCosts')) }}
             </dt>
             <dd class="text-gray-900">
               {{ formatCurrency(totalOperatingCosts) }}
@@ -218,7 +218,7 @@ async function confirmTerminate(): Promise<void> {
           </div>
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('rentalAgreement.common.heatingCosts') }}
+              {{ formatLabel(t('rentalAgreement.common.heatingCosts')) }}
             </dt>
             <dd class="text-gray-900">
               {{ formatCurrency(totalHeatingCosts) }}
@@ -228,7 +228,7 @@ async function confirmTerminate(): Promise<void> {
         <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('projectTenancies.table.amountKeys') }}
+              {{ formatLabel(t('projectTenancies.table.amountKeys')) }}
             </dt>
             <dd class="text-gray-900">
               {{ t('rentalAgreement.summary.schemaIncomplete') }}

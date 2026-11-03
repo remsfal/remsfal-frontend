@@ -35,7 +35,7 @@ async function updateStatus(placement: OrderPlacementJson, status: 'CONFIRMED' |
   if (!placement.id) return;
   try {
     await orderPlacementService.updateOrderPlacementStatus(placement.id, status);
-    appToast.success(t(status === 'CONFIRMED' ? 'orderPlacement.confirmSuccess' : 'orderPlacement.rejectSuccess'));
+    appToast.success(status === 'CONFIRMED' ? t('orderPlacement.confirmSuccess') : t('orderPlacement.rejectSuccess'));
     await fetchOrderPlacements();
   } catch (error) {
     console.error('Failed to update order placement status:', error);

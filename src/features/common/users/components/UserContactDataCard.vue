@@ -14,15 +14,16 @@ import Button from 'primevue/button';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
 import Skeleton from 'primevue/skeleton';
-import { userService } from '@/features/common/users/services/UserService';
-import { type Locale } from '@/i18n/i18n';
+import { userService, type UserJson } from '@/features/common/users/services/UserService';
+import { useUserSessionStore } from '@/stores/UserSession';
 import { toISODateString } from '@/helper/dateHelper';
 import { nameSchema, phoneSchema, optionalEmailSchema } from '@/helper/validationHelper';
 
-const { t } = useI18n();
-const i18n = useI18n();
+const { t, locale } = useI18n();
 const appToast = useAppToast();
+const sessionStore = useUserSessionStore();
 
+// Built once: the shared schema helpers translate their messages lazily, so they follow locale changes.
 const schema = z.object({
   firstName: nameSchema(t),
   lastName: nameSchema(t),
@@ -54,7 +55,7 @@ const initialValues = ref<Record<string, string>>({
   mobilePhoneNumber: '',
   businessPhoneNumber: '',
   privatePhoneNumber: '',
-  locale: i18n.locale.value,
+  locale: locale.value,
 });
 
 // Date of birth tracked separately (not via PrimeVue Forms, DatePicker returns a Date)
@@ -89,32 +90,34 @@ const localeOptions = [
   { language: 'English', value: 'en' },
 ];
 
-function validateLocale(locale: string): Locale {
-  return locale === 'de' || locale === 'en' ? (locale as Locale) : 'en';
+/**
+ * Applies user data received from the backend: updates the session store (which also switches
+ * the app locale to the user's saved language) and resets the form to the server state.
+ */
+function applyProfile(profile: UserJson) {
+  sessionStore.setUser(profile);
+  initialValues.value = {
+    firstName: profile.firstName || '',
+    lastName: profile.lastName || '',
+    placeOfBirth: profile.placeOfBirth || '',
+    alternativeEmail: profile.additionalEmails?.[0] ?? '',
+    mobilePhoneNumber: profile.mobilePhoneNumber || '',
+    businessPhoneNumber: profile.businessPhoneNumber || '',
+    privatePhoneNumber: profile.privatePhoneNumber || '',
+    locale: locale.value,
+  };
+  serverDateOfBirth.value = dateOfBirthValue.value = profile.dateOfBirth
+    ? new Date(profile.dateOfBirth)
+    : null;
+  applyAltEmail(profile.additionalEmails, profile.verifiedAdditionalEmails);
+  formKey.value++;
 }
 
 onMounted(async () => {
   try {
     const profile = await userService.getUser();
     email.value = profile.email || '';
-    initialValues.value = {
-      firstName: profile.firstName || '',
-      lastName: profile.lastName || '',
-      placeOfBirth: profile.placeOfBirth || '',
-      alternativeEmail: profile.additionalEmails?.[0] ?? '',
-      mobilePhoneNumber: profile.mobilePhoneNumber || '',
-      businessPhoneNumber: profile.businessPhoneNumber || '',
-      privatePhoneNumber: profile.privatePhoneNumber || '',
-      locale: profile.locale ? validateLocale(profile.locale) : i18n.locale.value,
-    };
-    if (profile.locale) {
-      i18n.locale.value = validateLocale(profile.locale);
-    }
-    serverDateOfBirth.value = dateOfBirthValue.value = profile.dateOfBirth
-      ? new Date(profile.dateOfBirth)
-      : null;
-    applyAltEmail(profile.additionalEmails, profile.verifiedAdditionalEmails);
-    formKey.value++;
+    applyProfile(profile);
   } catch (error) {
     console.error('Failed to load user profile', error);
   } finally {
@@ -151,24 +154,10 @@ async function onSubmit(event: FormSubmitEvent) {
       additionalEmails,
     });
 
-    initialValues.value = {
-      firstName: updatedUser.firstName || '',
-      lastName: updatedUser.lastName || '',
-      placeOfBirth: updatedUser.placeOfBirth || '',
-      alternativeEmail: updatedUser.additionalEmails?.[0] ?? '',
-      mobilePhoneNumber: updatedUser.mobilePhoneNumber || '',
-      businessPhoneNumber: updatedUser.businessPhoneNumber || '',
-      privatePhoneNumber: updatedUser.privatePhoneNumber || '',
-      locale: updatedUser.locale ? validateLocale(updatedUser.locale) : i18n.locale.value,
-    };
-    serverDateOfBirth.value = dateOfBirthValue.value = updatedUser.dateOfBirth
-      ? new Date(updatedUser.dateOfBirth)
-      : null;
-    formKey.value++;
+    applyProfile(updatedUser);
 
     appToast.success(t('accountSettings.userProfile.saveSuccess'), { summary: t('success.saved') });
 
-    applyAltEmail(updatedUser.additionalEmails, updatedUser.verifiedAdditionalEmails);
     altEmailSuccess.value = true;
     altEmailError.value = false;
     if (altEmailChanged && enteredAltEmail) {
@@ -373,7 +362,6 @@ async function onSubmit(event: FormSubmitEvent) {
                 name="locale"
                 optionLabel="language"
                 optionValue="value"
-                @change="(e) => (i18n.locale.value = e.value)"
               />
             </div>
           </div>

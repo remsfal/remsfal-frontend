@@ -78,7 +78,7 @@ describe('ContractorBaseDataCard', () => {
   it('renders required fields indicator', async () => {
     const wrapper = mountCard();
     await flushPromises();
-    expect(wrapper.text()).toContain('Plichtfelder');
+    expect(wrapper.text()).toContain('Pflichtfelder');
   });
 
   it('renders PhoneInput stub', async () => {

@@ -66,7 +66,7 @@ const { t } = useI18n();
             <!-- Content Cards -->
             <div class="space-y-6">
               <div
-                class="bg-surface-0 dark:bg-surface-900 rounded-2xl p-6
+                class="bg-surface-0 dark:bg-surface-900 rounded-xl p-6
                 shadow-md border border-surface-200 dark:border-surface-700"
               >
                 <h2 class="text-xl font-bold text-emerald-700 dark:text-emerald-400 mb-3 flex items-center gap-2">
@@ -79,7 +79,7 @@ const { t } = useI18n();
               </div>
 
               <div
-                class="bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 shadow-md
+                class="bg-surface-0 dark:bg-surface-900 rounded-xl p-6 shadow-md
                 border border-surface-200 dark:border-surface-700"
               >
                 <h2 class="text-xl font-bold text-blue-700 dark:text-blue-400 mb-3 flex items-center gap-2">
@@ -92,7 +92,7 @@ const { t } = useI18n();
               </div>
 
               <div
-                class="bg-surface-0 dark:bg-surface-900 rounded-2xl p-6 shadow-md
+                class="bg-surface-0 dark:bg-surface-900 rounded-xl p-6 shadow-md
                 border border-surface-200 dark:border-surface-700"
               >
                 <h2 class="text-xl font-bold text-purple-700 dark:text-purple-400 mb-3 flex items-center gap-2">
@@ -162,7 +162,7 @@ const { t } = useI18n();
           <div class="grid md:grid-cols-3 gap-12">
             <!-- Feature 1 -->
             <div
-              class="group p-8 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:shadow-xl transition-all
+              class="group p-8 rounded-xl bg-surface-0 dark:bg-surface-800 hover:shadow-xl transition-all
                duration-300 border border-surface-200 dark:border-surface-700"
             >
               <div
@@ -182,7 +182,7 @@ const { t } = useI18n();
 
             <!-- Feature 2 -->
             <div
-              class="group p-8 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:shadow-xl
+              class="group p-8 rounded-xl bg-surface-0 dark:bg-surface-800 hover:shadow-xl
               transition-all duration-300 border border-surface-200 dark:border-surface-700"
             >
               <div
@@ -202,7 +202,7 @@ const { t } = useI18n();
 
             <!-- Feature 3 -->
             <div
-              class="group p-8 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:shadow-xl
+              class="group p-8 rounded-xl bg-surface-0 dark:bg-surface-800 hover:shadow-xl
                 transition-all duration-300 border border-surface-200 dark:border-surface-700"
             >
               <div
@@ -220,15 +220,6 @@ const { t } = useI18n();
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- Disclaimer Section -->
-      <section class="py-8 border-t border-surface-200 dark:border-surface-700">
-        <div class="container mx-auto px-6">
-          <p class="text-xs text-surface-500 dark:text-surface-400 text-center leading-relaxed">
-            {{ t('landingPage.login-description') }}
-          </p>
         </div>
       </section>
     </main>
