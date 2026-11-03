@@ -86,11 +86,11 @@ function handleBack() {
       >
         <template #empty>
           <div class="flex flex-col items-center gap-3 p-6">
-            <i class="pi pi-cloud-upload text-4xl text-gray-400" />
-            <p class="text-gray-600">
+            <i class="pi pi-cloud-upload text-4xl text-muted-color" />
+            <p class="text-muted-color">
               {{ t('tenantIssue.step3.dragDrop') }}
             </p>
-            <p class="text-sm text-gray-500">
+            <p class="text-sm text-muted-color">
               {{ t('tenantIssue.step3.fileTypeHint') }}
             </p>
           </div>

@@ -92,7 +92,7 @@ const {
       <div
         v-else-if="items.length === 0"
         :data-testid="`${testIdPrefix}-empty`"
-        class="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-gray-600 mb-2"
+        class="rounded-lg border border-dashed border-surface bg-emphasis px-4 py-6 text-muted-color mb-2"
       >
         {{ emptyText }}
       </div>

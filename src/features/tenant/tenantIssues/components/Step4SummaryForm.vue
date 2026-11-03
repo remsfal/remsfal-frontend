@@ -85,7 +85,7 @@ function getFileIcon(file: File): string {
   if (file.type === 'application/pdf') {
     return 'pi pi-file-pdf text-red-500';
   }
-  return 'pi pi-file text-gray-500';
+  return 'pi pi-file text-muted-color';
 }
 
 // Handle Submit

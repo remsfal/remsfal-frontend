@@ -282,12 +282,12 @@ function applyIssueUpdate(updated: IssueJson) {
 <template>
   <BaseCard>
     <template #title>
-      <div class="flex flex-col gap-1 border-b border-gray-200 pb-4">
+      <div class="flex flex-col gap-1 border-b border-surface pb-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <span class="text-xl font-semibold">{{ title || t('issueDetails.fields.untitled') }}</span>
           <Tag :value="visibilityTag.label" :severity="visibilityTag.severity" />
         </div>
-        <p class="text-base text-gray-500 font-normal">
+        <p class="text-base text-muted-color font-normal">
           {{ t('issueDetails.fields.ticketNumber') }} {{ issueId || '—' }}
         </p>
       </div>
@@ -297,19 +297,19 @@ function applyIssueUpdate(updated: IssueJson) {
       <div class="flex flex-col gap-4 mt-4">
         <!-- Title -->
         <div class="flex flex-col gap-1">
-          <label for="issue-title" class="text-sm text-gray-600">{{ t('issueDetails.fields.title') }}</label>
+          <label for="issue-title" class="text-sm text-muted-color">{{ t('issueDetails.fields.title') }}</label>
           <InputText id="issue-title" v-model="title" :placeholder="t('issueDetails.fields.titlePlaceholder')" />
         </div>
 
         <!-- Issue Number & Reporter -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-number" class="text-sm text-gray-600">{{ t('issueDetails.fields.issueNumber') }}</label>
+            <label for="issue-number" class="text-sm text-muted-color">{{ t('issueDetails.fields.issueNumber') }}</label>
             <InputText id="issue-number" :modelValue="issueNumber" disabled />
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-reporter" class="text-sm text-gray-600">{{ t('issueDetails.fields.reporter') }}</label>
+            <label for="issue-reporter" class="text-sm text-muted-color">{{ t('issueDetails.fields.reporter') }}</label>
             <InputText
               id="issue-reporter"
               :modelValue="reporterName"
@@ -322,7 +322,7 @@ function applyIssueUpdate(updated: IssueJson) {
         <!-- Status & Type -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-status" class="text-sm text-gray-600">{{ t('issueDetails.fields.status') }}</label>
+            <label for="issue-status" class="text-sm text-muted-color">{{ t('issueDetails.fields.status') }}</label>
             <Select
               v-model="status"
               inputId="issue-status"
@@ -334,7 +334,7 @@ function applyIssueUpdate(updated: IssueJson) {
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-type" class="text-sm text-gray-600">{{ t('issueDetails.fields.type') }}</label>
+            <label for="issue-type" class="text-sm text-muted-color">{{ t('issueDetails.fields.type') }}</label>
             <Select
               v-model="issueType"
               inputId="issue-type"
@@ -350,7 +350,7 @@ function applyIssueUpdate(updated: IssueJson) {
         <!-- Category & Priority -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-category" class="text-sm text-gray-600">{{ t('issueDetails.fields.category') }}</label>
+            <label for="issue-category" class="text-sm text-muted-color">{{ t('issueDetails.fields.category') }}</label>
             <AutoComplete
               id="issue-category"
               v-model="category"
@@ -365,7 +365,7 @@ function applyIssueUpdate(updated: IssueJson) {
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-priority" class="text-sm text-gray-600">{{ t('issueDetails.fields.priority') }}</label>
+            <label for="issue-priority" class="text-sm text-muted-color">{{ t('issueDetails.fields.priority') }}</label>
             <Select
               v-model="priority"
               inputId="issue-priority"
@@ -380,7 +380,7 @@ function applyIssueUpdate(updated: IssueJson) {
         <!-- Assignee & Assigned At -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-assignee" class="text-sm text-gray-600">{{ t('issueDetails.fields.assignee') }}</label>
+            <label for="issue-assignee" class="text-sm text-muted-color">{{ t('issueDetails.fields.assignee') }}</label>
             <MemberAutoComplete
               v-model="assigneeId"
               inputId="issue-assignee"
@@ -389,7 +389,7 @@ function applyIssueUpdate(updated: IssueJson) {
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-assigned-at" class="text-sm text-gray-600">{{ t('issueDetails.fields.assignedAt') }}</label>
+            <label for="issue-assigned-at" class="text-sm text-muted-color">{{ t('issueDetails.fields.assignedAt') }}</label>
             <InputText id="issue-assigned-at" :modelValue="modifiedAtLabel" disabled />
           </div>
         </div>
@@ -397,7 +397,7 @@ function applyIssueUpdate(updated: IssueJson) {
         <!-- Location & Tenancy -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-location" class="text-sm text-gray-600">{{ t('issueDetails.fields.location') }}</label>
+            <label for="issue-location" class="text-sm text-muted-color">{{ t('issueDetails.fields.location') }}</label>
             <InputText
               id="issue-location"
               v-model="location"
@@ -406,7 +406,7 @@ function applyIssueUpdate(updated: IssueJson) {
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-tenancy" class="text-sm text-gray-600">{{ t('issueDetails.fields.tenancy') }}</label>
+            <label for="issue-tenancy" class="text-sm text-muted-color">{{ t('issueDetails.fields.tenancy') }}</label>
             <RentalAgreementSelect
               v-model="selectedAgreement"
               inputId="issue-tenancy"

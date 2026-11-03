@@ -77,7 +77,7 @@ async function handleDelete(attachment: IssueAttachmentJson) {
 
     <template #content>
       <div class="flex flex-col gap-4">
-        <div v-if="attachments.length === 0" class="text-sm text-gray-500">
+        <div v-if="attachments.length === 0" class="text-sm text-muted-color">
           {{ t('issueDetails.noAttachments') }}
         </div>
 
@@ -118,7 +118,7 @@ async function handleDelete(attachment: IssueAttachmentJson) {
             >
               {{ attachment.fileName }}
             </a>
-            <span class="text-xs text-gray-500 whitespace-nowrap">
+            <span class="text-xs text-muted-color whitespace-nowrap">
               ({{ t('issueDetails.attachmentUploadedBy') }}
               {{ attachment.uploadedBy || t('issueDetails.attachmentUnknownUploader') }})
             </span>

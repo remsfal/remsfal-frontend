@@ -83,7 +83,7 @@ watch(() => props.issueId, fetchMessages);
         <div
           v-else-if="sortedMessages.length === 0"
           data-testid="issue-chat-empty"
-          class="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-gray-600"
+          class="rounded-lg border border-dashed border-surface bg-emphasis px-4 py-6 text-muted-color"
         >
           {{ t('issueDetails.chat.empty') }}
         </div>

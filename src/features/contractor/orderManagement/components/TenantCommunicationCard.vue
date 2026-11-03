@@ -151,30 +151,30 @@ const confirmWithdraw = async () => {
         data-testid="tenant-communication-info"
         class="mb-4 grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3"
       >
-        <dl v-if="hasTenantBlock" class="space-y-2 text-base text-gray-600">
+        <dl v-if="hasTenantBlock" class="space-y-2 text-base text-muted-color">
           <div v-if="tenantNames" data-testid="tenant-names" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('orderManagement.tenantCommunication.fields.tenant') }}
             </dt>
-            <dd class="text-gray-900 break-words">
+            <dd class="text-color break-words">
               {{ tenantNames }}
             </dd>
           </div>
           <div v-if="rentalUnitTypeLabel" data-testid="rental-unit-type" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('orderManagement.tenantCommunication.fields.rentalUnitType') }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               {{ rentalUnitTypeLabel }}
             </dd>
           </div>
         </dl>
-        <dl v-if="hasLocationBlock" class="space-y-2 text-base text-gray-600">
+        <dl v-if="hasLocationBlock" class="space-y-2 text-base text-muted-color">
           <div v-if="placeOfPerformance" data-testid="place-of-performance" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('orderManagement.tenantCommunication.fields.address') }}
             </dt>
-            <dd class="text-gray-900 break-words">
+            <dd class="text-color break-words">
               {{ placeOfPerformance }}
             </dd>
           </div>
@@ -183,25 +183,25 @@ const confirmWithdraw = async () => {
             data-testid="rental-unit-location"
             class="flex items-center justify-start gap-2"
           >
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('orderManagement.tenantCommunication.fields.rentalUnitLocation') }}
             </dt>
-            <dd class="text-gray-900 break-words">
+            <dd class="text-color break-words">
               {{ request.rentalUnitLocation }}
             </dd>
           </div>
         </dl>
-        <dl v-if="hasUnitBlock" class="space-y-2 text-base text-gray-600">
+        <dl v-if="hasUnitBlock" class="space-y-2 text-base text-muted-color">
           <div v-if="request.rentalUnitTitle" data-testid="rental-unit-title" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('orderManagement.tenantCommunication.fields.rentalUnit') }}
             </dt>
-            <dd class="text-gray-900 break-words">
+            <dd class="text-color break-words">
               {{ request.rentalUnitTitle }}
             </dd>
           </div>
           <div v-if="tenantPhones.length > 0" data-testid="tenant-phones" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('orderManagement.tenantCommunication.fields.phone') }}
             </dt>
             <dd class="break-words">

@@ -61,7 +61,7 @@ describe('TenantIssueSummaryCard component', () => {
 
   it('renders cancel button in title header after title/number block', () => {
     const wrapper = mountCard();
-    const headerRow = wrapper.get('.border-b.border-gray-200.pb-4');
+    const headerRow = wrapper.get('.border-b.border-surface.pb-4');
     const headerChildren = Array.from(headerRow.element.children);
 
     expect(headerChildren).toHaveLength(2);

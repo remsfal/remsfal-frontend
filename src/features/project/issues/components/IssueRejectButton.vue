@@ -72,14 +72,14 @@ async function handleConfirm() {
 
   <BaseDialog v-model:visible="showDialog" :header="t('issueDetails.rejectRequest.dialogTitle')">
     <div class="flex flex-col gap-3">
-      <label for="reject-reason" class="text-sm text-gray-600">{{ t('issueDetails.rejectRequest.reasonLabel') }}</label>
+      <label for="reject-reason" class="text-sm text-muted-color">{{ t('issueDetails.rejectRequest.reasonLabel') }}</label>
       <Textarea
         id="reject-reason"
         v-model="reason"
         rows="4"
         :placeholder="t('issueDetails.rejectRequest.reasonPlaceholder')"
       />
-      <p class="text-sm text-gray-500">
+      <p class="text-sm text-muted-color">
         {{ t('issueDetails.rejectRequest.hint') }}
       </p>
     </div>
