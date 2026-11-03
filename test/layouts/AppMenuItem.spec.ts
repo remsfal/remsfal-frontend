@@ -305,7 +305,8 @@ describe('AppMenuItem.vue', () => {
       expect(navigate).not.toHaveBeenCalled();
     });
 
-    it.each(['click', 'keydown.enter', 'keydown.space'])('shows the disabled notice on %s without navigating or changing menu state', async (event) => {
+    it.each(['click', 'keydown.enter', 'keydown.space'])(
+      'shows the disabled notice on %s without navigating or changing menu state', async (event) => {
       const command = vi.fn();
       const navigate = vi.fn();
       const disabledCommand = vi.fn();
