@@ -1,0 +1,4 @@
+# Only the build output and the nginx configuration are needed for the image (see docker/Dockerfile)
+*
+!dist
+!docker/nginx

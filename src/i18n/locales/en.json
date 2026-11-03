@@ -1,8 +1,8 @@
 {
   "accountSettings.userProfile.title": "My Personal Contact Details",
   "accountSettings.userProfile.name": "Name",
-  "accountSettings.userProfile.email": "Email",
-  "accountSettings.userProfile.alternativeEmail": "Alternative email",
+  "accountSettings.userProfile.email": "Primary Email Address",
+  "accountSettings.userProfile.alternativeEmail": "Alternative Email Address",
   "accountSettings.userProfile.alternativeEmailSaveError": "Email could not be saved.",
   "accountSettings.userProfile.alternativeEmailSaveSuccess": "Email saved successfully. Please check your inbox to confirm the email address.",
   "accountSettings.userProfile.alternativeEmailUnverified": "Please confirm the email address.",
