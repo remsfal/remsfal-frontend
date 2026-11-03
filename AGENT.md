@@ -1021,6 +1021,10 @@ modify causes merge conflicts sooner or later. They therefore put **all** their 
 **Upstream responsibilities:** never put content into `src/extensions/`; when renaming or moving a file, keep in mind
 that downstream overrides of it break (with a clear build error) and mention it in the PR.
 
+**Generated route types:** `src/typed-router.d.ts` is not versioned (it would contain the downstream routes and
+conflict on every upstream route change). Vite and Vitest regenerate it, and `npm run type-check` creates it first via
+`scripts/generate-typed-router.ts`. The router options are shared in `plugins/typed-router-options.ts`.
+
 ### Data Flow for API Calls
 1. Component → Store action (if shared state) or direct service call
 2. Service → `apiClient` type-safe HTTP methods (get, post, put, patch, delete)

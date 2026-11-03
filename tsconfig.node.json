@@ -6,7 +6,8 @@
     "cypress.config.*",
     "eslint.config.*",
     "capacitor.config.*",
-    "plugins/**/*"
+    "plugins/**/*",
+    "scripts/**/*.ts"
   ],
   "compilerOptions": {
     "composite": true,
