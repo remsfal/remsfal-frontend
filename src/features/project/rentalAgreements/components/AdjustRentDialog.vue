@@ -87,15 +87,13 @@ async function confirmSubmit(details: RentalDetails) {
     );
     emit('update:rentalAgreement', updated);
     appToast.success(
-      t(
-        isAddMode.value
-          ? 'rentalAgreement.unitsCard.successDetail'
-          : 'rentalAgreement.unitsCard.adjustRentSuccessDetail',
-      ),
+      isAddMode.value
+        ? t('rentalAgreement.unitsCard.successDetail')
+        : t('rentalAgreement.unitsCard.adjustRentSuccessDetail'),
       {
-        summary: t(
-          isAddMode.value ? 'rentalAgreement.unitsCard.success' : 'rentalAgreement.unitsCard.adjustRentSuccess',
-        ),
+        summary: isAddMode.value
+          ? t('rentalAgreement.unitsCard.success')
+          : t('rentalAgreement.unitsCard.adjustRentSuccess'),
       },
     );
     closeDialog();
@@ -135,7 +133,7 @@ async function confirmSubmit(details: RentalDetails) {
         :initialOperatingCostsPrepayment="unit?.operatingCostsPrepayment"
         :initialHeatingCostsPrepayment="unit?.heatingCostsPrepayment"
         :initialBillingCycle="unit?.billingCycle"
-        :submitLabel="t(isAddMode ? 'rentalAgreement.unitsCard.confirmAdd' : 'rentalAgreement.unitsCard.adjustRentButton')"
+        :submitLabel="isAddMode ? t('rentalAgreement.unitsCard.confirmAdd') : t('rentalAgreement.unitsCard.adjustRentButton')"
         @submit="confirmSubmit"
         @cancel="closeDialog"
       />

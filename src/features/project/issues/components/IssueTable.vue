@@ -24,15 +24,15 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n();
 
-const COLUMN_DEFS: Record<IssueColumn, { field: string; headerKey: string }> = {
-  issueNumber: { field: 'id', headerKey: 'issueDetails.fields.issueNumber' },
-  title: { field: 'title', headerKey: 'issueDetails.fields.title' },
-  type: { field: 'type', headerKey: 'issueDetails.fields.type' },
-  status: { field: 'status', headerKey: 'issueDetails.fields.status' },
-  priority: { field: 'priority', headerKey: 'issueDetails.fields.priority' },
-  assignee: { field: 'assigneeId', headerKey: 'issueDetails.fields.assignee' },
-  modifiedAt: { field: 'modifiedAt', headerKey: 'issueDetails.fields.modifiedAt' },
-};
+const columnDefs = computed<Record<IssueColumn, { field: string; header: string }>>(() => ({
+  issueNumber: { field: 'id', header: t('issueDetails.fields.issueNumber') },
+  title: { field: 'title', header: t('issueDetails.fields.title') },
+  type: { field: 'type', header: t('issueDetails.fields.type') },
+  status: { field: 'status', header: t('issueDetails.fields.status') },
+  priority: { field: 'priority', header: t('issueDetails.fields.priority') },
+  assignee: { field: 'assigneeId', header: t('issueDetails.fields.assignee') },
+  modifiedAt: { field: 'modifiedAt', header: t('issueDetails.fields.modifiedAt') },
+}));
 
 const { members } = useProjectMembers(toRef(props, 'projectId'));
 
@@ -49,7 +49,7 @@ const modifiedAtLabel = (modifiedAt?: string) => {
   return Number.isNaN(date.getTime()) ? modifiedAt : date.toLocaleDateString(locale.value);
 };
 
-const visibleColumns = computed(() => props.columns.map((key) => ({ key, ...COLUMN_DEFS[key] })));
+const visibleColumns = computed(() => props.columns.map((key) => ({ key, ...columnDefs.value[key] })));
 
 const onRowClick = (event: DataTableRowClickEvent) => {
   emit('rowClick', event.data as IssueItemJson);
@@ -80,7 +80,7 @@ const onRowClick = (event: DataTableRowClickEvent) => {
       v-for="col in visibleColumns"
       :key="col.key"
       :field="col.field"
-      :header="t(col.headerKey)"
+      :header="col.header"
       sortable
     >
       <template v-if="col.key === 'assignee'" #body="slotProps">

@@ -49,33 +49,33 @@ const toFilterOption = (id: string, name: string, icon: string, query: string): 
 
 const filterGroups = computed<ActivityFeedFilterGroup[]>(() => {
   const filterData: [string, [string, string, string, string][]][] = [
-    ['activityFeeds.filter.smart', [
-      ['smart-urgent', 'activityFeeds.filters.smart.urgent', 'pi-exclamation-circle', 'status:OPEN type:DEFECT'],
-      ['smart-myTasks', 'activityFeeds.filters.myTasks', 'pi-check-square', 'status:OPEN type:TASK'],
-      ['smart-pendingApps', 'activityFeeds.filters.smart.pendingApplications', 'pi-hourglass',
+    [t('activityFeeds.filter.smart'), [
+      ['smart-urgent', t('activityFeeds.filters.smart.urgent'), 'pi-exclamation-circle', 'status:OPEN type:DEFECT'],
+      ['smart-myTasks', t('activityFeeds.filters.myTasks'), 'pi-check-square', 'status:OPEN type:TASK'],
+      ['smart-pendingApps', t('activityFeeds.filters.smart.pendingApplications'), 'pi-hourglass',
         'status:PENDING type:APPLICATION'],
-      ['smart-activeMaintenance', 'activityFeeds.filters.smart.activeMaintenance', 'pi-cog',
+      ['smart-activeMaintenance', t('activityFeeds.filters.smart.activeMaintenance'), 'pi-cog',
         'status:IN_PROGRESS type:MAINTENANCE'],
     ]],
-    ['activityFeeds.filter.status', [
-      ['status-pending', 'issueStatus.pending', 'pi-clock', 'status:PENDING'],
-      ['status-open', 'issueStatus.open', 'pi-circle', 'status:OPEN'],
-      ['status-inProgress', 'issueStatus.inProgress', 'pi-sync', 'status:IN_PROGRESS'],
-      ['status-closed', 'issueStatus.closed', 'pi-check-circle', 'status:CLOSED'],
-      ['status-rejected', 'issueStatus.rejected', 'pi-times-circle', 'status:REJECTED'],
+    [t('activityFeeds.filter.status'), [
+      ['status-pending', t('issueStatus.pending'), 'pi-clock', 'status:PENDING'],
+      ['status-open', t('issueStatus.open'), 'pi-circle', 'status:OPEN'],
+      ['status-inProgress', t('issueStatus.inProgress'), 'pi-sync', 'status:IN_PROGRESS'],
+      ['status-closed', t('issueStatus.closed'), 'pi-check-circle', 'status:CLOSED'],
+      ['status-rejected', t('issueStatus.rejected'), 'pi-times-circle', 'status:REJECTED'],
     ]],
-    ['activityFeeds.filter.type', [
-      ['type-application', 'issueType.application', 'pi-file-edit', 'type:APPLICATION'],
-      ['type-task', 'issueType.task', 'pi-list', 'type:TASK'],
-      ['type-defect', 'issueType.defect', 'pi-exclamation-triangle', 'type:DEFECT'],
-      ['type-maintenance', 'issueType.maintenance', 'pi-wrench', 'type:MAINTENANCE'],
-      ['type-termination', 'issueType.termination', 'pi-sign-out', 'type:TERMINATION'],
-      ['type-inquiry', 'issueType.inquiry', 'pi-question-circle', 'type:INQUIRY'],
+    [t('activityFeeds.filter.type'), [
+      ['type-application', t('issueType.application'), 'pi-file-edit', 'type:APPLICATION'],
+      ['type-task', t('issueType.task'), 'pi-list', 'type:TASK'],
+      ['type-defect', t('issueType.defect'), 'pi-exclamation-triangle', 'type:DEFECT'],
+      ['type-maintenance', t('issueType.maintenance'), 'pi-wrench', 'type:MAINTENANCE'],
+      ['type-termination', t('issueType.termination'), 'pi-sign-out', 'type:TERMINATION'],
+      ['type-inquiry', t('issueType.inquiry'), 'pi-question-circle', 'type:INQUIRY'],
     ]],
   ];
-  const groups = filterData.map(([labelKey, items]) => ({
-    label: t(labelKey),
-    items: items.map(([id, nameKey, icon, query]) => toFilterOption(id, t(nameKey), icon, query)),
+  const groups = filterData.map(([label, items]) => ({
+    label,
+    items: items.map(([id, name, icon, query]) => toFilterOption(id, name, icon, query)),
   }));
 
   if (projectOptions.value.length > 0) {
