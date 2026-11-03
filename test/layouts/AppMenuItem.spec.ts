@@ -307,29 +307,29 @@ describe('AppMenuItem.vue', () => {
 
     it.each(['click', 'keydown.enter', 'keydown.space'])(
       'shows the disabled notice on %s without navigating or changing menu state', async (event) => {
-      const command = vi.fn();
-      const navigate = vi.fn();
-      const disabledCommand = vi.fn();
-      layout.layoutState.activeMenuItem = '1';
-      layout.layoutState.overlayMenuActive = true;
-      const wrapper = mountItem({
-        label: 'managerMenu.myData.overview',
-        to: '/manager/dashboard',
-        disabled: true,
-        command,
-        navigate,
-        disabledCommand,
+        const command = vi.fn();
+        const navigate = vi.fn();
+        const disabledCommand = vi.fn();
+        layout.layoutState.activeMenuItem = '1';
+        layout.layoutState.overlayMenuActive = true;
+        const wrapper = mountItem({
+          label: 'managerMenu.myData.overview',
+          to: '/manager/dashboard',
+          disabled: true,
+          command,
+          navigate,
+          disabledCommand,
+        });
+
+        expect(wrapper.find('.router-link-stub').exists()).toBe(false);
+        await wrapper.get('a').trigger(event);
+
+        expect(disabledCommand).toHaveBeenCalledTimes(1);
+        expect(command).not.toHaveBeenCalled();
+        expect(navigate).not.toHaveBeenCalled();
+        expect(layout.layoutState.activeMenuItem).toBe('1');
+        expect(layout.layoutState.overlayMenuActive).toBe(true);
       });
-
-      expect(wrapper.find('.router-link-stub').exists()).toBe(false);
-      await wrapper.get('a').trigger(event);
-
-      expect(disabledCommand).toHaveBeenCalledTimes(1);
-      expect(command).not.toHaveBeenCalled();
-      expect(navigate).not.toHaveBeenCalled();
-      expect(layout.layoutState.activeMenuItem).toBe('1');
-      expect(layout.layoutState.overlayMenuActive).toBe(true);
-    });
 
   });
 
