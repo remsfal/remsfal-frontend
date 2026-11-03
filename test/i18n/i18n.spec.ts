@@ -117,13 +117,21 @@ describe('withExtensionMessages', () => {
     expect(withExtensionMessages('en', upstream, extensions)).toEqual(upstream);
   });
 
-  test.each(['de', 'en'])('loads the upstream %s locale unchanged when no extensions exist', async (locale) => {
+  // Must also hold in downstream projects that ship src/extensions/locales/*.json,
+  // so the expectation includes whatever extension messages exist.
+  test.each(['de', 'en'])('loads the upstream %s locale merged with the extension messages', async (locale) => {
     const { default: i18n } = await loadI18n();
     const { default: messages } = locale === 'de'
       ? await import('@/i18n/locales/de.json')
       : await import('@/i18n/locales/en.json');
+    const extensions = import.meta.glob<Record<string, string>>(
+      '/src/extensions/locales/*.json', { eager: true, import: 'default' },
+    );
 
-    expect(i18n.global.getLocaleMessage(locale)).toEqual(messages);
+    expect(i18n.global.getLocaleMessage(locale)).toEqual({
+      ...messages,
+      ...extensions[`/src/extensions/locales/${locale}.json`],
+    });
   });
 
 });
