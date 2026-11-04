@@ -256,6 +256,71 @@ describe('AppMenuItem.vue', () => {
   });
 
   describe('click handling', () => {
+    it.each([
+      { to: '/manager/dashboard' },
+      { url: 'https://example.com' },
+    ])('closes an open overlay for a navigation item %j', async (target) => {
+      layout.layoutConfig.menuMode = 'overlay';
+      layout.layoutState.overlayMenuActive = true;
+      const wrapper = mountItem({ label: 'managerMenu.myData.overview', ...target });
+
+      await wrapper.get('a').trigger('click');
+
+      expect(layout.layoutState.overlayMenuActive).toBe(false);
+      expect(layout.layoutState.activeMenuItem).toBe('0');
+    });
+
+    it('keeps the overlay open when expanding a submenu without a navigation target', async () => {
+      layout.layoutConfig.menuMode = 'overlay';
+      layout.layoutState.overlayMenuActive = true;
+      const wrapper = mountItem({ label: 'managerMenu.myData', items: [] });
+
+      await wrapper.get('a').trigger('click');
+
+      expect(layout.layoutState.overlayMenuActive).toBe(true);
+      expect(wrapper.get('.layout-submenu').isVisible()).toBe(true);
+    });
+
+    it.each(['click', 'keydown.enter', 'keydown.space'])(
+      'expands and collapses a nested submenu on %s', async (event) => {
+        const wrapper = mountItem({ label: 'managerMenu.myData', items: [] }, { parentItemKey: '2', index: 1 });
+        expect(wrapper.get('.layout-submenu').isVisible()).toBe(false);
+
+        await wrapper.get('a').trigger(event);
+        await nextTick();
+
+        expect(layout.layoutState.activeMenuItem).toBe('2-1');
+        expect(wrapper.get('li').classes()).toContain('active-menuitem');
+
+        await wrapper.get('a').trigger(event);
+        await nextTick();
+
+        expect(layout.layoutState.activeMenuItem).toBe('2');
+        expect(wrapper.get('.layout-submenu').isVisible()).toBe(false);
+      },
+    );
+
+    it('clears the active key when collapsing a top-level submenu', async () => {
+      const wrapper = mountItem({ label: 'managerMenu.myData', items: [] });
+      await wrapper.get('a').trigger('click');
+      expect(layout.layoutState.activeMenuItem).toBe('0');
+
+      await wrapper.get('a').trigger('click');
+
+      expect(layout.layoutState.activeMenuItem).toBeUndefined();
+      expect(wrapper.get('li').classes()).not.toContain('active-menuitem');
+    });
+
+    it('prevents the default click action for a disabled item without a notice callback', () => {
+      const wrapper = mountItem({ label: 'managerMenu.myData.overview', disabled: true });
+      const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+
+      wrapper.get('a').element.dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(true);
+      expect(layout.layoutState.activeMenuItem).toBeUndefined();
+    });
+
     it('calls command callback on click', async () => {
       const command = vi.fn();
       const item = {
@@ -334,6 +399,25 @@ describe('AppMenuItem.vue', () => {
   });
 
   describe('active menu state', () => {
+    it.each([
+      { activeKey: '2-1', active: true },
+      { activeKey: '2-1-3', active: true },
+      { activeKey: '2-10', active: false },
+      { activeKey: '3', active: false },
+      { activeKey: undefined, active: false },
+    ])('reacts to active key $activeKey with active=$active', async ({ activeKey, active }) => {
+      const wrapper = mountItem({ label: 'managerMenu.myData', items: [] }, { parentItemKey: '2', index: 1 });
+      layout.layoutState.activeMenuItem = '2-1-0';
+      await nextTick();
+      expect(wrapper.get('li').classes()).toContain('active-menuitem');
+
+      layout.layoutState.activeMenuItem = activeKey;
+      await nextTick();
+
+      expect(wrapper.get('li').classes().includes('active-menuitem')).toBe(active);
+      expect(wrapper.get('.layout-submenu').isVisible()).toBe(active);
+    });
+
     it('applies active-menuitem class when layoutState.activeMenuItem matches itemKey', async () => {
       layout.layoutState.activeMenuItem = '0';
       const item = { label: 'managerMenu.myData.overview', to: '/manager/dashboard' };
