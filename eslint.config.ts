@@ -56,6 +56,9 @@ export default [
       'vue/html-button-has-type': 'warn',
       'vue/html-indent': ['error', 2],
       'vue/no-multiple-objects-in-class': 'warn',
+      // Hard-coded Tailwind gray palettes ignore the dark mode. Use the theme-aware utilities
+      // from tailwindcss-primeui instead: text-color, text-muted-color, border-surface, bg-emphasis.
+      'vue/no-restricted-class': ['error', String.raw`/^(text|bg|border|divide|ring)-(gray|slate|zinc|neutral|stone)-\d+$/`],
       'vue/no-root-v-if': 'error',
       'vue/no-template-target-blank': 'error',
       'vue/no-undef-components': 'error',

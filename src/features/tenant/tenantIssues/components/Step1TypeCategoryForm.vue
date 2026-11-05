@@ -209,7 +209,7 @@ function handleNext() {
           <template #option="{ option }">
             <div class="flex flex-col">
               <span class="font-semibold">{{ option.label }}</span>
-              <span v-if="option.examples" class="text-sm text-gray-500">{{ option.examples }}</span>
+              <span v-if="option.examples" class="text-sm text-muted-color">{{ option.examples }}</span>
             </div>
           </template>
         </AutoComplete>

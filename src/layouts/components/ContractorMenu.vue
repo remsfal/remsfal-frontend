@@ -8,6 +8,7 @@ import { useOrganizationStore } from '@/stores/OrganizationStore';
 const { t } = useI18n();
 const organizationStore = useOrganizationStore();
 const { userOrganizations, initialized } = storeToRefs(organizationStore);
+const ordersDisabled = computed(() => initialized.value && !organizationStore.isOrganizationMember);
 
 onMounted(() => {
   if (!initialized.value) {
@@ -29,16 +30,19 @@ const model = computed<MenuItem[]>(() => {
           label: 'contractorMenu.orderManagement.open',
           icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
           to: '/contractor/orders/open',
+          disabled: ordersDisabled.value,
         },
         {
           label: 'contractorMenu.orderManagement.ongoing',
           icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
           to: '/contractor/orders/ongoing',
+          disabled: ordersDisabled.value,
         },
         {
           label: 'contractorMenu.orderManagement.closed',
           icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
           to: '/contractor/orders/closed',
+          disabled: ordersDisabled.value,
         },
         {
           label: 'contractorMenu.orderManagement.clients',

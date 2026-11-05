@@ -100,11 +100,14 @@ const checkActiveRoute = (item: MenuItem) => matchesRouteTarget(route, item.to);
       {{ item.rawLabel ?? t(item.label) }}
     </div>
     <a
-      v-if="(!item.to || item.items) && item.visible !== false"
-      :class="item.class"
+      v-if="(!item.to || item.items || item.disabled) && item.visible !== false"
+      :class="[item.class, { 'text-muted-color cursor-not-allowed': item.disabled }]"
+      :aria-disabled="item.disabled || undefined"
       :target="item.target"
       tabindex="0"
       @click="itemClick($event, item)"
+      @keydown.enter.prevent="itemClick($event, item)"
+      @keydown.space.prevent="itemClick($event, item)"
     >
       <template v-if="item.icon">
         <i v-if="item.icon.type === 'pi'" :class="item.icon.name" class="layout-menuitem-icon" />
@@ -118,7 +121,7 @@ const checkActiveRoute = (item: MenuItem) => matchesRouteTarget(route, item.to);
       <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler" />
     </a>
     <RouterLink
-      v-if="item.to && !item.items && item.visible !== false"
+      v-if="item.to && !item.items && !item.disabled && item.visible !== false"
       :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
       tabindex="0"
       :to="item.to"

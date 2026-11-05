@@ -43,10 +43,10 @@ const canCancel = computed(() => {
 <template>
   <BaseCard>
     <template #title>
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-surface pb-4">
         <div>
           <span class="text-xl font-semibold">{{ issue.title || t('tenantIssues.detail.untitled') }}</span>
-          <p class="text-base text-gray-500 font-normal mt-1">
+          <p class="text-base text-muted-color font-normal mt-1">
             {{ t('tenantIssues.detail.number') }} {{ issue.id || '—' }}
           </p>
         </div>
@@ -65,64 +65,64 @@ const canCancel = computed(() => {
     </template>
     <template #content>
       <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3 ">
-        <dl class="space-y-2 text-base text-gray-600">
+        <dl class="space-y-2 text-base text-muted-color">
           <div v-if="issue.id" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('tenantIssues.detail.issueNode') }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               <Tag :value="issueNodeId" severity="info" class="inline-flex w-fit" />
             </dd>
           </div>
           <div v-if="modifiedAtLabel" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('tenantIssues.detail.updated') }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               <Tag :value="modifiedAtLabel" severity="info" class="inline-flex w-fit" />
             </dd>
           </div>
         </dl>
-        <dl class="space-y-2 text-base text-gray-600">
+        <dl class="space-y-2 text-base text-muted-color">
           <div v-if="issue.type" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('tenantIssues.card.type') }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               <Tag :value="typeLabel" :severity="typeSeverity" class="inline-flex w-fit" />
             </dd>
           </div>
           <div v-if="issue.location?.trim()" class="flex justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('tenantIssues.detail.location') }}
             </dt>
-            <dd class="text-gray-900 break-words">
+            <dd class="text-color break-words">
               {{ issue.location }}
             </dd>
           </div>
         </dl>
-        <dl class="space-y-2 text-base text-gray-600">
+        <dl class="space-y-2 text-base text-muted-color">
           <div v-if="issue.status" class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('tenantIssues.filter.status') }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               <Tag :value="statusLabel" :severity="statusSeverity" class="inline-flex w-fit" />
             </dd>
           </div>
           <div v-if="issue.category" class="flex justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ t('tenantIssues.detail.category') }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               {{ categoryLabel }}
             </dd>
           </div>
         </dl>
       </div>
-      <div v-if="descriptionLabel" class="mt-4 text-base text-gray-600">
+      <div v-if="descriptionLabel" class="mt-4 text-base text-muted-color">
         {{ t('tenantIssues.detail.description') }}
-        <span class="text-gray-900 whitespace-pre-line break-words">
+        <span class="text-color whitespace-pre-line break-words">
           {{ descriptionLabel }}
         </span>
       </div>

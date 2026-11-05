@@ -83,7 +83,7 @@ function onNewMember(email: string) {
         <DataTable :value="members">
           <Column :header="t('projectSettings.projectMemberTable.columnName')">
             <template #body="slotProps">
-              <span :class="{ 'text-gray-400': slotProps.data.active === false }">
+              <span :class="{ 'text-muted-color': slotProps.data.active === false }">
                 {{ slotProps.data.name || slotProps.data.email }}
                 <span v-if="slotProps.data.active === false"> ({{ t('managerSettings.employments.status.inactive') }})</span>
               </span>

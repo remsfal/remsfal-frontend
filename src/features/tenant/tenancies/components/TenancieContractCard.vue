@@ -60,7 +60,7 @@ const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) 
         <div class="flex flex-col gap-5">
           <div class="flex items-start justify-between gap-2">
             <div>
-              <h2 class="text-2xl font-semibold text-gray-900">
+              <h2 class="text-2xl font-semibold text-color">
                 {{ formatTenancyLabel(contract) }}
               </h2>
               <div v-if="contract.rentalUnits?.length" class="mt-2 flex flex-wrap gap-2">
@@ -84,23 +84,23 @@ const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) 
 
           <div class="flex flex-col gap-4 xl:flex-row lg:items-stretch">
             <div class="lg:flex-1">
-              <p class="mb-2 text-lg font-semibold text-gray-700">
+              <p class="mb-2 text-lg font-semibold text-color">
                 {{ t('tenantDashboard.section.allDates') }}
               </p>
-              <dl class="space-y-1 text-lg text-gray-600">
+              <dl class="space-y-1 text-lg text-muted-color">
                 <div v-if="contract.startOfRental" class="flex justify-between gap-2">
-                  <dt class="font-medium text-gray-500">
+                  <dt class="font-medium text-muted-color">
                     {{ t('tenantDashboard.field.start') }}
                   </dt>
-                  <dd class="text-gray-900">
+                  <dd class="text-color">
                     {{ formatDate(contract.startOfRental) }}
                   </dd>
                 </div>
                 <div class="flex justify-between gap-2">
-                  <dt class="font-medium text-gray-500">
+                  <dt class="font-medium text-muted-color">
                     {{ t('tenantDashboard.field.end') }}
                   </dt>
-                  <dd class="text-gray-900">
+                  <dd class="text-color">
                     {{ contract.endOfRental ? formatDate(contract.endOfRental) : t('tenantDashboard.field.ongoing') }}
                   </dd>
                 </div>
@@ -111,39 +111,39 @@ const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) 
               <Divider layout="vertical" class="hidden lg:flex" />
               
               <div class="lg:flex-1">
-                <p class="mb-2 text-lg font-semibold text-gray-700">
+                <p class="mb-2 text-lg font-semibold text-color">
                   {{ t('tenantDashboard.section.financials') }}
                 </p>
-                <dl class="space-y-1 text-lg text-gray-600">
+                <dl class="space-y-1 text-lg text-muted-color">
                   <div v-if="contract.basicRent != null" class="flex justify-between">
-                    <dt class="text-gray-500">
+                    <dt class="text-muted-color">
                       {{ t('tenantDashboard.field.basicRent') }}
                     </dt>
-                    <dd class="text-gray-900">
+                    <dd class="text-color">
                       {{ formatCurrency(contract.basicRent) }}
                     </dd>
                   </div>
                   <div v-if="contract.operatingCostsPrepayment != null" class="flex justify-between">
-                    <dt class="text-gray-500">
+                    <dt class="text-muted-color">
                       {{ t('tenantDashboard.field.operatingCosts') }}
                     </dt>
-                    <dd class="text-gray-900">
+                    <dd class="text-color">
                       {{ formatCurrency(contract.operatingCostsPrepayment) }}
                     </dd>
                   </div>
                   <div v-if="contract.heatingCostsPrepayment != null" class="flex justify-between">
-                    <dt class="text-gray-500">
+                    <dt class="text-muted-color">
                       {{ t('tenantDashboard.field.heatingCosts') }}
                     </dt>
-                    <dd class="text-gray-900">
+                    <dd class="text-color">
                       {{ formatCurrency(contract.heatingCostsPrepayment) }}
                     </dd>
                   </div>
-                  <div class="mt-1 flex justify-between border-t border-gray-200 pt-1 font-semibold">
-                    <dt class="text-gray-700">
+                  <div class="mt-1 flex justify-between border-t border-surface pt-1 font-semibold">
+                    <dt class="text-color">
                       {{ t('tenantDashboard.field.totalRent') }}
                     </dt>
-                    <dd class="text-gray-900">
+                    <dd class="text-color">
                       {{ formatCurrency(totalRent(contract)) }}
                     </dd>
                   </div>
@@ -155,10 +155,10 @@ const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) 
               <Divider layout="vertical" class="hidden lg:flex" />
 
               <div class="lg:flex-1">
-                <p class="mb-2 text-lg font-semibold text-gray-700">
+                <p class="mb-2 text-lg font-semibold text-color">
                   {{ t('tenantDashboard.section.coTenants') }}
                 </p>
-                <ul class="space-y-1 text-lg text-gray-600">
+                <ul class="space-y-1 text-lg text-muted-color">
                   <li v-for="tenant in contract.tenants" :key="tenant.id">
                     {{ [tenant.firstName, tenant.lastName].filter(Boolean).join(' ') }}
                   </li>

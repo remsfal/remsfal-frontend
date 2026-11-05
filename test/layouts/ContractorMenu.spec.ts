@@ -1,5 +1,5 @@
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import {describe, it, expect, beforeEach, vi} from 'vitest';
+import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import ContractorMenu from '@/layouts/components/ContractorMenu.vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
@@ -10,7 +10,14 @@ describe('ContractorMenu.vue', () => {
 
   beforeEach(() => {
     userSessionStore = useUserSessionStore();
+    const orgStore = useOrganizationStore();
+    orgStore.$reset();
+    vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
     wrapper = mount(ContractorMenu);
+  });
+
+  afterEach(() => {
+    wrapper.unmount();
   });
 
   it('should render the correct menu structure', async () => {
@@ -109,4 +116,96 @@ describe('ContractorMenu.vue', () => {
     expect(orgSettingsLink).toBeDefined();
   });
 
+  it('does not fetch organizations again when the store is initialized', () => {
+    const orgStore = useOrganizationStore();
+    orgStore.initialized = true;
+    vi.mocked(orgStore.fetchUserOrganization).mockClear();
+    wrapper.unmount();
+    wrapper = mount(ContractorMenu);
+
+    expect(orgStore.fetchUserOrganization).not.toHaveBeenCalled();
+  });
+
+  it.each(['click', 'keydown.enter', 'keydown.space'])(
+    'keeps all order entries inactive on %s without membership', async (event) => {
+      const orgStore = useOrganizationStore();
+      orgStore.initialized = true;
+      await wrapper.vm.$nextTick();
+      const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
+
+      for (const label of ['Offene Anfragen', 'Laufende Aufträge', 'Abgeschlossene Aufträge']) {
+        const entry = wrapper.findAll('.layout-submenu a').find(item => item.text() === label)!;
+        expect(entry.attributes('href')).toBeUndefined();
+        expect(entry.attributes('aria-disabled')).toBe('true');
+        expect(entry.classes()).toContain('text-muted-color');
+        expect(entry.classes()).toContain('cursor-not-allowed');
+        await entry.trigger(event);
+      }
+
+      expect(pushSpy).not.toHaveBeenCalled();
+      expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+    },
+  );
+
+  it('keeps order links enabled while organizations are still loading', async () => {
+    const orgStore = useOrganizationStore();
+    expect(orgStore.initialized).toBe(false);
+
+    for (const status of ['open', 'ongoing', 'closed']) {
+      expect(wrapper.find(`a[href="/contractor/orders/${status}"]`).exists()).toBe(true);
+      expect(wrapper.get(`a[href="/contractor/orders/${status}"]`).attributes('aria-disabled')).toBeUndefined();
+    }
+
+    orgStore.initialized = true;
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.findAll('a[aria-disabled="true"]')).toHaveLength(3);
+    for (const status of ['open', 'ongoing', 'closed']) {
+      expect(wrapper.find(`a[href="/contractor/orders/${status}"]`).exists()).toBe(false);
+    }
+  });
+
+  it.each(['owner', 'employee'])(
+    'enables all order links reactively when the user becomes an %s', async (role) => {
+      const orgStore = useOrganizationStore();
+      orgStore.initialized = true;
+      if (role === 'owner') {
+        orgStore.userOrganizations = [{ id: 'org-1', name: 'Test GmbH' }];
+      } else {
+        orgStore.userEmployments = [{ employeeRole: 'STAFF' }];
+      }
+      await wrapper.vm.$nextTick();
+
+      for (const status of ['open', 'ongoing', 'closed']) {
+        const entry = wrapper.get(`a[href="/contractor/orders/${status}"]`);
+        expect(entry.attributes('aria-disabled')).toBeUndefined();
+        expect(entry.classes()).not.toContain('cursor-not-allowed');
+      }
+
+      orgStore.userOrganizations = [];
+      orgStore.userEmployments = [];
+      await wrapper.vm.$nextTick();
+
+      for (const status of ['open', 'ongoing', 'closed']) {
+        expect(wrapper.find(`a[href="/contractor/orders/${status}"]`).exists()).toBe(false);
+      }
+    },
+  );
+
+  it('renders named organizations and a fallback label while ignoring organizations without an id', async () => {
+    useOrganizationStore().userOrganizations = [
+      { id: 'org-1', name: 'Test GmbH' },
+      { id: 'org-2' },
+      { name: 'Missing ID' },
+    ];
+    await wrapper.vm.$nextTick();
+
+    const roots = wrapper.findAll('.layout-root-menuitem');
+    expect(roots).toHaveLength(5);
+    expect(roots[3].get('.layout-menuitem-root-text').text()).toBe('Test GmbH');
+    expect(roots[4].get('.layout-menuitem-root-text').text()).toBe('Organisation');
+    expect(wrapper.text()).not.toContain('Missing ID');
+    expect(roots[3].get('.layout-submenu a').attributes('href')).toBe('/contractor/organizations/org-1');
+    expect(roots[4].get('.layout-submenu a').attributes('href')).toBe('/contractor/organizations/org-2');
+  });
 });

@@ -56,25 +56,25 @@ const openAttachmentDownload = (downloadUrl: string) => {
 
 <template>
   <div class="mb-2 flex items-start gap-3" :class="{ 'flex-row-reverse': own }">
-    <span v-if="!hideDate" class="w-40 shrink-0 text-sm text-gray-500" :class="{ 'text-right': own }">
+    <span v-if="!hideDate" class="w-40 shrink-0 text-sm text-muted-color" :class="{ 'text-right': own }">
       {{ formattedDate || '-' }}
     </span>
     <article
       :data-testid="testId"
-      class="flex-1 rounded-lg border border-gray-200 p-4"
-      :class="own ? 'bg-gray-100' : 'bg-white'"
+      class="flex-1 rounded-lg border border-surface p-4"
+      :class="own ? 'bg-emphasis' : 'bg-surface-0 dark:bg-surface-900'"
     >
       <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <p class="text-lg font-semibold text-gray-900">
+        <p class="text-lg font-semibold text-color">
           {{ title }}
         </p>
         <slot name="actions" />
       </div>
-      <p v-if="message" class="text-gray-700 text-left whitespace-pre-line">
+      <p v-if="message" class="text-color text-left whitespace-pre-line">
         {{ message }}
       </p>
-      <div v-if="downloadableAttachments.length > 0" class="mt-3 rounded bg-gray-50 p-2 text-sm">
-        <p class="mb-1 text-left text-gray-700">
+      <div v-if="downloadableAttachments.length > 0" class="mt-3 rounded bg-surface-50 dark:bg-surface-800 p-2 text-sm">
+        <p class="mb-1 text-left text-color">
           {{ attachmentsLabel }}
         </p>
         <div class="mb-3 flex flex-wrap gap-2">

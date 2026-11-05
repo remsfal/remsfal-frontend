@@ -72,7 +72,7 @@ const totalRent = computed(() => {
       <template #content>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <dt class="font-semibold text-sm text-gray-600">
+            <dt class="font-semibold text-sm text-muted-color">
               {{ t('rentalAgreement.step1.startDate') }}
             </dt>
             <dd class="mt-1">
@@ -80,7 +80,7 @@ const totalRent = computed(() => {
             </dd>
           </div>
           <div>
-            <dt class="font-semibold text-sm text-gray-600">
+            <dt class="font-semibold text-sm text-muted-color">
               {{ t('rentalAgreement.step1.endDate') }}
             </dt>
             <dd class="mt-1">
@@ -107,7 +107,7 @@ const totalRent = computed(() => {
       </template>
 
       <template #content>
-        <div v-if="selectedUnits.length === 0" class="text-gray-500 text-center py-4">
+        <div v-if="selectedUnits.length === 0" class="text-muted-color text-center py-4">
           {{ t('rentalAgreement.validation.oneUnitRequired') }}
         </div>
 
@@ -122,7 +122,7 @@ const totalRent = computed(() => {
                 <h4 class="font-semibold">
                   {{ unit.unitTitle }}
                 </h4>
-                <p class="text-sm text-gray-600">
+                <p class="text-sm text-muted-color">
                   {{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}
                 </p>
               </div>
@@ -130,7 +130,7 @@ const totalRent = computed(() => {
 
             <dl class="grid grid-cols-2 gap-2 text-sm">
               <div v-if="unit.basicRent !== undefined && unit.basicRent !== null">
-                <dt class="text-gray-600">
+                <dt class="text-muted-color">
                   {{ t('rentalAgreement.common.basicRent') }}
                 </dt>
                 <dd class="font-semibold">
@@ -138,7 +138,7 @@ const totalRent = computed(() => {
                 </dd>
               </div>
               <div v-if="unit.operatingCostsPrepayment !== undefined && unit.operatingCostsPrepayment !== null">
-                <dt class="text-gray-600">
+                <dt class="text-muted-color">
                   {{ t('rentalAgreement.common.operatingCosts') }}
                 </dt>
                 <dd class="font-semibold">
@@ -146,7 +146,7 @@ const totalRent = computed(() => {
                 </dd>
               </div>
               <div v-if="unit.heatingCostsPrepayment !== undefined && unit.heatingCostsPrepayment !== null">
-                <dt class="text-gray-600">
+                <dt class="text-muted-color">
                   {{ t('rentalAgreement.common.heatingCosts') }}
                 </dt>
                 <dd class="font-semibold">
@@ -195,37 +195,37 @@ const totalRent = computed(() => {
 
             <dl class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
               <div v-if="tenant.email">
-                <dt class="text-gray-600">
+                <dt class="text-muted-color">
                   {{ t('rentalAgreement.step3.email') }}
                 </dt>
                 <dd>{{ tenant.email }}</dd>
               </div>
               <div v-if="tenant.mobilePhoneNumber">
-                <dt class="text-gray-600">
+                <dt class="text-muted-color">
                   {{ t('rentalAgreement.step3.mobilePhone') }}
                 </dt>
                 <dd>{{ tenant.mobilePhoneNumber }}</dd>
               </div>
               <div v-if="tenant.businessPhoneNumber">
-                <dt class="text-gray-600">
+                <dt class="text-muted-color">
                   {{ t('rentalAgreement.step3.businessPhone') }}
                 </dt>
                 <dd>{{ tenant.businessPhoneNumber }}</dd>
               </div>
               <div v-if="tenant.privatePhoneNumber">
-                <dt class="text-gray-600">
+                <dt class="text-muted-color">
                   {{ t('rentalAgreement.step3.privatePhone') }}
                 </dt>
                 <dd>{{ tenant.privatePhoneNumber }}</dd>
               </div>
               <div v-if="tenant.placeOfBirth">
-                <dt class="text-gray-600">
+                <dt class="text-muted-color">
                   {{ t('rentalAgreement.step3.placeOfBirth') }}
                 </dt>
                 <dd>{{ tenant.placeOfBirth }}</dd>
               </div>
               <div v-if="tenant.dateOfBirth">
-                <dt class="text-gray-600">
+                <dt class="text-muted-color">
                   {{ t('rentalAgreement.step3.dateOfBirth') }}
                 </dt>
                 <dd>{{ formatDate(tenant.dateOfBirth) }}</dd>

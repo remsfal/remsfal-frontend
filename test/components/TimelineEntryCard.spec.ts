@@ -165,19 +165,19 @@ describe('TimelineEntryCard component', () => {
     openSpy.mockRestore();
   });
 
-  it('renders left-aligned with a white background by default', () => {
+  it('renders left-aligned with the surface background by default', () => {
     const wrapper = mount(TimelineEntryCard, { props: { title: 'Titel' } });
 
     expect(wrapper.classes()).not.toContain('flex-row-reverse');
-    expect(wrapper.get('article').classes()).toContain('bg-white');
+    expect(wrapper.get('article').classes()).toContain('bg-surface-0');
   });
 
-  it('renders right-aligned with a light gray background when own is true', () => {
+  it('renders right-aligned with the emphasis background when own is true', () => {
     const wrapper = mount(TimelineEntryCard, { props: { title: 'Titel', own: true } });
 
     expect(wrapper.classes()).toContain('flex-row-reverse');
-    expect(wrapper.get('article').classes()).toContain('bg-gray-100');
-    expect(wrapper.get('article').classes()).not.toContain('bg-white');
+    expect(wrapper.get('article').classes()).toContain('bg-emphasis');
+    expect(wrapper.get('article').classes()).not.toContain('bg-surface-0');
   });
 
   it('shows a FILE label for attachments without a recognizable extension', () => {

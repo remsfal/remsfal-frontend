@@ -88,7 +88,7 @@ async function handleSubmit() {
   >
     <div class="flex flex-col gap-4">
       <div class="flex flex-col gap-1">
-        <label for="relation-type" class="text-sm text-gray-600">
+        <label for="relation-type" class="text-sm text-muted-color">
           {{ t('issueDetails.relationshipsRelationTypeLabel') }}
         </label>
         <Select
@@ -101,7 +101,7 @@ async function handleSubmit() {
       </div>
 
       <div class="flex flex-col gap-1">
-        <label for="relation-search" class="text-sm text-gray-600">
+        <label for="relation-search" class="text-sm text-muted-color">
           {{ t('issueDetails.relationshipsSearchLabel') }}
         </label>
         <InputText
@@ -119,7 +119,7 @@ async function handleSubmit() {
           <template #option="slotProps">
             <div class="flex flex-col">
               <span class="font-semibold">{{ slotProps.option.title }}</span>
-              <span class="text-xs text-gray-500">
+              <span class="text-xs text-muted-color">
                 #{{ slotProps.option.id }}
                 <template v-if="slotProps.option.type">
                   — {{ t('issueType.' + slotProps.option.type.toLowerCase()) }}

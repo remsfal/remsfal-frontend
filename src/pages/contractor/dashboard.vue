@@ -15,5 +15,5 @@ const organizationStore = useOrganizationStore()
 
 <template>
   <OrganizationDashboardCards />
-  <OrderManagementDashboardCards v-if="organizationStore.userEmployments.length > 0" />
+  <OrderManagementDashboardCards v-if="organizationStore.isOrganizationMember" />
 </template>

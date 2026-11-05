@@ -167,12 +167,12 @@ watch(() => props.projectId, () => fetchProjectIssues());
 
     <template #content>
       <div class="flex flex-col gap-4">
-        <div v-if="allGroupsEmpty" class="text-sm text-gray-500">
+        <div v-if="allGroupsEmpty" class="text-sm text-muted-color">
           {{ t('issueDetails.relationshipsEmpty') }}
         </div>
 
         <div v-for="group in groupDefs" v-show="group.ids.length > 0" :key="group.key" class="flex flex-col gap-2">
-          <div class="text-sm font-semibold text-gray-600">
+          <div class="text-sm font-semibold text-muted-color">
             {{ t(group.titleKey) }}
           </div>
 
@@ -186,7 +186,7 @@ watch(() => props.projectId, () => fetchProjectIssues());
               class="text-sm text-primary hover:underline flex items-center gap-2 truncate"
             >
               <span>{{ row.title }}</span>
-              <span v-if="row.type" class="text-xs text-gray-500">
+              <span v-if="row.type" class="text-xs text-muted-color">
                 ({{ t('issueType.' + row.type.toLowerCase()) }})
               </span>
             </RouterLink>

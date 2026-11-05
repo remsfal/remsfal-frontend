@@ -110,7 +110,7 @@ const searchTenants = (event: { query: string }) => {
     <template #option="slotProps">
       <div class="flex flex-col">
         <span class="font-semibold">{{ slotProps.option.firstName }} {{ slotProps.option.lastName }}</span>
-        <span v-if="slotProps.option.email" class="text-sm text-gray-600">{{ slotProps.option.email }}</span>
+        <span v-if="slotProps.option.email" class="text-sm text-muted-color">{{ slotProps.option.email }}</span>
       </div>
     </template>
   </AutoComplete>

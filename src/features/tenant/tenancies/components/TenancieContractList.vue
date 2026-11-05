@@ -36,7 +36,7 @@ onMounted(loadContracts);
   <div class="grid grid-cols-12 gap-4">
     <div v-if="loading" class="col-span-12 flex items-center gap-2">
       <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="4" />
-      <span class="text-sm text-gray-500">{{ t('tenantDashboard.loading') }}</span>
+      <span class="text-sm text-muted-color">{{ t('tenantDashboard.loading') }}</span>
     </div>
 
     <div class="col-span-12">
@@ -54,7 +54,7 @@ onMounted(loadContracts);
 
       <div 
         v-else-if="!loading"
-        class="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-gray-500"
+        class="mt-6 rounded-lg border border-dashed border-surface bg-emphasis px-4 py-6 text-center text-muted-color"
         data-testid="empty-state"
       >
         {{ t('tenantDashboard.empty') }}

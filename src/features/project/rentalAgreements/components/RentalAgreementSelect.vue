@@ -154,7 +154,7 @@ const searchAgreements = (event: { query: string }) => {
     <template #option="slotProps">
       <div class="flex flex-col">
         <span class="font-semibold">{{ tenantNamesFor(slotProps.option) }}</span>
-        <span v-if="unitLabelFor(slotProps.option)" class="text-sm text-gray-600">
+        <span v-if="unitLabelFor(slotProps.option)" class="text-sm text-muted-color">
           {{ unitLabelFor(slotProps.option) }}
         </span>
       </div>

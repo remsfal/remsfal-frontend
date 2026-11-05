@@ -71,6 +71,37 @@ describe('OrganizationStore', () => {
     });
   });
 
+  describe('isOrganizationMember getter', () => {
+    it.each([
+      {
+        ownsOrganization: false, employed: false, expected: false
+      },
+      {
+        ownsOrganization: true, employed: false, expected: true
+      },
+      {
+        ownsOrganization: false, employed: true, expected: true
+      },
+      {
+        ownsOrganization: true, employed: true, expected: true
+      },
+    ])('returns $expected for owner=$ownsOrganization and employee=$employed', (scenario) => {
+      store.userOrganizations = scenario.ownsOrganization ? [mockOrg] : [];
+      store.userEmployments = scenario.employed ? [mockEmployeeStaff] : [];
+
+      expect(store.isOrganizationMember).toBe(scenario.expected);
+    });
+
+    it('updates when the last membership is removed', () => {
+      store.userOrganizations = [mockOrg];
+      expect(store.isOrganizationMember).toBe(true);
+
+      store.userOrganizations = [];
+
+      expect(store.isOrganizationMember).toBe(false);
+    });
+  });
+
   describe('fetchUserOrganization', () => {
     it('calls both getOrganizations and getEmployments', async () => {
       const ownedSpy = vi.spyOn(organizationService, 'getOrganizations').mockResolvedValue({
