@@ -1520,6 +1520,24 @@
           }
         }
       },
+      "PushSubscriptionJson" : {
+        "description" : "Firebase Installation ID oder FCM-Token eines Geräts für Push-Benachrichtigungen",
+        "type" : "object",
+        "required" : [ "fidToken", "platform" ],
+        "properties" : {
+          "fidToken" : {
+            "type" : "string",
+            "description" : "Firebase Installation ID oder FCM-Registrierungstoken",
+            "pattern" : "\\S"
+          },
+          "platform" : {
+            "type" : "string",
+            "description" : "Plattform des Geräts",
+            "enum" : [ "WEB", "ANDROID", "IOS" ],
+            "pattern" : "WEB|ANDROID|IOS"
+          }
+        }
+      },
       "QuotationJson" : {
         "description" : "A quotation response submitted by a contractor",
         "type" : "object",
@@ -2795,6 +2813,84 @@
         },
         "summary" : "Test New Employment",
         "tags" : [ "Mailing Resource" ]
+      }
+    },
+    "/notification/v1/push-subscriptions" : {
+      "post" : {
+        "summary" : "Registriert die Firebase-Zielkennung des aktuellen Geräts für Push-Benachrichtigungen.",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PushSubscriptionJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "FID/FCM-Token registriert"
+          },
+          "400" : {
+            "description" : "Ungültige Anfrage"
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/notification/v1/push-subscriptions/test" : {
+      "post" : {
+        "summary" : "Send a test push notification to all devices of the current user",
+        "responses" : {
+          "204" : {
+            "description" : "Test push was sent"
+          },
+          "401" : {
+            "description" : "Not authenticated"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/notification/v1/push-subscriptions/{fidToken}" : {
+      "delete" : {
+        "summary" : "Removes the push subscription of the current user for the given FID or Token",
+        "parameters" : [ {
+          "name" : "fidToken",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Subscription removed"
+          },
+          "401" : {
+            "description" : "Not authenticated"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/notification/v1/settings/issues/emails" : {

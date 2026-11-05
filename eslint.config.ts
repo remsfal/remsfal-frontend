@@ -161,7 +161,10 @@ export default [
           String.raw`/^\["(tenantIssues\.timeline|issueContractorTimeline|orderManagement\.timeline)\.`
             + String.raw`(\w+Title|senderWithRole|senderRole\.\w+)"\]$/`,
           // keys passed as strings via the 'toast:translate' event and translated in App.vue
-          String.raw`/^\["(auth\.sessionExpired(Summary|Detail)|error\.api(Request|Response))"\]$/`,        ],
+          String.raw`/^\["(auth\.sessionExpired(Summary|Detail)|error\.api(Request|Response))"\]$/`,
+          String.raw`/^\["push\.(title|result\.(registered|denied|unsupported|no-session|needs-permission|failed)`
+            + String.raw`|testSent|testFailed)"\]$/`,
+        ],
       }],
       'max-len': 'off',
     },
@@ -185,6 +188,7 @@ export default [
       'html/**',
       'coverage/**',
       'src/services/api/*-schema.ts',
+      'android/**',
     ],
   },
 ] satisfies Linter.Config[];

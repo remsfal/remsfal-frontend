@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "156263737138",
+    "project_id": "remsfal-fcb-notification",
+    "storage_bucket": "remsfal-fcb-notification.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156263737138:android:5ba2d63b3123890c20d92b",
+        "android_client_info": {
+          "package_name": "de.remsfal.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgruYIBPUp8a5GPE57dO9zDL__q3MVe9M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -5,9 +5,10 @@ const config: CapacitorConfig = {
   appName: 'REMSFAL',
   webDir: 'dist',
   server: {
-    url: 'http://localhost:5173',
+    url: 'http://localhost:5173',/* 10.0.2.2 ist aus dem Android-Emulator von der Adresse meines macs */
     cleartext: true,
   },
+  plugins: {PushNotifications: {presentationOptions: ['sound', 'alert', 'banner', 'list'],},},
 };
 
 export default config;
