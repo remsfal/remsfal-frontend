@@ -88,7 +88,7 @@ describe('Step2UnitsForm', () => {
 
     await wrapper.vm.$nextTick();
 
-    const unitCards = wrapper.findAll('.bg-gray-50');
+    const unitCards = wrapper.findAll('.bg-emphasis');
     expect(unitCards).toHaveLength(1);
     expect(unitCards[0].text()).toContain('Apartment 101');
     expect(unitCards[0].text()).toContain('1.000,00');
@@ -158,7 +158,7 @@ describe('Step2UnitsForm', () => {
 
     await wrapper.vm.$nextTick();
 
-    const unitCard = wrapper.find('.bg-gray-50');
+    const unitCard = wrapper.find('.bg-emphasis');
     expect(unitCard.text()).toContain('1.000,00');
     expect(unitCard.text()).toContain('150,00');
     expect(unitCard.text()).toContain('100,00');
@@ -169,7 +169,7 @@ describe('Step2UnitsForm', () => {
 
     await wrapper.vm.$nextTick();
 
-    const unitCard = wrapper.find('.bg-gray-50');
+    const unitCard = wrapper.find('.bg-emphasis');
     expect(unitCard.text()).toContain('Wohnung');
   });
 
@@ -211,7 +211,7 @@ describe('Step2UnitsForm', () => {
 
     await wrapper.vm.$nextTick();
 
-    const unitCard = wrapper.find('.bg-gray-50');
+    const unitCard = wrapper.find('.bg-emphasis');
     expect(unitCard.text()).toContain('1.234,50');
   });
 
@@ -343,7 +343,7 @@ describe('Step2UnitsForm', () => {
     await wrapper.setProps({ selectedUnits: unitWithoutRent });
     await wrapper.vm.$nextTick();
 
-    const unitCard = wrapper.find('.bg-gray-50');
+    const unitCard = wrapper.find('.bg-emphasis');
     expect(unitCard.text()).not.toContain('Nettokaltmiete');
   });
 
@@ -362,7 +362,7 @@ describe('Step2UnitsForm', () => {
 
     await wrapper.vm.$nextTick();
 
-    const unitCard = wrapper.find('.bg-gray-50');
+    const unitCard = wrapper.find('.bg-emphasis');
     expect(unitCard.text()).toContain('1.000,00');
     // Operating costs and heating costs should not be shown
     expect(unitCard.text()).not.toContain('Betriebskostenvorauszahlung');

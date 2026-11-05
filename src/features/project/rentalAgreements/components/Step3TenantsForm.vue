@@ -154,13 +154,13 @@ const onTenantFormCancel = () => {
       <div
         v-for="(tenant, index) in tenants"
         :key="index"
-        class="flex items-center justify-between p-3 border rounded-lg bg-gray-50"
+        class="flex items-center justify-between p-3 border rounded-lg bg-emphasis"
       >
         <div class="flex-1">
           <p class="font-semibold">
             {{ tenant.firstName }} {{ tenant.lastName }}
           </p>
-          <p class="text-sm text-gray-600">
+          <p class="text-sm text-muted-color">
             <span v-if="tenant.email">{{ tenant.email }}</span>
             <span v-if="tenant.mobilePhoneNumber"> • {{ tenant.mobilePhoneNumber }}</span>
             <span v-if="tenant.dateOfBirth">

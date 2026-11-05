@@ -80,7 +80,7 @@ const confirmCancelIssue = () => {
 <template>
   <div class="flex flex-col gap-4">
     <div class="flex items-center gap-2">
-      <h1 class="text-2xl font-semibold text-gray-900">
+      <h1 class="text-2xl font-semibold text-color">
         {{ t('tenantIssues.detail.title') }}
       </h1>
     </div>
@@ -91,7 +91,7 @@ const confirmCancelIssue = () => {
 
     <div v-if="loading" class="flex items-center justify-center py-12">
       <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
-      <span class="ml-3 text-gray-600">{{ t('tenantIssues.loading') }}</span>
+      <span class="ml-3 text-muted-color">{{ t('tenantIssues.loading') }}</span>
     </div>
 
     <template v-else-if="issue">

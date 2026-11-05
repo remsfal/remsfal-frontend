@@ -84,7 +84,7 @@ function onNewEmployee(email: string) {
         <DataTable :value="employees">
           <Column :header="t('organization.employees.columnName')">
             <template #body="slotProps">
-              <span :class="{ 'text-gray-400': slotProps.data.active === false }">
+              <span :class="{ 'text-muted-color': slotProps.data.active === false }">
                 {{ slotProps.data.name || slotProps.data.email }}
                 <span v-if="slotProps.data.active === false"> ({{ t('managerSettings.employments.status.inactive') }})</span>
               </span>

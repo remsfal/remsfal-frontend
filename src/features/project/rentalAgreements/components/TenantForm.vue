@@ -129,7 +129,7 @@ function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <div :class="mode === 'create' ? 'p-4 border rounded-lg bg-gray-50' : undefined">
+  <div :class="mode === 'create' ? 'p-4 border rounded-lg bg-emphasis' : undefined">
     <h4 v-if="heading" class="font-semibold mb-4">
       {{ heading }}
     </h4>

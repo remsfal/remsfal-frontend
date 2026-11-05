@@ -154,10 +154,10 @@ async function confirmTerminate(): Promise<void> {
 <template>
   <BaseCard>
     <template #title>
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-surface pb-4">
         <div>
           <span class="text-xl font-semibold">{{ t('projectTenancies.table.title', { tenant: tenantTitleLabel }) }}</span>
-          <p class="text-base text-gray-500 font-normal mt-1">
+          <p class="text-base text-muted-color font-normal mt-1">
             {{ formatLabel(t('projectTenancies.table.tenancyNumber')) }} {{ rentalAgreement.id || '—' }}
           </p>
         </div>
@@ -173,64 +173,64 @@ async function confirmTerminate(): Promise<void> {
     </template>
     <template #content>
       <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3 ">
-        <dl class="space-y-2 text-[14.5px] text-gray-600">
+        <dl class="space-y-2 text-[14.5px] text-muted-color">
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ formatLabel(t('projectTenancies.table.rentalStart')) }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               {{ formatDateLabel(rentalAgreement.startOfRental) }}
             </dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ formatLabel(t('projectTenancies.table.rentalEnd')) }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               {{ formatDateLabel(rentalAgreement.endOfRental) }}
             </dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ formatLabel(t('projectTenancies.table.tenants')) }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               {{ tenantCount }}
             </dd>
           </div>
         </dl>
-        <dl class="space-y-2 text-[14.5px] text-gray-600">
+        <dl class="space-y-2 text-[14.5px] text-muted-color">
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ formatLabel(t('rentalAgreement.common.basicRent')) }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               {{ formatCurrency(totalBasicRent) }}
             </dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ formatLabel(t('rentalAgreement.common.operatingCosts')) }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               {{ formatCurrency(totalOperatingCosts) }}
             </dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ formatLabel(t('rentalAgreement.common.heatingCosts')) }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               {{ formatCurrency(totalHeatingCosts) }}
             </dd>
           </div>
         </dl>
-        <dl class="space-y-2 text-[14.5px] text-gray-600">
+        <dl class="space-y-2 text-[14.5px] text-muted-color">
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">
+            <dt class="font-medium text-muted-color">
               {{ formatLabel(t('projectTenancies.table.amountKeys')) }}
             </dt>
-            <dd class="text-gray-900">
+            <dd class="text-color">
               {{ t('rentalAgreement.summary.schemaIncomplete') }}
             </dd>
           </div>

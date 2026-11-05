@@ -81,7 +81,7 @@ const onMemberChange = (member: MemberOption | null) => {
     <template #option="slotProps">
       <div class="flex flex-col">
         <span class="font-semibold">{{ slotProps.option.name }}</span>
-        <span class="text-sm text-gray-600">{{ slotProps.option.email }}</span>
+        <span class="text-sm text-muted-color">{{ slotProps.option.email }}</span>
       </div>
     </template>
   </AutoComplete>

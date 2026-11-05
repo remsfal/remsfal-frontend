@@ -120,7 +120,7 @@ const canProceed = computed(() => {
     </div>
 
     <!-- Rental Details Form (shown when unit is selected) -->
-    <div v-if="currentUnit" class="p-4 border rounded-lg bg-gray-50">
+    <div v-if="currentUnit" class="p-4 border rounded-lg bg-emphasis">
       <h4 class="font-semibold mb-2">
         {{ currentUnit.unitTitle }} ({{ t(`unitTypes.${currentUnit.unitType.toLowerCase()}`) }})
       </h4>
@@ -140,13 +140,13 @@ const canProceed = computed(() => {
       <div
         v-for="(unit, index) in selectedUnits"
         :key="unit.rentalUnitId"
-        class="flex items-center justify-between p-3 border rounded-lg bg-gray-50"
+        class="flex items-center justify-between p-3 border rounded-lg bg-emphasis"
       >
         <div class="flex-1">
           <p class="font-semibold">
             {{ unit.unitTitle }} ({{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }})
           </p>
-          <p class="text-sm text-gray-600">
+          <p class="text-sm text-muted-color">
             {{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}
             <span v-if="unit.basicRent !== undefined">
               • {{ t('rentalAgreement.common.basicRent') }} {{ n(unit.basicRent, 'currency') }}

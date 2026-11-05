@@ -41,13 +41,13 @@ withDefaults(defineProps<Props>(), {
           <i class="text-xl" :class="[icon]" />
         </div>
         <div>
-          <p class="text-gray-800 text-lg font-medium">
+          <p class="text-color text-lg font-medium">
             {{ title }}
           </p>
-          <p class="text-2xl font-bold text-gray-800">
+          <p class="text-2xl font-bold text-color">
             {{ value }}
           </p>
-          <p v-if="subtext" class="text-sm text-gray-500 mt-1">
+          <p v-if="subtext" class="text-sm text-muted-color mt-1">
             {{ subtext }}
           </p>
         </div>

@@ -175,7 +175,7 @@ function onCancel() {
             fluid
             :class="{ 'p-invalid': $form.amount?.invalid && $form.amount?.touched }"
           />
-          <small v-if="$form.keyDescription?.value" class="text-gray-500">
+          <small v-if="$form.keyDescription?.value" class="text-muted-color">
             {{ t('returnKeyDialog.amountHint', { max: maxForDescription($form.keyDescription?.value) }) }}
           </small>
           <Message

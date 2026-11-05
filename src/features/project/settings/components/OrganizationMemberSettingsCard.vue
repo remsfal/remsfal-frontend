@@ -122,7 +122,7 @@ function onNewOrganization(organizationName: string) {
               <span
                 v-else
                 class="pl-4"
-                :class="{ 'text-gray-400': slotProps.data.member.active === false }"
+                :class="{ 'text-muted-color': slotProps.data.member.active === false }"
               >
                 {{ slotProps.data.member.name || slotProps.data.member.email }}
                 <span v-if="slotProps.data.member.active === false">
