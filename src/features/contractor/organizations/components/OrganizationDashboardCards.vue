@@ -21,7 +21,7 @@ onMounted(async () => {
 });
 
 const organizations = computed(() => organizationStore.userOrganizations);
-const showEmptyState = computed(() => !isLoading.value && organizationStore.userEmployments.length <= 0);
+const showEmptyState = computed(() => !isLoading.value && !organizationStore.isOrganizationMember);
 
 function formatAddressLine(address: { street?: string; zip?: string; city?: string }): string {
   return [address.street, [address.zip, address.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');

@@ -23,7 +23,6 @@ export interface MenuItem {
   navigate?: () => void;
   command?: (event: object) => void;
   disabled?: boolean;
-  disabledCommand?: () => void;
   visible?: boolean;
   class?: string;
   target?: string;
@@ -65,7 +64,6 @@ watch(
 const itemClick = (event: Event, item: MenuItem) => {
   if (item.disabled) {
     event.preventDefault();
-    item.disabledCommand?.();
     return;
   }
 
@@ -103,8 +101,8 @@ const checkActiveRoute = (item: MenuItem) => matchesRouteTarget(route, item.to);
     </div>
     <a
       v-if="(!item.to || item.items || item.disabled) && item.visible !== false"
-      :class="item.class"
-      :style="item.disabled ? { color: 'var(--p-surface-400)' } : undefined"
+      :class="[item.class, { 'text-muted-color cursor-not-allowed': item.disabled }]"
+      :aria-disabled="item.disabled || undefined"
       :target="item.target"
       tabindex="0"
       @click="itemClick($event, item)"

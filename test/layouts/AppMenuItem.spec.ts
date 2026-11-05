@@ -371,10 +371,9 @@ describe('AppMenuItem.vue', () => {
     });
 
     it.each(['click', 'keydown.enter', 'keydown.space'])(
-      'shows the disabled notice on %s without navigating or changing menu state', async (event) => {
+      'ignores %s on disabled items without navigating or changing menu state', async (event) => {
         const command = vi.fn();
         const navigate = vi.fn();
-        const disabledCommand = vi.fn();
         layout.layoutState.activeMenuItem = '1';
         layout.layoutState.overlayMenuActive = true;
         const wrapper = mountItem({
@@ -383,13 +382,12 @@ describe('AppMenuItem.vue', () => {
           disabled: true,
           command,
           navigate,
-          disabledCommand,
         });
 
         expect(wrapper.find('.router-link-stub').exists()).toBe(false);
+        expect(wrapper.get('a').attributes('aria-disabled')).toBe('true');
         await wrapper.get('a').trigger(event);
 
-        expect(disabledCommand).toHaveBeenCalledTimes(1);
         expect(command).not.toHaveBeenCalled();
         expect(navigate).not.toHaveBeenCalled();
         expect(layout.layoutState.activeMenuItem).toBe('1');

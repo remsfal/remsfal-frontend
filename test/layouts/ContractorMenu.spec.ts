@@ -1,6 +1,5 @@
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
-import Dialog from 'primevue/dialog';
 import ContractorMenu from '@/layouts/components/ContractorMenu.vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
@@ -127,53 +126,49 @@ describe('ContractorMenu.vue', () => {
     expect(orgStore.fetchUserOrganization).not.toHaveBeenCalled();
   });
 
-  it.each(['Offene Anfragen', 'Laufende Aufträge', 'Abgeschlossene Aufträge'])(
-    'shows the organization notice instead of navigating for %s', async (label) => {
+  it.each(['click', 'keydown.enter', 'keydown.space'])(
+    'keeps all order entries inactive on %s without membership', async (event) => {
+      const orgStore = useOrganizationStore();
+      orgStore.initialized = true;
+      await wrapper.vm.$nextTick();
       const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
-      const menuItem = wrapper.findAll('.layout-submenu a').find(item => item.text() === label);
-      expect(menuItem).toBeDefined();
-      expect(menuItem!.attributes('href')).toBeUndefined();
-      const dialog = wrapper.getComponent(Dialog);
-      expect(dialog.props('visible')).toBe(false);
 
-      await menuItem!.trigger('click');
+      for (const label of ['Offene Anfragen', 'Laufende Aufträge', 'Abgeschlossene Aufträge']) {
+        const entry = wrapper.findAll('.layout-submenu a').find(item => item.text() === label)!;
+        expect(entry.attributes('href')).toBeUndefined();
+        expect(entry.attributes('aria-disabled')).toBe('true');
+        expect(entry.classes()).toContain('text-muted-color');
+        expect(entry.classes()).toContain('cursor-not-allowed');
+        await entry.trigger(event);
+      }
 
-      expect(dialog.props('visible')).toBe(true);
       expect(pushSpy).not.toHaveBeenCalled();
+      expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
     },
   );
 
-  it('closes the notice and navigates to organization creation through its link', async () => {
-    const menuItem = wrapper.findAll('.layout-submenu a').find(item => item.text() === 'Offene Anfragen');
-    await menuItem!.trigger('click');
-    await flushPromises();
-    const dialog = wrapper.getComponent(Dialog);
-    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
-    const link = document.body.querySelector<HTMLAnchorElement>('a[href="/contractor/organizations/new"]');
-    expect(link).not.toBeNull();
+  it('keeps order links enabled while organizations are still loading', async () => {
+    const orgStore = useOrganizationStore();
+    expect(orgStore.initialized).toBe(false);
 
-    link!.click();
-    await flushPromises();
+    for (const status of ['open', 'ongoing', 'closed']) {
+      expect(wrapper.find(`a[href="/contractor/orders/${status}"]`).exists()).toBe(true);
+      expect(wrapper.get(`a[href="/contractor/orders/${status}"]`).attributes('aria-disabled')).toBeUndefined();
+    }
 
-    expect(dialog.props('visible')).toBe(false);
-    expect(pushSpy).toHaveBeenCalledWith('/contractor/organizations/new');
-  });
-
-  it('updates notice visibility when the dialog is dismissed', async () => {
-    const menuItem = wrapper.findAll('.layout-submenu a').find(item => item.text() === 'Offene Anfragen');
-    await menuItem!.trigger('click');
-    const dialog = wrapper.getComponent(Dialog);
-    expect(dialog.props('visible')).toBe(true);
-
-    dialog.vm.$emit('update:visible', false);
+    orgStore.initialized = true;
     await wrapper.vm.$nextTick();
 
-    expect(dialog.props('visible')).toBe(false);
+    expect(wrapper.findAll('a[aria-disabled="true"]')).toHaveLength(3);
+    for (const status of ['open', 'ongoing', 'closed']) {
+      expect(wrapper.find(`a[href="/contractor/orders/${status}"]`).exists()).toBe(false);
+    }
   });
 
   it.each(['owner', 'employee'])(
     'enables all order links reactively when the user becomes an %s', async (role) => {
       const orgStore = useOrganizationStore();
+      orgStore.initialized = true;
       if (role === 'owner') {
         orgStore.userOrganizations = [{ id: 'org-1', name: 'Test GmbH' }];
       } else {
@@ -182,9 +177,10 @@ describe('ContractorMenu.vue', () => {
       await wrapper.vm.$nextTick();
 
       for (const status of ['open', 'ongoing', 'closed']) {
-        expect(wrapper.find(`a[href="/contractor/orders/${status}"]`).exists()).toBe(true);
+        const entry = wrapper.get(`a[href="/contractor/orders/${status}"]`);
+        expect(entry.attributes('aria-disabled')).toBeUndefined();
+        expect(entry.classes()).not.toContain('cursor-not-allowed');
       }
-      expect(wrapper.getComponent(Dialog).props('visible')).toBe(false);
 
       orgStore.userOrganizations = [];
       orgStore.userEmployments = [];
