@@ -1038,5 +1038,5 @@
   "emailVerification.loading": "Verifying your email address …",
   "emailVerification.successMessage": "Your additional email address has been verified successfully.",
   "emailVerification.errorMessage": "The email address could not be verified. The verification link is invalid or has expired.",
-  "emailVerification.backToSettings": "Go to my settings"
+  "emailVerification.backToSettings": "Go to personal overview"
 }

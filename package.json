@@ -18,7 +18,7 @@
     "dev": "vite",
     "build": "run-s type-check \"build-only {@}\" --",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build --force",
+    "type-check": "node scripts/generate-typed-router.ts && vue-tsc --build --force",
     "preview": "vite preview",
     "test": "run-s type-check test:unit build-only test:e2e",
     "test:unit": "vitest run",

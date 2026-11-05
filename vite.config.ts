@@ -8,6 +8,7 @@ import Components from 'unplugin-vue-components/vite';
 import VueRouter from 'vue-router/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import extensionOverrides from './plugins/vite-plugin-extension-overrides.ts';
+import { typedRouterOptions } from './plugins/typed-router-options.ts';
 
 // Proxy-Configurations-Factory
 function createProxyConfig(target: string, backendName: string): ProxyOptions {
@@ -41,11 +42,7 @@ export default defineConfig({
       srcDir: fileURLToPath(new URL('./src', import.meta.url)),
       shadowing: !process.env.VITEST,
     }),
-    VueRouter({
-      // src/extensions/pages/ holds additional routes of downstream projects
-      routesFolder: ['src/pages', 'src/extensions/pages'],
-      dts: 'src/typed-router.d.ts',
-    }),
+    VueRouter(typedRouterOptions),
     vue(),
     // Disable DevTools in test environment to avoid localStorage issues
     process.env.VITEST ? undefined : vueDevTools(),

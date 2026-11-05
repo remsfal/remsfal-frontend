@@ -1038,5 +1038,5 @@
   "emailVerification.loading": "Deine E-Mail-Adresse wird bestätigt …",
   "emailVerification.successMessage": "Deine zusätzliche E-Mail-Adresse wurde erfolgreich bestätigt.",
   "emailVerification.errorMessage": "Die E-Mail-Adresse konnte nicht bestätigt werden. Der Bestätigungslink ist ungültig oder abgelaufen.",
-  "emailVerification.backToSettings": "Zu meinen Einstellungen"
+  "emailVerification.backToSettings": "Zur persönlichen Übersicht"
 }

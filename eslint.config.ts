@@ -128,10 +128,10 @@ export default [
     },
   },
 
-  // Vite's native config loader requires explicit extensions on relative imports
-  // in root-level config files (e.g. vitest.config.ts importing vite.config.ts).
+  // Vite's native config loader and Node's type stripping require explicit extensions on relative imports
+  // in root-level config files (e.g. vitest.config.ts importing vite.config.ts) and in scripts run by Node.
   {
-    files: ['*.config.ts'],
+    files: ['*.config.ts', 'scripts/*.ts'],
     rules: { 'import-x/extensions': 'off' },
   },
 
