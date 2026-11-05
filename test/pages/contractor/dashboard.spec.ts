@@ -53,4 +53,12 @@ describe('contractor/dashboard.vue', () => {
 
     expect(wrapper.find('[data-test="order-management-dashboard-cards-stub"]').exists()).toBe(true);
   });
+
+  it('shows order management for organization owners without employment records', () => {
+    useOrganizationStore().userOrganizations = [{ id: 'org-1', name: 'Test GmbH' }];
+
+    const wrapper = mount(ContractorDashboardPage);
+
+    expect(wrapper.find('[data-test="order-management-dashboard-cards-stub"]').exists()).toBe(true);
+  });
 });

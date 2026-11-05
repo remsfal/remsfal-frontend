@@ -94,6 +94,18 @@ describe('OrganizationDashboardCards', () => {
     expect(wrapper.findComponent(Message).exists()).toBe(false);
   });
 
+  it('does not show the empty-state message for an owner without employment records', async () => {
+    const store = useOrganizationStore();
+    store.userOrganizations = [org1];
+    store.initialized = true;
+
+    wrapper = mount(OrganizationDashboardCards);
+    await flushPromises();
+
+    expect(wrapper.findComponent(Message).exists()).toBe(false);
+    expect(wrapper.text()).toContain(org1.name);
+  });
+
   it('shows the empty-state message with a link when the user belongs to no organization at all', async () => {
     const store = useOrganizationStore();
     store.userOrganizations = [];
