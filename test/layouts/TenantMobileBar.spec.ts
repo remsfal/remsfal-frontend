@@ -43,6 +43,12 @@ describe('TenantMobileBar.vue', () => {
     expect(navItems).toHaveLength(2);
   });
 
+  it('renders translated screen reader labels', () => {
+    const { wrapper } = mountComponent();
+    const labels = wrapper.findAll('.sr-only').map((label) => label.text());
+    expect(labels).toEqual(['Überblick', 'Meldungen']);
+  });
+
   it('highlights Overview active state when on TenantDashboard', async () => {
     const { wrapper } = mountComponent({ path: '/tenant/dashboard', name: 'TenantDashboard' });
     await wrapper.vm.$nextTick();

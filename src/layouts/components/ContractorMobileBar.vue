@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import AppRoleMobileBar from '@/layouts/components/AppRoleMobileBar.vue'
 import ContractorMenu from '@/layouts/components/ContractorMenu.vue'
 import type { MobileNavItem } from '@/layouts/composables/useMobileBarActiveState'
 import { useOrganizationStore } from '@/stores/OrganizationStore'
 
+const { t } = useI18n()
 const organizationStore = useOrganizationStore()
 const { initialized } = storeToRefs(organizationStore)
 const ordersDisabled = computed(() => initialized.value && !organizationStore.isOrganizationMember)
@@ -19,18 +21,18 @@ onMounted(() => {
 
 const navItems = computed<MobileNavItem[]>(() => [
   {
-    label: 'contractorMenu.orderManagement.overview',
+    label: t('contractorMenu.orderManagement.overview'),
     to: { name: 'ContractorDashboard' },
     icon: 'pi-home',
   },
   {
-    label: 'contractorMenu.orderManagement.open',
+    label: t('contractorMenu.orderManagement.open'),
     icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
     to: '/contractor/orders/open',
     disabled: ordersDisabled.value,
   },
   {
-    label: 'contractorMenu.orderManagement.ongoing',
+    label: t('contractorMenu.orderManagement.ongoing'),
     icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
     to: '/contractor/orders/ongoing',
     disabled: ordersDisabled.value,

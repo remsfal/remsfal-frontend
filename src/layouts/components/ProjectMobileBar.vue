@@ -22,12 +22,12 @@ const navItems = computed<ProjectNavItem[]>(() => {
   if (!projectId.value) {
     return [
       {
-        label: 'Projekte',
+        label: t('managerMenu.myData.properties'),
         to: { name: 'ProjectSelection' },
         icon: 'pi-briefcase',
       },
       {
-        label: 'Einstellungen',
+        label: t('managerMenu.myData.settings'),
         to: { name: 'ManagerAccountSettings' },
         icon: 'pi-cog',
       },
