@@ -23,6 +23,11 @@
   border-top: 3px solid var(--p-primary-color, #4CAF50);
 }
 
+.nav-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .more-btn {
   background: none;
   border: none;

@@ -138,6 +138,32 @@ describe('AppRoleMobileBar.vue', () => {
     expect(navItem.find('i.pi').exists()).toBe(false)
   })
 
+  it('renders a disabled item as inert link without route target', () => {
+    const items: MobileNavItem[] = [
+      ...navItems,
+      {
+        label: 'Locked', to: { name: 'ManagerDashboard' }, icon: 'pi-lock', disabled: true
+      },
+    ]
+    const route = {
+      path: '/', name: 'ManagerDashboard', params: {}, query: {}
+    }
+    const wrapper = mountBar(items, route)
+    const locked = wrapper.findAll('a.nav-item')[2]
+    expect(locked.classes()).toContain('disabled')
+    expect(locked.classes()).not.toContain('active')
+    expect(locked.attributes('aria-disabled')).toBe('true')
+    expect(wrapper.findAllComponents(RouterLinkStub)).toHaveLength(2)
+  })
+
+  it('renders enabled items without disabled marker', () => {
+    const wrapper = mountBar()
+    wrapper.findAll('a.nav-item').forEach((item) => {
+      expect(item.classes()).not.toContain('disabled')
+      expect(item.attributes('aria-disabled')).toBeUndefined()
+    })
+  })
+
   it('renders sr-only label for each nav item', () => {
     const wrapper = mountBar()
     const labels = wrapper.findAll('.sr-only')
