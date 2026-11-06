@@ -44,7 +44,7 @@
     "openapi:notification": "openapi-typescript openapi/notification-spec.json --read-write-markers -o src/services/api/notification-schema.ts"
   },
   "dependencies": {
-    "@capacitor/android": "^8.5.3",
+    "@capacitor/android": "^8.6.0",
     "@capacitor/camera": "^8.2.6",
     "@capacitor/core": "^8.6.0",
     "@capacitor/ios": "^8.5.3",
