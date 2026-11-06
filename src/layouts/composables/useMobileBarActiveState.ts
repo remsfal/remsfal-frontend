@@ -6,6 +6,7 @@ export interface MobileNavItem {
   label: string;
   to: RouteLocationRaw;
   icon: string | { type: 'pi' | 'fa'; name: string | string[] };
+  disabled?: boolean;
 }
 
 export function useMobileBarActiveState() {

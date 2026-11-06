@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock capacitor core/utils
 vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: () => false } }));
@@ -12,6 +12,7 @@ import ContractorMobileBar from '@/layouts/components/ContractorMobileBar.vue';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
+import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 // Remove global router plugin for this test file
 // We need manual control over routing
@@ -24,6 +25,14 @@ const RouterLinkStub = {
 };
 
 describe('ContractorMobileBar.vue', () => {
+  let orgStore: ReturnType<typeof useOrganizationStore>;
+
+  beforeEach(() => {
+    orgStore = useOrganizationStore();
+    orgStore.$reset();
+    vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
+  });
+
   const defaultRoute = { path: '/contractor/dashboard', name: 'ContractorDashboard' };
   const mountComponent = (initialRoute = defaultRoute) => {
     const route = reactive(initialRoute);
@@ -89,6 +98,43 @@ describe('ContractorMobileBar.vue', () => {
     expect(navItems[0].classes()).not.toContain('active');
     expect(navItems[1].classes()).not.toContain('active');
     expect(navItems[2].classes()).not.toContain('active');
+  });
+
+  it('loads the organizations on mount when the store is not initialized', () => {
+    mountComponent();
+    expect(orgStore.fetchUserOrganization).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not reload the organizations when the store is already initialized', () => {
+    orgStore.initialized = true;
+    mountComponent();
+    expect(orgStore.fetchUserOrganization).not.toHaveBeenCalled();
+  });
+
+  it('keeps order items enabled while the organizations are loading', () => {
+    const { wrapper } = mountComponent();
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems[1].classes()).not.toContain('disabled');
+    expect(navItems[2].classes()).not.toContain('disabled');
+  });
+
+  it('disables order items for users without an organization', () => {
+    orgStore.initialized = true;
+    const { wrapper } = mountComponent();
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems[0].classes()).not.toContain('disabled');
+    expect(navItems[1].classes()).toContain('disabled');
+    expect(navItems[1].attributes('aria-disabled')).toBe('true');
+    expect(navItems[2].classes()).toContain('disabled');
+  });
+
+  it('enables order items for organization members', () => {
+    orgStore.initialized = true;
+    orgStore.userEmployments = [{ organizationId: 'org-1', employeeRole: 'STAFF' }];
+    const { wrapper } = mountComponent();
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems[1].classes()).not.toContain('disabled');
+    expect(navItems[2].classes()).not.toContain('disabled');
   });
 
   it('toggles sidebar when more button is clicked', async () => {

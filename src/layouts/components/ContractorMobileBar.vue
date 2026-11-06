@@ -1,9 +1,23 @@
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import AppRoleMobileBar from '@/layouts/components/AppRoleMobileBar.vue'
 import ContractorMenu from '@/layouts/components/ContractorMenu.vue'
 import type { MobileNavItem } from '@/layouts/composables/useMobileBarActiveState'
+import { useOrganizationStore } from '@/stores/OrganizationStore'
 
-const navItems: MobileNavItem[] = [
+const organizationStore = useOrganizationStore()
+const { initialized } = storeToRefs(organizationStore)
+const ordersDisabled = computed(() => initialized.value && !organizationStore.isOrganizationMember)
+
+// The drawer renders ContractorMenu lazily, so the bar has to load the organizations itself
+onMounted(() => {
+  if (!initialized.value) {
+    organizationStore.fetchUserOrganization()
+  }
+})
+
+const navItems = computed<MobileNavItem[]>(() => [
   {
     label: 'contractorMenu.orderManagement.overview',
     to: { name: 'ContractorDashboard' },
@@ -13,13 +27,15 @@ const navItems: MobileNavItem[] = [
     label: 'contractorMenu.orderManagement.open',
     icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
     to: '/contractor/orders/open',
+    disabled: ordersDisabled.value,
   },
   {
     label: 'contractorMenu.orderManagement.ongoing',
     icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
     to: '/contractor/orders/ongoing',
+    disabled: ordersDisabled.value,
   },
-]
+])
 </script>
 
 <template>
