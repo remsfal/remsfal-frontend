@@ -175,45 +175,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/authentication/login": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Login user via oauth flow of the default identity provider (Google).
-     * @description Kept for backward compatibility, use the provider specific login endpoints instead.
-     */
-    get: {
-      parameters: {
-        query?: {
-          route?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Redirect user to the identity provider */
-        302: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/v1/authentication/login/apple": {
     parameters: {
       query?: never;
@@ -469,55 +430,6 @@ export interface paths {
         };
       };
     };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/authentication/session": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Start user session via Google oauth flow (Google callback).
-     * @deprecated
-     * @description Kept for backward compatibility, use /session/google instead.
-     */
-    get: {
-      parameters: {
-        query?: {
-          code?: string;
-          error?: string;
-          state?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Redirect user to the frontend spa */
-        302: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Authentication failed or state does not match */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
     delete?: never;
     options?: never;
     head?: never;

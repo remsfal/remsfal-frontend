@@ -2730,25 +2730,6 @@
         }
       }
     },
-    "/api/v1/authentication/login" : {
-      "get" : {
-        "summary" : "Login user via oauth flow of the default identity provider (Google).",
-        "description" : "Kept for backward compatibility, use the provider specific login endpoints instead.",
-        "parameters" : [ {
-          "name" : "route",
-          "in" : "query",
-          "schema" : {
-            "type" : "string",
-            "default" : "/"
-          }
-        } ],
-        "responses" : {
-          "302" : {
-            "description" : "Redirect user to the identity provider"
-          }
-        }
-      }
-    },
     "/api/v1/authentication/login/apple" : {
       "get" : {
         "summary" : "Login user via Sign in with Apple oauth flow.",
@@ -2870,40 +2851,6 @@
           },
           "401" : {
             "description" : "Unauthorized - Invalid or missing refresh token"
-          }
-        }
-      }
-    },
-    "/api/v1/authentication/session" : {
-      "get" : {
-        "summary" : "Start user session via Google oauth flow (Google callback).",
-        "description" : "Kept for backward compatibility, use /session/google instead.",
-        "deprecated" : true,
-        "parameters" : [ {
-          "name" : "code",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "error",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "state",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "302" : {
-            "description" : "Redirect user to the frontend spa"
-          },
-          "401" : {
-            "description" : "Authentication failed or state does not match"
           }
         }
       }
