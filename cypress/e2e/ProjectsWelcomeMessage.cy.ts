@@ -61,15 +61,18 @@ describe('ProjectsWelcomeMessage E2E Tests', () => {
       statusCode: 200,
       body: { properties: [] },
     }).as('getPropertyTree');
+  });
 
+  function visitDashboard() {
     cy.visit('/manager/dashboard');
     cy.wait('@getUser');
     // CI runs against `vite dev` with coverage instrumentation, which is slower to first-mount.
     cy.wait('@getProjects', { timeout: 10000 });
     cy.wait('@getLatestIssues');
-  });
+  }
 
   it('opens the new project dialog from the welcome message', () => {
+    visitDashboard();
     cy.contains('button', 'Jetzt Liegenschaft anlegen').click();
 
     cy.get('[role="dialog"]').should('be.visible');
@@ -77,6 +80,7 @@ describe('ProjectsWelcomeMessage E2E Tests', () => {
   });
 
   it('creates a property and navigates to its dashboard', () => {
+    visitDashboard();
     cy.contains('button', 'Jetzt Liegenschaft anlegen').click();
 
     cy.get('#projectTitle').type('Musterstraße 1');
@@ -88,11 +92,27 @@ describe('ProjectsWelcomeMessage E2E Tests', () => {
   });
 
   it('closes the dialog without creating a property when cancelled', () => {
+    visitDashboard();
     cy.contains('button', 'Jetzt Liegenschaft anlegen').click();
     cy.contains('button', /cancel|abbrechen/i).click();
 
     cy.get('[role="dialog"]').should('not.exist');
     cy.location('pathname').should('eq', '/manager/dashboard');
     cy.contains('button', 'Jetzt Liegenschaft anlegen').should('be.visible');
+  });
+
+  it('shows the welcome message above the property list and creates a property from there', () => {
+    cy.visit('/manager/projects');
+    cy.wait('@getUser');
+    cy.wait('@getProjects', { timeout: 10000 });
+
+    cy.get('.p-message').should('contain.text', 'Willkommen bei REMSFAL');
+    cy.contains('button', 'Jetzt Liegenschaft anlegen').click();
+
+    cy.get('#projectTitle').type('Musterstraße 1');
+    cy.contains('button', /create|erstellen/i).click();
+
+    cy.wait('@createProject');
+    cy.location('pathname').should('eq', `/projects/${newProjectId}/dashboard`);
   });
 });
