@@ -36,7 +36,7 @@ const resolver = zodResolver(validationSchema);
 
 const initialValues = ref({projectTitle: ''});
 
-const onSubmit = (event: FormSubmitEvent) => {
+const onSubmit = async (event: FormSubmitEvent) => {
   const formState = event.states;
   const projectTitle = formState.projectTitle?.value?.trim() || '';
 
@@ -44,7 +44,7 @@ const onSubmit = (event: FormSubmitEvent) => {
     return;
   }
 
-  createProject(projectTitle);
+  await createProject(projectTitle);
 };
 
 async function createProject(title: string) {
