@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
 import { useProjectStore } from '@/stores/ProjectStore';
+import NewProjectDialog from './NewProjectDialog.vue';
 
 const { t } = useI18n();
 const projectStore = useProjectStore();
 const isLoading = ref(true);
+const dialogVisible = ref(false);
 
 onMounted(async () => {
   try {
@@ -28,10 +29,15 @@ const showWelcome = computed(() => !isLoading.value && projectStore.projectList.
     <span>
       {{ t('managerDashboard.projects.emptyState.text') }}
       <br>
-      <RouterLink :to="{ name: 'ProjectSelection' }" class="font-semibold underline">
+      <button
+        type="button"
+        class="font-semibold underline cursor-pointer"
+        @click="dialogVisible = true"
+      >
         {{ t('managerDashboard.projects.emptyState.link') }}
-      </RouterLink>
+      </button>
     </span>
   </Message>
-  <template v-else />
+  <!-- Outside the message: it disappears as soon as the new project is in the list -->
+  <NewProjectDialog v-model:visible="dialogVisible" />
 </template>

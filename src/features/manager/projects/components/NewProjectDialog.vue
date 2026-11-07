@@ -1,0 +1,135 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
+import { Form } from '@primevue/forms';
+import BaseDialog from '@/components/BaseDialog.vue';
+import type { FormSubmitEvent } from '@primevue/forms';
+import { zodResolver } from '@primevue/forms/resolvers/zod';
+import { z } from 'zod';
+import { projectService } from '@/services/ProjectService';
+import { useProjectStore } from '@/stores/ProjectStore';
+import { useRouter } from 'vue-router';
+import { useAppToast } from '@/composables/useAppToast';
+import { saveProject } from '@/helper/indexeddb';
+
+const visible = defineModel<boolean>('visible', { default: false });
+
+const { t } = useI18n();
+const appToast = useAppToast();
+
+const router = useRouter();
+const projectStore = useProjectStore();
+
+// Zod validation schema
+const validationSchema = z.object({
+  projectTitle: z
+    .string()
+    .trim()
+    .min(3, { message: t('newProjectForm.title.required') })
+    .max(100, { message: t('newProjectForm.title.error', { maxLength: 100 }) })
+});
+
+const resolver = zodResolver(validationSchema);
+
+const initialValues = ref({projectTitle: ''});
+
+const onSubmit = (event: FormSubmitEvent) => {
+  const formState = event.states;
+  const projectTitle = formState.projectTitle?.value?.trim() || '';
+
+  if (!event.valid || !projectTitle) {
+    return;
+  }
+
+  createProject(projectTitle);
+};
+
+async function createProject(title: string) {
+  try {
+    if (!navigator.onLine) {
+      await saveProject(title);
+      appToast.warn(t('newProjectForm.offlineSaved'), { summary: t('success.savedOffline') });
+      visible.value = false;
+      return;
+    }
+
+    const newProject = await projectService.createProject(title);
+
+    if (!newProject.id) {
+      await saveProject(title);
+      appToast.warn(t('newProjectForm.offlineSaved'), { summary: t('success.savedOffline') });
+      visible.value = false;
+      return;
+    }
+
+    const projectItem = {
+      id: newProject.id,
+      name: newProject.title,
+      memberRole: 'MANAGER' as const
+    };
+    await projectStore.addProjectToList(projectItem);
+    projectStore.setSelectedProject(projectItem);
+
+    await router.push({ name: 'ProjectDashboard', params: { projectId: newProject.id } });
+
+    appToast.success(t('newProjectForm.successCreated'), { summary: t('success.created') });
+    visible.value = false;
+  } catch (error) {
+    console.error('Failed to create project online:', error);
+    await saveProject(title);
+    appToast.warn(t('newProjectForm.offlineSaved'), { summary: t('success.savedOffline') });
+    visible.value = false;
+  }
+}
+
+function abort() {
+  visible.value = false;
+}
+</script>
+
+<template>
+  <BaseDialog
+    v-model:visible="visible"
+    :header="t('projectSelection.add')"
+    closable
+    @hide="abort"
+  >
+    <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
+      <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-1">
+          <label for="projectTitle" class="font-semibold">{{ t('newProjectForm.input.name') }}</label>
+          <InputText
+            id="projectTitle"
+            name="projectTitle"
+            type="text"
+            :placeholder="t('newProjectForm.input.exampleAddress')"
+            :class="{ 'p-invalid': $form.projectTitle?.invalid && $form.projectTitle?.touched }"
+            autofocus
+            fluid
+          />
+          <Message
+            v-if="$form.projectTitle?.invalid && $form.projectTitle?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.projectTitle?.error?.message }}
+          </Message>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-6">
+        <Button type="button" :label="t('button.cancel')" severity="secondary" @click="abort" />
+        <Button
+          type="submit"
+          :label="t('button.create')"
+          icon="pi pi-plus"
+          :disabled="!$form.projectTitle?.valid || !$form.projectTitle?.dirty"
+        />
+      </div>
+    </Form>
+  </BaseDialog>
+</template>

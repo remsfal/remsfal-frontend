@@ -40,7 +40,14 @@ describe('NewProjectButton.vue', () => {
     wrapper = mount(NewProjectButton, {
       global: {
         stubs: {
-          Dialog: { props: ['visible'], template: '<div v-if="visible"><slot /></div>' },
+          Dialog: {
+            props: ['visible'],
+            emits: ['update:visible'],
+            template: `<div v-if="visible">
+              <span class="dialog-close" @click="$emit('update:visible', false)" />
+              <slot />
+            </div>`,
+          },
           Button: { template: '<button type="button" @click="$emit(\'click\')"><slot /></button>' },
         },
         components: {
@@ -198,5 +205,26 @@ describe('NewProjectButton.vue', () => {
     await cancelButton.trigger('click');
 
     expect(wrapper.find('input[name="projectTitle"]').exists()).toBe(false);
+  });
+
+  it('closes the dialog when the dialog itself is closed', async () => {
+    await wrapper.find('button').trigger('click');
+    expect(wrapper.find('input[name="projectTitle"]').exists()).toBe(true);
+
+    await wrapper.find('.dialog-close').trigger('click');
+
+    expect(wrapper.find('input[name="projectTitle"]').exists()).toBe(false);
+  });
+
+  it('does not create a project when an invalid title is submitted', async () => {
+    await wrapper.find('button').trigger('click');
+    await wrapper.find('input[name="projectTitle"]').setValue('AB');
+
+    await wrapper.findComponent(Form).trigger('submit');
+    await flushPromises();
+
+    expect(projectService.createProject).not.toHaveBeenCalled();
+    expect(saveProject).not.toHaveBeenCalled();
+    expect(wrapper.find('input[name="projectTitle"]').exists()).toBe(true);
   });
 });
