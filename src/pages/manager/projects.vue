@@ -6,9 +6,10 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { ProjectSelectionView } from '@/features/manager/projects';
+import { ProjectSelectionView, ProjectsWelcomeMessage } from '@/features/manager/projects';
 </script>
 
 <template>
+  <ProjectsWelcomeMessage />
   <ProjectSelectionView />
 </template>
