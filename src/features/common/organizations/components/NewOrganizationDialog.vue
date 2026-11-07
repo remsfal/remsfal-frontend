@@ -72,6 +72,8 @@ async function onSubmit(event: FormSubmitEvent) {
     await organizationStore.fetchUserOrganization();
     appToast.success(t('organization.createSuccess'));
     emit('update:visible', false);
+    // The tenant view has no organization settings; its organizations page lists the new organization
+    if (route.meta.layout === 'tenant') return;
     const newOrg = organizationStore.userOrganizations.find(o => !previousIds.has(o.id));
     const orgId = newOrg?.id;
     if (orgId) {

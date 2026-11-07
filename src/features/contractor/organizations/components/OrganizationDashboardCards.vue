@@ -4,11 +4,13 @@ import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
 import BaseCard from '@/components/BaseCard.vue';
+import { NewOrganizationDialog } from '@/features/common/organizations';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 const { t } = useI18n();
 const organizationStore = useOrganizationStore();
 const isLoading = ref(true);
+const dialogVisible = ref(false);
 
 onMounted(async () => {
   try {
@@ -36,11 +38,17 @@ function formatAddressLine(address: { street?: string; zip?: string; city?: stri
     <span>
       {{ t('contractorDashboard.organization.emptyState.text') }}
       <br>
-      <RouterLink :to="{ name: 'ContractorOrganizations' }" class="font-semibold underline">
+      <button
+        type="button"
+        class="font-semibold underline cursor-pointer"
+        @click="dialogVisible = true"
+      >
         {{ t('contractorDashboard.organization.emptyState.link') }}
-      </RouterLink>
+      </button>
     </span>
   </Message>
+  <!-- Outside the message: it disappears as soon as the new organization is in the store -->
+  <NewOrganizationDialog v-model:visible="dialogVisible" />
   <div v-if="isLoading" class="mb-6 flex flex-col gap-4">
     <BaseCard loading />
   </div>
