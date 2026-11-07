@@ -60,6 +60,12 @@ describe('ContractorMobileBar.vue', () => {
     expect(navItems).toHaveLength(3);
   });
 
+  it('renders translated screen reader labels', () => {
+    const { wrapper } = mountComponent();
+    const labels = wrapper.findAll('.sr-only').map((label) => label.text());
+    expect(labels).toEqual(['Übersicht', 'Offene Anfragen', 'Laufende Aufträge']);
+  });
+
   it('highlights Übersicht when on ContractorDashboard route', async () => {
     const { wrapper } = mountComponent({ path: '/contractor/dashboard', name: 'ContractorDashboard' });
     await wrapper.vm.$nextTick();

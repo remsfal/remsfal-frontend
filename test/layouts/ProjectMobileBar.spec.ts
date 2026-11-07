@@ -64,6 +64,14 @@ describe('ProjectMobileBar.vue', () => {
     expect(navItems).toHaveLength(2);
   });
 
+  it('renders translated screen reader labels when no project is selected', () => {
+    const { wrapper } = mountComponent({
+      path: '/', name: 'ProjectSelection', params: {}, query: {}
+    });
+    const labels = wrapper.findAll('.sr-only').map((label) => label.text());
+    expect(labels).toEqual(['Meine Liegenschaften', 'Persönliche Einstellungen']);
+  });
+
   it('renders project navigation items when project is selected', () => {
     const { wrapper } = mountComponent({
       path: '/projects/123/dashboard',
