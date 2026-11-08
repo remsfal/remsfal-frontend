@@ -1855,11 +1855,14 @@ export interface paths {
     };
     /**
      * Retrieve order placements for the authenticated contractor.
-     * @description Returns all order placements sent to the contractor's organization. Requires at least MANAGER role in the contractor organization.
+     * @description Returns the order placements sent to the contractor's organization, optionally filtered by status. Requires at least MANAGER role in the contractor organization.
      */
     get: {
       parameters: {
-        query?: never;
+        query?: {
+          /** @description Filter to return only order placements matching one of the given statuses (repeat the parameter for multiple values, e.g. status=PLACED&status=CONFIRMED); omit to return order placements of all statuses */
+          status?: components["schemas"]["OrderPlacementStatus"][];
+        };
         header?: never;
         path?: never;
         cookie?: never;
