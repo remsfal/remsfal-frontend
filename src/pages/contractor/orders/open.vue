@@ -10,8 +10,6 @@ import { OrderPlacementRequestsCard, QuotationRequestsCard } from '@/features/co
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <OrderPlacementRequestsCard />
-    <QuotationRequestsCard />
-  </div>
+  <OrderPlacementRequestsCard />
+  <QuotationRequestsCard />
 </template>

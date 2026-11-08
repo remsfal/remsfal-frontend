@@ -6,9 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { CustomerView } from '@/features/contractor/customers'
+import { OngoingOrdersCard } from '@/features/contractor/orderManagement';
 </script>
 
 <template>
-  <CustomerView />
+  <OngoingOrdersCard />
 </template>

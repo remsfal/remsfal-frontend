@@ -41,8 +41,11 @@ export const quotationHandlers = [
     return HttpResponse.json({ items: [mockOrderPlacement] }, { status: 200 });
   }),
 
-  http.get(`${TICKETING_BASE}/order-management/order-placements`, () => {
-    return HttpResponse.json({ items: [mockOrderPlacement] }, { status: 200 });
+  http.get(`${TICKETING_BASE}/order-management/order-placements`, ({ request }) => {
+    // like the backend: repeated status params are combined with OR, no param returns all
+    const statuses = new URL(request.url).searchParams.getAll('status');
+    const items = [mockOrderPlacement].filter((p) => statuses.length === 0 || statuses.includes(p.status));
+    return HttpResponse.json({ items }, { status: 200 });
   }),
 
   http.patch(`${TICKETING_BASE}/order-management/order-placements/:placementId`, async ({ request }) => {

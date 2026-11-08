@@ -33,8 +33,8 @@ async function loadQuotationRequests(): Promise<QuotationRequestJson[]> {
 
 async function loadOrders(): Promise<OrderPlacementJson[]> {
   try {
-    const result = await orderPlacementService.getOrderPlacements();
-    return (result.items ?? []).filter((p) => p.status === 'PLACED').sort(byNewest).slice(0, 5);
+    const result = await orderPlacementService.getOrderPlacements(['PLACED']);
+    return (result.items ?? []).sort(byNewest).slice(0, 5);
   } catch (error) {
     console.error('Failed to load orders:', error);
     return [];

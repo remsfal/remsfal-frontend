@@ -2,10 +2,14 @@ import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClie
 
 export type OrderPlacementJson = Readable<ApiComponents['schemas']['OrderPlacementJson']>;
 export type OrderPlacementListJson = Readable<ApiComponents['schemas']['OrderPlacementListJson']>;
+export type OrderPlacementStatus = ApiComponents['schemas']['OrderPlacementStatus'];
 
 class OrderPlacementService {
-  async getOrderPlacements(): Promise<OrderPlacementListJson> {
-    return apiClient.get('/ticketing/v1/order-management/order-placements');
+  /**
+   * @param status only placements with one of these statuses are returned; omit or pass [] for all
+   */
+  async getOrderPlacements(status: OrderPlacementStatus[] = []): Promise<OrderPlacementListJson> {
+    return apiClient.get('/ticketing/v1/order-management/order-placements', { params: status.length ? { status } : {} });
   }
 
   async updateOrderPlacementStatus(

@@ -28,19 +28,19 @@ const model = computed<MenuItem[]>(() => {
         },
         {
           label: 'contractorMenu.orderManagement.open',
-          icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-pen-to-square' },
           to: '/contractor/orders/open',
           disabled: ordersDisabled.value,
         },
         {
           label: 'contractorMenu.orderManagement.ongoing',
-          icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-stop' },
           to: '/contractor/orders/ongoing',
           disabled: ordersDisabled.value,
         },
         {
           label: 'contractorMenu.orderManagement.closed',
-          icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
           to: '/contractor/orders/closed',
           disabled: ordersDisabled.value,
         },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
 import DataTable from 'primevue/datatable';
@@ -12,18 +12,14 @@ import type { OrderPlacementJson } from '@/features/contractor/orderManagement/s
 const { t, d } = useI18n();
 const appToast = useAppToast();
 
-const placements = ref<OrderPlacementJson[]>([]);
+const orderPlacementRequests = ref<OrderPlacementJson[]>([]);
 const isLoading = ref(true);
-
-const orderPlacementRequests = computed(() =>
-  placements.value.filter((p) => p.status === 'PLACED'),
-);
 
 async function fetchOrderPlacements() {
   isLoading.value = true;
   try {
-    const result = await orderPlacementService.getOrderPlacements();
-    placements.value = result.items ?? [];
+    const result = await orderPlacementService.getOrderPlacements(['PLACED']);
+    orderPlacementRequests.value = result.items ?? [];
   } catch (error) {
     console.error('Failed to fetch order placements:', error);
   } finally {
