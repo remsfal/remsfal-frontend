@@ -106,21 +106,44 @@ describe('OrganizationDashboardCards', () => {
     expect(wrapper.text()).toContain(org1.name);
   });
 
-  it('shows the empty-state message with a link when the user belongs to no organization at all', async () => {
+  const NewOrganizationDialogStub = {
+    name: 'NewOrganizationDialog',
+    props: ['visible'],
+    emits: ['update:visible'],
+    template: '<div class="new-organization-dialog-stub" />',
+  };
+
+  const mountWithoutOrganization = async () => {
     const store = useOrganizationStore();
     store.userOrganizations = [];
     store.userEmployments = [];
     store.initialized = true;
 
-    wrapper = mount(OrganizationDashboardCards);
+    wrapper = mount(OrganizationDashboardCards, { global: { stubs: { NewOrganizationDialog: NewOrganizationDialogStub } } });
     await flushPromises();
+  };
+
+  it('shows the empty-state message with a create action when the user belongs to no organization', async () => {
+    await mountWithoutOrganization();
 
     const message = wrapper.findComponent(Message);
     expect(message.exists()).toBe(true);
     expect(message.props('severity')).toBe('warn');
+    expect(message.find('button[type="button"]').text()).toBe('Organisation anlegen');
+  });
 
-    const link = wrapper.find('a[href="/contractor/organizations/new"]');
-    expect(link.exists()).toBe(true);
+  it('opens and closes the new organization dialog from the empty-state message', async () => {
+    await mountWithoutOrganization();
+
+    const dialog = wrapper.findComponent(NewOrganizationDialogStub);
+    expect(dialog.props('visible')).toBe(false);
+
+    await wrapper.findComponent(Message).find('button[type="button"]').trigger('click');
+    expect(dialog.props('visible')).toBe(true);
+
+    dialog.vm.$emit('update:visible', false);
+    await flushPromises();
+    expect(dialog.props('visible')).toBe(false);
   });
 
   it('shows a loading placeholder and no message before the store finishes fetching', () => {

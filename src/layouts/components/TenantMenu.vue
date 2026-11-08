@@ -35,12 +35,12 @@ const model = ref([
       {
         label: 'tenantMenu.furtherServices.properties',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: '/manager/projects',
+        to: '/tenant/properties',
       },
       {
-        label: 'tenantMenu.furtherServices.orders',
+        label: 'tenantMenu.furtherServices.organizations',
         icon: { type: 'pi', name: 'pi pi-fw pi-wrench' },
-        to: '/contractor/dashboard',
+        to: '/tenant/organizations',
       },
     ],
   },

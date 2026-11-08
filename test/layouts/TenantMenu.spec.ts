@@ -62,8 +62,8 @@ describe('TenantMenu.vue', () => {
     expect(labels).toContain('Überblick');
     expect(labels).toContain('Meldungen');
     expect(labels).toContain('Persönliche Daten');
-    expect(labels).toContain('Meine Immobilien');
-    expect(labels).toContain('Meine Aufträge');
+    expect(labels).toContain('Eigene Immobilien');
+    expect(labels).toContain('Meine Organisationen');
   });
 
   it('renders icons for menu items', async () => {
@@ -87,5 +87,19 @@ describe('TenantMenu.vue', () => {
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.pi-user').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith('/tenant/account-data');
+  });
+
+  it('navigates to the tenant own properties page when own properties is clicked', async () => {
+    await wrapper.vm.$nextTick();
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
+    await wrapper.find('.pi-home').trigger('click');
+    expect(pushSpy).toHaveBeenCalledWith('/tenant/properties');
+  });
+
+  it('navigates to the tenant organizations page when my organizations is clicked', async () => {
+    await wrapper.vm.$nextTick();
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
+    await wrapper.find('.pi-wrench').trigger('click');
+    expect(pushSpy).toHaveBeenCalledWith('/tenant/organizations');
   });
 });

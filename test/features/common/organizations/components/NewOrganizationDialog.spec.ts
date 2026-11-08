@@ -3,6 +3,8 @@ import { mount, flushPromises } from '@vue/test-utils';
 import NewOrganizationDialog from '@/features/common/organizations/components/NewOrganizationDialog.vue';
 import PhoneInputComponent from '@/components/PhoneInput.vue';
 import { organizationService } from '@/services/OrganizationService';
+import { useUserSessionStore } from '@/stores/UserSession';
+import router from '@/router';
 
 const DialogStub = {
   name: 'StubDialog',
@@ -104,6 +106,23 @@ describe('NewOrganizationDialog', () => {
         expect.objectContaining({ name: 'Test Organization' }),
       );
       expect(wrapper.emitted('update:visible')).toBeTruthy();
+    });
+
+    it('stays on the page after creating an organization in the tenant view', async () => {
+      vi.spyOn(organizationService, 'createOrganization').mockClear().mockResolvedValue(undefined);
+      useUserSessionStore().user = { id: 'user-1', email: 'test@example.com' };
+      await router.push('/tenant/organizations');
+      const pushSpy = vi.spyOn(router, 'push');
+      const wrapper = mountDialog();
+
+      await wrapper.find('input[name="name"]').setValue('Test Organization');
+      await wrapper.find('form').trigger('submit');
+
+      // the store refresh after creation goes through msw and needs more than one tick
+      await vi.waitFor(() => expect(wrapper.emitted('update:visible')).toBeTruthy());
+      expect(organizationService.createOrganization).toHaveBeenCalled();
+      expect(pushSpy).not.toHaveBeenCalled();
+      pushSpy.mockRestore();
     });
 
     it('logs and does not emit update:visible when createOrganization fails', async () => {
