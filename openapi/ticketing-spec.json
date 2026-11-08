@@ -4224,7 +4224,18 @@
     "/ticketing/v1/order-management/order-placements" : {
       "get" : {
         "summary" : "Retrieve order placements for the authenticated contractor.",
-        "description" : "Returns all order placements sent to the contractor's organization. Requires at least MANAGER role in the contractor organization.",
+        "description" : "Returns the order placements sent to the contractor's organization, optionally filtered by status. Requires at least MANAGER role in the contractor organization.",
+        "parameters" : [ {
+          "description" : "Filter to return only order placements matching one of the given statuses (repeat the parameter for multiple values, e.g. status=PLACED&status=CONFIRMED); omit to return order placements of all statuses",
+          "name" : "status",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderPlacementStatus"
+            }
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "Order placements returned successfully",
