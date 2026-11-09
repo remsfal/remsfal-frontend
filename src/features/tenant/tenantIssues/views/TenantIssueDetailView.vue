@@ -79,12 +79,6 @@ const confirmCancelIssue = () => {
 
 <template>
   <div class="flex flex-col gap-4">
-    <div class="flex items-center gap-2">
-      <h1 class="text-2xl font-semibold text-color">
-        {{ t('tenantIssues.detail.title') }}
-      </h1>
-    </div>
-
     <Message v-if="error" severity="error" :closable="false">
       {{ error }}
     </Message>

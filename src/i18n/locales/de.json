@@ -541,7 +541,6 @@
   "tenantIssues.empty": "Keine Meldungen vorhanden",
   "tenantIssues.card.updated": "Aktualisiert am:",
   "tenantIssues.card.type": "Art:",
-  "tenantIssues.detail.title": "Meldungsdetails",
   "tenantIssues.detail.number": "Ticketnummer:",
   "tenantIssues.detail.untitled": "Unbenannte Meldung",
   "tenantIssues.detail.loadError": "Meldungsdetails konnten nicht geladen werden.",
