@@ -108,6 +108,13 @@ describe('TenantIssueDetailView', () => {
     expect(summaryStub.props('deletingIssue')).toBe(false);
   });
 
+  it('renders no page heading, like all other pages', async () => {
+    const wrapper = mountDetails();
+    await flushPromises();
+
+    expect(wrapper.find('h1').exists()).toBe(false);
+  });
+
   it('refetches issue when issueId changes', async () => {
     vi.mocked(tenantIssueService.getIssue)
       .mockResolvedValueOnce(baseIssue)
