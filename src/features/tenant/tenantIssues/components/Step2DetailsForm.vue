@@ -142,7 +142,7 @@ function handleBack() {
           <!-- Caused By Field -->
           <div class="flex flex-col gap-2">
             <label for="causedBy" class="font-semibold">
-              {{ t('tenantIssue.step2.causedByLabel') }}
+              {{ t('tenantIssue.step2.causedByLabel') }} *
             </label>
             <InputText
               id="causedBy"
@@ -231,7 +231,7 @@ function handleBack() {
           icon="pi pi-arrow-right"
           iconPos="right"
           :disabled="
-            (!$form.description?.valid || !$form.description?.dirty) ||
+            !$form.description?.value?.trim() || $form.description?.invalid ||
               (issueType === 'DEFECT' &&
                 (!localCausedByUnknown && !$form.causedBy?.value?.trim()))
           "

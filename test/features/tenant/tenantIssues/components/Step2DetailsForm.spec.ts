@@ -102,6 +102,32 @@ describe('Step2DetailsForm', () => {
     expect(findNextButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
+  it('marks causedBy as required for DEFECT', () => {
+    const wrapper = mountForm({ issueType: 'DEFECT' });
+    expect(wrapper.find('label[for="causedBy"]').text()).toMatch(/\*$/);
+  });
+
+  it('enables the next button when returning to the step with prefilled values', async () => {
+    const wrapper = mount(Step2DetailsForm, {
+      props: {
+        ...defaultProps,
+        issueType: 'DEFECT',
+        causedBy: 'Nachbar 2. OG',
+        description: 'Es tropft aus der Wand',
+      },
+    });
+    await flushPromises();
+
+    expect(findNextButton(wrapper).attributes('disabled')).toBeUndefined();
+  });
+
+  it('keeps the next button disabled when the description only contains whitespace', async () => {
+    const wrapper = mountForm({ issueType: 'INQUIRY' });
+    await wrapper.find('textarea[name="description"]').setValue('   ');
+
+    expect(findNextButton(wrapper).attributes('disabled')).toBeDefined();
+  });
+
   it('emits back when the back button is clicked', async () => {
     const wrapper = mountForm();
     await findBackButton(wrapper).trigger('click');
