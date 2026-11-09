@@ -63,7 +63,7 @@ onMounted(() => loadData());
 </script>
 
 <template>
-  <div class="mb-6 grid grid-cols-1 xl:grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
     <BaseCard :loading="isLoading" :skeletonRows="5">
       <template #title>
         {{ t('orderManagement.dashboard.newQuotationRequests') }}

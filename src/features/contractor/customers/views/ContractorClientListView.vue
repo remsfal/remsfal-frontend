@@ -24,14 +24,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <ContractorClientListCard
-      v-for="organizationId in organizationIds"
-      :key="organizationId"
-      :organizationId="organizationId"
-    />
-    <Message v-if="initialized && organizationIds.length === 0" severity="info">
-      {{ t('contractorClients.noOrganization') }}
-    </Message>
-  </div>
+  <ContractorClientListCard
+    v-for="organizationId in organizationIds"
+    :key="organizationId"
+    :organizationId="organizationId"
+  />
+  <Message v-if="initialized && organizationIds.length === 0" severity="info">
+    {{ t('contractorClients.noOrganization') }}
+  </Message>
 </template>

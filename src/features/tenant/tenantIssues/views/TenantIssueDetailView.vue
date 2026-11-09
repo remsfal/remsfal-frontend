@@ -78,46 +78,44 @@ const confirmCancelIssue = () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <Message v-if="error" severity="error" :closable="false">
-      {{ error }}
-    </Message>
+  <Message v-if="error" severity="error" :closable="false">
+    {{ error }}
+  </Message>
 
-    <BaseCard v-if="loading" loading :skeletonRows="6" data-testid="issue-loading-skeleton" />
+  <BaseCard v-if="loading" loading :skeletonRows="6" data-testid="issue-loading-skeleton" />
 
-    <template v-else-if="issue">
-      <TenantIssueRequestsCard :issueId="issue.id || props.issueId" />
-      <TenantIssueSummaryCard
-        :issue="issue"
-        :deletingIssue="deletingIssue"
-        @cancel="openCancelDialog"
+  <template v-else-if="issue">
+    <TenantIssueRequestsCard :issueId="issue.id || props.issueId" />
+    <TenantIssueSummaryCard
+      :issue="issue"
+      :deletingIssue="deletingIssue"
+      @cancel="openCancelDialog"
+    />
+    <TenantIssueTimelineCard :issueId="issue.id || props.issueId" />
+  </template>
+
+  <BaseDialog
+    v-model:visible="showCancelDialog"
+    :header="t('tenantIssues.detail.cancelIssue')"
+  >
+    <p class="mb-4">
+      {{ t('tenantIssues.detail.cancelConfirm') }}
+    </p>
+    <template #footer>
+      <Button
+        :label="t('button.cancel')"
+        severity="secondary"
+        @click="showCancelDialog = false"
       />
-      <TenantIssueTimelineCard :issueId="issue.id || props.issueId" />
+      <Button
+        :label="t('tenantIssues.detail.cancelIssue')"
+        severity="danger"
+        icon="pi pi-trash"
+        data-testid="tenant-issue-cancel-confirm"
+        :loading="deletingIssue"
+        :disabled="deletingIssue"
+        @click="confirmCancelIssue"
+      />
     </template>
-
-    <BaseDialog
-      v-model:visible="showCancelDialog"
-      :header="t('tenantIssues.detail.cancelIssue')"
-    >
-      <p class="mb-4">
-        {{ t('tenantIssues.detail.cancelConfirm') }}
-      </p>
-      <template #footer>
-        <Button
-          :label="t('button.cancel')"
-          severity="secondary"
-          @click="showCancelDialog = false"
-        />
-        <Button
-          :label="t('tenantIssues.detail.cancelIssue')"
-          severity="danger"
-          icon="pi pi-trash"
-          data-testid="tenant-issue-cancel-confirm"
-          :loading="deletingIssue"
-          :disabled="deletingIssue"
-          @click="confirmCancelIssue"
-        />
-      </template>
-    </BaseDialog>
-  </div>
+  </BaseDialog>
 </template>
