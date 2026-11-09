@@ -108,6 +108,22 @@ describe('TenantIssueDetailView', () => {
     expect(summaryStub.props('deletingIssue')).toBe(false);
   });
 
+  it('shows a skeleton card instead of the issue cards while loading', async () => {
+    let resolveIssue: ((value: TenantIssueJson) => void) | undefined;
+    vi.mocked(tenantIssueService.getIssue).mockReturnValue(new Promise((resolve) => { resolveIssue = resolve; }));
+    const wrapper = mountDetails();
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('[data-testid="issue-loading-skeleton"]').exists()).toBe(true);
+    expect(wrapper.findComponent({ name: 'TenantIssueSummaryCard' }).exists()).toBe(false);
+
+    resolveIssue!(baseIssue);
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="issue-loading-skeleton"]').exists()).toBe(false);
+    expect(wrapper.findComponent({ name: 'TenantIssueSummaryCard' }).exists()).toBe(true);
+  });
+
   it('refetches issue when issueId changes', async () => {
     vi.mocked(tenantIssueService.getIssue)
       .mockResolvedValueOnce(baseIssue)

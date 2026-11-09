@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProgressSpinner from 'primevue/progressspinner';
 import Message from 'primevue/message';
 import NewTenancyIssueDialog from '@/features/tenant/tenantIssues/components/NewTenancyIssueDialog.vue';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
@@ -55,7 +54,7 @@ const Step4Stub = {
   name: 'Step4SummaryForm',
   props: [
     'tenancyId', 'issueType', 'issueCategory', 'rentalUnitId', 'causedBy',
-    'causedByUnknown', 'location', 'description', 'files', 'tenancies', 'generatedTitle',
+    'causedByUnknown', 'location', 'description', 'files', 'tenancies', 'generatedTitle', 'submitting',
   ],
   emits: ['submit', 'back', 'editStep'],
   template: '<div data-testid="step4" />',
@@ -115,17 +114,19 @@ describe('NewTenancyIssueDialog', () => {
     expect(tenancyService.getTenancies).toHaveBeenCalledTimes(1);
   });
 
-  it('shows a loading spinner while tenancies are being fetched', async () => {
+  it('shows a loading skeleton while tenancies are being fetched', async () => {
     let resolvePromise: ((value: TenancyJson[]) => void) | undefined;
     vi.mocked(tenancyService.getTenancies).mockReturnValue(new Promise((resolve) => { resolvePromise = resolve; }));
 
     const wrapper = mountDialog();
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.findComponent(ProgressSpinner).exists()).toBe(true);
+    expect(wrapper.find('[data-testid="tenancies-loading-skeleton"]').exists()).toBe(true);
 
     resolvePromise!([tenancyA]);
     await flushPromises();
+
+    expect(wrapper.find('[data-testid="tenancies-loading-skeleton"]').exists()).toBe(false);
   });
 
   it('auto-selects the tenancy when only one is available', async () => {
@@ -302,6 +303,23 @@ describe('NewTenancyIssueDialog', () => {
     }));
     expect(wrapper.emitted('issueCreated')?.at(-1)).toEqual([createdIssue]);
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false]);
+  });
+
+  it('passes the submitting state to the summary step while the issue is being created', async () => {
+    let resolveCreate: ((value: TenantIssueJson) => void) | undefined;
+    vi.mocked(tenantIssueService.createIssueWithAttachment)
+      .mockReturnValue(new Promise((resolve) => { resolveCreate = resolve; }));
+    const wrapper = mountDialog();
+    await flushPromises();
+    await fillDefectForm(wrapper);
+
+    expect(wrapper.findComponent(Step4Stub).props('submitting')).toBe(false);
+    await wrapper.findComponent(Step4Stub).vm.$emit('submit');
+    expect(wrapper.findComponent(Step4Stub).props('submitting')).toBe(true);
+
+    resolveCreate!(createdIssue);
+    await flushPromises();
+    expect(wrapper.findComponent(Step4Stub).props('submitting')).toBe(false);
   });
 
   it('logs, shows no toast, and keeps the dialog open when submission fails', async () => {

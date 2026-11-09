@@ -166,4 +166,14 @@ describe('Step4SummaryForm', () => {
 
     expect(wrapper.emitted('submit')).toBeTruthy();
   });
+
+  it('shows the submit button in loading state and disables back while submitting', () => {
+    const wrapper = mount(Step4SummaryForm, { props: { ...defaultProps, submitting: true } });
+    const submitButton = wrapper.findAllComponents(Button).find((btn) => btn.props('icon') === 'pi pi-check')!;
+    const backButton = wrapper.findAllComponents(Button).find((btn) => btn.props('icon') === 'pi pi-arrow-left')!;
+
+    expect(submitButton.props('loading')).toBe(true);
+    expect(submitButton.attributes('disabled')).toBeDefined();
+    expect(backButton.attributes('disabled')).toBeDefined();
+  });
 });

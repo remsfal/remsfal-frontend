@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
 import Message from 'primevue/message';
-import ProgressSpinner from 'primevue/progressspinner';
+import BaseCard from '@/components/BaseCard.vue';
 import TenantIssueTimelineCard from '../components/TenantIssueTimelineCard.vue';
 import TenantIssueRequestsCard from '../components/TenantIssueRequestsCard.vue';
 import BaseDialog from '@/components/BaseDialog.vue';
@@ -89,10 +89,7 @@ const confirmCancelIssue = () => {
       {{ error }}
     </Message>
 
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
-      <span class="ml-3 text-muted-color">{{ t('tenantIssues.loading') }}</span>
-    </div>
+    <BaseCard v-if="loading" loading :skeletonRows="6" data-testid="issue-loading-skeleton" />
 
     <template v-else-if="issue">
       <TenantIssueRequestsCard :issueId="issue.id || props.issueId" />
