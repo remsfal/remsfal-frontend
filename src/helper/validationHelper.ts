@@ -55,6 +55,15 @@ export function phoneSchema(t: Translate) {
     .refine((v) => !v || isValidPhone(v), { error: () => t('validation.phone') });
 }
 
+/**
+ * PATCH value of an optional phone number form field. An emptied field is sent as `''`, which makes the
+ * backend remove the number; a field that is not part of the form state stays unchanged (`undefined`).
+ */
+export function phonePatchValue(state: { value?: unknown } | undefined): string | undefined {
+  if (!state) return undefined;
+  return typeof state.value === 'string' ? state.value : '';
+}
+
 // Trim before piping into z.email(): the format check of z.email().trim() runs on the untrimmed value.
 
 /** Required email address. */

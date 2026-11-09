@@ -12,7 +12,7 @@ import Message from 'primevue/message';
 import Button from 'primevue/button';
 import BaseCard from '@/components/BaseCard.vue';
 import PhoneInput from '@/components/PhoneInput.vue';
-import { phoneSchema } from '@/helper/validationHelper';
+import { phoneSchema, phonePatchValue } from '@/helper/validationHelper';
 import { organizationService } from '@/services/OrganizationService';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -91,7 +91,7 @@ async function onSubmit(event: FormSubmitEvent) {
   const s = event.states;
   const payload = {
     name: s.name?.value || undefined,
-    phone: s.phone?.value || undefined,
+    phone: phonePatchValue(s.phone),
     email: currentValues.email || undefined,
     trade: s.trade?.value || undefined,
   };

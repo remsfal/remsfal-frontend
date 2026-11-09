@@ -114,6 +114,23 @@ describe('OrganizationBaseDataCard', () => {
     expect(wrapper.text()).toContain('Pflichtfelder');
   });
 
+  it('sends an emptied phone number as empty string so it gets removed', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: { name: { value: 'Updated GmbH' }, phone: { value: '' } },
+    });
+    await flushPromises();
+
+    expect(organizationService.updateOrganization).toHaveBeenCalledWith(
+      'org-123',
+      expect.objectContaining({ phone: '' }),
+    );
+  });
+
   it('calls updateOrganization on valid submit and shows success toast', async () => {
     const wrapper = mountCard();
     await flushPromises();

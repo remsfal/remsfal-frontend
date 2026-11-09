@@ -364,6 +364,28 @@ describe('UserContactDataCard', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
+  test('sends emptied phone numbers as empty strings so they get removed', async () => {
+    await flushPromises();
+    vi.mocked(userService.updateUser).mockResolvedValue({ ...mockProfile, mobilePhoneNumber: undefined });
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Max' },
+        lastName: { value: 'Mustermann' },
+        mobilePhoneNumber: { value: '' },
+        businessPhoneNumber: { value: '+491511234568' },
+      },
+    });
+    await flushPromises();
+
+    const payload = vi.mocked(userService.updateUser).mock.calls.at(-1)![0];
+    expect(payload.mobilePhoneNumber).toBe('');
+    expect(payload.businessPhoneNumber).toBe('+491511234568');
+    expect(payload.privatePhoneNumber).toBeUndefined();
+  });
+
   test('submits with fallback defaults when optional fields and locale are empty', async () => {
     vi.mocked(userService.getUser).mockResolvedValue({ ...mockProfile, dateOfBirth: undefined });
     wrapper = mountCard();
