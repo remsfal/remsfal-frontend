@@ -541,7 +541,6 @@
   "tenantIssues.empty": "No issues available",
   "tenantIssues.card.updated": "Updated:",
   "tenantIssues.card.type": "Type:",
-  "tenantIssues.detail.title": "Issue details",
   "tenantIssues.detail.number": "Ticket number:",
   "tenantIssues.detail.untitled": "Untitled issue",
   "tenantIssues.detail.loadError": "Issue details could not be loaded.",
