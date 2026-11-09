@@ -17,7 +17,7 @@ import Skeleton from 'primevue/skeleton';
 import { userService, type UserJson } from '@/features/common/users/services/UserService';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { toISODateString } from '@/helper/dateHelper';
-import { nameSchema, phoneSchema, optionalEmailSchema } from '@/helper/validationHelper';
+import { nameSchema, phoneSchema, phonePatchValue, optionalEmailSchema } from '@/helper/validationHelper';
 
 const { t, locale } = useI18n();
 const appToast = useAppToast();
@@ -147,9 +147,9 @@ async function onSubmit(event: FormSubmitEvent) {
       lastName: s.lastName?.value || undefined,
       placeOfBirth: s.placeOfBirth?.value?.trim() || undefined,
       dateOfBirth: toISODateString(dateOfBirthValue.value) || undefined,
-      mobilePhoneNumber: s.mobilePhoneNumber?.value || undefined,
-      businessPhoneNumber: s.businessPhoneNumber?.value || undefined,
-      privatePhoneNumber: s.privatePhoneNumber?.value || undefined,
+      mobilePhoneNumber: phonePatchValue(s.mobilePhoneNumber),
+      businessPhoneNumber: phonePatchValue(s.businessPhoneNumber),
+      privatePhoneNumber: phonePatchValue(s.privatePhoneNumber),
       locale: s.locale?.value || undefined,
       additionalEmails,
     });

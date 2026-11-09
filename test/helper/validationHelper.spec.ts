@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isValidPhone, isValidUuid, phoneSchema, emailSchema } from '@/helper/validationHelper';
+import { isValidPhone, isValidUuid, phoneSchema, phonePatchValue, emailSchema } from '@/helper/validationHelper';
 import { optionalEmailSchema, nameSchema, streetSchema } from '@/helper/validationHelper';
 
 const t = ((key: string) => key) as unknown as Parameters<typeof phoneSchema>[0];
@@ -45,6 +45,22 @@ describe('validationHelper', () => {
 
     it.each(['', 'not-a-uuid', '3f2504e0-4f89-11d3-9a0c-0305e82c330'])('rejects %j', (value) => {
       expect(isValidUuid(value)).toBe(false);
+    });
+  });
+
+  describe('phonePatchValue', () => {
+    it('sends an entered number as is', () => {
+      expect(phonePatchValue({ value: '+491511234567' })).toBe('+491511234567');
+    });
+
+    it('sends an emptied field as empty string so the backend removes the number', () => {
+      expect(phonePatchValue({ value: '' })).toBe('');
+      expect(phonePatchValue({ value: undefined })).toBe('');
+      expect(phonePatchValue({ value: null })).toBe('');
+    });
+
+    it('leaves the number unchanged when the field is not part of the form state', () => {
+      expect(phonePatchValue(undefined)).toBeUndefined();
     });
   });
 
