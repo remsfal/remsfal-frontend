@@ -101,11 +101,12 @@ npm run dev
 The app is served at [http://localhost:5173](http://localhost:5173) with hot module replacement.
 The Vite dev server proxies all API calls to the locally running backend, so no CORS setup is required:
 
-| Path          | Target                  | Purpose                                     |
-|---------------|-------------------------|---------------------------------------------|
-| `/api`        | `http://localhost:8080` | Platform service (login, projects, users …) |
-| `/ticketing`  | `http://localhost:8081` | Ticketing service (issues, chat, documents) |
-| `/otlp`       | `http://localhost:4318` | OpenTelemetry collector (Grafana LGTM)      |
+| Path            | Target                  | Purpose                                     |
+|-----------------|-------------------------|---------------------------------------------|
+| `/api`          | `http://localhost:8080` | Platform service (login, projects, users …) |
+| `/ticketing`    | `http://localhost:8081` | Ticketing service (issues, chat, documents) |
+| `/notification` | `http://localhost:8082` | Notification service (email settings)       |
+| `/otlp`         | `http://localhost:4318` | OpenTelemetry collector (Grafana LGTM)      |
 
 **3. Log in.** Click *Login* – in dev mode the backend shows a dev login page instead of Google OAuth.
 Choose one of the seed users (`verwalter@remsfal.dev`, `mieter@remsfal.dev`, `handwerker@remsfal.dev`) to explore

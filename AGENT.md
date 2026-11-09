@@ -483,9 +483,9 @@ The application communicates with three separate backend microservices, each wit
 
 - **Platform** (`/api` → localhost:8080) - Core platform functionality
 - **Ticketing** (`/ticketing` → localhost:8081) - Issue/ticket management
-- **Notification** (implied) - Notification service
+- **Notification** (`/notification` → localhost:8082) - Notification service (e.g. email settings)
 
-Development proxy is configured in `vite.config.ts:50-53` to route requests to appropriate backends.
+The development proxy (`server.proxy` in `vite.config.ts`) routes requests to the appropriate backends.
 
 ### API Integration Pattern
 
