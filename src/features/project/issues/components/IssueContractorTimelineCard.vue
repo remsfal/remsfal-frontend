@@ -76,13 +76,12 @@ const sendTimelineEntry = async (organizationId: string, payload: TimelineWritab
 const sendHandlerFor = (organizationId: string) => (payload: TimelineWritableJson, files: File[]) =>
   sendTimelineEntry(organizationId, payload, files);
 
-const sendToSoleContractor = async (payload: TimelineWritableJson, files: File[]) => {
-  if (contractors.value.length !== 1) return;
-  await sendTimelineEntry(contractors.value[0].organizationId, payload, files);
-};
+const soleContractorId = () => contractors.value[0]!.organizationId;
 
-const loadForSoleOrAllContractors = () =>
-  loadTimelineEntries(contractors.value.length === 1 ? contractors.value[0].organizationId : undefined);
+const sendToSoleContractor = (payload: TimelineWritableJson, files: File[]) =>
+  sendTimelineEntry(soleContractorId(), payload, files);
+
+const loadForSoleContractor = () => loadTimelineEntries(soleContractorId());
 </script>
 
 <template>
@@ -132,12 +131,12 @@ const loadForSoleOrAllContractors = () =>
       </template>
     </BaseCard>
   </template>
-  <template v-else-if="contractorsLoaded">
+  <!-- Hidden until a quotation request involves a contractor: before that the timeline can have no entries -->
+  <template v-else-if="contractorsLoaded && contractors.length === 1">
     <TimelineCard
-      :load="loadForSoleOrAllContractors"
+      :load="loadForSoleContractor"
       :send="sendToSoleContractor"
       :watchSource="() => props.issueId"
-      :hideComposer="contractors.length !== 1"
       :title="t('issueContractorTimeline.title')"
       loadErrorLogLabel="Error fetching contractor timeline:"
       sendErrorLogLabel="Error creating contractor timeline entry:"
