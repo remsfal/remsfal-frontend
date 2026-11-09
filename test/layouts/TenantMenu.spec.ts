@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TenantMenu from '@/layouts/components/TenantMenu.vue';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 describe('TenantMenu.vue', () => {
   let wrapper: VueWrapper;
@@ -50,10 +51,21 @@ describe('TenantMenu.vue', () => {
     expect(submenus[1].findAll('.layout-menuitem-text')).toHaveLength(1);
   });
 
-  it('renders two submenu items under "Weitere Leistungen"', async () => {
+  it('renders two submenu items under "Weitere Leistungen" for a user without contractor context', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[2].findAll('.layout-menuitem-text')).toHaveLength(2);
+    expect(submenus[2].findAll('.layout-menuitem-text').map((el) => el.text()))
+      .toEqual(['Eigene Immobilien', 'Meine Organisationen']);
+  });
+
+  it('renders "Zur Auftragsverwaltung" as third item for a user with contractor context', async () => {
+    useUserSessionStore().user = {
+      id: 'user-1', email: 'test@example.com', userContexts: ['TENANT', 'CONTRACTOR'] 
+    };
+    await wrapper.vm.$nextTick();
+    const submenus = wrapper.findAll('.layout-submenu');
+    expect(submenus[2].findAll('.layout-menuitem-text').map((el) => el.text()))
+      .toEqual(['Eigene Immobilien', 'Meine Organisationen', 'Zur Auftragsverwaltung']);
   });
 
   it('renders expected submenu item labels', async () => {
@@ -101,5 +113,15 @@ describe('TenantMenu.vue', () => {
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.pi-wrench').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith('/tenant/organizations');
+  });
+
+  it('switches to the contractor view when "Zur Auftragsverwaltung" is clicked', async () => {
+    useUserSessionStore().user = {
+      id: 'user-1', email: 'test@example.com', userContexts: ['CONTRACTOR'] 
+    };
+    await wrapper.vm.$nextTick();
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
+    await wrapper.find('.pi-briefcase').trigger('click');
+    expect(pushSpy).toHaveBeenCalledWith('/contractor/dashboard');
   });
 });

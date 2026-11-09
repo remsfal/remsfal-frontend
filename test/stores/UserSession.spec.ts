@@ -37,6 +37,37 @@ describe('UserSession Store', () => {
     });
   });
 
+  describe('user context getters', () => {
+    it('are all false without a user', () => {
+      expect(store.isManager).toBe(false);
+      expect(store.isTenant).toBe(false);
+      expect(store.isContractor).toBe(false);
+    });
+
+    it('are all false for a user without contexts', () => {
+      store.user = { id: 'user-1', email: 'test@example.com' } as User;
+      expect(store.isManager).toBe(false);
+      expect(store.isTenant).toBe(false);
+      expect(store.isContractor).toBe(false);
+    });
+
+    it('reflect the contexts of the user', () => {
+      store.user = {
+        id: 'user-1', email: 'test@example.com', userContexts: ['MANAGER', 'TENANT'] 
+      } as User;
+      expect(store.isManager).toBe(true);
+      expect(store.isTenant).toBe(true);
+      expect(store.isContractor).toBe(false);
+
+      store.user = {
+        id: 'user-1', email: 'test@example.com', userContexts: ['CONTRACTOR'] 
+      } as User;
+      expect(store.isManager).toBe(false);
+      expect(store.isTenant).toBe(false);
+      expect(store.isContractor).toBe(true);
+    });
+  });
+
   describe('refreshSessionState', () => {
     it('should update user on successful fetch', async () => {
       const mockUser = { email: 'test@example.com' };

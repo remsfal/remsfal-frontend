@@ -3,10 +3,10 @@ import { useUserSessionStore } from '@/stores/UserSession'
 import { useProjectStore } from '@/stores/ProjectStore'
 import { safeRedirectPath } from '@/helper/redirectHelper'
 
-function homeRouteFor(roles: string[]): RouteLocationRaw {
-  if (roles.includes('MANAGER')) return { name: 'ProjectSelection' }
-  if (roles.includes('CONTRACTOR')) return { name: 'ContractorDashboard' }
-  if (roles.includes('TENANT')) return { name: 'TenantDashboard' }
+function homeRouteFor(sessionStore: ReturnType<typeof useUserSessionStore>): RouteLocationRaw {
+  if (sessionStore.isManager) return { name: 'ProjectSelection' }
+  if (sessionStore.isContractor) return { name: 'ContractorDashboard' }
+  if (sessionStore.isTenant) return { name: 'TenantDashboard' }
   return { name: 'ProjectSelection' }
 }
 
@@ -29,11 +29,11 @@ export function setupRouterGuards(router: Router) {
     }
 
     if (to.name === 'Login' && isLoggedIn) {
-      return safeRedirectPath(to.query.redirect) ?? homeRouteFor(sessionStore.user?.userContexts || [])
+      return safeRedirectPath(to.query.redirect) ?? homeRouteFor(sessionStore)
     }
 
     if (to.name === 'LandingPage' && isLoggedIn) {
-      return homeRouteFor(sessionStore.user?.userContexts || [])
+      return homeRouteFor(sessionStore)
     }
   })
 }

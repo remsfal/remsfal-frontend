@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ManagerMenu from '@/layouts/components/ManagerMenu.vue';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 describe('ManagerMenu.vue', () => {
   let wrapper: VueWrapper;
@@ -18,34 +19,71 @@ describe('ManagerMenu.vue', () => {
     expect(wrapper.find('.layout-menu').exists()).toBe(true);
   });
 
-  it('renders two root menu sections', async () => {
+  it('renders three root menu sections', async () => {
     await wrapper.vm.$nextTick();
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems).toHaveLength(2);
+    expect(rootItems).toHaveLength(3);
   });
 
-  it('renders "Meine Daten" as the first section label', async () => {
+  it('renders the business section first, then personal data, then further services', async () => {
     await wrapper.vm.$nextTick();
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems[0].text()).toContain('Meine Daten');
+    expect(rootItems[0].text()).toContain('Liegenschaftsverwaltung');
+    expect(rootItems[1].text()).toContain('Meine Daten');
+    expect(rootItems[2].text()).toContain('Weitere Leistungen');
   });
 
-  it('renders "Organisationen" as the second section label', async () => {
-    await wrapper.vm.$nextTick();
-    const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems[1].text()).toContain('Organisationen');
-  });
-
-  it('renders six submenu items under "Meine Daten"', async () => {
+  it('renders four submenu items under "Liegenschaftsverwaltung"', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[0].findAll('.layout-menuitem-text')).toHaveLength(6);
+    expect(submenus[0].findAll('.layout-menuitem-text')).toHaveLength(4);
   });
 
-  it('renders one submenu item under "Organisationen"', async () => {
+  it('renders two submenu items under "Meine Daten" for a user without tenancy', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[1].findAll('.layout-menuitem-text')).toHaveLength(1);
+    expect(submenus[1].findAll('.layout-menuitem-text')).toHaveLength(2);
+    expect(wrapper.text()).not.toContain('Persönliche Mietverhältnisse');
+  });
+
+  it('renders only "Organisationen anlegen" under "Weitere Leistungen" for a user without contractor context', async () => {
+    await wrapper.vm.$nextTick();
+    const submenus = wrapper.findAll('.layout-submenu');
+    expect(submenus[2].findAll('.layout-menuitem-text').map((el) => el.text()))
+      .toEqual(['Organisationen anlegen']);
+  });
+
+  it('renders "Zur Auftragsverwaltung" above "Organisationen anlegen" for a user with contractor context', async () => {
+    useUserSessionStore().user = {
+      id: 'user-1', email: 'test@example.com', userContexts: ['MANAGER', 'CONTRACTOR'] 
+    };
+    await wrapper.vm.$nextTick();
+    const submenus = wrapper.findAll('.layout-submenu');
+    expect(submenus[2].findAll('.layout-menuitem-text').map((el) => el.text()))
+      .toEqual(['Zur Auftragsverwaltung', 'Organisationen anlegen']);
+  });
+
+  it('switches to the contractor view when "Zur Auftragsverwaltung" is clicked', async () => {
+    useUserSessionStore().user = {
+      id: 'user-1', email: 'test@example.com', userContexts: ['CONTRACTOR'] 
+    };
+    await wrapper.vm.$nextTick();
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
+    await wrapper.find('.pi-briefcase').trigger('click');
+    expect(pushSpy).toHaveBeenCalledWith('/contractor/dashboard');
+  });
+
+  it('shows "Persönliche Mietverhältnisse" linking to the tenant view for a user with tenant context', async () => {
+    useUserSessionStore().user = {
+      id: 'user-1', email: 'test@example.com', userContexts: ['MANAGER', 'TENANT'] 
+    };
+    await wrapper.vm.$nextTick();
+
+    const submenus = wrapper.findAll('.layout-submenu');
+    expect(submenus[1].findAll('.layout-menuitem-text')).toHaveLength(3);
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
+    await wrapper.find('.pi-key').trigger('click');
+    expect(pushSpy).toHaveBeenCalledWith('/tenant/dashboard');
   });
 
   it('renders the expected submenu item labels', async () => {
@@ -106,31 +144,31 @@ describe('ManagerMenu.vue — with organization', () => {
     await wrapper.vm.$nextTick();
   });
 
-  it('renders three root menu sections when user has an organization', () => {
+  it('renders four root menu sections when user has an organization', () => {
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems).toHaveLength(3);
+    expect(rootItems).toHaveLength(4);
   });
 
-  it('shows the organization name as the third section label', () => {
+  it('shows the organization name as the fourth section label', () => {
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems[2].text()).toContain('Muster GmbH');
+    expect(rootItems[3].text()).toContain('Muster GmbH');
   });
 
   it('renders "Einstellungen" as submenu item under the org section', () => {
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[2].text()).toContain('Einstellungen');
+    expect(submenus[3].text()).toContain('Einstellungen');
   });
 
   it('links org settings to the correct URL including org id', () => {
-    const orgSettingsLink = wrapper.findAll('.layout-submenu').at(2)?.find('a');
+    const orgSettingsLink = wrapper.findAll('.layout-submenu').at(3)?.find('a');
     expect(orgSettingsLink?.attributes('href')).toContain('org-abc');
   });
 
-  it('renders four sections when user belongs to two organizations', async () => {
+  it('renders five sections when user belongs to two organizations', async () => {
     orgStore.userOrganizations = [mockOrg, { id: 'org-xyz', name: 'Zweite GmbH' }];
     await wrapper.vm.$nextTick();
 
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems).toHaveLength(4);
+    expect(rootItems).toHaveLength(5);
   });
 });

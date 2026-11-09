@@ -12,7 +12,6 @@ describe('AccountDataView', () => {
           UserContactDataCard: true,
           UserAddressCard: true,
           UserDangerZoneCard: true,
-          RouterLink: { template: '<a><slot /></a>' },
         },
       },
     });
@@ -34,10 +33,8 @@ describe('AccountDataView', () => {
     expect(wrapper.findComponent({ name: 'UserDangerZoneCard' }).exists()).toBe(true);
   });
 
-  test('renders navigation buttons to management, tenancies and contractor views', () => {
-    const text = wrapper.text();
-    expect(text).toContain('Zur Verwalter Ansicht');
-    expect(text).toContain('Zur Mieter Ansicht');
-    expect(text).toContain('Zur Auftragnehmer Ansicht');
+  test('renders no view switch buttons', () => {
+    expect(wrapper.findAll('button')).toHaveLength(0);
+    expect(wrapper.findAll('a')).toHaveLength(0);
   });
 });
