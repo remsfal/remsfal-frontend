@@ -484,7 +484,8 @@
           },
           "phone" : {
             "type" : "string",
-            "pattern" : "^\\+?[0-9]{10,14}$",
+            "description" : "An empty string removes the number",
+            "pattern" : "^$|^\\+[1-9]\\d{4,14}$",
             "maxLength" : 15
           },
           "email" : {
@@ -1239,7 +1240,8 @@
           },
           "phone" : {
             "type" : "string",
-            "pattern" : "^\\+[1-9]\\d{4,14}$",
+            "description" : "An empty string removes the number",
+            "pattern" : "^$|^\\+[1-9]\\d{4,14}$",
             "maxLength" : 15
           },
           "email" : {
@@ -2390,18 +2392,21 @@
           },
           "mobilePhoneNumber" : {
             "type" : "string",
+            "description" : "An empty string removes the number",
             "examples" : [ "+491234567890" ],
-            "pattern" : "^\\+[1-9]\\d{4,14}$"
+            "pattern" : "^$|^\\+[1-9]\\d{4,14}$"
           },
           "businessPhoneNumber" : {
             "type" : "string",
+            "description" : "An empty string removes the number",
             "examples" : [ "+491234567890" ],
-            "pattern" : "^\\+[1-9]\\d{4,14}$"
+            "pattern" : "^$|^\\+[1-9]\\d{4,14}$"
           },
           "privatePhoneNumber" : {
             "type" : "string",
+            "description" : "An empty string removes the number",
             "examples" : [ "+491234567890" ],
-            "pattern" : "^\\+[1-9]\\d{4,14}$"
+            "pattern" : "^$|^\\+[1-9]\\d{4,14}$"
           },
           "address" : {
             "$ref" : "#/components/schemas/AddressJson"
