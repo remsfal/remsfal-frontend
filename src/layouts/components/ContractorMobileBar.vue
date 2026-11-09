@@ -27,13 +27,13 @@ const navItems = computed<MobileNavItem[]>(() => [
   },
   {
     label: t('contractorMenu.orderManagement.open'),
-    icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+    icon: { type: 'pi', name: 'pi pi-fw pi-pen-to-square' },
     to: '/contractor/orders/open',
     disabled: ordersDisabled.value,
   },
   {
     label: t('contractorMenu.orderManagement.ongoing'),
-    icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
+    icon: { type: 'pi', name: 'pi pi-fw pi-stop' },
     to: '/contractor/orders/ongoing',
     disabled: ordersDisabled.value,
   },

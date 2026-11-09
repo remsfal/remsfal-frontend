@@ -6,12 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { OrderPlacementRequestsCard, QuotationRequestsCard } from '@/features/contractor/orderManagement';
+import { OrderBillingCard } from '@/features/contractor/orderManagement';
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <OrderPlacementRequestsCard />
-    <QuotationRequestsCard />
-  </div>
+  <OrderBillingCard />
 </template>

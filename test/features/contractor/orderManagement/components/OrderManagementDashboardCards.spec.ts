@@ -43,9 +43,6 @@ const orderPlacements: OrderPlacementJson[] = [
   {
     id: 'op-2', status: 'PLACED', projectOwner: 'Zweitfirma GmbH', createdAt: '2026-01-05T10:00:00Z'
   },
-  {
-    id: 'op-3', status: 'CONFIRMED', projectOwner: 'Drittfirma GmbH', createdAt: '2026-01-06T10:00:00Z'
-  },
 ];
 
 describe('OrderManagementDashboardCards', () => {
@@ -63,7 +60,7 @@ describe('OrderManagementDashboardCards', () => {
     await flushPromises();
 
     expect(quotationRequestService.getContractorQuotationRequests).toHaveBeenCalledOnce();
-    expect(orderPlacementService.getOrderPlacements).toHaveBeenCalledOnce();
+    expect(orderPlacementService.getOrderPlacements).toHaveBeenCalledExactlyOnceWith(['PLACED']);
   });
 
   it('shows only REQUESTED quotation requests, newest first', async () => {
@@ -80,7 +77,7 @@ describe('OrderManagementDashboardCards', () => {
     expect(wrapper.text()).not.toContain('Fenster prüfen');
   });
 
-  it('shows only PLACED orders, newest first', async () => {
+  it('shows the loaded orders, newest first', async () => {
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({ items: [] });
     vi.spyOn(orderPlacementService, 'getOrderPlacements').mockResolvedValue({ items: orderPlacements });
 
@@ -91,7 +88,6 @@ describe('OrderManagementDashboardCards', () => {
     const rows = table.props('value') as OrderPlacementJson[];
     expect(rows.map((r) => r.id)).toEqual(['op-2', 'op-1']);
     expect(wrapper.text()).toContain('Zweitfirma GmbH');
-    expect(wrapper.text()).not.toContain('Drittfirma GmbH');
   });
 
   it('limits each list to 5 entries', async () => {

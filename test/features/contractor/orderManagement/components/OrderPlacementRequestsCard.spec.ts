@@ -14,12 +14,6 @@ const mockPlacements: OrderPlacementJson[] = [
     status: 'PLACED',
     createdAt: '2026-01-15T10:00:00Z',
   },
-  {
-    id: 'op-2',
-    projectOwner: 'Beispiel AG',
-    status: 'CONFIRMED',
-    createdAt: '2026-01-16T10:00:00Z',
-  },
 ];
 
 describe('OrderPlacementRequestsCard', () => {
@@ -30,10 +24,10 @@ describe('OrderPlacementRequestsCard', () => {
 
   const mountCard = () => mount(OrderPlacementRequestsCard);
 
-  it('calls getOrderPlacements on mount', async () => {
+  it('loads only PLACED order placements on mount', async () => {
     mountCard();
     await flushPromises();
-    expect(orderPlacementService.getOrderPlacements).toHaveBeenCalledOnce();
+    expect(orderPlacementService.getOrderPlacements).toHaveBeenCalledExactlyOnceWith(['PLACED']);
   });
 
   it('renders card title "Anfragen zur Auftragserteilung"', async () => {
@@ -42,11 +36,10 @@ describe('OrderPlacementRequestsCard', () => {
     expect(wrapper.text()).toContain('Anfragen zur Auftragserteilung');
   });
 
-  it('shows only PLACED entries in the table', async () => {
+  it('shows the loaded order placement requests in the table', async () => {
     const wrapper = mountCard();
     await flushPromises();
     expect(wrapper.text()).toContain('Musterfrau GmbH');
-    expect(wrapper.text()).not.toContain('Beispiel AG');
   });
 
   it('renders translated status label for PLACED', async () => {
@@ -56,11 +49,7 @@ describe('OrderPlacementRequestsCard', () => {
   });
 
   it('shows empty message when no order placement requests exist', async () => {
-    vi.spyOn(orderPlacementService, 'getOrderPlacements').mockResolvedValue({
-      items: [{
-        id: 'op-1', status: 'CONFIRMED', projectOwner: 'Test' 
-      }],
-    });
+    vi.spyOn(orderPlacementService, 'getOrderPlacements').mockResolvedValue({ items: [] });
     const wrapper = mountCard();
     await flushPromises();
     expect(wrapper.text()).toContain('Keine Anfragen zur Auftragserteilung vorhanden');
