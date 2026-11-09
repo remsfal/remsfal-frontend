@@ -84,7 +84,7 @@ describe('TenancieContractList', () => {
     const wrapper = mount(TenancieContractList);
     await nextTick();
 
-    expect(wrapper.text()).toContain('Lade Mietverhältnisse');
+    expect(wrapper.find('[data-testid="contracts-loading-skeleton"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="empty-state"]').exists()).toBe(false);
   });
 

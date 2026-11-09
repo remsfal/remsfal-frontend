@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch } from 'vue';
+import BaseCard from '@/components/BaseCard.vue';
 import IssueDetailsCard from '../components/IssueDetailsCard.vue';
 import IssueDescriptionCard from '../components/IssueDescriptionCard.vue';
 import IssueChatCard from '../components/IssueChatCard.vue';
@@ -114,9 +115,13 @@ watch(
 </script>
 
 <template>
-  <div v-if="loadingFetch" class="flex justify-center items-center p-8">
-    <i class="pi pi-spin pi-spinner text-4xl text-primary" />
-  </div>
+  <!-- Placeholder for the details card until the issue is loaded -->
+  <BaseCard
+    v-if="loadingFetch && !issueDetailsData"
+    loading
+    :skeletonRows="6"
+    data-testid="issue-loading-skeleton"
+  />
 
   <!-- Issue Details Card -->
   <IssueDetailsCard

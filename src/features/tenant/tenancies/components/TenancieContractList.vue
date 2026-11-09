@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
-import ProgressSpinner from 'primevue/progressspinner';
+import BaseCard from '@/components/BaseCard.vue';
 
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import TenancieContractCard from './TenancieContractCard.vue';
@@ -34,9 +34,8 @@ onMounted(loadContracts);
 
 <template>
   <div class="grid grid-cols-12 gap-4">
-    <div v-if="loading" class="col-span-12 flex items-center gap-2">
-      <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="4" />
-      <span class="text-sm text-muted-color">{{ t('tenantDashboard.loading') }}</span>
+    <div v-if="loading" class="col-span-12 grid content-start gap-5" data-testid="contracts-loading-skeleton">
+      <BaseCard loading :skeletonRows="4" />
     </div>
 
     <div class="col-span-12">

@@ -25,6 +25,7 @@ const props = defineProps<{
   files: File[];
   tenancies: TenancyJson[];
   generatedTitle: string;
+  submitting?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -229,12 +230,14 @@ function handleEdit(stepValue: string) {
         :label="t('tenantIssue.step4.backButton')"
         severity="secondary"
         icon="pi pi-arrow-left"
+        :disabled="submitting"
         @click="handleBack"
       />
       <Button
         type="button"
         :label="t('tenantIssue.step4.submitButton')"
         icon="pi pi-check"
+        :loading="submitting"
         @click="handleSubmit"
       />
     </div>

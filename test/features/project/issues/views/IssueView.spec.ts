@@ -183,7 +183,7 @@ describe("IssueView.vue", () => {
     );
   });
   
-  test("loading spinner shows while fetching issue", async () => {
+  test("loading skeleton shows while fetching issue", async () => {
     // Create a promise that never resolves to simulate ongoing fetch
     const pendingPromise = new Promise(() => {});
     vi.spyOn(issueService, "getIssue").mockReturnValue(
@@ -206,7 +206,8 @@ describe("IssueView.vue", () => {
     // Wait for next tick so loadingFetch is set to true
     await tempWrapper.vm.$nextTick();
   
-    expect(tempWrapper.find("i.pi-spin").exists()).toBe(true);
+    expect(tempWrapper.find('[data-testid="issue-loading-skeleton"]').exists()).toBe(true);
+    expect(tempWrapper.find("i.pi-spin").exists()).toBe(false);
   });
   
   

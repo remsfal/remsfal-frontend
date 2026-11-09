@@ -153,7 +153,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
   // LOADING STATE
   // =========================================================================
   describe('Loading State', () => {
-    it('should show spinner while tenancies are loading', () => {
+    it('should show a skeleton while tenancies are loading', () => {
       cy.intercept('GET', '/api/v1/tenancies', {
         statusCode: 200,
         delay: 1500,
@@ -163,7 +163,8 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.contains('button', /neue meldung/i).click();
       cy.get('[role="dialog"]').should('be.visible');
       cy.get('[role="dialog"]').within(() => {
-        cy.get('[role="progressbar"]').should('exist');
+        cy.get('[data-testid="tenancies-loading-skeleton"]').should('exist');
+        cy.get('[role="progressbar"]').should('not.exist');
       });
       cy.wait('@getSlowTenancies');
     });
@@ -672,7 +673,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.get('[role="dialog"]').should('not.exist');
     });
 
-    it('should show a loading overlay while the issue is being created', () => {
+    it('should show a loading submit button while the issue is being created', () => {
       cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 201,
         delay: 2000,
@@ -682,9 +683,10 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       completeFormAndReachStep4();
       cy.contains('button', 'Meldung erstellen').scrollIntoView();
       cy.contains('button', 'Meldung erstellen').click();
-      // The overlay spinner should be visible during the network request
+      // The submit button is in loading state during the network request
+      cy.contains('button', 'Meldung erstellen').should('be.disabled');
       cy.get('[role="dialog"]').within(() => {
-        cy.get('[role="progressbar"]').should('exist');
+        cy.get('[role="progressbar"]').should('not.exist');
       });
       cy.wait('@createIssueDelayed');
     });

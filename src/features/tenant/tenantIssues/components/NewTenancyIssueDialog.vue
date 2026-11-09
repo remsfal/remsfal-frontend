@@ -11,7 +11,7 @@ import Step from 'primevue/step';
 import StepPanels from 'primevue/steppanels';
 import StepPanel from 'primevue/steppanel';
 import Message from 'primevue/message';
-import ProgressSpinner from 'primevue/progressspinner';
+import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
 
 // Services & Types
 import type { IssueCategory, IssueType } from '@/features/project/issues/services/IssueService';
@@ -271,9 +271,7 @@ const hasNoContracts = computed(() => tenancies.value.length === 0 && !loadingTe
     @update:visible="emit('update:visible', $event)"
   >
     <!-- Loading State -->
-    <div v-if="loadingTenancies" class="flex justify-center items-center p-6">
-      <ProgressSpinner style="width: 50px; height: 50px" />
-    </div>
+    <CardSkeletonRows v-if="loadingTenancies" :rows="4" data-testid="tenancies-loading-skeleton" />
 
     <!-- No Contracts Warning -->
     <Message v-else-if="hasNoContracts" severity="warn" :closable="false" class="mb-4">
@@ -362,6 +360,7 @@ const hasNoContracts = computed(() => tenancies.value.length === 0 && !loadingTe
             :files="formState.files"
             :tenancies="tenancies"
             :generatedTitle="generatedTitle"
+            :submitting="isCreating"
             @submit="handleSubmit"
             @back="activateCallback('3')"
             @editStep="editStep"
@@ -369,13 +368,5 @@ const hasNoContracts = computed(() => tenancies.value.length === 0 && !loadingTe
         </StepPanel>
       </StepPanels>
     </Stepper>
-
-    <!-- Loading Overlay during submission -->
-    <div
-      v-if="isCreating"
-      class="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center rounded-lg"
-    >
-      <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
-    </div>
   </Dialog>
 </template>
