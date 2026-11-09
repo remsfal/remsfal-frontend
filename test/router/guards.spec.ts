@@ -40,4 +40,16 @@ describe('Router guards - authentication', () => {
     await router.push({ name: 'Login' });
     expect(router.currentRoute.value.name).toBe('ContractorDashboard');
   });
+
+  it('prefers the manager home for users with several contexts', async () => {
+    useUserSessionStore().user = { email: 'a@b.de', userContexts: ['TENANT', 'CONTRACTOR', 'MANAGER'] } as SessionUser;
+    await router.push({ name: 'Login' });
+    expect(router.currentRoute.value.name).toBe('ProjectSelection');
+  });
+
+  it('forwards logged-in users without context to the project selection', async () => {
+    useUserSessionStore().user = { email: 'a@b.de' } as SessionUser;
+    await router.push({ name: 'Login' });
+    expect(router.currentRoute.value.name).toBe('ProjectSelection');
+  });
 });

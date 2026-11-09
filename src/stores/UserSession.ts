@@ -11,6 +11,16 @@ export type User = UserJson;
 export const useUserSessionStore = defineStore('user-session', {
   state: () => ({ user: null as User | null, sessionInitialized: false }),
 
+  /**
+   * The user contexts are determined by the backend when the session is loaded:
+   * MANAGER = member of a project, CONTRACTOR = employee of an organization, TENANT = has a rental agreement.
+   */
+  getters: {
+    isManager: (state): boolean => state.user?.userContexts?.includes('MANAGER') ?? false,
+    isTenant: (state): boolean => state.user?.userContexts?.includes('TENANT') ?? false,
+    isContractor: (state): boolean => state.user?.userContexts?.includes('CONTRACTOR') ?? false,
+  },
+
   actions: {
     /**
      * Stores the given user as the active session user and applies the user's preferred locale.

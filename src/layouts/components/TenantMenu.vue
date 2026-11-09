@@ -5,7 +5,6 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const sessionStore = useUserSessionStore();
-const isContractor = computed(() => sessionStore.user?.userContexts?.includes('CONTRACTOR') ?? false);
 
 const model = computed<MenuItem[]>(() => [
   {
@@ -50,7 +49,7 @@ const model = computed<MenuItem[]>(() => [
         label: 'tenantMenu.furtherServices.orderManagement',
         icon: { type: 'pi', name: 'pi pi-fw pi-briefcase' },
         to: '/contractor/dashboard',
-        visible: isContractor.value,
+        visible: sessionStore.isContractor,
       },
     ],
   },
