@@ -4,10 +4,13 @@ import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 const { t } = useI18n();
 const organizationStore = useOrganizationStore();
 const { userOrganizations, initialized } = storeToRefs(organizationStore);
+const sessionStore = useUserSessionStore();
+const isTenant = computed(() => sessionStore.user?.userContexts?.includes('TENANT') ?? false);
 const ordersDisabled = computed(() => initialized.value && !organizationStore.isOrganizationMember);
 
 onMounted(() => {
@@ -60,6 +63,12 @@ const model = computed<MenuItem[]>(() => {
           to: '/contractor/account-data',
         },
         {
+          label: 'contractorMenu.myData.tenancies',
+          icon: { type: 'pi', name: 'pi pi-fw pi-key' },
+          to: '/tenant/dashboard',
+          visible: isTenant.value,
+        },
+        {
           label: 'contractorMenu.myData.settings',
           icon: { type: 'pi', name: 'pi pi-fw pi-user-edit' },
           to: '/contractor/account-settings',
@@ -67,10 +76,15 @@ const model = computed<MenuItem[]>(() => {
       ],
     },
     {
-      label: 'contractorMenu.organizations',
+      label: 'contractorMenu.furtherServices',
       items: [
         {
-          label: 'contractorMenu.organizations.create',
+          label: 'contractorMenu.furtherServices.properties',
+          icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+          to: '/contractor/properties',
+        },
+        {
+          label: 'contractorMenu.furtherServices.createOrganization',
           icon: { type: 'pi', name: 'pi pi-fw pi-user-plus' },
           to: '/contractor/organizations/new',
         },

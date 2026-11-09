@@ -9,22 +9,22 @@ const { t } = useI18n()
 
 const navItems = computed<MobileNavItem[]>(() => [
   {
-    label: t('managerMenu.myData.overview'),
+    label: t('managerMenu.propertyManagement.overview'),
     to: { name: 'ManagerDashboard' },
     icon: 'pi-chart-bar',
   },
   {
-    label: t('managerMenu.myData.activityFeeds'),
+    label: t('managerMenu.propertyManagement.activityFeeds'),
     to: { name: 'ActivityFeeds' },
     icon: 'pi-bell',
   },
   {
-    label: t('managerMenu.myData.properties'),
+    label: t('managerMenu.propertyManagement.properties'),
     to: { name: 'ProjectSelection' },
     icon: 'pi-building',
   },
   {
-    label: t('managerMenu.myData.contractors'),
+    label: t('managerMenu.propertyManagement.contractors'),
     to: { name: 'ManagerContractorList' },
     icon: 'pi-id-card',
   },

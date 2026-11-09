@@ -25,9 +25,9 @@ describe('ContractorMenu.vue', () => {
 
     const rootMenuItems = wrapper.findAll('.layout-root-menuitem');
     expect(rootMenuItems).toHaveLength(3);
-    expect(rootMenuItems[0].text()).toContain('Auftragsmanagement');
+    expect(rootMenuItems[0].text()).toContain('Auftragsverwaltung');
     expect(rootMenuItems[1].text()).toContain('Meine Daten');
-    expect(rootMenuItems[2].text()).toContain('Organisationen');
+    expect(rootMenuItems[2].text()).toContain('Weitere Leistungen');
 
     const submenus = wrapper.findAll('.layout-submenu');
     expect(submenus).toHaveLength(3);
@@ -46,12 +46,40 @@ describe('ContractorMenu.vue', () => {
       'Meine Auftraggeber',
       'Persönliche Daten',
       'Persönliche Einstellungen',
+      'Eigene Immobilien',
       'Organisationen anlegen',
     ];
 
-    expectedSubmenuLabels.forEach((label, index) => {
-      expect(submenuLabels[index].text()).toContain(label);
-    });
+    expect(submenuLabels.map((label) => label.text())).toEqual(expectedSubmenuLabels);
+  });
+
+  it('navigates to the own properties page when "Eigene Immobilien" is clicked', async () => {
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
+    const propertiesItem = wrapper.findAll('.layout-menuitem-text').find((item) => item.text() === 'Eigene Immobilien');
+    await propertiesItem!.trigger('click');
+    expect(pushSpy).toHaveBeenCalledWith('/contractor/properties');
+  });
+
+  it('hides "Meine Mietverhältnisse" for a user without tenant context', async () => {
+    userSessionStore.user = {
+      id: 'user-1', email: 'test@example.com', userContexts: ['CONTRACTOR'] 
+    };
+    await wrapper.vm.$nextTick();
+    expect(wrapper.text()).not.toContain('Meine Mietverhältnisse');
+    expect(wrapper.find('.pi-key').exists()).toBe(false);
+  });
+
+  it('shows "Meine Mietverhältnisse" linking to the tenant view for a user with tenant context', async () => {
+    userSessionStore.user = {
+      id: 'user-1', email: 'test@example.com', userContexts: ['CONTRACTOR', 'TENANT'] 
+    };
+    await wrapper.vm.$nextTick();
+
+    const submenus = wrapper.findAll('.layout-submenu');
+    expect(submenus[1].text()).toContain('Meine Mietverhältnisse');
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
+    await wrapper.find('.pi-key').trigger('click');
+    expect(pushSpy).toHaveBeenCalledWith('/tenant/dashboard');
   });
 
   it('should render the correct icons for menu items', async () => {

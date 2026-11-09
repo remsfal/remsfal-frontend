@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
+import { useUserSessionStore } from '@/stores/UserSession';
 
-const model = ref([
+const sessionStore = useUserSessionStore();
+const isContractor = computed(() => sessionStore.user?.userContexts?.includes('CONTRACTOR') ?? false);
+
+const model = computed<MenuItem[]>(() => [
   {
     label: 'tenantMenu.tenancies',
     items: [
@@ -42,9 +46,15 @@ const model = ref([
         icon: { type: 'pi', name: 'pi pi-fw pi-wrench' },
         to: '/tenant/organizations',
       },
+      {
+        label: 'tenantMenu.furtherServices.orderManagement',
+        icon: { type: 'pi', name: 'pi pi-fw pi-briefcase' },
+        to: '/contractor/dashboard',
+        visible: isContractor.value,
+      },
     ],
   },
-] as MenuItem[]);
+]);
 </script>
 
 <template>

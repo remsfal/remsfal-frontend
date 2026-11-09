@@ -4,10 +4,14 @@ import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 const { t } = useI18n();
 const organizationStore = useOrganizationStore();
 const { userOrganizations, initialized } = storeToRefs(organizationStore);
+const sessionStore = useUserSessionStore();
+const isTenant = computed(() => sessionStore.user?.userContexts?.includes('TENANT') ?? false);
+const isContractor = computed(() => sessionStore.user?.userContexts?.includes('CONTRACTOR') ?? false);
 
 onMounted(() => {
   if (!initialized.value) {
@@ -18,32 +22,43 @@ onMounted(() => {
 const model = computed<MenuItem[]>(() => {
   const items: MenuItem[] = [
     {
-      label: 'managerMenu.myData',
+      label: 'managerMenu.propertyManagement',
       items: [
         {
-          label: 'managerMenu.myData.overview',
+          label: 'managerMenu.propertyManagement.overview',
           icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
           to: '/manager/dashboard',
         },
         {
-          label: 'managerMenu.myData.activityFeeds',
+          label: 'managerMenu.propertyManagement.activityFeeds',
           icon: { type: 'pi', name: 'pi pi-fw pi-bell' },
           to: '/manager/activity-feeds',
         },
         {
-          label: 'managerMenu.myData.properties',
+          label: 'managerMenu.propertyManagement.properties',
           icon: { type: 'pi', name: 'pi pi-fw pi-building' },
           to: '/manager/projects',
         },
         {
-          label: 'managerMenu.myData.contractors',
+          label: 'managerMenu.propertyManagement.contractors',
           icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
           to: '/manager/contractors',
         },
+      ],
+    },
+    {
+      label: 'managerMenu.myData',
+      items: [
         {
           label: 'managerMenu.myData.personalData',
           icon: { type: 'pi', name: 'pi pi-fw pi-user' },
           to: '/manager/account-data',
+        },
+        {
+          label: 'managerMenu.myData.tenancies',
+          icon: { type: 'pi', name: 'pi pi-fw pi-key' },
+          to: '/tenant/dashboard',
+          visible: isTenant.value,
         },
         {
           label: 'managerMenu.myData.settings',
@@ -53,10 +68,16 @@ const model = computed<MenuItem[]>(() => {
       ],
     },
     {
-      label: 'managerMenu.organizations',
+      label: 'managerMenu.furtherServices',
       items: [
         {
-          label: 'managerMenu.organizations.create',
+          label: 'managerMenu.furtherServices.orderManagement',
+          icon: { type: 'pi', name: 'pi pi-fw pi-briefcase' },
+          to: '/contractor/dashboard',
+          visible: isContractor.value,
+        },
+        {
+          label: 'managerMenu.furtherServices.createOrganization',
           icon: { type: 'pi', name: 'pi pi-fw pi-user-plus' },
           to: '/manager/organizations/new',
         },

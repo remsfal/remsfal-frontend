@@ -71,7 +71,7 @@ describe('AppMenuItem.vue', () => {
   describe('item with children (no route)', () => {
     const parentItem = {
       label: 'managerMenu.myData',
-      items: [{ label: 'managerMenu.myData.overview', to: '/manager/dashboard' }],
+      items: [{ label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard' }],
     };
 
     it('renders an anchor element', () => {
@@ -101,7 +101,7 @@ describe('AppMenuItem.vue', () => {
   });
 
   describe('item with route (RouterLink)', () => {
-    const leafItem = { label: 'managerMenu.myData.overview', to: '/manager/dashboard' };
+    const leafItem = { label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard' };
 
     it('renders a RouterLink stub', () => {
       const wrapper = mountItem(leafItem);
@@ -225,7 +225,7 @@ describe('AppMenuItem.vue', () => {
   describe('icons', () => {
     it('renders a PrimeIcon <i> element for pi icon type', () => {
       const item: MenuItem = {
-        label: 'managerMenu.myData.overview',
+        label: 'managerMenu.propertyManagement.overview',
         to: '/manager/dashboard',
         icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
       };
@@ -247,7 +247,7 @@ describe('AppMenuItem.vue', () => {
 
     it('does not render icon when icon is null', () => {
       const item = {
-        label: 'managerMenu.myData.overview', to: '/manager/dashboard', icon: null 
+        label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard', icon: null 
       };
       const wrapper = mountItem(item);
       expect(wrapper.find('.layout-menuitem-icon').exists()).toBe(false);
@@ -262,7 +262,7 @@ describe('AppMenuItem.vue', () => {
     ])('closes an open overlay for a navigation item %j', async (target) => {
       layout.layoutConfig.menuMode = 'overlay';
       layout.layoutState.overlayMenuActive = true;
-      const wrapper = mountItem({ label: 'managerMenu.myData.overview', ...target });
+      const wrapper = mountItem({ label: 'managerMenu.propertyManagement.overview', ...target });
 
       await wrapper.get('a').trigger('click');
 
@@ -312,7 +312,7 @@ describe('AppMenuItem.vue', () => {
     });
 
     it('prevents the default click action for a disabled item without a notice callback', () => {
-      const wrapper = mountItem({ label: 'managerMenu.myData.overview', disabled: true });
+      const wrapper = mountItem({ label: 'managerMenu.propertyManagement.overview', disabled: true });
       const event = new MouseEvent('click', { bubbles: true, cancelable: true });
 
       wrapper.get('a').element.dispatchEvent(event);
@@ -324,7 +324,7 @@ describe('AppMenuItem.vue', () => {
     it('calls command callback on click', async () => {
       const command = vi.fn();
       const item = {
-        label: 'managerMenu.myData.overview', to: '/manager/dashboard', command 
+        label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard', command 
       };
       const wrapper = mountItem(item);
       await wrapper.find('.router-link-stub').trigger('click');
@@ -334,7 +334,7 @@ describe('AppMenuItem.vue', () => {
     it('calls navigate callback on click', async () => {
       const navigate = vi.fn();
       const item = {
-        label: 'managerMenu.myData.overview', to: '/manager/dashboard', navigate 
+        label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard', navigate 
       };
       const wrapper = mountItem(item);
       await wrapper.find('.router-link-stub').trigger('click');
@@ -342,7 +342,7 @@ describe('AppMenuItem.vue', () => {
     });
 
     it('updates layoutState.activeMenuItem when item is clicked', async () => {
-      const item = { label: 'managerMenu.myData.overview', to: '/manager/dashboard' };
+      const item = { label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard' };
       const wrapper = mountItem(item, { index: 0 });
       await wrapper.find('.router-link-stub').trigger('click');
       expect(layout.layoutState.activeMenuItem).toBe('0');
@@ -351,7 +351,7 @@ describe('AppMenuItem.vue', () => {
     it('does not call command when item is disabled', async () => {
       const command = vi.fn();
       const item = {
-        label: 'managerMenu.myData.overview', to: '/manager/dashboard', command, disabled: true 
+        label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard', command, disabled: true 
       };
       const wrapper = mountItem(item);
       expect(wrapper.find('.router-link-stub').exists()).toBe(false);
@@ -362,7 +362,7 @@ describe('AppMenuItem.vue', () => {
     it('does not call navigate when item is disabled', async () => {
       const navigate = vi.fn();
       const item = {
-        label: 'managerMenu.myData.overview', to: '/manager/dashboard', navigate, disabled: true 
+        label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard', navigate, disabled: true 
       };
       const wrapper = mountItem(item);
       expect(wrapper.find('.router-link-stub').exists()).toBe(false);
@@ -377,7 +377,7 @@ describe('AppMenuItem.vue', () => {
         layout.layoutState.activeMenuItem = '1';
         layout.layoutState.overlayMenuActive = true;
         const wrapper = mountItem({
-          label: 'managerMenu.myData.overview',
+          label: 'managerMenu.propertyManagement.overview',
           to: '/manager/dashboard',
           disabled: true,
           command,
@@ -418,7 +418,7 @@ describe('AppMenuItem.vue', () => {
 
     it('applies active-menuitem class when layoutState.activeMenuItem matches itemKey', async () => {
       layout.layoutState.activeMenuItem = '0';
-      const item = { label: 'managerMenu.myData.overview', to: '/manager/dashboard' };
+      const item = { label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard' };
       const wrapper = mountItem(item, { index: 0 });
       await nextTick();
       expect(wrapper.find('li').classes()).toContain('active-menuitem');
@@ -427,7 +427,7 @@ describe('AppMenuItem.vue', () => {
     it('applies active-menuitem class when activeMenuItem starts with itemKey', async () => {
       // index=0 → itemKey='0'; '0-1'.startsWith('0-') = true
       layout.layoutState.activeMenuItem = '0-1';
-      const item = { label: 'managerMenu.myData.overview', to: '/manager/dashboard' };
+      const item = { label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard' };
       const wrapper = mountItem(item, { index: 0 });
       await nextTick();
       expect(wrapper.find('li').classes()).toContain('active-menuitem');
@@ -435,14 +435,14 @@ describe('AppMenuItem.vue', () => {
 
     it('does not apply active-menuitem class when key does not match', async () => {
       // Keep activeMenuItem undefined (reset in beforeEach)
-      const item = { label: 'managerMenu.myData.overview', to: '/manager/dashboard' };
+      const item = { label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard' };
       const wrapper = mountItem(item, { index: 0 });
       await nextTick();
       expect(wrapper.find('li').classes()).not.toContain('active-menuitem');
     });
 
     it('updates active state reactively when layoutState.activeMenuItem changes', async () => {
-      const item = { label: 'managerMenu.myData.overview', to: '/manager/dashboard' };
+      const item = { label: 'managerMenu.propertyManagement.overview', to: '/manager/dashboard' };
       const wrapper = mountItem(item, { index: 0 });
       await nextTick();
       expect(wrapper.find('li').classes()).not.toContain('active-menuitem');
