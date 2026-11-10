@@ -31,7 +31,7 @@ function formatAddressLine(address: { street?: string; zip?: string; city?: stri
 </script>
 
 <template>
-  <Message v-if="showEmptyState" severity="warn" class="mb-6">
+  <Message v-if="showEmptyState" severity="warn">
     <template #icon>
       <i class="pi pi-exclamation-triangle text-xl" />
     </template>
@@ -49,10 +49,8 @@ function formatAddressLine(address: { street?: string; zip?: string; city?: stri
   </Message>
   <!-- Outside the message: it disappears as soon as the new organization is in the store -->
   <NewOrganizationDialog v-model:visible="dialogVisible" />
-  <div v-if="isLoading" class="mb-6 flex flex-col gap-4">
-    <BaseCard loading />
-  </div>
-  <div v-else-if="organizations.length > 0" class="mb-6 flex flex-col gap-4">
+  <BaseCard v-if="isLoading" loading data-testid="organizations-loading-skeleton" />
+  <template v-else-if="organizations.length > 0">
     <BaseCard v-for="org in organizations" :key="org.id">
       <template #title>
         <RouterLink
@@ -79,5 +77,5 @@ function formatAddressLine(address: { street?: string; zip?: string; city?: stri
         </div>
       </template>
     </BaseCard>
-  </div>
+  </template>
 </template>

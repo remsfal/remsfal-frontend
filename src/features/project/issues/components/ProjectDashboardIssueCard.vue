@@ -46,42 +46,40 @@ onMounted(loadData);
 </script>
 
 <template>
-  <div class="mb-6" data-testid="recent-issues-card">
-    <BaseCard :loading="isLoading" :skeletonRows="5">
-      <template #title>
-        {{ t('managerDashboard.recentIssues.title') }}
-      </template>
-      <template #content>
-        <div v-if="issues.length === 0" class="text-muted-color text-sm">
-          {{ t('issueDashboard.empty') }}
-        </div>
-        <DataTable
-          v-else
-          class="issue-dashboard-table"
-          :value="issues"
-          selectionMode="single"
-          :metaKeySelection="false"
-          :showHeaders="false"
-          :pt="{ bodyRow: { 'data-testid': 'recent-issues-row' } }"
-          @rowSelect="onRowSelect"
-        >
-          <Column field="title" :header="t('issueDetails.fields.title')">
-            <template #body="slotProps">
-              <span class="font-medium truncate">{{ slotProps.data.title }}</span>
-            </template>
-          </Column>
-          <Column field="type" :header="t('issueDetails.fields.type')">
-            <template #body="slotProps">
-              <span class="text-muted-color text-sm">{{ getIssueTypeLabel(slotProps.data.type, t) }}</span>
-            </template>
-          </Column>
-          <Column field="projectId">
-            <template #body="slotProps">
-              <span class="text-muted-color text-sm">{{ projectName(slotProps.data.projectId) }}</span>
-            </template>
-          </Column>
-        </DataTable>
-      </template>
-    </BaseCard>
-  </div>
+  <BaseCard :loading="isLoading" :skeletonRows="5" data-testid="recent-issues-card">
+    <template #title>
+      {{ t('managerDashboard.recentIssues.title') }}
+    </template>
+    <template #content>
+      <div v-if="issues.length === 0" class="text-muted-color text-sm">
+        {{ t('issueDashboard.empty') }}
+      </div>
+      <DataTable
+        v-else
+        class="issue-dashboard-table"
+        :value="issues"
+        selectionMode="single"
+        :metaKeySelection="false"
+        :showHeaders="false"
+        :pt="{ bodyRow: { 'data-testid': 'recent-issues-row' } }"
+        @rowSelect="onRowSelect"
+      >
+        <Column field="title" :header="t('issueDetails.fields.title')">
+          <template #body="slotProps">
+            <span class="font-medium truncate">{{ slotProps.data.title }}</span>
+          </template>
+        </Column>
+        <Column field="type" :header="t('issueDetails.fields.type')">
+          <template #body="slotProps">
+            <span class="text-muted-color text-sm">{{ getIssueTypeLabel(slotProps.data.type, t) }}</span>
+          </template>
+        </Column>
+        <Column field="projectId">
+          <template #body="slotProps">
+            <span class="text-muted-color text-sm">{{ projectName(slotProps.data.projectId) }}</span>
+          </template>
+        </Column>
+      </DataTable>
+    </template>
+  </BaseCard>
 </template>
