@@ -6,7 +6,15 @@ import TimelineCard from '@/components/TimelineCard.vue';
 import IssueTimelineItemCard from './IssueTimelineItemCard.vue';
 import { issueTimelineService } from '@/features/project/issues/services/IssueTimelineService';
 
-const props = defineProps<{ issueId: string; visibleToTenants: boolean; }>();
+const props = defineProps<{
+  issueId: string;
+  visibleToTenants: boolean;
+  /**
+   * Last modification of the issue. Changing the issue (e.g. its status) may create timeline entries
+   * in the backend, so the timeline is reloaded whenever this value changes.
+   */
+  issueModifiedAt?: string;
+}>();
 
 const { t } = useI18n();
 
@@ -19,7 +27,7 @@ const visibilityTag = computed(() => (props.visibleToTenants
   <TimelineCard
     :load="() => issueTimelineService.getTimelineEntries(issueId).then((r) => r.timelines ?? [])"
     :send="(payload, files) => issueTimelineService.createTimelineEntryWithAttachments(issueId, payload, files)"
-    :watchSource="() => props.issueId"
+    :watchSource="() => [props.issueId, props.issueModifiedAt]"
     :title="t('issue.timeline.title')"
     loadErrorLogLabel="Error fetching issue timeline:"
     sendErrorLogLabel="Error creating timeline entry:"

@@ -63,7 +63,11 @@ describe("IssueView.vue", () => {
             template:
               '<div data-test="description" @click="$emit(\'saved\')" />',
           },
-          IssueTimelineCard: {template: '<div data-test="timeline" />',},
+          IssueTimelineCard: {
+            name: 'IssueTimelineCard',
+            props: ['issueId', 'visibleToTenants', 'issueModifiedAt'],
+            template: '<div data-test="timeline" />',
+          },
           IssueAttachmentCard: {
             template:
               '<div data-test="attachments" @click="$emit(\'saved\')" />',
@@ -79,6 +83,18 @@ describe("IssueView.vue", () => {
     });
 
     await flushPromises();
+  });
+
+  test("passes the issue modification time to the timeline so it reloads after saving details", async () => {
+    const timeline = () => wrapper.findComponent({ name: 'IssueTimelineCard' });
+    vi.spyOn(issueService, "getIssue").mockResolvedValue(
+      { ...mockIssue, modifiedAt: '2026-01-02T11:00:00Z' } as unknown as Awaited<ReturnType<typeof issueService.getIssue>>
+    );
+
+    await wrapper.find('[data-test="details"]').trigger("click");
+    await flushPromises();
+
+    expect(timeline().props('issueModifiedAt')).toBe('2026-01-02T11:00:00Z');
   });
 
   // ---- Fetch & Render Tests ----

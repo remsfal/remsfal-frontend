@@ -43,6 +43,33 @@ describe('IssueTimelineCard component', () => {
     expect(result).toEqual([makeTimeline()]);
   });
 
+  it('reloads the timeline when the issue was modified, e.g. by a status change', async () => {
+    vi.mocked(issueTimelineService.getTimelineEntries).mockReset();
+    vi.mocked(issueTimelineService.getTimelineEntries).mockResolvedValueOnce({ timelines: [makeTimeline()] });
+    const { default: IssueTimelineCard } = await import(
+      '@/features/project/issues/components/IssueTimelineCard.vue'
+    );
+    const wrapper = mount(IssueTimelineCard, {
+      props: {
+        issueId: 'issue-1', visibleToTenants: true, issueModifiedAt: '2026-01-02T10:00:00Z' 
+      },
+      global: { stubs: { IssueTimelineItemCard: true } },
+    });
+    await flushPromises();
+    expect(issueTimelineService.getTimelineEntries).toHaveBeenCalledTimes(1);
+
+    const statusEntry = makeTimeline({
+      timelineId: 'timeline-2', purpose: 'STATUS_CHANGED', message: 'IN_PROGRESS' 
+    });
+    vi.mocked(issueTimelineService.getTimelineEntries)
+      .mockResolvedValueOnce({ timelines: [makeTimeline(), statusEntry] });
+    await wrapper.setProps({ issueModifiedAt: '2026-01-02T11:00:00Z' });
+    await flushPromises();
+
+    expect(issueTimelineService.getTimelineEntries).toHaveBeenCalledTimes(2);
+    expect(wrapper.findAllComponents(IssueTimelineItemCard)).toHaveLength(2);
+  });
+
   it('sends messages with attachments for the given issue', async () => {
     vi.mocked(issueTimelineService.createTimelineEntryWithAttachments).mockResolvedValueOnce();
 
