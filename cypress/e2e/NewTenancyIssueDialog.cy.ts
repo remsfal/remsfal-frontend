@@ -1,3 +1,5 @@
+import { createResponseGate } from '../support/responseGate';
+
 describe('NewTenancyIssueDialog E2E Tests', () => {
   // ─── Test data ───────────────────────────────────────────────────────────
   const tenancy1 = {
@@ -154,11 +156,10 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
   // =========================================================================
   describe('Loading State', () => {
     it('should show a skeleton while tenancies are loading', () => {
-      cy.intercept('GET', '/api/v1/tenancies', {
-        statusCode: 200,
-        delay: 1500,
-        body: { agreements: [tenancy1] },
-      }).as('getSlowTenancies');
+      const gate = createResponseGate();
+      cy.intercept('GET', '/api/v1/tenancies', (req) =>
+        gate.hold(() => req.reply({ statusCode: 200, body: { agreements: [tenancy1] } })),
+      ).as('getSlowTenancies');
 
       cy.contains('button', /neue meldung/i).click();
       cy.get('[role="dialog"]').should('be.visible');
@@ -166,6 +167,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         cy.get('[data-testid="tenancies-loading-skeleton"]').should('exist');
         cy.get('[role="progressbar"]').should('not.exist');
       });
+      cy.then(gate.release);
       cy.wait('@getSlowTenancies');
     });
   });
@@ -674,11 +676,10 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     });
 
     it('should show a loading submit button while the issue is being created', () => {
-      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
-        statusCode: 201,
-        delay: 2000,
-        body: createdIssue,
-      }).as('createIssueDelayed');
+      const gate = createResponseGate();
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', (req) =>
+        gate.hold(() => req.reply({ statusCode: 201, body: createdIssue })),
+      ).as('createIssueDelayed');
 
       completeFormAndReachStep4();
       cy.contains('button', 'Meldung erstellen').scrollIntoView();
@@ -688,6 +689,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.get('[role="dialog"]').within(() => {
         cy.get('[role="progressbar"]').should('not.exist');
       });
+      cy.then(gate.release);
       cy.wait('@createIssueDelayed');
     });
 
