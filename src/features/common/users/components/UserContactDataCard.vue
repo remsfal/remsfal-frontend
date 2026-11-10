@@ -2,8 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent, FormFieldState } from '@primevue/forms';
+import { Form, type FormSubmitEvent, type FormFieldState } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseCard from '@/components/BaseCard.vue';

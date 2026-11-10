@@ -13,8 +13,7 @@ import Select from 'primevue/select';
 import BaseDialog from '@/components/BaseDialog.vue';
 
 // PrimeVue Forms
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import { Form, type FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 

@@ -8,13 +8,12 @@ import Checkbox from 'primevue/checkbox';
 import Image from 'primevue/image';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import { Form, type FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseDialog from '@/components/BaseDialog.vue';
-import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
-import type { CreateQuotationRequestJson } from '@/features/project/issues/services/QuotationRequestService';
+import {quotationRequestService,
+  type CreateQuotationRequestJson,} from '@/features/project/issues/services/QuotationRequestService';
 import type { IssueAttachmentJson } from '@/features/project/issues/services/IssueService';
 import { type ContractorJson, ContractorMultiSelect, NewContractorButton } from '@/features/project/contractors';
 import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';

@@ -1,12 +1,15 @@
-import { reactive, ref, computed, onMounted } from 'vue';
-import type { Ref, ComputedRef } from 'vue';
+import {reactive,
+  ref,
+  computed,
+  onMounted,
+  type Ref,
+  type ComputedRef,} from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { z } from 'zod';
 import { countryDisplayName } from '@/helper/countryHelper';
 import { useAppToast } from '@/composables/useAppToast';
-import AddressService from '@/services/AddressService';
-import type { AddressJson } from '@/services/AddressService';
+import AddressService, { type AddressJson } from '@/services/AddressService';
 import { COUNTRIES } from '@/constants/countries';
 import { nameSchema, streetSchema } from '@/helper/validationHelper';
 

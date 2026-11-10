@@ -1,5 +1,4 @@
-import { ref, watch, toValue } from 'vue';
-import type { MaybeRefOrGetter } from 'vue';
+import { ref, watch, toValue, type MaybeRefOrGetter } from 'vue';
 import { projectMemberService, type ProjectMemberJson } from '@/features/common/projects/services/ProjectMemberService';
 import { organizationMemberService } from '@/features/common/projects/services/OrganizationMemberService';
 

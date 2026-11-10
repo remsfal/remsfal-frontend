@@ -5,8 +5,9 @@ import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import TreeTable, { type TreeTableExpandedKeys, type TreeTableSelectionKeys } from 'primevue/treetable';
-import type { RentalUnitNodeDataJson, RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
-import { toRentableUnitView } from '@/features/project/rentableUnits/services/PropertyService';
+import {toRentableUnitView,
+  type RentalUnitNodeDataJson,
+  type RentalUnitTreeNodeJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import type { components } from '@/services/api/platform-schema';
 import NewRentableUnitButton from './NewRentableUnitButton.vue';
 import NewPropertyButton from './NewPropertyButton.vue';

@@ -4,8 +4,8 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import BaseCard from '@/components/BaseCard.vue';
 import QuotationRequestsTable from './QuotationRequestsTable.vue';
-import { quotationRequestService } from '@/features/contractor/orderManagement/services/QuotationRequestService';
-import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
+import {quotationRequestService,
+  type QuotationRequestJson,} from '@/features/contractor/orderManagement/services/QuotationRequestService';
 
 const { t } = useI18n();
 const router = useRouter();

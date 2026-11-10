@@ -4,8 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
 import Button from 'primevue/button';
-import FileUpload from 'primevue/fileupload';
-import type { FileUploadSelectEvent, FileUploadRemoveEvent } from 'primevue/fileupload';
+import FileUpload, { type FileUploadSelectEvent, type FileUploadRemoveEvent } from 'primevue/fileupload';
 import Message from 'primevue/message';
 
 // Props & Emits

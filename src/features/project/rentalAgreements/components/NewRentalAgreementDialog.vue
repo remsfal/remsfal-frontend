@@ -16,11 +16,10 @@ import {rentalAgreementService,
   type RentalAgreementWritableJson,
   type TenantWritableJson,
   type RentJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import type { SelectedUnit } from './Step2UnitsForm.vue';
 
 // Step Components
 import Step1DatesForm from './Step1DatesForm.vue';
-import Step2UnitsForm from './Step2UnitsForm.vue';
+import Step2UnitsForm, { type SelectedUnit } from './Step2UnitsForm.vue';
 import Step3TenantsForm from './Step3TenantsForm.vue';
 import Step4Summary from './Step4Summary.vue';
 

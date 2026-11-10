@@ -1,9 +1,8 @@
-import axios from 'axios';
-import type {AxiosError,
-  AxiosInstance,
-  AxiosRequestConfig,
-  InternalAxiosRequestConfig,
-  AxiosResponse} from 'axios';
+import axios, {type AxiosError,
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+  type AxiosResponse,} from 'axios';
 import type { paths as ticketingPaths, components as ticketingComponents, Readable, Writable } from './api/ticketing-schema';
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';

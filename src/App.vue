@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Component } from 'vue'
+import { computed, type Component } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'

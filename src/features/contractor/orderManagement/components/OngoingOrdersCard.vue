@@ -5,8 +5,8 @@ import { useRouter } from 'vue-router';
 import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
-import { orderPlacementService } from '@/features/contractor/orderManagement/services/OrderPlacementService';
-import type { OrderPlacementJson } from '@/features/contractor/orderManagement/services/OrderPlacementService';
+import {orderPlacementService,
+  type OrderPlacementJson,} from '@/features/contractor/orderManagement/services/OrderPlacementService';
 
 const { t, d } = useI18n();
 const router = useRouter();

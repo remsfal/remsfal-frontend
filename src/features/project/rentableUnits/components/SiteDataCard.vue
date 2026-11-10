@@ -13,8 +13,7 @@ import { z } from 'zod';
 import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
 import {useRentableUnitForm,
   createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm';
-import { siteService } from '@/features/project/rentableUnits/services/SiteService';
-import type { SiteJson } from '@/features/project/rentableUnits/services/SiteService';
+import { siteService, type SiteJson } from '@/features/project/rentableUnits/services/SiteService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
