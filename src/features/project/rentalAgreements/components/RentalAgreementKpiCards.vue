@@ -111,7 +111,7 @@ onMounted(() => fetchData(props.projectId));
 </script>
 
 <template>
-  <Message v-if="!isLoading && !hasData" severity="success" closable class="mb-6">
+  <Message v-if="!isLoading && !hasData" severity="success" closable>
     <template #icon>
       <i class="pi pi-sparkles text-xl" />
     </template>
@@ -126,7 +126,7 @@ onMounted(() => fetchData(props.projectId));
       </RouterLink>
     </span>
   </Message>
-  <div v-else class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+  <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
     <template v-if="isLoading">
       <KpiCard v-for="i in 6" :key="i" loading />
     </template>

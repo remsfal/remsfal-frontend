@@ -3,6 +3,8 @@ import { useI18n } from 'vue-i18n';
 import type { TenantTimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import { useTimelineItem } from '@/composables/useTimelineItem';
+import { getIssueStatusLabel } from '@/features/common/issues/issueLabels';
+import type { IssueStatus } from '@/features/project/issues/services/IssueService';
 
 const props = defineProps<{
   item: TenantTimelineJson;
@@ -11,9 +13,10 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const { title, attachments } = useTimelineItem(props, {
+const { title, message, attachments } = useTimelineItem(props, {
   titleNamespace: 'tenantIssues.timeline',
   showSenderRole: true,
+  statusLabel: (status) => getIssueStatusLabel(status as IssueStatus, t),
 });
 </script>
 
@@ -21,7 +24,7 @@ const { title, attachments } = useTimelineItem(props, {
   <TimelineEntryCard
     :date="item.createdAt"
     :title="title"
-    :message="item.message"
+    :message="message"
     :attachments="attachments"
     :attachmentsLabel="t('tenantIssues.timeline.attachmentsCount')"
     :downloadAttachmentLabel="t('tenantIssues.timeline.downloadAttachment')"
