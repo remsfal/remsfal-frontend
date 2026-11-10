@@ -7,3 +7,12 @@ export { default as NewOrganizationEmployeeButton } from './components/NewOrgani
 export { default as EmployeeRoleSelect } from './components/EmployeeRoleSelect.vue';
 export { default as OrganizationSettingsView } from './views/OrganizationSettingsView.vue';
 export { default as OrganizationsView } from './views/OrganizationsView.vue';
+export {organizationService,
+  type OrganizationJson,
+  type OrganizationWritableJson,
+  type OrganizationListJson,
+  type OrganizationEmployeeJson,
+  type OrganizationEmployeeWritableJson,
+  type OrganizationEmployeeListJson,
+  type EmployeeRole,} from './services/OrganizationService';
+export { useOrganizationStore } from './stores/OrganizationStore';

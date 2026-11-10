@@ -15,8 +15,7 @@ import { z } from 'zod';
 import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
 import {useRentableUnitForm,
   createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm';
-import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
-import type { PropertyJson } from '@/features/project/rentableUnits/services/PropertyService';
+import { propertyService, type PropertyJson } from '@/features/project/rentableUnits/services/PropertyService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{

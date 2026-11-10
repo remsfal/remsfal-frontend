@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
-import { organizationService } from '@/services/OrganizationService';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
+import { organizationService } from '@/features/common/organizations/services/OrganizationService';
 
 const mockOrg = {
   id: 'org-1', name: 'Test GmbH', phone: '+4915123456789' 

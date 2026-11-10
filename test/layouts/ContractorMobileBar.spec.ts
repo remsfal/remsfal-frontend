@@ -12,7 +12,7 @@ import ContractorMobileBar from '@/layouts/components/ContractorMobileBar.vue';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 
 // Remove global router plugin for this test file
 // We need manual control over routing

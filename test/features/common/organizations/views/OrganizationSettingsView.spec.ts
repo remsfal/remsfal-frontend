@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import OrganizationSettingsView from '@/features/common/organizations/views/OrganizationSettingsView.vue'
-import { organizationService } from '@/services/OrganizationService'
+import { organizationService } from '@/features/common/organizations/services/OrganizationService'
 import type { AddressJson } from '@/services/AddressService'
 
 const storeMocks = vi.hoisted(() => ({
@@ -10,7 +10,7 @@ const storeMocks = vi.hoisted(() => ({
   initialized: false,
 }))
 
-vi.mock('@/stores/OrganizationStore', () => ({
+vi.mock('@/features/common/organizations/stores/OrganizationStore', () => ({
   useOrganizationStore: () => ({
     get initialized() {
       return storeMocks.initialized

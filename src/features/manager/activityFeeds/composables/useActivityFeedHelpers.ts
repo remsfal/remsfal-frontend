@@ -1,4 +1,4 @@
-import type { ProjectItem } from '@/services/ProjectService';
+import type { ProjectItem } from '@/features/common/projects';
 
 export function resolveProjectName(projectId: string, projectList: ProjectItem[]): string {
   return projectList.find((p) => p.id === projectId)?.name ?? projectId;

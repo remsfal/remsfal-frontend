@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
-import { flushPromises } from '@vue/test-utils';
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import Step3TenantsForm from '@/features/project/rentalAgreements/components/Step3TenantsForm.vue';
 import type {TenantJson as TenantItem,
   TenantWritableJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';

@@ -2,10 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import Message from 'primevue/message';
 import ProjectsWelcomeMessage from '@/features/manager/projects/components/ProjectsWelcomeMessage.vue';
-import { useProjectStore } from '@/stores/ProjectStore';
-import type { ProjectItem } from '@/services/ProjectService';
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
+import type { ProjectItem } from '@/features/common/projects/services/ProjectService';
 
-vi.mock('@/stores/ProjectStore', () => ({ useProjectStore: vi.fn() }));
+vi.mock('@/features/common/projects/stores/ProjectStore', () => ({ useProjectStore: vi.fn() }));
 
 describe('ProjectsWelcomeMessage.vue', () => {
   let refreshProjectListMock: ReturnType<typeof vi.fn>;

@@ -2,8 +2,8 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { activityFeedService, type ActivityFeedJson } from '../services/ActivityFeedService';
 import { resolveProjectName } from '../composables/useActivityFeedHelpers';
-import { useProjectStore } from '@/stores/ProjectStore';
-import type { IssueType, IssueStatus } from '@/features/project/issues/services/IssueService';
+import { useProjectStore } from '@/features/common/projects';
+import type { IssueType, IssueStatus } from '@/features/common/issues';
 
 const PAGE_LIMIT = 50;
 

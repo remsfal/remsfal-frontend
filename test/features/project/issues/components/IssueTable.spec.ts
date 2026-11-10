@@ -3,11 +3,13 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import IssueTable from '@/features/project/issues/components/IssueTable.vue';
 import DataTable from 'primevue/datatable';
 import { type IssueItemJson } from '@/features/project/issues/services/IssueService';
-import { type ProjectMemberListJson, projectMemberService } from '@/services/ProjectMemberService';
-import { type OrganizationMemberListJson, organizationMemberService } from '@/services/OrganizationMemberService';
+import {type ProjectMemberListJson,
+  projectMemberService,} from '@/features/common/projects/services/ProjectMemberService';
+import {type OrganizationMemberListJson,
+  organizationMemberService,} from '@/features/common/projects/services/OrganizationMemberService';
 
-vi.mock('@/services/ProjectMemberService', { spy: true });
-vi.mock('@/services/OrganizationMemberService', { spy: true });
+vi.mock('@/features/common/projects/services/ProjectMemberService', { spy: true });
+vi.mock('@/features/common/projects/services/OrganizationMemberService', { spy: true });
 
 const mockIssues: IssueItemJson[] = [
   {

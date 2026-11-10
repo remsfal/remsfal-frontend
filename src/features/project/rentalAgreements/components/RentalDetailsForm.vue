@@ -9,8 +9,7 @@ import InputNumber from 'primevue/inputnumber';
 import SelectButton from 'primevue/selectbutton';
 import DatePicker from 'primevue/datepicker';
 import Message from 'primevue/message';
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import { Form, type FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import ManagerContractorInfoCard from '@/features/manager/contractors/components/ManagerContractorInfoCard.vue';
-import { organizationService } from '@/services/OrganizationService';
+import { organizationService } from '@/features/common/organizations/services/OrganizationService';
 
 const mockOrgFull = {
   id: 'org-123',

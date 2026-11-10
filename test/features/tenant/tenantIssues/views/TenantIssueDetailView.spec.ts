@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
-import type { TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
-import { tenantIssueService } from '@/features/tenant/tenantIssues/services/TenantIssueService';
+import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import TenantIssueDetailView from '@/features/tenant/tenantIssues/views/TenantIssueDetailView.vue';
 
 const pushMock = vi.fn();

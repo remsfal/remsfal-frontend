@@ -12,7 +12,7 @@ export type RentJson = Readable<ApiComponents['schemas']['RentJson']>;
 
 /**
  * Service for managing rental agreements in the manager/property owner context.
- * For tenant context, use TenancyService instead.
+ * For tenant context, use the TenancyService of the tenant/tenancies feature instead.
  */
 export default class RentalAgreementService {
   /**

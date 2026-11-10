@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { defineComponent, nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import { useOrganizationMenuSections } from '@/layouts/composables/useOrganizationMenuSections';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 
 function mountSections(i18nPrefix = 'managerMenu', basePath = '/manager') {
   let sections!: ReturnType<typeof useOrganizationMenuSections>;

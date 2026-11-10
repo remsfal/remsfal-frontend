@@ -3,15 +3,13 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import Message from 'primevue/message';
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import { Form, type FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
-import { type MemberRole } from '@/services/ProjectMemberService';
-import { organizationMemberService } from '@/services/OrganizationMemberService';
+import { type MemberRole, organizationMemberService } from '@/features/common/projects';
 import BaseDialog from '@/components/BaseDialog.vue';
 
 const props = defineProps<{ projectId: string }>();

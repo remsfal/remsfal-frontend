@@ -2,8 +2,7 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import { Form, type FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import InputText from 'primevue/inputtext';
@@ -13,8 +12,8 @@ import Button from 'primevue/button';
 import BaseCard from '@/components/BaseCard.vue';
 import PhoneInput from '@/components/PhoneInput.vue';
 import { phoneSchema, phonePatchValue } from '@/helper/validationHelper';
-import { organizationService } from '@/services/OrganizationService';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { organizationService } from '@/features/common/organizations/services/OrganizationService';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ organizationId: string }>();

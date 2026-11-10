@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import TenantPropertiesPage from '@/pages/tenant/properties.vue';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
 
 vi.mock('@/features/manager/projects', () => ({
   ProjectsWelcomeMessage: {

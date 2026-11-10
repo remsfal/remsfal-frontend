@@ -5,14 +5,14 @@ import NewOrganizationMemberButton from '@/features/project/settings/components/
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import {organizationMemberService,
   type OrganizationMemberJson,
-  type MemberRole,} from '@/services/OrganizationMemberService';
-import type { ProjectMemberJson } from '@/services/ProjectMemberService';
+  type MemberRole,} from '@/features/common/projects/services/OrganizationMemberService';
+import type { ProjectMemberJson } from '@/features/common/projects/services/ProjectMemberService';
 
 const { mockToastAdd } = vi.hoisted(() => ({mockToastAdd: vi.fn(),}));
 
 vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}));
 
-vi.mock('@/services/OrganizationMemberService');
+vi.mock('@/features/common/projects/services/OrganizationMemberService');
 
 // PrimeVue's Select emits 'change' after 'update:modelValue', so simulate both to mirror a real selection.
 async function selectRole(roleSelect: VueWrapper<InstanceType<typeof ProjectMemberRoleSelect>>, role: MemberRole) {

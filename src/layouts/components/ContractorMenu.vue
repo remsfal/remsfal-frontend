@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useOrganizationMenuSections } from '@/layouts/composables/useOrganizationMenuSections';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const organizationStore = useOrganizationStore();

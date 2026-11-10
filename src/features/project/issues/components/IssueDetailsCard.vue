@@ -8,20 +8,22 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import BaseCard from '@/components/BaseCard.vue';
-import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
+import { MemberAutoComplete } from '@/features/common/projects';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
 import { issueService, type IssueJson, type IssueWritableJson, type IssueStatus, type IssueType, type IssuePriority }
   from '@/features/project/issues/services/IssueService';
 import { RentalAgreementSelect, type RentalAgreementItemJson } from '@/features/project/rentalAgreements';
-import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
 import { formatDateTime } from '@/helper/dateHelper';
-import {getDefectCategories,
+import {getIssueStatusLabel,
+  getIssueTypeLabel,
+  getIssuePriorityLabel,
+  getDefectCategories,
   getInquiryCategories,
   getMaintenanceCategories,
   getGeneralCategory,
   findCategoryOption,
-  type CategoryOption,} from '@/features/common/issues/issueCategories';
+  type CategoryOption,} from '@/features/common/issues';
 
 /* =========================
      Props & Emits

@@ -5,8 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 
 import BaseCard from '@/components/BaseCard.vue';
-import { useActivityFeedStore } from '../stores/ActivityFeedStore';
-import type { ActivityFeedEntry } from '../stores/ActivityFeedStore';
+import { useActivityFeedStore, type ActivityFeedEntry } from '../stores/ActivityFeedStore';
 import ActivityFeedToolbar, { type ActivityFeedFilterGroup, type ActivityFeedFilterOption } from './ActivityFeedToolbar.vue';
 import ActivityFeedList from './ActivityFeedList.vue';
 

@@ -1,16 +1,16 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import NewProjectButton from '@/features/manager/projects/components/NewProjectButton.vue';
-import { projectService } from '@/services/ProjectService';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { projectService } from '@/features/common/projects/services/ProjectService';
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { Form } from '@primevue/forms';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import { saveProject } from '@/helper/indexeddb';
 
-vi.mock('@/services/ProjectService', { spy: true });
-vi.mock('@/stores/ProjectStore', () => ({useProjectStore: vi.fn(),}));
+vi.mock('@/features/common/projects/services/ProjectService', { spy: true });
+vi.mock('@/features/common/projects/stores/ProjectStore', () => ({useProjectStore: vi.fn(),}));
 vi.mock('vue-router', () => ({useRouter: vi.fn(),}));
 vi.mock('@/helper/indexeddb', () => ({ saveProject: vi.fn() }));
 

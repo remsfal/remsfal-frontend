@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ContractorDashboardPage from '@/pages/contractor/dashboard.vue';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
-import type { OrganizationEmployeeJson } from '@/services/OrganizationService';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
+import type { OrganizationEmployeeJson } from '@/features/common/organizations/services/OrganizationService';
 
 vi.mock('@/features/contractor/organizations', () => ({
   OrganizationDashboardCards: {

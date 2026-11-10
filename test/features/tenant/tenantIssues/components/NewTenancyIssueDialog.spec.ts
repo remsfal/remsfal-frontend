@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import Message from 'primevue/message';
 import NewTenancyIssueDialog from '@/features/tenant/tenantIssues/components/NewTenancyIssueDialog.vue';
-import { tenancyService, type TenancyJson } from '@/services/TenancyService';
+import { tenancyService, type TenancyJson } from '@/features/tenant/tenancies/services/TenancyService';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import { useUserSessionStore } from '@/stores/UserSession';
 import i18n from '@/i18n/i18n';
@@ -10,8 +10,10 @@ import i18n from '@/i18n/i18n';
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
-vi.mock('@/services/TenancyService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/TenancyService')>('@/services/TenancyService');
+vi.mock('@/features/tenant/tenancies/services/TenancyService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/tenant/tenancies/services/TenancyService')>(
+    '@/features/tenant/tenancies/services/TenancyService',
+  );
   return { ...actual, tenancyService: { getTenancies: vi.fn() } };
 });
 

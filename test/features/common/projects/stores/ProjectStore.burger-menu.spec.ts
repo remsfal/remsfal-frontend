@@ -1,6 +1,6 @@
 import {describe, it, expect, beforeEach, vi} from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
 
 // Mock the project service with proper vi.mocked support
 const mockProjectService = {
@@ -9,7 +9,7 @@ const mockProjectService = {
   createProject: vi.fn(),
 };
 
-vi.mock('@/services/ProjectService', () => ({projectService: mockProjectService,}));
+vi.mock('@/features/common/projects/services/ProjectService', () => ({projectService: mockProjectService,}));
 
 describe('ProjectStore - Burger Menu Bug Fix', () => {
   let store: ReturnType<typeof useProjectStore>;

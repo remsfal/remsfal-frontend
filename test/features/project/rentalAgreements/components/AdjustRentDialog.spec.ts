@@ -5,8 +5,8 @@ import AdjustRentDialog, {type RentAdjustmentUnit,} from '@/features/project/ren
 import RentalDetailsForm from '@/features/project/rentalAgreements/components/RentalDetailsForm.vue';
 import BaseDialog from '@/components/BaseDialog.vue';
 import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
-import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import {rentalAgreementService,
+  type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 
 const toastSpy = vi.fn();

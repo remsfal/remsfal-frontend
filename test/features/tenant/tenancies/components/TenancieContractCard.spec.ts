@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 
 import TenancieContractCard from '@/features/tenant/tenancies/components/TenancieContractCard.vue';
-import type { TenancyJson } from '@/services/TenancyService';
+import type { TenancyJson } from '@/features/tenant/tenancies/services/TenancyService';
 
 describe('TenancieContractCard', () => {
   const contract: TenancyJson = {

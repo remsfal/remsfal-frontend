@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ContractorClientListView from '@/features/contractor/customers/views/ContractorClientListView.vue';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 
 vi.mock('@/features/contractor/customers', () => ({
   ContractorClientListCard: {

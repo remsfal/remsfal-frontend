@@ -12,7 +12,7 @@ vi.mock('vue-router', () => ({
 }));
 
 // ---- Mock ProjectStore ----
-vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'proj-1' }),}));
+vi.mock('@/features/common/projects/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'proj-1' }),}));
 
 const toastSpy = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastSpy }) }));

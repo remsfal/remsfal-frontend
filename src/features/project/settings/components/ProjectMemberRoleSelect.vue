@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import Select from 'primevue/select';
 import { useI18n } from 'vue-i18n';
-import type { MemberRole } from '@/services/ProjectMemberService';
+import type { MemberRole } from '@/features/common/projects';
 
 const props = withDefaults(
   defineProps<{

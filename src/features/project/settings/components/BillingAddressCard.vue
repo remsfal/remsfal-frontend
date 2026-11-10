@@ -10,7 +10,7 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
-import { projectService } from '@/services/ProjectService';
+import { projectService } from '@/features/common/projects';
 import { useAddressForm, buildAddressSchema } from '@/composables/useAddressForm';
 
 interface Props {

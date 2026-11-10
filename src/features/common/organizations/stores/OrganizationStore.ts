@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import {organizationService,
   type OrganizationJson,
-  type OrganizationEmployeeJson,} from '@/services/OrganizationService';
+  type OrganizationEmployeeJson,} from '@/features/common/organizations/services/OrganizationService';
 
 export const useOrganizationStore = defineStore('organization', {
   state: () => ({

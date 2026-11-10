@@ -1,10 +1,8 @@
 import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 import { type UnitType } from '@/features/project/rentableUnits';
+import type { IssueStatus, IssueType } from '@/features/common/issues';
 
-export type IssueCategory = ApiComponents['schemas']['IssueCategory'];
-export type IssueStatus = ApiComponents['schemas']['IssueStatus'];
-export type IssueType = ApiComponents['schemas']['IssueType'];
-export type IssuePriority = ApiComponents['schemas']['IssuePriority'];
+export type { IssueCategory, IssueStatus, IssueType, IssuePriority } from '@/features/common/issues';
 export type IssueJson = Readable<ApiComponents['schemas']['IssueJson']>;
 export type IssueWritableJson = Writable<ApiComponents['schemas']['IssueJson']>;
 export type IssueItemJson = Readable<ApiComponents['schemas']['IssueItemJson']>;

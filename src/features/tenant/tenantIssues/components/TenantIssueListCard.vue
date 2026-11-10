@@ -10,10 +10,9 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Select from 'primevue/select';
 import BaseCard from '@/components/BaseCard.vue';
-import { tenancyService, type TenancyJson } from '@/services/TenancyService';
-import type { IssueStatus, IssueType } from '@/features/project/issues/services/IssueService';
+import { tenancyService, type TenancyJson } from '@/features/tenant/tenancies';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
-import { getIssueStatusLabel, getIssueTypeLabel } from '@/features/common/issues/issueLabels';
+import { getIssueStatusLabel, getIssueTypeLabel, type IssueStatus, type IssueType } from '@/features/common/issues';
 import NewTenancyIssueDialog from './NewTenancyIssueDialog.vue';
 import TenantIssueListItem from './TenantIssueListItem.vue';
 

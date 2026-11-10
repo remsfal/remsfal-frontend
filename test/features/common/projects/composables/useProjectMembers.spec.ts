@@ -1,21 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
-import { useProjectMembers } from '@/composables/useProjectMembers';
-import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
-import { organizationMemberService, type OrganizationMemberListJson } from '@/services/OrganizationMemberService';
+import { useProjectMembers } from '@/features/common/projects/composables/useProjectMembers';
+import {projectMemberService,
+  type ProjectMemberListJson,} from '@/features/common/projects/services/ProjectMemberService';
+import {organizationMemberService,
+  type OrganizationMemberListJson,} from '@/features/common/projects/services/OrganizationMemberService';
 
-vi.mock('@/services/ProjectMemberService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/ProjectMemberService')>('@/services/ProjectMemberService');
+vi.mock('@/features/common/projects/services/ProjectMemberService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/common/projects/services/ProjectMemberService')>(
+    '@/features/common/projects/services/ProjectMemberService',
+  );
   return {
     ...actual,
     projectMemberService: {getMembers: vi.fn(),},
   };
 });
 
-vi.mock('@/services/OrganizationMemberService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/OrganizationMemberService')>(
-    '@/services/OrganizationMemberService',
+vi.mock('@/features/common/projects/services/OrganizationMemberService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/common/projects/services/OrganizationMemberService')>(
+    '@/features/common/projects/services/OrganizationMemberService',
   );
   return {
     ...actual,

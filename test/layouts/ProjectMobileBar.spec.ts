@@ -6,7 +6,7 @@ vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
 // Mock ProjectMenu to avoid deep dependency resolution
 vi.mock('@/layouts/components/ProjectMenu.vue', () => ({ default: { name: 'ProjectMenu', template: '<div></div>' } }));
 // Mock ProjectStore used by ProjectMenu
-vi.mock('@/stores/ProjectStore', () => ({
+vi.mock('@/features/common/projects/stores/ProjectStore', () => ({
   useProjectStore: () => ({
     projectId: undefined, projectList: [], selectedProject: null
   }),

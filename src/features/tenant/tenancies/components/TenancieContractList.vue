@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
 import BaseCard from '@/components/BaseCard.vue';
 
-import { tenancyService, type TenancyJson } from '@/services/TenancyService';
+import { tenancyService, type TenancyJson } from '@/features/tenant/tenancies/services/TenancyService';
 import TenancieContractCard from './TenancieContractCard.vue';
 
 const { t } = useI18n();

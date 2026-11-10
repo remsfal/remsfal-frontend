@@ -7,8 +7,7 @@ import Textarea from 'primevue/textarea';
 import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
 
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent, FormProps } from '@primevue/forms';
+import { Form, type FormSubmitEvent, type FormProps } from '@primevue/forms';
 
 import BaseCard from '@/components/BaseCard.vue';
 

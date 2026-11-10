@@ -1,6 +1,9 @@
 import type { Router, RouteLocationRaw } from 'vue-router'
 import { useUserSessionStore } from '@/stores/UserSession'
-import { useProjectStore } from '@/stores/ProjectStore'
+// NOTE: imports the store module directly, not the `@/features/common/projects` barrel —
+// the router is loaded by the global test setup, which would evaluate the barrel before the
+// `vi.mock` calls of a test file are registered, so components would bypass those mocks.
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore'
 import { safeRedirectPath } from '@/helper/redirectHelper'
 
 function homeRouteFor(sessionStore: ReturnType<typeof useUserSessionStore>): RouteLocationRaw {

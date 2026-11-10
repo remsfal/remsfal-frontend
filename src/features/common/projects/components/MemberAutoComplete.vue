@@ -2,8 +2,8 @@
 import { ref, computed, toRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AutoComplete from 'primevue/autocomplete';
-import type { ProjectMemberJson } from '@/services/ProjectMemberService';
-import { useProjectMembers } from '@/composables/useProjectMembers';
+import type { ProjectMemberJson } from '@/features/common/projects/services/ProjectMemberService';
+import { useProjectMembers } from '@/features/common/projects/composables/useProjectMembers';
 
 const props = defineProps<{
   modelValue: string | null;     // Member ID (UUID)

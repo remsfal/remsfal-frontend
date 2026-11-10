@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import ContractorMultiSelect from '@/features/project/contractors/components/ContractorMultiSelect.vue';
-import { contractorService } from '@/features/project/contractors/services/ContractorService';
-import type { ContractorJson } from '@/features/project/contractors/services/ContractorService';
+import { contractorService, type ContractorJson } from '@/features/project/contractors/services/ContractorService';
 
 vi.mock('@/features/project/contractors/services/ContractorService', { spy: true });
 

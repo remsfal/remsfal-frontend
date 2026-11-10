@@ -12,8 +12,8 @@ import TimelineCard from '@/components/TimelineCard.vue';
 import BaseCard from '@/components/BaseCard.vue';
 import IssueContractorTimelineItemCard from './IssueContractorTimelineItemCard.vue';
 import type { TimelineWritableJson } from '@/composables/useTimeline';
-import type { ContractorTimelineJson } from '@/features/project/issues/services/ContractorTimelineService';
-import { contractorTimelineService } from '@/features/project/issues/services/ContractorTimelineService';
+import {contractorTimelineService,
+  type ContractorTimelineJson,} from '@/features/project/issues/services/ContractorTimelineService';
 import { quotationRequestService } from '@/features/project/issues/services/QuotationRequestService';
 
 interface RequestedContractor {

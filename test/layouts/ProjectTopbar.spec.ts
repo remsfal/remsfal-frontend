@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import ProjectTopbar from '@/layouts/components/ManagerTopbar.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
-import { useProjectStore } from '@/stores/ProjectStore';
-import type { ProjectItem } from '@/services/ProjectService';
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
+import type { ProjectItem } from '@/features/common/projects/services/ProjectService';
 
 // Router mock
 const mockPush = vi.fn();

@@ -3,7 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 
 import TenancieContractList from '@/features/tenant/tenancies/components/TenancieContractList.vue';
-import { tenancyService, type TenancyJson } from '@/services/TenancyService';
+import { tenancyService, type TenancyJson } from '@/features/tenant/tenancies/services/TenancyService';
 
 describe('TenancieContractList', () => {
   const contracts: TenancyJson[] = [

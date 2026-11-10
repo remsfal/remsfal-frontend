@@ -2,8 +2,7 @@
 import { useI18n } from 'vue-i18n';
 import { useAppToast } from '@/composables/useAppToast';
 import { useRouter } from 'vue-router';
-import { projectService } from '@/services/ProjectService';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { projectService, useProjectStore } from '@/features/common/projects';
 import DangerZoneCard from '@/components/DangerZoneCard.vue';
 
 const props = defineProps<{

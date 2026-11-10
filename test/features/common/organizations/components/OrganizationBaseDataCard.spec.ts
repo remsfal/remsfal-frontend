@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import OrganizationBaseDataCard from '@/features/common/organizations/components/OrganizationBaseDataCard.vue';
-import { organizationService } from '@/services/OrganizationService';
+import { organizationService } from '@/features/common/organizations/services/OrganizationService';
 import { setActivePinia, createPinia } from 'pinia';
 
 const addMock = vi.fn();

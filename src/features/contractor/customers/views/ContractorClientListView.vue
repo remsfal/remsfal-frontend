@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import Message from 'primevue/message';
 import { ContractorClientListCard } from '@/features/contractor/customers';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations';
 
 const { t } = useI18n();
 const organizationStore = useOrganizationStore();

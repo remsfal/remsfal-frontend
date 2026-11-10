@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { getRelativeTime, getStatusColor, getStatusIcon, resolveProjectName }
   from '@/features/manager/activityFeeds/composables/useActivityFeedHelpers';
-import type { ProjectItem } from '@/services/ProjectService';
+import type { ProjectItem } from '@/features/common/projects/services/ProjectService';
 
 describe('useActivityFeedHelpers', () => {
   let mockDate: Date;

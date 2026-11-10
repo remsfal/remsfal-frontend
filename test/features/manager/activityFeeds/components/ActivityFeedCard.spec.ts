@@ -3,11 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../../../mocks/server';
 import ActivityFeedCard from '@/features/manager/activityFeeds/components/ActivityFeedCard.vue';
-import { useActivityFeedStore } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
-import ActivityFeedToolbar from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
-import type { ActivityFeedFilterGroup } from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
+import { useActivityFeedStore, type ActivityFeedEntry } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
+import ActivityFeedToolbar, { type ActivityFeedFilterGroup }
+  from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
 import ActivityFeedList from '@/features/manager/activityFeeds/components/ActivityFeedList.vue';
-import type { ActivityFeedEntry } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
 import { createMockActivityFeedEntry } from '../../../../utils/testHelpers';
 
 // Mocks

@@ -3,9 +3,7 @@ import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/BaseCard.vue';
-import IssueTable, { type IssueColumn } from '../../issues/components/IssueTable.vue';
-import type { IssueItemJson } from '@/features/project/issues/services/IssueService';
-import { useIssueList } from '../../issues/composables/useIssueList';
+import { IssueTable, useIssueList, type IssueColumn, type IssueItemJson } from '@/features/project/issues';
 
 const props = defineProps<{
   projectId: string; agreementId: string;

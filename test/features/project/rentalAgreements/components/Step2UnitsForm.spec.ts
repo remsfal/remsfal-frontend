@@ -1,8 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
-import { flushPromises } from '@vue/test-utils';
-import Step2UnitsForm from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
-import type { SelectedUnit } from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
+import Step2UnitsForm, { type SelectedUnit } from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import type { PropertyListJson, RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';

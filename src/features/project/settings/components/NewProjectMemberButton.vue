@@ -3,13 +3,12 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import { Form, type FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
-import { type ProjectMemberWritableJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
+import { type ProjectMemberWritableJson, type MemberRole, projectMemberService } from '@/features/common/projects';
 import BaseDialog from '@/components/BaseDialog.vue';
 import { emailSchema } from '@/helper/validationHelper';
 

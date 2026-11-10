@@ -10,13 +10,12 @@ import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
 
 // PrimeVue Forms
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import { Form, type FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 // Types
-import type { IssueType } from '@/features/project/issues/services/IssueService';
+import type { IssueType } from '@/features/common/issues';
 
 // Props & Emits
 const props = defineProps<{

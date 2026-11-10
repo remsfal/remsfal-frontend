@@ -6,10 +6,12 @@ import IssueAcceptButton from '@/features/project/issues/components/IssueAcceptB
 import IssueRejectButton from '@/features/project/issues/components/IssueRejectButton.vue';
 import Select from 'primevue/select';
 import AutoComplete from 'primevue/autocomplete';
-import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
+import MemberAutoComplete from '@/features/common/projects/components/MemberAutoComplete.vue';
 import { issueService, type IssueJson } from '@/features/project/issues/services/IssueService';
-import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
-import { organizationMemberService, type OrganizationMemberListJson } from '@/services/OrganizationMemberService';
+import {projectMemberService,
+  type ProjectMemberListJson,} from '@/features/common/projects/services/ProjectMemberService';
+import {organizationMemberService,
+  type OrganizationMemberListJson,} from '@/features/common/projects/services/OrganizationMemberService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
@@ -40,17 +42,19 @@ vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
 });
 
 // MemberAutoComplete (rendered as a real child) loads its own members via these services.
-vi.mock('@/services/ProjectMemberService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/ProjectMemberService')>('@/services/ProjectMemberService');
+vi.mock('@/features/common/projects/services/ProjectMemberService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/common/projects/services/ProjectMemberService')>(
+    '@/features/common/projects/services/ProjectMemberService',
+  );
   return {
     ...actual,
     projectMemberService: {getMembers: vi.fn(),},
   };
 });
 
-vi.mock('@/services/OrganizationMemberService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/OrganizationMemberService')>(
-    '@/services/OrganizationMemberService',
+vi.mock('@/features/common/projects/services/OrganizationMemberService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/common/projects/services/OrganizationMemberService')>(
+    '@/features/common/projects/services/OrganizationMemberService',
   );
   return {
     ...actual,
