@@ -71,7 +71,7 @@ onMounted(() => loadData(props.projectId));
 </script>
 
 <template>
-  <div class="mb-6 grid grid-cols-1 xl:grid-cols-2 gap-4" data-testid="issue-dashboard-cards">
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-8" data-testid="issue-dashboard-cards">
     <BaseCard :loading="isLoading" :skeletonRows="5">
       <template #title>
         {{ t('projectMenu.issueManagement.mine') }}

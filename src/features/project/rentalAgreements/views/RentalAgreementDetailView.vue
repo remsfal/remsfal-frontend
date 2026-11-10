@@ -92,52 +92,48 @@ defineExpose({
 </script>
 
 <template>
-  <div class="p-4">
-    <div class="grid grid-cols-1 gap-6">
-      <RentalAgreementSummaryCard
-        v-if="rentalAgreement"
-        :projectId="props.projectId"
-        :rentalAgreement="rentalAgreement"
-        @update:rentalAgreement="rentalAgreement = $event"
-      />
+  <RentalAgreementSummaryCard
+    v-if="rentalAgreement"
+    :projectId="props.projectId"
+    :rentalAgreement="rentalAgreement"
+    @update:rentalAgreement="rentalAgreement = $event"
+  />
 
-      <!-- Tenants -->
-      <RentalAgreementTenantListCard
-        v-if="rentalAgreement"
-        :active="isAgreementActive"
-        :projectId="projectId"
-        :rentalAgreement="rentalAgreement"
-        @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
-      />
+  <!-- Tenants -->
+  <RentalAgreementTenantListCard
+    v-if="rentalAgreement"
+    :active="isAgreementActive"
+    :projectId="projectId"
+    :rentalAgreement="rentalAgreement"
+    @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
+  />
 
-      <RentalAgreementKeyCard
-        v-if="rentalAgreement"
-        :projectId="projectId"
-        :rentalAgreement="rentalAgreement"
-        @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
-      />
+  <RentalAgreementKeyCard
+    v-if="rentalAgreement"
+    :projectId="projectId"
+    :rentalAgreement="rentalAgreement"
+    @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
+  />
 
-      <RentalAgreementUnitListCard
-        v-if="rentalAgreement"
-        :projectId="props.projectId"
-        :rentalAgreement="rentalAgreement"
-        @update:rentalAgreement="rentalAgreement = $event"
-      />
+  <RentalAgreementUnitListCard
+    v-if="rentalAgreement"
+    :projectId="props.projectId"
+    :rentalAgreement="rentalAgreement"
+    @update:rentalAgreement="rentalAgreement = $event"
+  />
 
-      <RentalAgreementIssueCard
-        :projectId="props.projectId"
-        :agreementId="props.agreementId"
-      />
+  <RentalAgreementIssueCard
+    :projectId="props.projectId"
+    :agreementId="props.agreementId"
+  />
 
-      <DangerZoneCard
-        :description="t('rentalAgreement.dangerZone.description')"
-        :deleteButtonLabel="t('rentalAgreement.dangerZone.deleteButton')"
-        :confirmTitle="t('rentalAgreement.dangerZone.confirmTitle')"
-        :confirmMessage="t('rentalAgreement.dangerZone.confirmMessage')"
-        @confirm="deleteAgreement"
-      />
-    </div>
-  </div>
+  <DangerZoneCard
+    :description="t('rentalAgreement.dangerZone.description')"
+    :deleteButtonLabel="t('rentalAgreement.dangerZone.deleteButton')"
+    :confirmTitle="t('rentalAgreement.dangerZone.confirmTitle')"
+    :confirmMessage="t('rentalAgreement.dangerZone.confirmMessage')"
+    @confirm="deleteAgreement"
+  />
 
   <BaseDialog v-model:visible="confirmationDialogVisible" :header="t('projectTenancies.dialog.confirmationTitle')">
     <p>{{ t('rentalAgreement.dialog.confirmDelete', { id: rentalAgreement?.id }) }}</p>

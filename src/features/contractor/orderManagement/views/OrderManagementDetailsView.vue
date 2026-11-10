@@ -48,20 +48,18 @@ watch(() => props.issueId, fetchRequest);
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <Message v-if="error" severity="error" :closable="false">
-      {{ error }}
-    </Message>
+  <Message v-if="error" severity="error" :closable="false">
+    {{ error }}
+  </Message>
 
-    <CardSkeletonRows v-if="loading" :rows="4" />
+  <CardSkeletonRows v-if="loading" :rows="4" />
 
-    <template v-else-if="request">
-      <QuotationRequestDetailsCard :request="request" />
-      <ContractorOrderTimelineCard
-        :issueId="props.issueId"
-        :title="t('tenantIssues.timeline.title')"
-      />
-      <TenantCommunicationCard :issueId="props.issueId" :request="request" />
-    </template>
-  </div>
+  <template v-else-if="request">
+    <QuotationRequestDetailsCard :request="request" />
+    <ContractorOrderTimelineCard
+      :issueId="props.issueId"
+      :title="t('tenantIssues.timeline.title')"
+    />
+    <TenantCommunicationCard :issueId="props.issueId" :request="request" />
+  </template>
 </template>

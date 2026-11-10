@@ -33,31 +33,25 @@ onMounted(loadContracts);
 </script>
 
 <template>
-  <div class="grid grid-cols-12 gap-4">
-    <div v-if="loading" class="col-span-12 grid content-start gap-5" data-testid="contracts-loading-skeleton">
-      <BaseCard loading :skeletonRows="4" />
-    </div>
+  <BaseCard v-if="loading" loading :skeletonRows="4" data-testid="contracts-loading-skeleton" />
 
-    <div class="col-span-12">
-      <Message v-if="error" severity="error" class="mb-4 mt-4" :closable="false">
-        {{ error }}
-      </Message>
+  <Message v-if="error" severity="error" :closable="false">
+    {{ error }}
+  </Message>
 
-      <div v-if="contracts.length" class="mb-6 grid content-start gap-5">
-        <TenancieContractCard
-          v-for="contract in contracts"
-          :key="contract.agreementId"
-          :contract="contract"
-        />
-      </div>
+  <template v-if="contracts.length">
+    <TenancieContractCard
+      v-for="contract in contracts"
+      :key="contract.agreementId"
+      :contract="contract"
+    />
+  </template>
 
-      <div 
-        v-else-if="!loading"
-        class="mt-6 rounded-lg border border-dashed border-surface bg-emphasis px-4 py-6 text-center text-muted-color"
-        data-testid="empty-state"
-      >
-        {{ t('tenantDashboard.empty') }}
-      </div>
-    </div>
+  <div
+    v-else-if="!loading"
+    class="rounded-lg border border-dashed border-surface bg-emphasis px-4 py-6 text-center text-muted-color"
+    data-testid="empty-state"
+  >
+    {{ t('tenantDashboard.empty') }}
   </div>
 </template>
