@@ -160,6 +160,23 @@ describe('useTimelineItem', () => {
     expect(wrapper.vm.message).toBe('Hallo');
   });
 
+  it('uses the statusLabel option to translate a STATUS_CHANGED message', () => {
+    const statusLabel = (status: string) => `label:${status}`;
+    const StatusLabelComponent = defineComponent({
+      props: { item: { type: Object as () => TenantTimelineJson, required: true } },
+      setup(props) {
+        return useTimelineItem(props, { titleNamespace: 'tenantIssues.timeline', statusLabel });
+      },
+      template: '<div></div>',
+    });
+
+    const statusItem = makeTimeline({ purpose: 'STATUS_CHANGED', message: 'REJECTED' });
+    expect(mount(StatusLabelComponent, { props: { item: statusItem } }).vm.message).toBe('label:REJECTED');
+
+    const messageItem = makeTimeline({ purpose: 'MESSAGE_SENT', message: 'REJECTED' });
+    expect(mount(StatusLabelComponent, { props: { item: messageItem } }).vm.message).toBe('REJECTED');
+  });
+
   it('passes the backend attachments through unchanged', () => {
     const attachments = [
       {

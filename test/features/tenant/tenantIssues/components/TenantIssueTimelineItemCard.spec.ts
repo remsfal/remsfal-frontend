@@ -27,6 +27,16 @@ describe('TenantIssueTimelineItemCard component', () => {
     expect(props.testId).toBe('tenant-issue-timeline-entry');
   });
 
+  it.each([
+    ['OPEN', 'Offen'],
+    ['IN_PROGRESS', 'In Bearbeitung'],
+    ['CLOSED', 'Abgeschlossen'],
+  ])('shows the translated issue status %s for a STATUS_CHANGED entry', (status, expected) => {
+    const props = entryCardProps(mountItemCard(makeTimeline({ purpose: 'STATUS_CHANGED', message: status })));
+
+    expect(props.message).toBe(expected);
+  });
+
   it('passes the backend-provided attachment download URL through unchanged', () => {
     const wrapper = mountItemCard(
       makeTimeline({

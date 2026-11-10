@@ -10,6 +10,11 @@ export interface UseTimelineItemProps<T extends TimelineEntry> {
 export interface UseTimelineItemOptions {
   titleNamespace: string;
   showSenderRole?: boolean;
+  /**
+   * Translates the status value of a STATUS_CHANGED entry (e.g. an issue status for the tenant timeline).
+   * Without it, quotation request and order placement statuses are translated.
+   */
+  statusLabel?: (status: string) => string;
 }
 
 const STATUS_NAMESPACES = ['quotationRequest.status', 'orderPlacement.status'];
@@ -19,7 +24,7 @@ export function useTimelineItem<T extends TimelineEntry>(
   options: UseTimelineItemOptions,
 ) {
   const { t, te } = useI18n();
-  const { titleNamespace, showSenderRole = false } = options;
+  const { titleNamespace, showSenderRole = false, statusLabel } = options;
 
   const getIssueNumber = (issueId: string) => issueId.split('-').pop() || issueId;
 
@@ -68,6 +73,9 @@ export function useTimelineItem<T extends TimelineEntry>(
     const timelineItem = props.item;
     if (timelineItem.purpose !== 'STATUS_CHANGED' || !timelineItem.message) {
       return timelineItem.message;
+    }
+    if (statusLabel) {
+      return statusLabel(timelineItem.message);
     }
 
     const statusKey = STATUS_NAMESPACES.map((namespace) => `${namespace}.${timelineItem.message}`).find((key) =>
