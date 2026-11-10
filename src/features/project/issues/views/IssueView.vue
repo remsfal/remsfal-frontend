@@ -155,6 +155,7 @@ watch(
     v-if="issueDetailsData?.visibleToTenants"
     :issueId="issueId"
     :visibleToTenants="issueDetailsData.visibleToTenants"
+    :issueModifiedAt="issueDetailsData.modifiedAt"
   />
 
   <!-- Issue Relationships Card -->
