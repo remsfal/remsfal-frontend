@@ -49,7 +49,7 @@ watch(rentableUnitTree, (tree) => emit('update:rentableUnitTree', tree), { immed
 </script>
 
 <template>
-  <Message v-if="!isLoading && kpis.length === 0" severity="success" closable class="mb-6">
+  <Message v-if="!isLoading && kpis.length === 0" severity="success" closable>
     <template #icon>
       <i class="pi pi-sparkles text-xl" />
     </template>
@@ -64,7 +64,7 @@ watch(rentableUnitTree, (tree) => emit('update:rentableUnitTree', tree), { immed
       </RouterLink>
     </span>
   </Message>
-  <div v-else class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+  <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
     <template v-if="isLoading">
       <KpiCard v-for="i in 6" :key="i" loading />
     </template>

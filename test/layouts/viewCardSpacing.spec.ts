@@ -33,3 +33,39 @@ describe('view card spacing', () => {
     },
   );
 });
+
+/**
+ * Dashboard components render their cards directly into the page. Their top-level elements must not
+ * add margins, and card grids must use the same gap as the layout (gap-8).
+ */
+const dashboardSources = import.meta.glob(
+  ['/src/features/**/components/*KpiCards.vue', '/src/features/**/components/*Dashboard*.vue'],
+  {
+    query: '?raw', import: 'default', eager: true 
+  },
+) as Record<string, string>;
+
+function topLevelElements(source: string): string[] {
+  const template = source.match(/^<template>\n([\s\S]*)^<\/template>/m)?.[1] ?? '';
+  // top-level opening tags are indented by exactly two spaces; collect each tag up to its closing '>'
+  return [...template.matchAll(/^ {2}<(?!\/|!--)[^>]*>/gm)].map((match) => match[0]);
+}
+
+describe('dashboard card spacing', () => {
+  const dashboards = Object.entries(dashboardSources);
+
+  it('finds the dashboard components to check', () => {
+    expect(dashboards.length).toBeGreaterThan(0);
+  });
+
+  it.each(dashboards.map(([path, source]) => [path, source]))(
+    '%s uses the layout spacing for its cards',
+    (_path, source) => {
+      for (const element of topLevelElements(source as string)) {
+        expect(element).not.toMatch(/class="[^"]*\b(m[tby]?-\d+|space-y-\d+)\b/);
+        const gaps = element.match(/\bgap-\d+\b/g) ?? [];
+        gaps.forEach((gap) => expect(gap).toBe('gap-8'));
+      }
+    },
+  );
+});
