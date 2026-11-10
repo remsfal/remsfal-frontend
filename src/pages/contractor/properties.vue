@@ -7,7 +7,7 @@ meta:
 
 <script setup lang="ts">
 import { ProjectSelectionView, ProjectsWelcomeMessage } from '@/features/manager/projects';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore } from '@/features/common/projects';
 
 const projectStore = useProjectStore();
 </script>

@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { organizationMemberService, type OrganizationMemberWritableJson } from '@/services/OrganizationMemberService';
-import { server } from '../mocks/server';
-import { testErrorHandling } from '../utils/testHelpers';
+import {organizationMemberService,
+  type OrganizationMemberWritableJson,} from '@/features/common/projects/services/OrganizationMemberService';
+import { server } from '../../../../mocks/server';
+import { testErrorHandling } from '../../../../utils/testHelpers';
 
 describe('organizationMemberService (MSW)', () => {
   const projectId = 'project123';

@@ -5,8 +5,7 @@ import { useAppToast } from '@/composables/useAppToast';
 import BaseCard from '@/components/BaseCard.vue';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
-import { projectService } from '@/services/ProjectService';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { projectService, useProjectStore } from '@/features/common/projects';
 
 const props = defineProps<{
   projectId: string;

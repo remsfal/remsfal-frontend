@@ -7,7 +7,7 @@ import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
 import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
 import { getIssueTypeLabel } from '@/features/common/issues';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore } from '@/features/common/projects';
 
 const { t } = useI18n();
 const router = useRouter();

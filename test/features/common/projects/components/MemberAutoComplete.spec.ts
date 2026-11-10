@@ -1,12 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
-import { type ProjectMemberListJson, projectMemberService } from '@/services/ProjectMemberService';
-import { type OrganizationMemberListJson, organizationMemberService } from '@/services/OrganizationMemberService';
+import MemberAutoComplete from '@/features/common/projects/components/MemberAutoComplete.vue';
+import {type ProjectMemberListJson,
+  projectMemberService,} from '@/features/common/projects/services/ProjectMemberService';
+import {type OrganizationMemberListJson,
+  organizationMemberService,} from '@/features/common/projects/services/OrganizationMemberService';
 import AutoComplete from 'primevue/autocomplete';
 
-vi.mock('@/services/ProjectMemberService', { spy: true });
-vi.mock('@/services/OrganizationMemberService', { spy: true });
+vi.mock('@/features/common/projects/services/ProjectMemberService', { spy: true });
+vi.mock('@/features/common/projects/services/OrganizationMemberService', { spy: true });
 
 describe('MemberAutoComplete.vue', () => {
   beforeEach(() => {

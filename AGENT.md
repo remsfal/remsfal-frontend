@@ -84,6 +84,9 @@ src/
 │       │                       # generic UI atoms (which live in src/components/ / src/composables/, see below)
 │       ├── authentication/     # components, composables, views
 │       ├── organizations/      # components, services (OrganizationService), stores (OrganizationStore), views
+│       ├── projects/           # components (MemberAutoComplete), composables (useProjectMembers),
+│       │                       # services (ProjectService, ProjectMemberService, OrganizationMemberService),
+│       │                       # stores (ProjectStore)
 │       ├── users/              # components, services (UserService), views
 │       └── issues/             # issueTypes.ts (IssueType, IssueStatus, ...), issueLabels.ts, issueCategories.ts
 │
@@ -275,7 +278,7 @@ declare module 'vue-router' {
 - Features are grouped by view: `src/features/<view>/<domain>/`, where `<view>` is one of `manager`, `project`, `tenant`, `contractor`
 - New features are created under the view they belong to
 - Existing code moves to its feature slice when the file is next modified
-- Never reach into a feature's internals from outside — use `index.ts` as the public API. This applies to components as well as types and services (see the `RentalUnitTreeNodeJson`/`ContractorJson` re-exports in `rentableUnits/index.ts` and `contractors/index.ts`). If the barrel doesn't yet export something a consumer needs, add the export to `index.ts` rather than importing the full path. The only intentional exception is `src/stores/UserSession.ts`, which imports `UserService` directly so that the eagerly loaded store does not pull the route-level views of the `users` barrel into the main chunk (see the comment there)
+- Never reach into a feature's internals from outside — use `index.ts` as the public API. This applies to components as well as types and services (see the `RentalUnitTreeNodeJson`/`ContractorJson` re-exports in `rentableUnits/index.ts` and `contractors/index.ts`). If the barrel doesn't yet export something a consumer needs, add the export to `index.ts` rather than importing the full path. There are two intentional exceptions: `src/stores/UserSession.ts` imports `UserService` directly so that the eagerly loaded store does not pull the route-level views of the `users` barrel into the main chunk, and `src/router/guards.ts` imports `ProjectStore` directly because the router is loaded by the global test setup — importing the `projects` barrel there would evaluate it before a test file's `vi.mock` calls are registered (see the comments there)
 - Types needed by several views belong to the `common/` domain, not to a view-specific service. Example: the issue enums (`IssueType`, `IssueStatus`, `IssueCategory`, `IssuePriority`) are defined in `features/common/issues/issueTypes.ts` and exported via `@/features/common/issues`; `project/issues/services/IssueService.ts` only re-exports them
 - A domain used by more than one view (e.g. organizations, used by both `manager` and `contractor`) does not belong to any single view — it goes into `src/features/common/<domain>/`. This is the feature-level counterpart to shared UI atoms (see below); when in doubt, start the domain under the view that needs it first and promote it to `common/` once a second view needs it too
 - Feature-specific Views (`*View.vue`) go in `src/features/<view>/<domain>/views/` and are exported via `index.ts` — the global `src/views/` is only for Views without a clear feature home
@@ -320,9 +323,8 @@ import type { MyType } from '@/services/MyService';
 // Props & Emits defined directly in <script setup> (no import section)
 ```
 
-**Remaining moves** (in this order):
-1. Projects: `src/services/ProjectService.ts`, `src/services/ProjectMemberService.ts`, `src/services/OrganizationMemberService.ts` (organizations as members of a project, `/api/v1/projects/{projectId}/organizations`), `src/stores/ProjectStore.ts`, `src/components/MemberAutoComplete.vue` and `src/composables/useProjectMembers.ts` → `features/common/projects/` (used by the manager and project views, the router and the layouts — therefore `common/`, not `manager/projects/`)
-2. Pages that use a feature of another view (`tenant/properties.vue` and `contractor/properties.vue` → `manager/projects`, `tenant/organizations.vue` → `contractor/organizations`, `manager/dashboard.vue` → `project/issues`): move the shared building blocks to `features/common/` when they are next touched
+**Remaining moves**:
+1. Pages that use a feature of another view (`tenant/properties.vue` and `contractor/properties.vue` → `manager/projects`, `tenant/organizations.vue` → `contractor/organizations`, `manager/dashboard.vue` → `project/issues`): move the shared building blocks to `features/common/` when they are next touched
 
 `src/services/AddressService.ts` stays as a generic service (used by `AddressCard` and five features). `src/views/` only contains `LandingPageView.vue`, which has no feature home.
 
@@ -334,7 +336,7 @@ import type { MyType } from '@/services/MyService';
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔄 In progress | 17 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels. Open: project services/stores (see "Remaining moves") |
+| 3 — Feature-Sliced | 🔄 In progress | 18 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels; all domain services and stores live in their slices. Open: pages that use a feature of another view (see "Remaining moves") |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
@@ -342,9 +344,8 @@ import type { MyType } from '@/services/MyService';
 
 ## Current Project Structure
 
-> **Note**: The current structure already matches the target structure above, except for the files listed under
-> "Remaining moves" in Phase 3, which still live in the flat `src/services/`, `src/stores/`, `src/components/`
-> and `src/composables/` directories.
+> **Note**: The current structure matches the target structure above. The only open item are the pages listed
+> under "Remaining moves" in Phase 3, which still use a feature of another view.
 
 ```
 src/
@@ -352,12 +353,10 @@ src/
 ├── layouts/             # Role-based layouts (Phase 2)
 ├── features/            # Feature slices by view (Phase 3)
 ├── extensions/          # Downstream extension points (empty upstream)
-├── components/          # Generic UI components (permanent); MemberAutoComplete.vue still pending a move
-├── composables/         # Generic composables (permanent); useProjectMembers.ts still pending a move
-├── services/            # ApiClient.ts, AuthService.ts, AddressService.ts (permanent);
-│                        # OrganizationMemberService, Project* still pending a move
-├── stores/              # UserSession.ts, EventStore.ts (permanent);
-│                        # ProjectStore.ts still pending a move
+├── components/          # Generic UI components (permanent)
+├── composables/         # Generic composables (permanent)
+├── services/            # ApiClient.ts, AuthService.ts, AddressService.ts (permanent)
+├── stores/              # UserSession.ts, EventStore.ts (permanent)
 ├── views/               # LandingPageView.vue only
 ├── router/              # Thin wrapper + guards.ts
 ├── i18n/, types/, helper/, constants/, telemetry/, assets/
@@ -535,7 +534,7 @@ const props = defineProps<{ inputId?: string }>()
 <PhoneInput inputId="org-phone" v-model="phone" />
 ```
 
-- Existing composite components with this pattern: `PhoneInput` (`src/components/PhoneInput.vue`), `MemberAutoComplete` (`src/components/MemberAutoComplete.vue`)
+- Existing composite components with this pattern: `PhoneInput` (`src/components/PhoneInput.vue`), `MemberAutoComplete` (`src/features/common/projects/components/MemberAutoComplete.vue`)
 - Apply the same `inputId` prop to every new composite input component
 
 **BaseCard Component** (`src/components/BaseCard.vue`):

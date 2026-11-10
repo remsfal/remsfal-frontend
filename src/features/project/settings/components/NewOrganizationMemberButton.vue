@@ -10,8 +10,7 @@ import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import { useOrganizationStore } from '@/features/common/organizations';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
-import { type MemberRole } from '@/services/ProjectMemberService';
-import { organizationMemberService } from '@/services/OrganizationMemberService';
+import { type MemberRole, organizationMemberService } from '@/features/common/projects';
 import BaseDialog from '@/components/BaseDialog.vue';
 
 const props = defineProps<{ projectId: string }>();

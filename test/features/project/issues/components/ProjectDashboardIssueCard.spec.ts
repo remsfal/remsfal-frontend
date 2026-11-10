@@ -2,8 +2,8 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ProjectDashboardIssueCard from '@/features/project/issues/components/ProjectDashboardIssueCard.vue';
 import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
-import { useProjectStore } from '@/stores/ProjectStore';
-import type { ProjectItem } from '@/services/ProjectService';
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
+import type { ProjectItem } from '@/features/common/projects/services/ProjectService';
 
 const push = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }));
@@ -20,7 +20,7 @@ vi.mock('@/features/project/issues/services/IssueService', async () => {
   };
 });
 
-vi.mock('@/stores/ProjectStore', () => ({ useProjectStore: vi.fn() }));
+vi.mock('@/features/common/projects/stores/ProjectStore', () => ({ useProjectStore: vi.fn() }));
 
 function issue(overrides: Partial<IssueItemJson>): IssueItemJson {
   return {

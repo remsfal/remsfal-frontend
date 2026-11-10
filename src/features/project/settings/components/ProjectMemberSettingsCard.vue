@@ -7,7 +7,7 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { onMounted, ref } from 'vue';
-import { type ProjectMemberJson, projectMemberService } from '@/services/ProjectMemberService';
+import { type ProjectMemberJson, projectMemberService } from '@/features/common/projects';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import { isValidUuid } from '@/helper/validationHelper';
 

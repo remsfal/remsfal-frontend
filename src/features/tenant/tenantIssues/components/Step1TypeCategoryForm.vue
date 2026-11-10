@@ -11,8 +11,11 @@ import Message from 'primevue/message';
 
 // Types
 import { formatTenancyLabel, type TenancyJson, type RentalUnitJson } from '@/features/tenant/tenancies';
-import { getDefectCategories, getInquiryCategories, type CategoryOption } from '@/features/common/issues';
-import type { IssueCategory, IssueType } from '@/features/common/issues';
+import {getDefectCategories,
+  getInquiryCategories,
+  type CategoryOption,
+  type IssueCategory,
+  type IssueType,} from '@/features/common/issues';
 
 // Props & Emits
 const props = defineProps<{

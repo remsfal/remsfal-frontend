@@ -5,13 +5,13 @@ import NewProjectMemberButton from '@/features/project/settings/components/NewPr
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import {projectMemberService,
   type ProjectMemberJson,
-  type MemberRole,} from '@/services/ProjectMemberService';
+  type MemberRole,} from '@/features/common/projects/services/ProjectMemberService';
 
 const { mockToastAdd } = vi.hoisted(() => ({mockToastAdd: vi.fn(),}));
 
 vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}));
 
-vi.mock('@/services/ProjectMemberService');
+vi.mock('@/features/common/projects/services/ProjectMemberService');
 
 // PrimeVue's Select emits 'change' after 'update:modelValue', so simulate both to mirror a real selection.
 async function selectRole(roleSelect: VueWrapper<InstanceType<typeof ProjectMemberRoleSelect>>, role: MemberRole) {

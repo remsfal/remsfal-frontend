@@ -49,7 +49,7 @@ window.addEventListener('unhandledrejection', (event) => {
 // Vue Router 4 triggers the initial navigation synchronously during app.use(router),
 // which fires the beforeEach guard. The session must be populated at that point.
 const { useUserSessionStore } = await import('@/stores/UserSession');
-const { useProjectStore } = await import('@/stores/ProjectStore');
+const { useProjectStore } = await import('@/features/common/projects');
 const sessionStore = useUserSessionStore();
 await sessionStore.refreshSessionState();
 useProjectStore().refreshProjectList();

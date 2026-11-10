@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import ProjectMenu from '@/layouts/components/ProjectMenu.vue';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 // Suppress console.log from ProjectMenu (watches projectId changes)

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore } from '@/features/common/projects';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const projectStore = useProjectStore();

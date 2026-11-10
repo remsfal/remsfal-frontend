@@ -4,8 +4,7 @@ import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
 import BaseCard from '@/components/BaseCard.vue';
-import { NewOrganizationDialog } from '@/features/common/organizations';
-import { useOrganizationStore } from '@/features/common/organizations';
+import { NewOrganizationDialog, useOrganizationStore } from '@/features/common/organizations';
 
 const { t } = useI18n();
 const organizationStore = useOrganizationStore();

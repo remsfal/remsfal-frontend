@@ -2,7 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import ProjectSettingsCard from '@/features/project/settings/components/ProjectSettingsCard.vue';
-import { projectService, type ProjectJson } from '@/services/ProjectService';
+import { projectService, type ProjectJson } from '@/features/common/projects/services/ProjectService';
 
 // ---- Mocks ----
 const addMock = vi.fn();

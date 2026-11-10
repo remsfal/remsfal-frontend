@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore } from '@/features/common/projects';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';

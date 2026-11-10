@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import DataTable, {type DataTablePageEvent,
   type DataTableRowClickEvent,} from 'primevue/datatable';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore, type MemberRole } from '@/features/common/projects';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import Column from 'primevue/column';
 import { useI18n } from 'vue-i18n';
-import type { MemberRole } from '@/services/ProjectMemberService';
 
 const { t } = useI18n();
 

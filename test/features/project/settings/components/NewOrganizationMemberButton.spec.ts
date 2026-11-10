@@ -1,11 +1,12 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper, DOMWrapper, flushPromises } from '@vue/test-utils';
 import NewOrganizationMemberButton from '@/features/project/settings/components/NewOrganizationMemberButton.vue';
-import { organizationMemberService } from '@/services/OrganizationMemberService';
+import { organizationMemberService } from '@/features/common/projects/services/OrganizationMemberService';
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-vi.mock('@/services/OrganizationMemberService', () => ({organizationMemberService: { addOrganization: vi.fn() },}));
+const { serviceMock } = vi.hoisted(() => ({ serviceMock: { addOrganization: vi.fn() } }));
+vi.mock('@/features/common/projects/services/OrganizationMemberService', () => ({ organizationMemberService: serviceMock }));
 
 vi.mock('@/features/common/organizations/stores/OrganizationStore', () => ({
   useOrganizationStore: vi.fn(() => ({

@@ -4,7 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { server } from '../../../../mocks/server';
 import { useActivityFeedStore } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
 import type { ActivityFeedEntry } from '@/features/manager/activityFeeds/stores/ActivityFeedStore';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
 import { createMockActivityFeedEntry } from '../../../../utils/testHelpers';
 
 function toRawActivity(entry: ActivityFeedEntry) {

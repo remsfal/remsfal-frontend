@@ -1,9 +1,12 @@
 /* eslint-disable object-curly-newline */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { projectService, type ProjectJson, type ProjectListJson, type ProjectWritableJson } from '@/services/ProjectService';
-import { server } from '../mocks/server';
-import { testErrorHandling } from '../utils/testHelpers';
+import {projectService,
+  type ProjectJson,
+  type ProjectListJson,
+  type ProjectWritableJson,} from '@/features/common/projects/services/ProjectService';
+import { server } from '../../../../mocks/server';
+import { testErrorHandling } from '../../../../utils/testHelpers';
 
 // --- MOCK DATA ---
 

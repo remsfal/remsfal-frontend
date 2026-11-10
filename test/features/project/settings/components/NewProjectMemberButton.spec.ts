@@ -1,11 +1,11 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper, DOMWrapper, flushPromises } from '@vue/test-utils';
 import NewProjectMemberButton from '@/features/project/settings/components/NewProjectMemberButton.vue';
-import { projectMemberService } from '@/services/ProjectMemberService';
+import { projectMemberService } from '@/features/common/projects/services/ProjectMemberService';
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-vi.mock('@/services/ProjectMemberService', () => ({projectMemberService: { addMember: vi.fn() },}));
+vi.mock('@/features/common/projects/services/ProjectMemberService', () => ({projectMemberService: { addMember: vi.fn() },}));
 
 // BaseDialog renders PrimeVue's Dialog, which teleports its entire content (via Portal) to
 // document.body. Vue Test Utils' `wrapper.find()` only searches the wrapper's own DOM subtree, so
