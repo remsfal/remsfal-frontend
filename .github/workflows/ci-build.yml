@@ -89,24 +89,15 @@ jobs:
       - name: Check css with Stylelint (stylelint)
         run: npm run stylelint
 
-      # Generate reports for Sonar Analysis (only in the upstream repository)
-      - name: Build Coverage Report (only on LTS version)
-        if: ${{ matrix.node-version == 'lts/*' && github.repository == 'remsfal/remsfal-frontend' }}
-        run: npm run coverage:merge
+      # Upload reports for Sonar Analysis (only in the upstream repository)
       - name: Upload Coverage Reports (only on LTS version)
         if: ${{ matrix.node-version == 'lts/*' && github.repository == 'remsfal/remsfal-frontend' }}
         uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ github.run_id }}
-          # coverage-vitest/ and coverage-cypress/ hold each tool's own lcov.info,
-          # unmerged. Sonar unions per-line hit counts across separate reports itself,
-          # which is robust to Vitest and Cypress instrumenting the same .vue file with
-          # different AST shapes - nyc's merge (coverage/) instead concatenates their
-          # function/branch/line tables unreconciled, inflating the denominator on any
-          # component no e2e spec visits. coverage/ is kept for now until the CI/merge
-          # step itself is cleaned up.
+          # Each tool's own lcov.info; Sonar unions the two reports itself
+          # (see sonar.javascript.lcov.reportPaths in sonar-project.properties).
           path: |
-            coverage/
             coverage-vitest/lcov.info
             coverage-cypress/lcov.info
           retention-days: 1
