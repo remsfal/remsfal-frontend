@@ -25,8 +25,7 @@ vi.mock("@/features/project/issues/services/IssueService", () => {
 import IssueListView from "@/features/project/issues/views/IssueListView.vue";
 import IssueTable from "@/features/project/issues/components/IssueTable.vue";
 import NewIssueButton from "@/features/project/issues/components/NewIssueButton.vue";
-import { issueService } from "@/features/project/issues/services/IssueService";
-import type { IssueStatus, IssueType } from "@/features/project/issues/services/IssueService";
+import { issueService, type IssueStatus, type IssueType } from "@/features/project/issues/services/IssueService";
 
 const getIssuesMock = vi.mocked(issueService.getIssues);
 

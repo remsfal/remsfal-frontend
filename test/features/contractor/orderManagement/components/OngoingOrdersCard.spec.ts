@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import DataTable from 'primevue/datatable';
 import OngoingOrdersCard from '@/features/contractor/orderManagement/components/OngoingOrdersCard.vue';
-import { orderPlacementService } from '@/features/contractor/orderManagement/services/OrderPlacementService';
-import type { OrderPlacementJson } from '@/features/contractor/orderManagement/services/OrderPlacementService';
+import {orderPlacementService,
+  type OrderPlacementJson,} from '@/features/contractor/orderManagement/services/OrderPlacementService';
 
 const pushMock = vi.fn();
 vi.mock('vue-router', async (importOriginal) => {

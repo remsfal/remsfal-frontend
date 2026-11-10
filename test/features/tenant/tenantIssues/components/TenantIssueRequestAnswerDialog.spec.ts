@@ -5,8 +5,8 @@ import FileUpload from 'primevue/fileupload';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import i18n from '@/i18n/i18n';
 import TenantIssueRequestAnswerDialog from '@/features/tenant/tenantIssues/components/TenantIssueRequestAnswerDialog.vue';
-import { tenantIssueRequestService } from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
-import type { IssueRequestJson } from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
+import {tenantIssueRequestService,
+  type IssueRequestJson,} from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
 
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));

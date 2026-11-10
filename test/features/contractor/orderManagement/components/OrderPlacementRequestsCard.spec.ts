@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import OrderPlacementRequestsCard from '@/features/contractor/orderManagement/components/OrderPlacementRequestsCard.vue';
-import { orderPlacementService } from '@/features/contractor/orderManagement/services/OrderPlacementService';
-import type { OrderPlacementJson } from '@/features/contractor/orderManagement/services/OrderPlacementService';
+import {orderPlacementService,
+  type OrderPlacementJson,} from '@/features/contractor/orderManagement/services/OrderPlacementService';
 
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));

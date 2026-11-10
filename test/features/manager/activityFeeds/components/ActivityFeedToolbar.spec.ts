@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import ActivityFeedToolbar from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
-import type { ActivityFeedFilterGroup } from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
+import ActivityFeedToolbar, { type ActivityFeedFilterGroup }
+  from '@/features/manager/activityFeeds/components/ActivityFeedToolbar.vue';
 import SelectButton from 'primevue/selectbutton';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';

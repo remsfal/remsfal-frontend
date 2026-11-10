@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { isValidPhone, isValidUuid, phoneSchema, phonePatchValue, emailSchema } from '@/helper/validationHelper';
-import { optionalEmailSchema, nameSchema, streetSchema } from '@/helper/validationHelper';
+import {isValidPhone,
+  isValidUuid,
+  phoneSchema,
+  phonePatchValue,
+  emailSchema,
+  optionalEmailSchema,
+  nameSchema,
+  streetSchema,} from '@/helper/validationHelper';
 
 const t = ((key: string) => key) as unknown as Parameters<typeof phoneSchema>[0];
 

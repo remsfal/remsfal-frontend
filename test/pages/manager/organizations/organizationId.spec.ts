@@ -1,9 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, config } from '@vue/test-utils'
 import { reactive } from 'vue'
 import { routeLocationKey } from 'vue-router'
 import router from '@/router'
-import { config } from '@vue/test-utils'
 import ManagerOrganizationSettingsPage from '@/pages/manager/organizations/[organizationId].vue'
 
 config.global.plugins = config.global.plugins.filter((p) => p !== router)

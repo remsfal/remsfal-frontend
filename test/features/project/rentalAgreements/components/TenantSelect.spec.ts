@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import TenantSelect from '@/features/project/rentalAgreements/components/TenantSelect.vue';
-import { tenantService } from '@/features/project/rentalAgreements/services/TenantService';
-import type { TenantItemJson } from '@/features/project/rentalAgreements/services/TenantService';
+import { tenantService, type TenantItemJson } from '@/features/project/rentalAgreements/services/TenantService';
 
 vi.mock('@/features/project/rentalAgreements/services/TenantService', { spy: true });
 

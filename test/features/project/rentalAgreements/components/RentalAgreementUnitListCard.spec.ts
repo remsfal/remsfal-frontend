@@ -4,10 +4,9 @@ import RentalAgreementUnitListCard from '@/features/project/rentalAgreements/com
 import AdjustRentDialog from '@/features/project/rentalAgreements/components/AdjustRentDialog.vue';
 import BaseDialog from '@/components/BaseDialog.vue';
 import DataTable from 'primevue/datatable';
-import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
-import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
+import {rentalAgreementService,
+  type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import { propertyService, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';

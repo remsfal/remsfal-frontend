@@ -2,8 +2,11 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import type { AxiosError } from 'axios';
 import { server } from '../mocks/server';
-import { apiClient, requestErrorHandler, replacePlaceholders } from '@/services/ApiClient';
-import type { PathsForMethod, RequestOptions } from '@/services/ApiClient';
+import {apiClient,
+  requestErrorHandler,
+  replacePlaceholders,
+  type PathsForMethod,
+  type RequestOptions,} from '@/services/ApiClient';
 import { authService } from '@/services/AuthService';
 import { setActivePinia, createPinia } from 'pinia';
 import { useEventBus } from '@/stores/EventStore';

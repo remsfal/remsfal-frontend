@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import TenantIssueRequestsCard from '@/features/tenant/tenantIssues/components/TenantIssueRequestsCard.vue';
-import { tenantIssueRequestService } from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
-import type { IssueRequestJson } from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
+import {tenantIssueRequestService,
+  type IssueRequestJson,} from '@/features/tenant/tenantIssues/services/TenantIssueRequestService';
 
 const AnswerDialogStub = defineComponent({
   name: 'TenantIssueRequestAnswerDialog',

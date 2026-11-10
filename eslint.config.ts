@@ -116,6 +116,8 @@ export default [
         ts: 'never',
         tsx: 'never',
       }],
+      // one import per module; type imports are merged inline (`import { foo, type Bar } from '...'`)
+      'import-x/no-duplicates': ['error', { 'prefer-inline': true }],
       'object-curly-newline': [
         'error',
         {
