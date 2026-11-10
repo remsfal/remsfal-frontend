@@ -10,10 +10,10 @@ import AutoComplete from 'primevue/autocomplete';
 import Message from 'primevue/message';
 
 // Types
-import type { IssueCategory, IssueType } from '@/features/project/issues/services/IssueService';
 import type { TenancyJson, RentalUnitJson } from '@/services/TenancyService';
 import { formatTenancyLabel } from '@/services/TenancyService';
-import { getDefectCategories, getInquiryCategories, type CategoryOption } from '@/features/common/issues/issueCategories';
+import { getDefectCategories, getInquiryCategories, type CategoryOption } from '@/features/common/issues';
+import type { IssueCategory, IssueType } from '@/features/common/issues';
 
 // Props & Emits
 const props = defineProps<{

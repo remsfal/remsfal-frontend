@@ -7,7 +7,7 @@ import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
 import { issueService, type IssueItemJson, type IssuePriority, type IssueStatus }
   from '@/features/project/issues/services/IssueService';
-import { getIssueTypeLabel } from '@/features/common/issues/issueLabels';
+import { getIssueTypeLabel } from '@/features/common/issues';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ projectId: string }>();

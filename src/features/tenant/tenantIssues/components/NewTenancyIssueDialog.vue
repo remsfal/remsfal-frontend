@@ -14,7 +14,7 @@ import Message from 'primevue/message';
 import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
 
 // Services & Types
-import type { IssueCategory, IssueType } from '@/features/project/issues/services/IssueService';
+import type { IssueCategory, IssueType } from '@/features/common/issues';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import { useUserSessionStore } from '@/stores/UserSession';

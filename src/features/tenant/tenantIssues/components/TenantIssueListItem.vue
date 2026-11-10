@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import Tag from 'primevue/tag';
 import type { TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import { getIssueStatusLabel, getIssueTypeSeverity,
-  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/common/issues/issueLabels';
+  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/common/issues';
 const props = withDefaults(defineProps<{
   issue: TenantIssueJson;
   isLast?: boolean;

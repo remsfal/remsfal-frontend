@@ -5,7 +5,7 @@ import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable';
 import Column from 'primevue/column';
 import { type IssueItemJson } from '@/features/project/issues/services/IssueService';
 import { useProjectMembers } from '@/composables/useProjectMembers';
-import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
+import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues';
 
 export type IssueColumn = 'title' | 'assignee' | 'status' | 'priority' | 'type' | 'issueNumber' | 'modifiedAt';
 

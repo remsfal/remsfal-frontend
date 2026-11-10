@@ -6,7 +6,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/BaseCard.vue';
 import { issueService, type IssueItemJson } from '@/features/project/issues/services/IssueService';
-import { getIssueTypeLabel } from '@/features/common/issues/issueLabels';
+import { getIssueTypeLabel } from '@/features/common/issues';
 import { useProjectStore } from '@/stores/ProjectStore';
 
 const { t } = useI18n();

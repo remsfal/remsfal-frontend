@@ -33,134 +33,72 @@ src/
 │   ├── project.vue             # ProjectMenu + ProjectTopbar + ProjectMobileBar
 │   ├── tenant.vue              # TenantMenu + AppSimpleTopbar + TenantMobileBar
 │   ├── contractor.vue          # ContractorMenu + AppSimpleTopbar + ContractorMobileBar
-│   ├── public.vue              # AppSimpleTopbar + AppFooter (Landing, Legal, Privacy)
-│   ├── components/             # Layout chrome sub-components (Topbars, Menus, MobileBars)
-│   └── composables/            # useLayout(), useMobileBarActiveState()
+│   ├── public.vue              # AppSimpleTopbar + AppFooter (Landing page)
+│   ├── auth.vue                # Login / email verification pages
+│   ├── components/             # Layout chrome (AppRoleLayout, Topbars, Menus, MobileBars)
+│   └── composables/            # layout.ts, useMobileBarActiveState, useOrganizationMenuSections, ...
 │
-├── pages/                      # File-based routes via unplugin-vue-router
-│   ├── index.vue               →  /                    (layout: public)
-│   ├── inbox/
-│   │   ├── index.vue           →  /inbox               (layout: manager)
-│   │   └── [id].vue            →  /inbox/:id           (layout: manager)
-│   ├── manager/
-│   │   ├── index.vue           →  /manager             (layout: manager)
-│   │   ├── settings.vue        →  /manager/settings    (layout: manager)
-│   │   └── organizations.vue   →  /manager/organizations
-│   ├── projects/
-│   │   └── [projectId]/
-│   │       ├── index.vue       →  /projects/:projectId          (layout: project)
-│   │       ├── settings.vue
-│   │       ├── chat.vue
-│   │       ├── issues/
-│   │       │   ├── index.vue
-│   │       │   └── [issueId]/
-│   │       │       └── index.vue
-│   │       ├── units/
-│   │       │   ├── index.vue
-│   │       │   ├── property/[unitId].vue
-│   │       │   ├── building/[unitId].vue
-│   │       │   ├── apartment/[unitId].vue
-│   │       │   ├── site/[unitId].vue
-│   │       │   ├── storage/[unitId].vue
-│   │       │   └── commercial/[unitId].vue
-│   │       ├── tenants/
-│   │       │   ├── index.vue
-│   │       │   └── [tenantId].vue
-│   │       ├── rental-agreements/
-│   │       │   ├── index.vue
-│   │       │   └── [agreementId].vue
-│   │       └── contractors/
-│   │           └── index.vue
-│   ├── tenancies/
-│   │   ├── dashboard.vue       →  /tenancies/dashboard (layout: tenant)
-│   │   ├── issues/
-│   │   │   └── index.vue
-│   │   └── account-settings.vue
-│   └── contractor/
-│       ├── index.vue           →  /contractor          (layout: contractor)
-│       ├── issues/
-│       │   └── index.vue
-│       └── clients/
-│           └── index.vue
+├── pages/                      # File-based routes (Vue Router v5); route name + layout via <route> block
+│   ├── index.vue               →  /                                (layout: public)
+│   ├── login.vue, verify-additional-email.vue                      (layout: auth)
+│   ├── manager/                →  /manager/...                     (layout: manager)
+│   │   ├── dashboard.vue, projects.vue, activity-feeds.vue
+│   │   ├── account-data.vue, account-settings.vue
+│   │   ├── contractors/        index.vue, [organizationId].vue
+│   │   └── organizations/      new.vue, [organizationId].vue
+│   ├── projects/[projectId]/   →  /projects/:projectId/...         (layout: project)
+│   │   ├── dashboard.vue, settings.vue
+│   │   ├── issues/             index.vue, [issueId].vue
+│   │   ├── units/              index.vue, {property,building,apartment,site,storage,commercial}/[unitId].vue
+│   │   ├── tenants/            index.vue, [tenantId].vue
+│   │   ├── agreements/         index.vue, [agreementId].vue
+│   │   └── contractors/        index.vue, [contractorId].vue
+│   ├── tenant/                 →  /tenant/...                      (layout: tenant)
+│   │   ├── dashboard.vue, account-data.vue, properties.vue, organizations.vue
+│   │   └── issues/             index.vue, [issueId].vue
+│   └── contractor/             →  /contractor/...                  (layout: contractor)
+│       ├── dashboard.vue, account-data.vue, account-settings.vue, properties.vue
+│       ├── orders/             open.vue, ongoing.vue, closed.vue, [issueId].vue
+│       ├── clients/            index.vue
+│       └── organizations/      new.vue, [organizationId].vue
 │
-├── features/                   # Domain-based feature slices, grouped by view
+├── features/                   # Domain-based feature slices, grouped by view; index.ts = public API
 │   ├── manager/                # Domains specific to the manager view
-│   │   ├── projects/
-│   │   │   ├── components/     # ProjectSelectionTable, NewProjectDialog, ...
-│   │   │   ├── views/          # Feature-specific page-level components (*View.vue)
-│   │   │   ├── stores/         # ProjectStore
-│   │   │   └── index.ts        # Public API of this feature
-│   │   ├── inbox/
-│   │   │   ├── components/     # InboxSidebar, InboxMessageList, InboxToolbar, ...
-│   │   │   ├── composables/    # useInboxHelpers
-│   │   │   ├── stores/         # InboxStore
-│   │   │   ├── services/       # InboxService
-│   │   │   └── index.ts
-│   │   └── contractors/
-│   │       ├── components/
-│   │       └── index.ts
+│   │   ├── projects/           # components (ProjectSelectionView, NewProjectDialog, ...), views
+│   │   ├── activityFeeds/      # components, composables, services, stores, views
+│   │   └── contractors/        # components, views
 │   ├── project/                # Domains specific to the project view
-│   │   ├── rentableUnits/
-│   │   │   ├── components/     # RentableUnitsTable, UnitBreadcrumb, ...
-│   │   │   ├── composables/
-│   │   │   ├── services/       # PropertyService, BuildingService, ApartmentService, ...
-│   │   │   ├── stores/
-│   │   │   └── index.ts
-│   │   ├── rentalAgreements/
-│   │   │   ├── components/     # Step1..Step4Forms, RentalDetailsForm
-│   │   │   ├── views/
-│   │   │   ├── services/       # RentalAgreementService, TenancyService
-│   │   │   └── index.ts
-│   │   ├── issues/
-│   │   │   ├── components/     # NewIssueDialog, IssueTable, IssueDetailsCard, IssueDescriptionCard
-│   │   │   ├── views/          # IssueView, ProjectIssueView
-│   │   │   └── index.ts
-│   │   ├── contractors/
-│   │   │   ├── components/     # ContractorTable
-│   │   │   ├── services/       # ProjectContractorService
-│   │   │   └── index.ts
-│   │   └── settings/
-│   │       ├── components/
-│   │       ├── views/
-│   │       └── index.ts
-│   ├── tenant/                  # Domains specific to the tenant view
-│   │   ├── tenancies/
-│   │   │   ├── components/      # Tenant tenancy dashboard cards
-│   │   │   └── index.ts
-│   │   └── tenantIssues/
-│   │       ├── components/      # TenantIssueListCard, TenantIssueListItem, NewTenancyIssueDialog, ...
-│   │       ├── services/        # TenancyService (tenant-side)
-│   │       └── index.ts
-│   ├── contractor/              # Domains specific to the contractor view
-│   │   ├── orderManagement/
-│   │   │   ├── components/
-│   │   │   └── index.ts
-│   │   └── organizations/
-│   │       ├── components/
-│   │       └── index.ts
-│   └── common/                   # Domain features used by MORE THAN ONE view — the counterpart to
-│       │                         # generic UI atoms (which live in src/components/ / src/composables/, see below)
-│       ├── organizations/
-│       │   ├── components/
-│       │   ├── views/
-│       │   └── index.ts
-│       ├── users/
-│       │   ├── components/
-│       │   ├── services/        # UserService
-│       │   └── index.ts
-│       └── issues/               # issueCategories.ts, issueLabels.ts — shared by project/issues and tenant/tenantIssues
+│   │   ├── rentableUnits/      # components, composables, services (PropertyService, ...), stores
+│   │   ├── rentalAgreements/   # components (Step1..Step4 wizard, ...), services, views
+│   │   ├── issues/             # components, composables, services (IssueService, ...), views
+│   │   ├── contractors/        # components, services (ProjectContractorService), views
+│   │   └── settings/           # components, views
+│   ├── tenant/                 # Domains specific to the tenant view
+│   │   ├── tenancies/          # components (TenancieContractList, ...)
+│   │   └── tenantIssues/       # components (NewTenancyIssueDialog, ...), services, views
+│   ├── contractor/             # Domains specific to the contractor view
+│   │   ├── orderManagement/    # components, services, views
+│   │   ├── customers/          # components, services, views
+│   │   └── organizations/      # components
+│   └── common/                 # Domain features used by MORE THAN ONE view — the counterpart to
+│       │                       # generic UI atoms (which live in src/components/ / src/composables/, see below)
+│       ├── authentication/     # components, composables, views
+│       ├── organizations/      # components, views
+│       ├── users/              # components, services (UserService), views
+│       └── issues/             # issueTypes.ts (IssueType, IssueStatus, ...), issueLabels.ts, issueCategories.ts
 │
-├── components/                  # Base/generic UI components used by ≥2 features (permanent, not a staging area)
-│   └── common/                  # e.g. BaseCard.vue, BaseDialog.vue, KpiCard.vue, PhoneInput.vue
-├── composables/                  # Base/generic composables used by ≥2 features (permanent), e.g. useAddressForm
-├── services/                     # App-wide infrastructure services only: ApiClient.ts, AuthService.ts
-│                                  # (feature-specific services live in features/*/services/)
-├── stores/                       # App-wide Pinia stores only: UserSession.ts, EventStore.ts
-│                                  # (feature-specific stores live in features/*/stores/)
-├── i18n/                         # i18n config + locale files
-├── types/                        # App-wide TypeScript types
-├── helper/                       # Utility functions
-├── constants/                    # App-wide constants
+├── components/                 # Base/generic UI components used by ≥2 features (permanent, not a staging area),
+│                               # e.g. BaseCard.vue, BaseDialog.vue, KpiCard.vue, PhoneInput.vue, TimelineCard.vue
+├── composables/                # Base/generic composables used by ≥2 features (permanent), e.g. useAddressForm
+├── services/                   # App-wide infrastructure services: ApiClient.ts, AuthService.ts
+│                               # (feature-specific services live in features/*/services/)
+├── stores/                     # App-wide Pinia stores: UserSession.ts, EventStore.ts
+│                               # (feature-specific stores live in features/*/stores/)
+├── i18n/                       # i18n config + locale files
+├── types/                      # App-wide TypeScript types
+├── helper/                     # Utility functions
+├── constants/                  # App-wide constants
+├── telemetry/                  # OpenTelemetry setup
 │
 ├── extensions/                   # Reserved for downstream projects — empty upstream (see "Downstream Extensions")
 │   ├── overrides/                # Mirror of src/: replaces the upstream file with the same relative path
@@ -170,9 +108,10 @@ src/
 │
 ├── App.vue                      # Root: resolves route.meta.layout → renders <component>
 ├── main.ts                      # Bootstrap only
-└── mocks/                       # MSW service worker
+└── sw.ts                        # Service worker (PWA / push notifications)
 
-test/                           # Mirrors src/ structure (pages/ + features/ + top-level src/ dirs)
+test/                           # Mirrors src/ structure (pages/ + features/ + top-level src/ dirs);
+                                # test/mocks/ holds the MSW handlers and fixtures
 ```
 
 ---
@@ -336,14 +275,14 @@ declare module 'vue-router' {
 - Features are grouped by view: `src/features/<view>/<domain>/`, where `<view>` is one of `manager`, `project`, `tenant`, `contractor`
 - New features are created under the view they belong to
 - Existing code moves to its feature slice when the file is next modified
-- Never reach into a feature's internals from outside — use `index.ts` as the public API. This applies to components as well as types and services (see the `RentalUnitTreeNodeJson`/`ContractorJson` re-exports in `rentableUnits/index.ts` and `contractors/index.ts`). If the barrel doesn't yet export something a consumer needs, add the export to `index.ts` rather than importing the full path — don't treat an existing direct-path import elsewhere in the codebase as proof the barrel isn't needed; this rule is not yet fully applied everywhere
+- Never reach into a feature's internals from outside — use `index.ts` as the public API. This applies to components as well as types and services (see the `RentalUnitTreeNodeJson`/`ContractorJson` re-exports in `rentableUnits/index.ts` and `contractors/index.ts`). If the barrel doesn't yet export something a consumer needs, add the export to `index.ts` rather than importing the full path. The only intentional exception is `src/stores/UserSession.ts`, which imports `UserService` directly so that the eagerly loaded store does not pull the route-level views of the `users` barrel into the main chunk (see the comment there)
+- Types needed by several views belong to the `common/` domain, not to a view-specific service. Example: the issue enums (`IssueType`, `IssueStatus`, `IssueCategory`, `IssuePriority`) are defined in `features/common/issues/issueTypes.ts` and exported via `@/features/common/issues`; `project/issues/services/IssueService.ts` only re-exports them
 - A domain used by more than one view (e.g. organizations, used by both `manager` and `contractor`) does not belong to any single view — it goes into `src/features/common/<domain>/`. This is the feature-level counterpart to shared UI atoms (see below); when in doubt, start the domain under the view that needs it first and promote it to `common/` once a second view needs it too
 - Feature-specific Views (`*View.vue`) go in `src/features/<view>/<domain>/views/` and are exported via `index.ts` — the global `src/views/` is only for Views without a clear feature home
 
 **Base/generic components and composables (not tied to a feature domain)**:
 - The earlier idea of a top-level `src/shared/` directory has been discarded — `src/components/` and `src/composables/` are its permanent replacement, not a staging area before a future move
-- Generic, reusable UI atoms (e.g. `BaseCard`, `BaseDialog`, `KpiCard`, `PhoneInput`) used by ≥2 features live in `src/components/common/`
-- Non-`common` app-wide components (e.g. `AddressCard.vue`) live in `src/components/` (root level)
+- Generic, reusable UI components (e.g. `BaseCard`, `BaseDialog`, `KpiCard`, `PhoneInput`, `AddressCard`, `TimelineCard`) used by ≥2 features live directly in `src/components/` (there is no `common/` subfolder)
 - Generic composables used by ≥2 features (e.g. `useAddressForm`) live in `src/composables/`
 - Don't confuse these with `features/common/<domain>/`: `components/`/`composables/` are for generic, domain-agnostic building blocks; `features/common/` is for a cohesive feature domain that happens to be used by more than one view
 
@@ -372,7 +311,7 @@ import { Form } from '@primevue/forms';
 import { z } from 'zod';
 
 // 4. Internal shared components
-import BaseCard from '@/components/common/BaseCard.vue';
+import BaseCard from '@/components/BaseCard.vue';
 
 // 5. Services & Types
 import { myService } from '@/services/MyService';
@@ -381,12 +320,13 @@ import type { MyType } from '@/services/MyService';
 // Props & Emits defined directly in <script setup> (no import section)
 ```
 
-**Priority order for migration** (highest impact first):
-1. `src/services/` → split into feature slices (most files, clearest ownership)
-2. `src/components/` subdirectories → already partially organized, finish the grouping
-3. `src/stores/ProjectStore.ts` → move to `features/manager/projects/`
-4. `src/stores/InboxStore.ts` → move to `features/manager/inbox/`
-5. `src/views/` → replaced by `src/pages/` in Phase 1, then co-located with features
+**Remaining moves** (in this order):
+1. Organizations: `src/services/OrganizationService.ts`, `src/services/OrganizationMemberService.ts` and `src/stores/OrganizationStore.ts` → `features/common/organizations/` (used by manager, project, tenant and contractor)
+2. Tenancies: `src/services/TenancyService.ts` → `features/tenant/tenancies/` (only used by the tenant view)
+3. Projects: `src/services/ProjectService.ts`, `src/services/ProjectMemberService.ts`, `src/stores/ProjectStore.ts`, `src/components/MemberAutoComplete.vue` and `src/composables/useProjectMembers.ts` → `features/common/projects/` (used by the manager and project views, the router and the layouts — therefore `common/`, not `manager/projects/`)
+4. Pages that use a feature of another view (`tenant/properties.vue` and `contractor/properties.vue` → `manager/projects`, `tenant/organizations.vue` → `contractor/organizations`, `manager/dashboard.vue` → `project/issues`): move the shared building blocks to `features/common/` when they are next touched
+
+`src/services/AddressService.ts` stays as a generic service (used by `AddressCard` and five features). `src/views/` only contains `LandingPageView.vue`, which has no feature home.
 
 ---
 
@@ -396,7 +336,7 @@ import type { MyType } from '@/services/MyService';
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` and `src/features/project/issues/` complete; `src/features/common/{organizations,users,issues}/` established; incremental for other domains |
+| 3 — Feature-Sliced | 🔄 In progress | 17 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels. Open: organization, tenancy and project services/stores (see "Remaining moves") |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
@@ -404,32 +344,30 @@ import type { MyType } from '@/services/MyService';
 
 ## Current Project Structure
 
-> **Note**: This reflects the *current* state. The target structure is described in the Architecture Roadmap above.
-> During migration, both structures coexist — legacy code in the flat directories, new/migrated code in `features/` and `pages/`.
+> **Note**: The current structure already matches the target structure above, except for the files listed under
+> "Remaining moves" in Phase 3, which still live in the flat `src/services/`, `src/stores/`, `src/components/`
+> and `src/composables/` directories.
 
 ```
 src/
-├── components/          # Feature-specific pieces still pending a move to features/*/components/;
-│                        # common/ and other genuinely generic components stay here permanently (see Phase 3)
-├── views/               # Page-level components (→ pages/ + features/*/views/)
-├── layout/              # Legacy layout components (→ layouts/, superseded by Phase 2)
-├── stores/              # Feature-specific stores still pending a move to features/*/stores/;
-│                        # UserSession.ts and EventStore.ts stay here permanently
-├── services/            # Feature-specific services still pending a move to features/*/services/;
-│                        # ApiClient.ts and AuthService.ts stay here permanently
-├── router/              # Vue Router config (→ thin wrapper after Phase 1)
-├── i18n/                # i18n config + locales (stays here permanently)
-├── types/               # TypeScript types (stays here permanently)
-├── helper/              # Utility functions (stays here permanently)
-├── assets/              # Static assets
-├── constants/           # App constants (stays here permanently)
-└── mocks/               # MSW service worker
+├── pages/               # File-based routes (Phase 1)
+├── layouts/             # Role-based layouts (Phase 2)
+├── features/            # Feature slices by view (Phase 3)
+├── extensions/          # Downstream extension points (empty upstream)
+├── components/          # Generic UI components (permanent); MemberAutoComplete.vue still pending a move
+├── composables/         # Generic composables (permanent); useProjectMembers.ts still pending a move
+├── services/            # ApiClient.ts, AuthService.ts, AddressService.ts (permanent);
+│                        # Organization*, Project*, TenancyService still pending a move
+├── stores/              # UserSession.ts, EventStore.ts (permanent);
+│                        # OrganizationStore.ts, ProjectStore.ts still pending a move
+├── views/               # LandingPageView.vue only
+├── router/              # Thin wrapper + guards.ts
+├── i18n/, types/, helper/, constants/, telemetry/, assets/
+└── App.vue, main.ts, sw.ts
 
 test/
-├── components/          # Component tests
-├── views/               # View tests
-├── services/            # Service tests
-├── setup/               # Test configuration
+├── features/, pages/, layouts/, components/, composables/, services/, stores/, ...   # mirror src/
+├── setup/               # Test configuration and helpers
 └── mocks/               # MSW handlers and fixtures
 ```
 
@@ -544,7 +482,7 @@ const newMember = await apiClient.post('/api/v1/projects/{projectId}/members',
 Store files are named `[Name]Store.ts` (e.g., `ProjectStore.ts`). Keep stores focused and domain-specific.
 
 **UI State** (separate from Pinia):
-- `src/layout/composables/layout.ts` manages layout state (menu visibility, dark mode, active menu)
+- `src/layouts/composables/layout.ts` manages layout state (menu visibility, dark mode, active menu)
 - Uses Vue 3 `reactive()` and `ref()` for UI chrome state
 - Provides `useLayout()` composable for components
 
@@ -552,18 +490,20 @@ Store files are named `[Name]Store.ts` (e.g., `ProjectStore.ts`). Keep stores fo
 
 ### Role-Based Routing
 
-Users have roles (MANAGER, CONTRACTOR, TENANT) that determine accessible views:
-- Each role has dedicated menu/topbar components
-- Landing page redirects authenticated users based on role (see `src/router/index.ts:194`)
+The backend returns the user's contexts (`MANAGER`, `CONTRACTOR`, `TENANT`) in `UserJson.userContexts`:
+- `useUserSessionStore()` exposes them as the getters `isManager`, `isTenant` and `isContractor` — use these instead of parsing `userContexts`
+- Each view has its own layout with dedicated menu/topbar/mobile bar components
+- The login and landing pages redirect authenticated users to their home route based on the contexts (`homeRouteFor` in `src/router/guards.ts`)
+- Switching between views happens through context-dependent menu entries (e.g. "Persönliche Mietverhältnisse" in the manager menu is only visible with the `TENANT` context)
 - Named routes facilitate conditional navigation
-- Route guards handle post-login redirects
 
 **View Organization**:
-- `src/views/` - Page-level components (route targets)
-- `src/components/` - Reusable components
-- `src/layout/` - Layout components (topbar, sidebar, etc.)
+- `src/pages/` - Route targets (thin; render feature views/components)
+- `src/features/<view>/<domain>/views/` - Feature-specific page-level components
+- `src/components/` - Generic reusable components
+- `src/layouts/` - Layouts and layout chrome (topbar, sidebar, mobile bar)
 
-Use lazy loading for routes: `component: () => import('@/views/ViewName.vue')`
+Routes are generated from `src/pages/` and lazy-loaded automatically.
 
 ### Component Standards
 
@@ -920,6 +860,11 @@ Use singular forms for type labels in selects/dropdowns.
 - **SCSS** for component-level scoped styles
 - **Responsive design**: Mobile-first with Tailwind breakpoints
 - **Dark mode**: Supported via layout composable with View Transitions API
+
+**Page layout conventions**:
+- `AppRoleLayout` stacks the page content with `flex flex-col gap-8`. Pages, views and dashboard components render their cards directly (as fragments) and must not wrap them in an own spacing container (`gap-*`, `p-*`, `space-y-*`, margins). Cards placed side by side use a grid with `gap-8`. `test/layouts/viewCardSpacing.spec.ts` guards this for `*View.vue`, `*KpiCards.vue` and `*Dashboard*.vue`
+- Pages have no heading above their cards; the card titles carry the context
+- Loading states use skeletons (`BaseCard` with `loading`, `KpiCard` with `loading`, `CardSkeletonRows`), never spinners. Pending actions use the `loading` state of the triggering `Button`
 
 ### Environment Configuration
 

@@ -3,8 +3,7 @@ import { useI18n } from 'vue-i18n';
 import type { TenantTimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import TimelineEntryCard from '@/components/TimelineEntryCard.vue';
 import { useTimelineItem } from '@/composables/useTimelineItem';
-import { getIssueStatusLabel } from '@/features/common/issues/issueLabels';
-import type { IssueStatus } from '@/features/project/issues/services/IssueService';
+import { getIssueStatusLabel, type IssueStatus } from '@/features/common/issues';
 
 const props = defineProps<{
   item: TenantTimelineJson;
