@@ -7,6 +7,7 @@ import { contractorTimelineService, type ContractorTimelineJson }
 import { quotationRequestService, type QuotationRequestJson }
   from '@/features/project/issues/services/QuotationRequestService';
 import { setupResizeObserverMock, waitForTabListTimersAfterAll } from '../../../../setup/issueTestHelpers';
+import { useEventBus } from '@/stores/EventStore';
 
 // PrimeVue TabList relies on ResizeObserver, which JSDOM does not implement.
 setupResizeObserverMock();
@@ -121,16 +122,45 @@ describe('IssueContractorTimelineCard component', () => {
     );
   });
 
-  it('hides the composer when no contractor has been requested yet', async () => {
+  it('hides the card and loads no timeline while no contractor has been requested', async () => {
     vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items: [] });
-    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValueOnce({ timelines: [] });
-
     vi.mocked(contractorTimelineService.getTimelineEntries).mockClear();
 
     const wrapper = await mountCardFull('issue-1');
 
-    expect(wrapper.getComponent(TimelineCard).props('hideComposer')).toBe(true);
-    expect(contractorTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-1', undefined);
+    expect(wrapper.findComponent(TimelineCard).exists()).toBe(false);
+    expect(wrapper.html()).toBe('<!--v-if-->');
+    expect(contractorTimelineService.getTimelineEntries).not.toHaveBeenCalled();
+  });
+
+  it('hides the card when the quotation requests cannot be loaded', async () => {
+    vi.mocked(quotationRequestService.getQuotationRequests).mockRejectedValueOnce(new Error('network'));
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const wrapper = await mountCardFull('issue-1');
+
+    expect(wrapper.findComponent(TimelineCard).exists()).toBe(false);
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('shows the card as soon as a quotation request is created for the issue', async () => {
+    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValueOnce({ items: [] });
+    const wrapper = await mountCardFull('issue-1');
+    expect(wrapper.findComponent(TimelineCard).exists()).toBe(false);
+
+    // persistent mocks: cards mounted by earlier tests listen to the same event
+    vi.mocked(quotationRequestService.getQuotationRequests).mockResolvedValue({ items: [makeQuotationRequest()] });
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockResolvedValue({ timelines: [] });
+    useEventBus().emit('quotationRequest:created', { issueId: 'issue-1' });
+    await flushPromises();
+
+    expect(wrapper.findComponent(TimelineCard).exists()).toBe(true);
+    expect(contractorTimelineService.getTimelineEntries).toHaveBeenLastCalledWith('issue-1', 'org-1');
+
+    wrapper.unmount();
+    vi.mocked(quotationRequestService.getQuotationRequests).mockReset();
+    vi.mocked(contractorTimelineService.getTimelineEntries).mockReset();
   });
 
   it('shows one tab per requested contractor and scopes each timeline to its organization', async () => {
