@@ -43,13 +43,10 @@ jobs:
           path: ${{ runner.temp }}/artifacts/coverage
       - name: Prepare coverage directories and move lcov.info files
         run: |
-          # coverage-vitest/lcov.info and coverage-cypress/lcov.info are each tool's own,
-          # unmerged report - sonar-project.properties points sonar.javascript.lcov.reportPaths
-          # at these directly so Sonar can union them itself, since nyc's merge (coverage/)
-          # concatenates the two tools' differently-shaped .vue instrumentation instead of
-          # reconciling it. coverage/ is kept and moved too for now, until that merge step
-          # is cleaned up out of the pipeline.
-          for dir in coverage coverage-vitest coverage-cypress; do
+          # coverage-vitest/lcov.info and coverage-cypress/lcov.info are each tool's own report;
+          # sonar-project.properties points sonar.javascript.lcov.reportPaths at both, and
+          # Sonar unions them itself. A merged coverage/ report is no longer needed.
+          for dir in coverage-vitest coverage-cypress; do
             mkdir -p "$dir"
             src="${{ runner.temp }}/artifacts/coverage/$dir/lcov.info"
             if [ -f "$src" ]; then
