@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Select from 'primevue/select';
 import { useI18n } from 'vue-i18n';
-import type { EmployeeRole } from '@/services/OrganizationService';
+import type { EmployeeRole } from '@/features/common/organizations/services/OrganizationService';
 
 const props = withDefaults(
   defineProps<{

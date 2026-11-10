@@ -9,7 +9,9 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
-import { type OrganizationEmployeeWritableJson, type EmployeeRole, organizationService } from '@/services/OrganizationService';
+import {type OrganizationEmployeeWritableJson,
+  type EmployeeRole,
+  organizationService,} from '@/features/common/organizations/services/OrganizationService';
 import BaseDialog from '@/components/BaseDialog.vue';
 import { emailSchema } from '@/helper/validationHelper';
 

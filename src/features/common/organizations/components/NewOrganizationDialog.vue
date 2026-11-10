@@ -14,8 +14,8 @@ import Message from 'primevue/message';
 import PhoneInput from '@/components/PhoneInput.vue';
 import BaseDialog from '@/components/BaseDialog.vue';
 import { phoneSchema } from '@/helper/validationHelper';
-import { organizationService } from '@/services/OrganizationService';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { organizationService } from '@/features/common/organizations/services/OrganizationService';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ visible: boolean }>();

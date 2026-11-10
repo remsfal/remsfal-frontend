@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import NewOrganizationDialog from '@/features/common/organizations/components/NewOrganizationDialog.vue';
 import PhoneInputComponent from '@/components/PhoneInput.vue';
-import { organizationService } from '@/services/OrganizationService';
+import { organizationService } from '@/features/common/organizations/services/OrganizationService';
 import { useUserSessionStore } from '@/stores/UserSession';
 import router from '@/router';
 

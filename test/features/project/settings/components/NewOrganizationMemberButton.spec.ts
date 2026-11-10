@@ -7,7 +7,7 @@ vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
 vi.mock('@/services/OrganizationMemberService', () => ({organizationMemberService: { addOrganization: vi.fn() },}));
 
-vi.mock('@/stores/OrganizationStore', () => ({
+vi.mock('@/features/common/organizations/stores/OrganizationStore', () => ({
   useOrganizationStore: vi.fn(() => ({
     userOrganizations: [
       { id: 'org-1', name: 'Test GmbH' },

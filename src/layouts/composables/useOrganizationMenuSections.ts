@@ -2,7 +2,7 @@ import { computed, onMounted, type ComputedRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import type { MenuItem } from '@/layouts/components/AppMenuItem.vue';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations';
 
 /**
  * Builds one sidebar section per organization of the user, each with a link to the organization settings.

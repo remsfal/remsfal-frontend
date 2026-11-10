@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import BaseCard from '@/components/BaseCard.vue';
-import { type OrganizationJson, organizationService } from '@/services/OrganizationService';
+import { type OrganizationJson, organizationService } from '@/features/common/organizations';
 
 const { t } = useI18n();
 const router = useRouter();

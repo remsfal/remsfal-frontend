@@ -3,8 +3,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Message from 'primevue/message';
 import OrganizationDashboardCards from '@/features/contractor/organizations/components/OrganizationDashboardCards.vue';
 import BaseCard from '@/components/BaseCard.vue';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
-import type { OrganizationJson, OrganizationEmployeeJson } from '@/services/OrganizationService';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
+import type { OrganizationJson, OrganizationEmployeeJson } from '@/features/common/organizations/services/OrganizationService';
 
 const org1: OrganizationJson = {
   id: 'org-1',

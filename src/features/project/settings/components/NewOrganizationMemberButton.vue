@@ -8,7 +8,7 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import { type MemberRole } from '@/services/ProjectMemberService';
 import { organizationMemberService } from '@/services/OrganizationMemberService';

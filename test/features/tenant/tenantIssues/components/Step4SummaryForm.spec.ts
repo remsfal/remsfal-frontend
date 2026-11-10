@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import Button from 'primevue/button';
 import Step4SummaryForm from '@/features/tenant/tenantIssues/components/Step4SummaryForm.vue';
-import type { TenancyJson } from '@/services/TenancyService';
+import type { TenancyJson } from '@/features/tenant/tenancies/services/TenancyService';
 import type { IssueType } from '@/features/project/issues/services/IssueService';
 import i18n from '@/i18n/i18n';
 

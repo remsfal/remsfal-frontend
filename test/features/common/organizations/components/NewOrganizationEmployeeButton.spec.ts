@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import NewOrganizationEmployeeButton from '@/features/common/organizations/components/NewOrganizationEmployeeButton.vue';
-import { organizationService } from '@/services/OrganizationService';
+import { organizationService } from '@/features/common/organizations/services/OrganizationService';
 
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));

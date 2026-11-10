@@ -9,8 +9,7 @@ import Divider from 'primevue/divider';
 
 // Types
 import type { IssueType } from '@/features/common/issues';
-import type { TenancyJson } from '@/services/TenancyService';
-import { formatTenancyLabel } from '@/services/TenancyService';
+import { formatTenancyLabel, type TenancyJson } from '@/features/tenant/tenancies';
 
 // Props & Emits
 const props = defineProps<{

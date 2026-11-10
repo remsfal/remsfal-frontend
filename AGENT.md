@@ -74,7 +74,7 @@ src/
 │   │   ├── contractors/        # components, services (ProjectContractorService), views
 │   │   └── settings/           # components, views
 │   ├── tenant/                 # Domains specific to the tenant view
-│   │   ├── tenancies/          # components (TenancieContractList, ...)
+│   │   ├── tenancies/          # components (TenancieContractList, ...), services (TenancyService)
 │   │   └── tenantIssues/       # components (NewTenancyIssueDialog, ...), services, views
 │   ├── contractor/             # Domains specific to the contractor view
 │   │   ├── orderManagement/    # components, services, views
@@ -83,7 +83,7 @@ src/
 │   └── common/                 # Domain features used by MORE THAN ONE view — the counterpart to
 │       │                       # generic UI atoms (which live in src/components/ / src/composables/, see below)
 │       ├── authentication/     # components, composables, views
-│       ├── organizations/      # components, views
+│       ├── organizations/      # components, services (OrganizationService), stores (OrganizationStore), views
 │       ├── users/              # components, services (UserService), views
 │       └── issues/             # issueTypes.ts (IssueType, IssueStatus, ...), issueLabels.ts, issueCategories.ts
 │
@@ -321,10 +321,8 @@ import type { MyType } from '@/services/MyService';
 ```
 
 **Remaining moves** (in this order):
-1. Organizations: `src/services/OrganizationService.ts`, `src/services/OrganizationMemberService.ts` and `src/stores/OrganizationStore.ts` → `features/common/organizations/` (used by manager, project, tenant and contractor)
-2. Tenancies: `src/services/TenancyService.ts` → `features/tenant/tenancies/` (only used by the tenant view)
-3. Projects: `src/services/ProjectService.ts`, `src/services/ProjectMemberService.ts`, `src/stores/ProjectStore.ts`, `src/components/MemberAutoComplete.vue` and `src/composables/useProjectMembers.ts` → `features/common/projects/` (used by the manager and project views, the router and the layouts — therefore `common/`, not `manager/projects/`)
-4. Pages that use a feature of another view (`tenant/properties.vue` and `contractor/properties.vue` → `manager/projects`, `tenant/organizations.vue` → `contractor/organizations`, `manager/dashboard.vue` → `project/issues`): move the shared building blocks to `features/common/` when they are next touched
+1. Projects: `src/services/ProjectService.ts`, `src/services/ProjectMemberService.ts`, `src/services/OrganizationMemberService.ts` (organizations as members of a project, `/api/v1/projects/{projectId}/organizations`), `src/stores/ProjectStore.ts`, `src/components/MemberAutoComplete.vue` and `src/composables/useProjectMembers.ts` → `features/common/projects/` (used by the manager and project views, the router and the layouts — therefore `common/`, not `manager/projects/`)
+2. Pages that use a feature of another view (`tenant/properties.vue` and `contractor/properties.vue` → `manager/projects`, `tenant/organizations.vue` → `contractor/organizations`, `manager/dashboard.vue` → `project/issues`): move the shared building blocks to `features/common/` when they are next touched
 
 `src/services/AddressService.ts` stays as a generic service (used by `AddressCard` and five features). `src/views/` only contains `LandingPageView.vue`, which has no feature home.
 
@@ -336,7 +334,7 @@ import type { MyType } from '@/services/MyService';
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔄 In progress | 17 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels. Open: organization, tenancy and project services/stores (see "Remaining moves") |
+| 3 — Feature-Sliced | 🔄 In progress | 17 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels. Open: project services/stores (see "Remaining moves") |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
@@ -357,9 +355,9 @@ src/
 ├── components/          # Generic UI components (permanent); MemberAutoComplete.vue still pending a move
 ├── composables/         # Generic composables (permanent); useProjectMembers.ts still pending a move
 ├── services/            # ApiClient.ts, AuthService.ts, AddressService.ts (permanent);
-│                        # Organization*, Project*, TenancyService still pending a move
+│                        # OrganizationMemberService, Project* still pending a move
 ├── stores/              # UserSession.ts, EventStore.ts (permanent);
-│                        # OrganizationStore.ts, ProjectStore.ts still pending a move
+│                        # ProjectStore.ts still pending a move
 ├── views/               # LandingPageView.vue only
 ├── router/              # Thin wrapper + guards.ts
 ├── i18n/, types/, helper/, constants/, telemetry/, assets/

@@ -2,7 +2,7 @@ import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import ContractorMenu from '@/layouts/components/ContractorMenu.vue';
 import { useUserSessionStore } from '@/stores/UserSession';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 
 describe('ContractorMenu.vue', () => {
   let wrapper: VueWrapper;

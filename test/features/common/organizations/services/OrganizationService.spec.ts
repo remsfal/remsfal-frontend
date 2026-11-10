@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { OrganizationService } from '@/services/OrganizationService';
+import { OrganizationService } from '@/features/common/organizations/services/OrganizationService';
 
 describe('OrganizationService with MSW', () => {
   const service = new OrganizationService();

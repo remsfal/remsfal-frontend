@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import TenantOrganizationsPage from '@/pages/tenant/organizations.vue';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 
 vi.mock('@/features/contractor/organizations', () => ({
   OrganizationDashboardCards: {
@@ -10,7 +10,10 @@ vi.mock('@/features/contractor/organizations', () => ({
   },
 }));
 
-vi.mock('@/features/common/organizations', () => ({
+vi.mock('@/features/common/organizations', async () => ({
+  ...(await vi.importActual<typeof import('@/features/common/organizations/stores/OrganizationStore')>(
+    '@/features/common/organizations/stores/OrganizationStore',
+  )),
   UserOrganizationEmploymentsCard: {
     name: 'UserOrganizationEmploymentsCard',
     template: '<div data-test="employments-card-stub" />',

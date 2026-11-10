@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ManagerMenu from '@/layouts/components/ManagerMenu.vue';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 describe('ManagerMenu.vue', () => {

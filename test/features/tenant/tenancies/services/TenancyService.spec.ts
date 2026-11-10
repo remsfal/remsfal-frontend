@@ -1,7 +1,9 @@
 import { describe, test, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server';
-import { tenancyService, formatTenancyLabel, type TenancyJson } from '@/services/TenancyService';
+import { server } from '../../../../mocks/server';
+import {tenancyService,
+  formatTenancyLabel,
+  type TenancyJson,} from '@/features/tenant/tenancies/services/TenancyService';
 
 describe('TenancyService with MSW', () => {
   test('getTenancies returns all tenancies', async () => {

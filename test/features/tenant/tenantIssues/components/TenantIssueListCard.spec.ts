@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { tenantIssueService } from '@/features/tenant/tenantIssues/services/TenantIssueService';
-import { tenancyService } from '@/services/TenancyService';
+import { tenancyService } from '@/features/tenant/tenancies/services/TenancyService';
 import Select from 'primevue/select';
 
 const pushMock = vi.fn();
@@ -14,9 +14,9 @@ vi.mock('vue-router', async () => {
   };
 });
 
-vi.mock('@/services/TenancyService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/TenancyService')>(
-    '@/services/TenancyService',
+vi.mock('@/features/tenant/tenancies/services/TenancyService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/tenant/tenancies/services/TenancyService')>(
+    '@/features/tenant/tenancies/services/TenancyService',
   );
 
   return {

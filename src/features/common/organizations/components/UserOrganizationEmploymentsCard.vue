@@ -5,7 +5,7 @@ import BaseCard from '@/components/BaseCard.vue';
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import Tag from "primevue/tag";
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 
 const { t } = useI18n();
 const organizationStore = useOrganizationStore();

@@ -3,7 +3,7 @@ import Tag from 'primevue/tag';
 import Divider from 'primevue/divider';
 
 import BaseCard from '@/components/BaseCard.vue';
-import { formatTenancyLabel, type TenancyJson } from '@/services/TenancyService';
+import { formatTenancyLabel, type TenancyJson } from '@/features/tenant/tenancies/services/TenancyService';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{

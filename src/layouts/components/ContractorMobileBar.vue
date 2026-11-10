@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import AppRoleMobileBar from '@/layouts/components/AppRoleMobileBar.vue'
 import ContractorMenu from '@/layouts/components/ContractorMenu.vue'
 import type { MobileNavItem } from '@/layouts/composables/useMobileBarActiveState'
-import { useOrganizationStore } from '@/stores/OrganizationStore'
+import { useOrganizationStore } from '@/features/common/organizations'
 
 const { t } = useI18n()
 const organizationStore = useOrganizationStore()

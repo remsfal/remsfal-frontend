@@ -16,7 +16,7 @@ import CardSkeletonRows from '@/components/CardSkeletonRows.vue';
 // Services & Types
 import type { IssueCategory, IssueType } from '@/features/common/issues';
 import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
-import { tenancyService, type TenancyJson } from '@/services/TenancyService';
+import { tenancyService, type TenancyJson } from '@/features/tenant/tenancies';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 // Step Components

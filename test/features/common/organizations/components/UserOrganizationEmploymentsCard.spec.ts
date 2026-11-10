@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import UserOrganizationEmploymentsCard from '@/features/common/organizations/components/UserOrganizationEmploymentsCard.vue';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 
 const mockOwner = {
   id: 'emp-1',

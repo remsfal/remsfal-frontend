@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/BaseCard.vue';
-import { type OrganizationJson, organizationService } from '@/services/OrganizationService';
+import { type OrganizationJson, organizationService } from '@/features/common/organizations';
 
 const props = defineProps<{ organizationId: string }>();
 

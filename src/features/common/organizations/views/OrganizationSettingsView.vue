@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 import { OrganizationBaseDataCard, OrganizationEmployeeCard } from '@/features/common/organizations';
 import AddressCard from '@/components/AddressCard.vue';
-import { organizationService } from '@/services/OrganizationService';
+import { organizationService } from '@/features/common/organizations/services/OrganizationService';
 import type { AddressJson } from '@/services/AddressService';
 
 const props = defineProps<{ organizationId: string }>();

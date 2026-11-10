@@ -13,8 +13,8 @@ import Button from 'primevue/button';
 import BaseCard from '@/components/BaseCard.vue';
 import PhoneInput from '@/components/PhoneInput.vue';
 import { phoneSchema, phonePatchValue } from '@/helper/validationHelper';
-import { organizationService } from '@/services/OrganizationService';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { organizationService } from '@/features/common/organizations/services/OrganizationService';
+import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ organizationId: string }>();

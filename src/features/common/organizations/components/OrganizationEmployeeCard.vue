@@ -8,7 +8,8 @@ import DataTable from 'primevue/datatable';
 import BaseCard from '@/components/BaseCard.vue';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
 import NewOrganizationEmployeeButton from '@/features/common/organizations/components/NewOrganizationEmployeeButton.vue';
-import { type OrganizationEmployeeJson, organizationService } from '@/services/OrganizationService';
+import {type OrganizationEmployeeJson,
+  organizationService,} from '@/features/common/organizations/services/OrganizationService';
 import { isValidUuid } from '@/helper/validationHelper';
 
 const props = defineProps<{ organizationId: string }>();
