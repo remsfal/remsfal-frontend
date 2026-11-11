@@ -66,6 +66,14 @@ describe('LoginView', () => {
     expect(wrapper.find('[data-test="login-code-input"]').exists()).toBe(false);
   });
 
+  it('shows the legal notice below all sign-in options', () => {
+    const wrapper = mount(LoginView);
+    const html = wrapper.html();
+    expect(wrapper.find('[data-test="login-legal-notice"]').exists()).toBe(true);
+    expect(html.indexOf('data-test="login-legal-notice"'))
+      .toBeGreaterThan(html.indexOf('data-test="login-email-input"'));
+  });
+
   it('switches to the code entry after requesting a code and back again', async () => {
     const spy = vi.spyOn(authService, 'requestEmailLoginCode').mockResolvedValue({ status: 'sent' });
     const wrapper = mount(LoginView);
