@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// Legal notice below the sign-in options of the login page. Kept as a separate component so that
-// downstream projects can replace it via src/extensions/overrides/ (e.g. to link their own terms
-// of use and privacy policy) without overriding the whole LoginView.
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
