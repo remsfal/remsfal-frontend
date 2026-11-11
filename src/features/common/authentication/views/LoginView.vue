@@ -6,6 +6,7 @@ import Divider from 'primevue/divider';
 import LoginProviderButton from '../components/LoginProviderButton.vue';
 import EmailLoginForm from '../components/EmailLoginForm.vue';
 import EmailCodeForm from '../components/EmailCodeForm.vue';
+import LoginLegalNotice from '../components/LoginLegalNotice.vue';
 import { useLogin } from '../composables/useLogin';
 import { useEmailLogin } from '../composables/useEmailLogin';
 
@@ -55,9 +56,6 @@ const {
       <div v-else class="flex flex-col gap-4">
         <LoginProviderButton provider="google" @click="loginWith('google')" />
         <LoginProviderButton provider="apple" @click="loginWith('apple')" />
-        <p class="text-xs text-surface-500 dark:text-surface-400 text-center leading-relaxed">
-          {{ t('login.description') }}
-        </p>
 
         <Divider align="center">
           <span class="text-sm text-surface-500 dark:text-surface-400">{{ t('login.or') }}</span>
@@ -69,6 +67,8 @@ const {
           :error
           @submit="requestCode"
         />
+
+        <LoginLegalNotice />
 
         <template v-if="showDevLogin">
           <Divider />
