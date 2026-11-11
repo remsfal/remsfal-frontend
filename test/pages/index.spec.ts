@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import LandingPage from '@/pages/index.vue';
 
-vi.mock('@/views/LandingPageView.vue', () => ({
-  default: {
+vi.mock('@/features/common/landing', () => ({
+  LandingPageView: {
     name: 'LandingPageView',
     template: '<div data-test="landing-page-view-stub" />',
   },
