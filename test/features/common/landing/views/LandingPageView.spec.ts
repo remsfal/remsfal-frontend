@@ -1,6 +1,6 @@
 import {describe, expect, test} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import LandingPage from '@/views/LandingPageView.vue';
+import LandingPage from '@/features/common/landing/views/LandingPageView.vue';
 
 describe('LandingPageView', () => {
   let wrapper: VueWrapper;

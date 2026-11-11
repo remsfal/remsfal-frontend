@@ -11,8 +11,9 @@ That keeps regular upstream merges free of conflicts.
 | `features/`  | New downstream code. Import it via `@/extensions/features/...`.                         |
 | `locales/`   | `de.json` / `en.json` with additional keys; they are merged over (and may override) the upstream messages. |
 
-Example: `overrides/views/LandingPageView.vue` replaces `src/views/LandingPageView.vue`.
-Inside an override the original is still available via `@upstream/views/LandingPageView.vue`.
+Example: `overrides/features/common/landing/views/LandingPageView.vue` replaces
+`src/features/common/landing/views/LandingPageView.vue`.
+Inside an override the original is still available via `@upstream/features/common/landing/views/LandingPageView.vue`.
 
 The build fails if an override has no upstream counterpart (e.g. because the upstream file was renamed).
 

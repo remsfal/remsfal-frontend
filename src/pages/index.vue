@@ -5,7 +5,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import LandingPageView from '@/views/LandingPageView.vue'
+import { LandingPageView } from '@/features/common/landing'
 </script>
 
 <template>

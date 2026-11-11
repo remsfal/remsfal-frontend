@@ -83,6 +83,7 @@ src/
 │   └── common/                 # Domain features used by MORE THAN ONE view — the counterpart to
 │       │                       # generic UI atoms (which live in src/components/ / src/composables/, see below)
 │       ├── authentication/     # components, composables, views
+│       ├── landing/            # views (LandingPageView, the public start page)
 │       ├── organizations/      # components, services (OrganizationService), stores (OrganizationStore), views
 │       ├── projects/           # components (MemberAutoComplete), composables (useProjectMembers),
 │       │                       # services (ProjectService, ProjectMemberService, OrganizationMemberService),
@@ -281,7 +282,7 @@ declare module 'vue-router' {
 - Never reach into a feature's internals from outside — use `index.ts` as the public API. This applies to components as well as types and services (see the `RentalUnitTreeNodeJson`/`ContractorJson` re-exports in `rentableUnits/index.ts` and `contractors/index.ts`). If the barrel doesn't yet export something a consumer needs, add the export to `index.ts` rather than importing the full path. There are two intentional exceptions: `src/stores/UserSession.ts` imports `UserService` directly so that the eagerly loaded store does not pull the route-level views of the `users` barrel into the main chunk, and `src/router/guards.ts` imports `ProjectStore` directly because the router is loaded by the global test setup — importing the `projects` barrel there would evaluate it before a test file's `vi.mock` calls are registered (see the comments there)
 - Types needed by several views belong to the `common/` domain, not to a view-specific service. Example: the issue enums (`IssueType`, `IssueStatus`, `IssueCategory`, `IssuePriority`) are defined in `features/common/issues/issueTypes.ts` and exported via `@/features/common/issues`; `project/issues/services/IssueService.ts` only re-exports them
 - A domain used by more than one view (e.g. organizations, used by both `manager` and `contractor`) does not belong to any single view — it goes into `src/features/common/<domain>/`. This is the feature-level counterpart to shared UI atoms (see below); when in doubt, start the domain under the view that needs it first and promote it to `common/` once a second view needs it too
-- Feature-specific Views (`*View.vue`) go in `src/features/<view>/<domain>/views/` and are exported via `index.ts` — the global `src/views/` is only for Views without a clear feature home
+- Views (`*View.vue`) go in `src/features/<view>/<domain>/views/` and are exported via `index.ts`; there is no global `src/views/` folder. Views that belong to no role-based view (e.g. the public landing page) live in `features/common/<domain>/`
 
 **Base/generic components and composables (not tied to a feature domain)**:
 - The earlier idea of a top-level `src/shared/` directory has been discarded — `src/components/` and `src/composables/` are its permanent replacement, not a staging area before a future move
@@ -326,7 +327,7 @@ import type { MyType } from '@/services/MyService';
 **Remaining moves**:
 1. Pages that use a feature of another view (`tenant/properties.vue` and `contractor/properties.vue` → `manager/projects`, `tenant/organizations.vue` → `contractor/organizations`, `manager/dashboard.vue` → `project/issues`): move the shared building blocks to `features/common/` when they are next touched
 
-`src/services/AddressService.ts` stays as a generic service (used by `AddressCard` and five features). `src/views/` only contains `LandingPageView.vue`, which has no feature home.
+`src/services/AddressService.ts` stays as a generic service (used by `AddressCard` and five features).
 
 ---
 
@@ -336,7 +337,7 @@ import type { MyType } from '@/services/MyService';
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔄 In progress | 18 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels; all domain services and stores live in their slices. Open: pages that use a feature of another view (see "Remaining moves") |
+| 3 — Feature-Sliced | 🔄 In progress | 19 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels; all domain services and stores live in their slices. Open: pages that use a feature of another view (see "Remaining moves") |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
@@ -357,7 +358,6 @@ src/
 ├── composables/         # Generic composables (permanent)
 ├── services/            # ApiClient.ts, AuthService.ts, AddressService.ts (permanent)
 ├── stores/              # UserSession.ts, EventStore.ts (permanent)
-├── views/               # LandingPageView.vue only
 ├── router/              # Thin wrapper + guards.ts
 ├── i18n/, types/, helper/, constants/, telemetry/, assets/
 └── App.vue, main.ts, sw.ts
@@ -933,7 +933,7 @@ modify causes merge conflicts sooner or later. They therefore put **all** their 
 
 | Folder | Mechanism | Rules |
 |---|---|---|
-| `overrides/` | File-shadowing via `plugins/vite-plugin-extension-overrides.ts` | Mirrors `src/`: `overrides/views/LandingPageView.vue` replaces `src/views/LandingPageView.vue` for **every** import (aliased, relative, barrel, generated routes). Each override **must** have an upstream counterpart, otherwise build and unit tests fail. |
+| `overrides/` | File-shadowing via `plugins/vite-plugin-extension-overrides.ts` | Mirrors `src/`: `overrides/features/common/landing/views/LandingPageView.vue` replaces `src/features/common/landing/views/LandingPageView.vue` for **every** import (aliased, relative, barrel, generated routes). Each override **must** have an upstream counterpart, otherwise build and unit tests fail. |
 | `pages/` | Second `routesFolder` of the vue-router plugin | Same conventions as `src/pages/` (`<route>` block, layout meta). Only for routes that do not exist upstream. |
 | `features/` | Plain code | Same structure as `src/features/`; imported via `@/extensions/features/...`. No upstream counterpart needed. |
 | `locales/` | Merged in `src/i18n/i18n.ts` (`withExtensionMessages`) | `de.json` / `en.json` with flat keys. Keys are added to — and may override — the upstream messages. Linted like the upstream locale files. |
@@ -945,7 +945,7 @@ modify causes merge conflicts sooner or later. They therefore put **all** their 
   available via `@upstream/<path>`, e.g. to wrap it:
   ```vue
   <script setup lang="ts">
-  import UpstreamLandingPageView from '@upstream/views/LandingPageView.vue';
+  import UpstreamLandingPageView from '@upstream/features/common/landing/views/LandingPageView.vue';
   </script>
   <template>
     <DownstreamBanner />
