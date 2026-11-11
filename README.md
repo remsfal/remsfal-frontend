@@ -143,7 +143,7 @@ To develop the service worker itself, set `VITE_SERVICE_WORKER_ENABLED=true`.
 | `npm run test:e2e`                    | Build preview and run end-to-end tests with [Cypress](https://www.cypress.io/) |
 | `npm run test:e2e:dev`                | Start the dev server and open the interactive Cypress runner                   |
 | `npm test`                            | Type-check, unit tests, build and e2e tests                                    |
-| `npm run coverage`                    | Collect and merge unit and e2e coverage reports                                |
+| `npm run coverage`                    | Collect unit and e2e coverage into `coverage-vitest/` and `coverage-cypress/`  |
 | `npm run lint` / `lint:fix`           | Lint with [ESLint](https://eslint.org/)                                        |
 | `npm run stylelint` / `stylelint:fix` | Lint styles with [Stylelint](https://stylelint.io/)                            |
 | `npm run openapi`                     | Regenerate TypeScript API types from the specs in [`openapi/`](openapi)        |
