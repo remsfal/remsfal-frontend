@@ -1,3 +1,5 @@
+import { createResponseGate } from '../support/responseGate';
+
 describe('ProjectTenancies E2E Tests', () => {
   const projectId = 'test-project-123';
 
@@ -139,17 +141,15 @@ describe('ProjectTenancies E2E Tests', () => {
   });
 
   it('should display a loading skeleton initially', () => {
-    // Delay the API response to test loading state
-    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements`, {
-      statusCode: 200,
-      delay: 1000,
-      body: { rentalAgreements: [] },
-    }).as('getDelayedRentalAgreements');
+    // Hold the API response back until the loading skeleton has been seen
+    const gate = createResponseGate();
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements`, (req) =>
+      gate.hold(() => req.reply({ statusCode: 200, body: { rentalAgreements: [] } })),
+    ).as('getDelayedRentalAgreements');
 
     cy.visit(`/projects/${projectId}/agreements`);
 
-    // Loading skeleton should be visible during the delayed response
-    cy.get('.p-skeleton', { timeout: 2500 }).should('exist');
+    cy.get('.p-skeleton').should('exist').then(gate.release);
     cy.wait('@getDelayedRentalAgreements');
   });
 

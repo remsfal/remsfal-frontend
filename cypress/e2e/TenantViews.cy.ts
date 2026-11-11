@@ -1,3 +1,5 @@
+import { createResponseGate } from '../support/responseGate';
+
 describe('Tenant Views E2E Tests', () => {
   const projectId = 'test-project-123';
   const tenantId = 'tenant-123';
@@ -124,17 +126,15 @@ describe('Tenant Views E2E Tests', () => {
     });
 
     it('should display a loading skeleton initially', () => {
-      // Delay API response to test loading state - use long delay for reliable skeleton detection
-      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
-        statusCode: 200,
-        delay: 2000,
-        body: { tenants: [] },
-      }).as('getDelayedTenants');
+      // Hold the API response back until the loading skeleton has been seen
+      const gate = createResponseGate();
+      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, (req) =>
+        gate.hold(() => req.reply({ statusCode: 200, body: { tenants: [] } })),
+      ).as('getDelayedTenants');
 
       cy.visit(`/projects/${projectId}/tenants`);
 
-      // Loading skeleton should be visible during the delayed response
-      cy.get('.p-skeleton', { timeout: 2500 }).should('exist');
+      cy.get('.p-skeleton').should('exist').then(gate.release);
       cy.wait('@getDelayedTenants');
     });
 
@@ -365,22 +365,23 @@ describe('Tenant Views E2E Tests', () => {
     });
 
     it('should display a loading skeleton while loading tenant data', () => {
-      // Delay API response - use long delay for reliable skeleton detection
-      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants/${tenantId}`, {
-        statusCode: 200,
-        delay: 2000,
-        body: {
-          id: tenantId,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@example.com',
-        },
-      }).as('getDelayedTenant');
+      // Hold the API response back until the loading skeleton has been seen
+      const gate = createResponseGate();
+      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants/${tenantId}`, (req) =>
+        gate.hold(() => req.reply({
+          statusCode: 200,
+          body: {
+            id: tenantId,
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john.doe@example.com',
+          },
+        })),
+      ).as('getDelayedTenant');
 
       cy.visit(`/projects/${projectId}/tenants/${tenantId}`);
 
-      // Loading skeleton should be visible during the delayed response
-      cy.get('.p-skeleton', { timeout: 2500 }).should('exist');
+      cy.get('.p-skeleton').should('exist').then(gate.release);
       cy.wait('@getDelayedTenant');
     });
 
