@@ -337,7 +337,7 @@ import type { MyType } from '@/services/MyService';
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | ✅ Done | 17 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels; all domain services and stores live in their slices; no role uses features of another role |
+| 3 — Feature-Sliced | ✅ Done | 18 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels; all domain services and stores live in their slices; no role uses features of another role |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
