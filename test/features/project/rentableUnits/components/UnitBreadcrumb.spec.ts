@@ -7,7 +7,6 @@ import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/R
 vi.mock('@/features/project/rentableUnits/services/PropertyService', () => ({
   EntityType: { Property: 'PROPERTY' },
   toRentableUnitView: (type: string) => type[0]! + type.slice(1).toLowerCase() + 'View',
-  getIconForUnitType: vi.fn(() => 'pi pi-folder'),
 }));
 
 const mockPush = vi.fn();
