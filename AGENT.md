@@ -64,7 +64,6 @@ src/
 │
 ├── features/                   # Domain-based feature slices, grouped by view; index.ts = public API
 │   ├── manager/                # Domains specific to the manager view
-│   │   ├── projects/           # components (ProjectSelectionView, NewProjectDialog, ...), views
 │   │   ├── activityFeeds/      # components, composables, services, stores, views
 │   │   └── contractors/        # components, views
 │   ├── project/                # Domains specific to the project view
@@ -78,18 +77,21 @@ src/
 │   │   └── tenantIssues/       # components (NewTenancyIssueDialog, ...), services, views
 │   ├── contractor/             # Domains specific to the contractor view
 │   │   ├── orderManagement/    # components, services, views
-│   │   ├── customers/          # components, services, views
-│   │   └── organizations/      # components
+│   │   └── customers/          # components, services, views
 │   └── common/                 # Domain features used by MORE THAN ONE view — the counterpart to
 │       │                       # generic UI atoms (which live in src/components/ / src/composables/, see below)
 │       ├── authentication/     # components, composables, views
 │       ├── landing/            # views (LandingPageView, the public start page)
-│       ├── organizations/      # components, services (OrganizationService), stores (OrganizationStore), views
-│       ├── projects/           # components (MemberAutoComplete), composables (useProjectMembers),
+│       ├── organizations/      # components (OrganizationDashboardCards, ...), services (OrganizationService),
+│       │                       # stores (OrganizationStore), views
+│       ├── projects/           # components (MemberAutoComplete, NewProjectDialog, ...),
+│       │                       # composables (useProjectMembers),
 │       │                       # services (ProjectService, ProjectMemberService, OrganizationMemberService),
-│       │                       # stores (ProjectStore)
+│       │                       # stores (ProjectStore), views (ProjectSelectionView)
 │       ├── users/              # components, services (UserService), views
-│       └── issues/             # issueTypes.ts (IssueType, IssueStatus, ...), issueLabels.ts, issueCategories.ts
+│       ├── issues/             # issueTypes.ts (IssueType, IssueStatus, ...), issueLabels.ts, issueCategories.ts
+│       └── rentableUnits/      # unitTypes.ts (UnitType), unitTypeIcons.ts, unitLabels.ts (getUnitTypeLabel,
+│                               # formatUnitLabel) — the only place to turn a unit type into a label or icon
 │
 ├── components/                 # Base/generic UI components used by ≥2 features (permanent, not a staging area),
 │                               # e.g. BaseCard.vue, BaseDialog.vue, KpiCard.vue, PhoneInput.vue, TimelineCard.vue
@@ -281,7 +283,8 @@ declare module 'vue-router' {
 - Existing code moves to its feature slice when the file is next modified
 - Never reach into a feature's internals from outside — use `index.ts` as the public API. This applies to components as well as types and services (see the `RentalUnitTreeNodeJson`/`ContractorJson` re-exports in `rentableUnits/index.ts` and `contractors/index.ts`). If the barrel doesn't yet export something a consumer needs, add the export to `index.ts` rather than importing the full path. There are two intentional exceptions: `src/stores/UserSession.ts` imports `UserService` directly so that the eagerly loaded store does not pull the route-level views of the `users` barrel into the main chunk, and `src/router/guards.ts` imports `ProjectStore` directly because the router is loaded by the global test setup — importing the `projects` barrel there would evaluate it before a test file's `vi.mock` calls are registered (see the comments there)
 - Types needed by several views belong to the `common/` domain, not to a view-specific service. Example: the issue enums (`IssueType`, `IssueStatus`, `IssueCategory`, `IssuePriority`) are defined in `features/common/issues/issueTypes.ts` and exported via `@/features/common/issues`; `project/issues/services/IssueService.ts` only re-exports them
-- A domain used by more than one view (e.g. organizations, used by both `manager` and `contractor`) does not belong to any single view — it goes into `src/features/common/<domain>/`. This is the feature-level counterpart to shared UI atoms (see below); when in doubt, start the domain under the view that needs it first and promote it to `common/` once a second view needs it too
+- Features of one role must not be used by another role: `manager`, `tenant` and `contractor` never import from each other, and pages of one role (`src/pages/<role>/`) only use features of their own role or `common/`. The `project` view belongs to the manager role (a manager manages the projects), so dependencies between `manager` and `project` are allowed — e.g. `pages/manager/dashboard.vue` uses `ProjectDashboardIssueCard` from `project/issues`
+- A domain used by more than one role (e.g. organizations, used by `manager`, `tenant` and `contractor`) does not belong to any single view — it goes into `src/features/common/<domain>/`. This is the feature-level counterpart to shared UI atoms (see below); when in doubt, start the domain under the view that needs it first and promote it to `common/` once a second view needs it too
 - Views (`*View.vue`) go in `src/features/<view>/<domain>/views/` and are exported via `index.ts`; there is no global `src/views/` folder. Views that belong to no role-based view (e.g. the public landing page) live in `features/common/<domain>/`
 
 **Base/generic components and composables (not tied to a feature domain)**:
@@ -324,9 +327,6 @@ import type { MyType } from '@/services/MyService';
 // Props & Emits defined directly in <script setup> (no import section)
 ```
 
-**Remaining moves**:
-1. Pages that use a feature of another view (`tenant/properties.vue` and `contractor/properties.vue` → `manager/projects`, `tenant/organizations.vue` → `contractor/organizations`, `manager/dashboard.vue` → `project/issues`): move the shared building blocks to `features/common/` when they are next touched
-
 `src/services/AddressService.ts` stays as a generic service (used by `AddressCard` and five features).
 
 ---
@@ -337,7 +337,7 @@ import type { MyType } from '@/services/MyService';
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔄 In progress | 19 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels; all domain services and stores live in their slices. Open: pages that use a feature of another view (see "Remaining moves") |
+| 3 — Feature-Sliced | ✅ Done | 17 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels; all domain services and stores live in their slices; no role uses features of another role |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
@@ -345,8 +345,7 @@ import type { MyType } from '@/services/MyService';
 
 ## Current Project Structure
 
-> **Note**: The current structure matches the target structure above. The only open item are the pages listed
-> under "Remaining moves" in Phase 3, which still use a feature of another view.
+> **Note**: The current structure matches the target structure above.
 
 ```
 src/

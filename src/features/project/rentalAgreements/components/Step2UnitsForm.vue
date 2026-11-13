@@ -11,6 +11,7 @@ import type { RentJson } from '@/features/project/rentalAgreements/services/Rent
 
 // Components
 import { RentableUnitSelect, type UnitType } from '@/features/project/rentableUnits';
+import { getUnitTypeLabel } from '@/features/common/rentableUnits';
 import RentalDetailsForm, { type RentalDetails } from './RentalDetailsForm.vue';
 
 // Extend RentJson with additional UI-specific fields
@@ -121,7 +122,7 @@ const canProceed = computed(() => {
     <!-- Rental Details Form (shown when unit is selected) -->
     <div v-if="currentUnit" class="p-4 border rounded-lg bg-emphasis">
       <h4 class="font-semibold mb-2">
-        {{ currentUnit.unitTitle }} ({{ t(`unitTypes.${currentUnit.unitType.toLowerCase()}`) }})
+        {{ currentUnit.unitTitle }} ({{ getUnitTypeLabel(currentUnit.unitType, t) }})
       </h4>
       <RentalDetailsForm
         :initialFirstPaymentDate="startOfRental ?? undefined"
@@ -143,10 +144,10 @@ const canProceed = computed(() => {
       >
         <div class="flex-1">
           <p class="font-semibold">
-            {{ unit.unitTitle }} ({{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }})
+            {{ unit.unitTitle }} ({{ getUnitTypeLabel(unit.unitType, t) }})
           </p>
           <p class="text-sm text-muted-color">
-            {{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}
+            {{ getUnitTypeLabel(unit.unitType, t) }}
             <span v-if="unit.basicRent !== undefined">
               • {{ t('rentalAgreement.common.basicRent') }} {{ n(unit.basicRent, 'currency') }}
             </span>

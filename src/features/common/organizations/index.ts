@@ -5,6 +5,7 @@ export { default as UserOrganizationEmploymentsCard } from './components/UserOrg
 export { default as OrganizationEmployeeCard } from './components/OrganizationEmployeeCard.vue';
 export { default as NewOrganizationEmployeeButton } from './components/NewOrganizationEmployeeButton.vue';
 export { default as EmployeeRoleSelect } from './components/EmployeeRoleSelect.vue';
+export { default as OrganizationDashboardCards } from './components/OrganizationDashboardCards.vue';
 export { default as OrganizationSettingsView } from './views/OrganizationSettingsView.vue';
 export { default as OrganizationsView } from './views/OrganizationsView.vue';
 export {organizationService,

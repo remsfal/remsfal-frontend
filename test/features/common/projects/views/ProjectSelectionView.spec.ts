@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
-import ProjectSelectionView from '@/features/manager/projects/views/ProjectSelectionView.vue';
-import ProjectSelectionCard from '@/features/manager/projects/components/ProjectSelectionCard.vue';
+import ProjectSelectionView from '@/features/common/projects/views/ProjectSelectionView.vue';
+import ProjectSelectionCard from '@/features/common/projects/components/ProjectSelectionCard.vue';
 
 describe('ProjectSelectionView.vue', () => {
   it('renders the view', () => {

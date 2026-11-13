@@ -1,6 +1,6 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
-import NewProjectButton from '@/features/manager/projects/components/NewProjectButton.vue';
+import NewProjectButton from '@/features/common/projects/components/NewProjectButton.vue';
 import { projectService } from '@/features/common/projects/services/ProjectService';
 import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
 import { useRouter } from 'vue-router';

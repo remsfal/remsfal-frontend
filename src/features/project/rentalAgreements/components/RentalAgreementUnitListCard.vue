@@ -19,6 +19,7 @@ import {propertyService,
   commercialService,
   storageService,
   siteService,} from '@/features/project/rentableUnits';
+import { getUnitTypeLabel } from '@/features/common/rentableUnits';
 import AdjustRentDialog, { type RentAdjustmentUnit } from './AdjustRentDialog.vue';
 
 interface RentRow extends RentJson {
@@ -285,7 +286,7 @@ async function confirmRemove() {
           >
             <div class="font-semibold flex items-center gap-2">
               <span>{{ data.unitTitle }}</span>
-              <span class="text-muted-color font-normal">({{ t(`unitTypes.${data.unitType.toLowerCase()}`) }})</span>
+              <span class="text-muted-color font-normal">({{ getUnitTypeLabel(data.unitType, t) }})</span>
             </div>
             <div class="flex gap-2">
               <Button

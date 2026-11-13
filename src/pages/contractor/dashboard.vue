@@ -7,8 +7,7 @@ meta:
 
 <script setup lang="ts">
 import { OrderManagementDashboardCards } from '@/features/contractor/orderManagement'
-import { OrganizationDashboardCards } from '@/features/contractor/organizations'
-import { useOrganizationStore } from '@/features/common/organizations'
+import { OrganizationDashboardCards, useOrganizationStore } from '@/features/common/organizations'
 
 const organizationStore = useOrganizationStore()
 </script>

@@ -4,7 +4,10 @@ import ContractorDashboardPage from '@/pages/contractor/dashboard.vue';
 import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 import type { OrganizationEmployeeJson } from '@/features/common/organizations/services/OrganizationService';
 
-vi.mock('@/features/contractor/organizations', () => ({
+vi.mock('@/features/common/organizations', async () => ({
+  ...(await vi.importActual<typeof import('@/features/common/organizations/stores/OrganizationStore')>(
+    '@/features/common/organizations/stores/OrganizationStore',
+  )),
   OrganizationDashboardCards: {
     name: 'OrganizationDashboardCards',
     template: '<div data-test="organization-dashboard-cards-stub" />',

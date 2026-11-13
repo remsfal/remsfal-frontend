@@ -6,6 +6,7 @@ import TreeSelect from 'primevue/treeselect';
 import type { TreeNode } from 'primevue/treenode';
 import type { RentalUnitTreeNodeJson } from '../services/PropertyService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
+import { getUnitTypeLabel } from '@/features/common/rentableUnits';
 
 const props = defineProps<{
   modelValue: string | null;
@@ -28,7 +29,7 @@ const excludedUnitIds = computed(() => new Set(props.excludeUnitIds ?? []));
 
 function transformTreeNodes(nodes: RentalUnitTreeNodeJson[]): TreeNode[] {
   return nodes.map((node) => {
-    const unitType = node.data?.type ? t(`unitTypes.${node.data.type.toLowerCase()}`) : '';
+    const unitType = node.data?.type ? getUnitTypeLabel(node.data.type, t) : '';
     const title = node.data?.title || 'Unbenannt';
     const isLeaf = !node.children || node.children.length === 0;
 

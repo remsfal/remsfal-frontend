@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity, getIssuePriorityLabel,
-  getIssueStatusSeverity, getIssueTypeLabel, getUnitTypeLabel } from '@/features/common/issues/issueLabels';
+  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/common/issues/issueLabels';
 import i18n from '@/i18n/i18n';
 
 type Translator = Parameters<typeof getIssueStatusLabel>[1];
@@ -103,17 +103,6 @@ describe('issueLabels', () => {
     it('falls back to raw category and dash', () => {
       expect(getIssueCategoryLabel('UNKNOWN' as Parameters<typeof getIssueCategoryLabel>[0], t)).toBe('UNKNOWN');
       expect(getIssueCategoryLabel(undefined, t)).toBe('—');
-    });
-  });
-
-  describe('getUnitTypeLabel', () => {
-    it('returns translated unit type label when available', () => {
-      expect(getUnitTypeLabel('APARTMENT' as Parameters<typeof getUnitTypeLabel>[0], t)).toBe('Wohnung');
-    });
-
-    it('falls back to raw unit type and dash', () => {
-      expect(getUnitTypeLabel('UNKNOWN' as Parameters<typeof getUnitTypeLabel>[0], t)).toBe('UNKNOWN');
-      expect(getUnitTypeLabel(undefined, t)).toBe('—');
     });
   });
 });

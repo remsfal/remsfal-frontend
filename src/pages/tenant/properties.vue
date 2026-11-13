@@ -6,8 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { ProjectSelectionView, ProjectsWelcomeMessage } from '@/features/manager/projects';
-import { useProjectStore } from '@/features/common/projects';
+import { ProjectSelectionView, ProjectsWelcomeMessage, useProjectStore } from '@/features/common/projects';
 
 const projectStore = useProjectStore();
 </script>
