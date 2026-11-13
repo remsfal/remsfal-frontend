@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
-import { useProjectStore } from '@/features/common/projects';
+import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
 import NewProjectDialog from './NewProjectDialog.vue';
 
 const { t } = useI18n();

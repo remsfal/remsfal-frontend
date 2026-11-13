@@ -3,17 +3,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import TenantOrganizationsPage from '@/pages/tenant/organizations.vue';
 import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 
-vi.mock('@/features/contractor/organizations', () => ({
-  OrganizationDashboardCards: {
-    name: 'OrganizationDashboardCards',
-    template: '<div data-test="organization-dashboard-cards-stub" />',
-  },
-}));
-
 vi.mock('@/features/common/organizations', async () => ({
   ...(await vi.importActual<typeof import('@/features/common/organizations/stores/OrganizationStore')>(
     '@/features/common/organizations/stores/OrganizationStore',
   )),
+  OrganizationDashboardCards: {
+    name: 'OrganizationDashboardCards',
+    template: '<div data-test="organization-dashboard-cards-stub" />',
+  },
   UserOrganizationEmploymentsCard: {
     name: 'UserOrganizationEmploymentsCard',
     template: '<div data-test="employments-card-stub" />',

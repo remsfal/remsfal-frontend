@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import Message from 'primevue/message';
-import ProjectsWelcomeMessage from '@/features/manager/projects/components/ProjectsWelcomeMessage.vue';
+import ProjectsWelcomeMessage from '@/features/common/projects/components/ProjectsWelcomeMessage.vue';
 import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
 import type { ProjectItem } from '@/features/common/projects/services/ProjectService';
 

@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ManagerDashboardPage from '@/pages/manager/dashboard.vue';
 
-vi.mock('@/features/manager/projects', () => ({
+vi.mock('@/features/common/projects', () => ({
   ProjectsWelcomeMessage: {
     name: 'ProjectsWelcomeMessage',
     template: '<div data-test="welcome-message-stub" />',

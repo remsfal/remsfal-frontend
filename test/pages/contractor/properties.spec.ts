@@ -3,7 +3,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ContractorPropertiesPage from '@/pages/contractor/properties.vue';
 import { useProjectStore } from '@/features/common/projects/stores/ProjectStore';
 
-vi.mock('@/features/manager/projects', () => ({
+vi.mock('@/features/common/projects', async () => ({
+  ...(await vi.importActual<typeof import('@/features/common/projects/stores/ProjectStore')>(
+    '@/features/common/projects/stores/ProjectStore',
+  )),
   ProjectsWelcomeMessage: {
     name: 'ProjectsWelcomeMessage',
     template: '<div data-test="welcome-message-stub" />',

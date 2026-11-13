@@ -6,8 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { OrganizationDashboardCards } from '@/features/contractor/organizations';
-import { UserOrganizationEmploymentsCard, useOrganizationStore } from '@/features/common/organizations';
+import {OrganizationDashboardCards,
+  UserOrganizationEmploymentsCard,
+  useOrganizationStore,} from '@/features/common/organizations';
 
 const organizationStore = useOrganizationStore();
 </script>
