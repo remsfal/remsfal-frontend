@@ -7,7 +7,6 @@ import AppRoleMobileBar from '@/layouts/components/AppRoleMobileBar.vue'
 import type { MobileNavItem } from '@/layouts/composables/useMobileBarActiveState'
 
 vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: () => false } }))
-vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }))
 vi.mock('@fortawesome/vue-fontawesome', () => ({
   FontAwesomeIcon: {
     name: 'FontAwesomeIcon', template: '<i class="fa-icon" />', props: ['icon'] 

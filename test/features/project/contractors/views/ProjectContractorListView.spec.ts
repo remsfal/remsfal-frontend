@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ProjectContractorListView from '@/features/project/contractors/views/ProjectContractorListView.vue';
 
-vi.mock('@/features/project/contractors', () => ({
-  ContractorListCard: {
+vi.mock('@/features/project/contractors/components/ContractorListCard.vue', () => ({
+  default: {
     name: 'ContractorListCard', template: '<div data-test="contractor-list-card" />', props: ['projectId'] 
   },
 }));

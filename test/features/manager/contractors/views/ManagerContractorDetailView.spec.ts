@@ -3,8 +3,8 @@ import { mount, flushPromises } from '@vue/test-utils';
 import ManagerContractorDetailView from '@/features/manager/contractors/views/ManagerContractorDetailView.vue';
 import router from '@/router';
 
-vi.mock('@/features/manager/contractors', () => ({
-  ManagerContractorInfoCard: {
+vi.mock('@/features/manager/contractors/components/ManagerContractorInfoCard.vue', () => ({
+  default: {
     template: '<div data-test="manager-contractor-info-card" />',
     props: ['organizationId'],
   },

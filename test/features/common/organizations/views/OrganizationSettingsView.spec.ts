@@ -24,13 +24,15 @@ vi.mock('@/features/common/organizations/stores/OrganizationStore', () => ({
 let capturedLoadAddress: (() => Promise<AddressJson | undefined>) | undefined
 let capturedSaveAddress: ((addr: AddressJson) => Promise<void>) | undefined
 
-vi.mock('@/features/common/organizations', () => ({
-  OrganizationBaseDataCard: {
+vi.mock('@/features/common/organizations/components/OrganizationBaseDataCard.vue', () => ({
+  default: {
     name: 'OrganizationBaseDataCard',
     template: '<div data-test="base-data-card" />',
     props: ['organizationId'],
   },
-  OrganizationEmployeeCard: {
+}))
+vi.mock('@/features/common/organizations/components/OrganizationEmployeeCard.vue', () => ({
+  default: {
     name: 'OrganizationEmployeeCard',
     template: '<div data-test="member-card" />',
     props: ['organizationId'],

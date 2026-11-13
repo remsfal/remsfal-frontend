@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import OrganizationsView from '@/features/common/organizations/views/OrganizationsView.vue'
 
-vi.mock('@/features/common/organizations', () => ({
-  OrganizationBenefitsCard: {
+vi.mock('@/features/common/organizations/components/OrganizationBenefitsCard.vue', () => ({
+  default: {
     name: 'OrganizationBenefitsCard',
     template: '<div data-test="benefits-card" />',
     props: [],
