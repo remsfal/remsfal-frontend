@@ -68,8 +68,8 @@ src/
 ```
 
 > **_NOTE:_** Before implementing a new feature, please **first** read [AGENT.md](AGENT.md). It is the single source
-> of truth for the project architecture, the ongoing migration to the feature-sliced structure, API and form
-> patterns, testing organization and coding conventions.
+> of truth for the project architecture, the rules for where new code goes, API and form patterns, testing
+> organization and coding conventions.
 
 
 ## Development

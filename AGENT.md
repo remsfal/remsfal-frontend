@@ -7,37 +7,25 @@ Central AI instructions for the remsfal-frontend repository.
 
 This is the frontend for Remsfal, an open-source facility management software built as a Vue 3 single-page application (SPA) using Vite. It manages real estate projects and works in conjunction with the [`remsfal-backend`](https://github.com/remsfal/remsfal-backend) repository.
 
-**Technology Stack**: Vue 3 (Composition API), TypeScript, Vite, PrimeVue 4 (pinned to `<5.0.0`), TailwindCSS 4, Pinia, Vue Router 4, Vitest, Cypress
+**Technology Stack**: Vue 3 (Composition API), TypeScript, Vite, PrimeVue 4 (pinned to `<5.0.0`), TailwindCSS 4, Pinia, Vue Router 5 (file-based routing), Vitest, Cypress
 
 **Live Version**: https://remsfal.de
 
-## Architecture Roadmap
-
-The project is undergoing a planned architectural modernization in three phases.
-**New code must follow the target architecture.** Existing code is migrated incrementally when touched.
+## Project Architecture
 
 ### Guiding Principles
 
-- **Feature Cohesion over Technical Layering** — code that changes together lives together
-- **Nuxt-Inspired Conventions in Vite** — layout system and file-based routing without framework migration
-- **Incremental Migration** — never rewrite everything at once; phases are independent and additive
+- **Feature cohesion over technical layering** — code that changes together lives together: a domain's components,
+  composables, services, stores and views sit in one feature slice, not spread over global `components/`, `services/`, …
+- **Role boundaries** — the app serves three roles (manager, tenant, contractor). Code of one role never depends on
+  another role; what several roles need lives in `features/common/`.
+- **Nuxt-inspired conventions in Vite** — file-based routing and layouts resolved from route meta, without Nuxt.
+- **Thin edges** — pages only map a route to a view; layouts only provide the role chrome.
 
----
-
-### Target Directory Structure
+### Directory Structure
 
 ```
 src/
-├── layouts/                    # Role-based layout components (Nuxt-inspired)
-│   ├── manager.vue             # ManagerMenu + ManagerTopbar + ManagerMobileBar
-│   ├── project.vue             # ProjectMenu + ManagerTopbar + ProjectMobileBar
-│   ├── tenant.vue              # TenantMenu + AppSimpleTopbar + TenantMobileBar
-│   ├── contractor.vue          # ContractorMenu + AppSimpleTopbar + ContractorMobileBar
-│   ├── public.vue              # AppSimpleTopbar + AppFooter (Landing page)
-│   ├── auth.vue                # Login / email verification pages
-│   ├── components/             # Layout chrome (AppRoleLayout, Topbars, Menus, MobileBars)
-│   └── composables/            # layout.ts, useMobileBarActiveState, useOrganizationMenuSections, ...
-│
 ├── pages/                      # File-based routes (Vue Router v5); route name + layout via <route> block
 │   ├── index.vue               →  /                                (layout: public)
 │   ├── login.vue, verify-additional-email.vue                      (layout: auth)
@@ -62,25 +50,34 @@ src/
 │       ├── clients/            index.vue
 │       └── organizations/      new.vue, [organizationId].vue
 │
-├── features/                   # Domain-based feature slices, grouped by view; index.ts = public API
-│   ├── manager/                # Domains specific to the manager view
+├── layouts/                    # One layout per role, selected by route.meta.layout
+│   ├── manager.vue             # ManagerMenu + ManagerTopbar + ManagerMobileBar
+│   ├── project.vue             # ProjectMenu + ManagerTopbar + ProjectMobileBar
+│   ├── tenant.vue              # TenantMenu + AppSimpleTopbar + TenantMobileBar
+│   ├── contractor.vue          # ContractorMenu + AppSimpleTopbar + ContractorMobileBar
+│   ├── public.vue              # AppSimpleTopbar + AppFooter (landing page)
+│   ├── auth.vue                # Login / email verification pages
+│   ├── components/             # Layout chrome (AppRoleLayout, Topbars, Menus, MobileBars)
+│   └── composables/            # layout.ts, useMobileBarActiveState, useOrganizationMenuSections, ...
+│
+├── features/                   # Feature slices: features/<view>/<domain>/, index.ts = public API
+│   ├── manager/                # Manager view (role manager)
 │   │   ├── activityFeeds/      # components, composables, services, stores, views
 │   │   └── contractors/        # components, views
-│   ├── project/                # Domains specific to the project view
+│   ├── project/                # Project view (role manager, inside one project)
 │   │   ├── rentableUnits/      # components, composables, services (PropertyService, ...), stores
 │   │   ├── rentalAgreements/   # components (Step1..Step4 wizard, ...), services, views
 │   │   ├── issues/             # components, composables, services (IssueService, ...), views
 │   │   ├── contractors/        # components, services (ProjectContractorService), views
 │   │   └── settings/           # components, views
-│   ├── tenant/                 # Domains specific to the tenant view
+│   ├── tenant/                 # Tenant view (role tenant)
 │   │   ├── tenancies/          # components (TenancieContractList, ...), services (TenancyService)
 │   │   └── tenantIssues/       # components (NewTenancyIssueDialog, ...), services, views
-│   ├── contractor/             # Domains specific to the contractor view
+│   ├── contractor/             # Contractor view (role contractor)
 │   │   ├── orderManagement/    # components, services, views
 │   │   └── customers/          # components, services, views
-│   └── common/                 # Domain features used by MORE THAN ONE view — the counterpart to
-│       │                       # generic UI atoms (which live in src/components/ / src/composables/, see below)
-│       ├── authentication/     # components, composables, views
+│   └── common/                 # Domains used by more than one role or by no role at all
+│       ├── authentication/     # components, composables, views, platform.ts
 │       ├── landing/            # views (LandingPageView, the public start page)
 │       ├── organizations/      # components (OrganizationDashboardCards, ...), services (OrganizationService),
 │       │                       # stores (OrganizationStore), views
@@ -93,216 +90,162 @@ src/
 │       └── rentableUnits/      # unitTypes.ts (UnitType), unitTypeIcons.ts, unitLabels.ts (getUnitTypeLabel,
 │                               # formatUnitLabel) — the only place to turn a unit type into a label or icon
 │
-├── components/                 # Base/generic UI components used by ≥2 features (permanent, not a staging area),
-│                               # e.g. BaseCard.vue, BaseDialog.vue, KpiCard.vue, PhoneInput.vue, TimelineCard.vue
-├── composables/                # Base/generic composables used by ≥2 features (permanent), e.g. useAddressForm
-├── services/                   # App-wide infrastructure services: ApiClient.ts, AuthService.ts
-│                               # (feature-specific services live in features/*/services/)
+├── components/                 # Generic, domain-agnostic UI components used by ≥2 features,
+│                               # e.g. BaseCard, BaseDialog, KpiCard, PhoneInput, AddressCard, TimelineCard
+├── composables/                # Generic composables used by ≥2 features, e.g. useAddressForm
+├── services/                   # App-wide infrastructure: ApiClient.ts, AuthService.ts, AddressService.ts,
+│                               # generated OpenAPI schemas in services/api/
 ├── stores/                     # App-wide Pinia stores: UserSession.ts, EventStore.ts
-│                               # (feature-specific stores live in features/*/stores/)
-├── i18n/                       # i18n config + locale files
-├── types/                      # App-wide TypeScript types
-├── helper/                     # Utility functions
-├── constants/                  # App-wide constants
-├── telemetry/                  # OpenTelemetry setup
+├── router/                     # index.ts (thin), guards.ts, typed-meta.d.ts
+├── i18n/                       # i18n config, number formats, locale files
+├── helper/                     # Generic utility functions (dates, validation, redirects, IndexedDB, ...)
+├── types/, constants/, telemetry/, assets/
 │
-├── extensions/                   # Reserved for downstream projects — empty upstream (see "Downstream Extensions")
-│   ├── overrides/                # Mirror of src/: replaces the upstream file with the same relative path
-│   ├── pages/                    # Additional routes (second routesFolder)
-│   ├── features/                 # New downstream code
-│   └── locales/                  # de.json / en.json merged over the upstream messages
+├── extensions/                 # Reserved for downstream projects — empty upstream (see "Downstream Extensions")
+│   ├── overrides/              # Mirror of src/: replaces the upstream file with the same relative path
+│   ├── pages/                  # Additional routes (second routesFolder)
+│   ├── features/               # New downstream code
+│   └── locales/                # de.json / en.json merged over the upstream messages
 │
-├── App.vue                      # Root: resolves route.meta.layout → renders <component>
-├── main.ts                      # Bootstrap only
-└── sw.ts                        # Service worker (PWA / push notifications)
+├── App.vue                     # Root: resolves route.meta.layout → renders the layout around <RouterView>
+├── main.ts                     # Bootstrap only
+└── sw.ts                       # Service worker (PWA / push notifications)
 
-test/                           # Mirrors src/ structure (pages/ + features/ + top-level src/ dirs);
-                                # test/mocks/ holds the MSW handlers and fixtures
+test/                           # Mirrors src/ (pages/, layouts/, features/, components/, ...);
+├── setup/                      # Global Vitest setup (PrimeVue, i18n, router, Pinia)
+└── mocks/                      # MSW handlers and fixtures
+cypress/e2e/                    # Cypress specs (*.cy.ts)
 ```
 
----
+### Pages and Routing
 
-### Phase 1 — File-Based Routing (Vue Router v5)
+- Routes are generated from `src/pages/` by the router plugin built into Vue Router v5 (`vue-router/vite`); they are
+  lazy-loaded automatically. Do not add routes by hand to `src/router/index.ts`.
+- Every page declares its route name and meta in a `<route>` block. The meta keys are typed in
+  `src/router/typed-meta.d.ts`; route names are typed via the generated `RouteNamedMap`, so navigate with named routes
+  (`router.push({ name: 'ProjectDashboard', params: { projectId } })`), never with string paths.
+- Pages are thin: they read route params and render **one** view from a feature barrel. No API calls, no business logic.
 
-**Goal**: Replace the manual `src/router/index.ts` (currently 392 lines) with auto-generated routes from file structure.
-
-> **Note**: File-based routing was previously provided by the separate `unplugin-vue-router` package.
-> As of Vue Router v5, it is built into the core — no extra package needed.
-
-**`vite.config.ts`** — add plugin **before** `Vue()`:
-```ts
-import VueRouter from 'vue-router/vite'
-
-export default defineConfig({
-  plugins: [
-    VueRouter({ routesFolder: 'src/pages' }),
-    Vue(),
-  ],
-})
-```
-
-**`src/router/index.ts`** becomes a thin wrapper:
-```ts
-import { createRouter, createWebHistory } from 'vue-router/auto'
-import { routes } from 'vue-router/auto-routes'
-import { setupRouterGuards } from './guards'
-
-export const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
-})
-
-setupRouterGuards(router)
-```
-
-**`src/router/guards.ts`** — extracted `beforeEach` logic:
-```ts
-import type { Router } from 'vue-router'
-import { useUserSessionStore } from '@/stores/UserSession'
-
-export function setupRouterGuards(router: Router) {
-  router.beforeEach((to) => {
-    const sessionStore = useUserSessionStore()
-    if (to.meta.requiresAuth && !sessionStore.user) {
-      return { path: '/', query: { redirect: to.fullPath } }
-    }
-    if (to.path === '/' && sessionStore.user) {
-      return { path: '/manager' }
-    }
-  })
-}
-```
-
-**Each page declares its own meta** via `<route>` block:
 ```vue
-<!-- src/pages/manager/index.vue -->
+<!-- src/pages/projects/[projectId]/contractors/index.vue -->
 <route lang="yaml">
+name: ProjectContractorList
 meta:
-  layout: manager
+  layout: project
   requiresAuth: true
 </route>
 
 <script setup lang="ts">
-// page code
+import { ProjectContractorListView } from '@/features/project/contractors'
+import { useRoute } from 'vue-router'
+const route = useRoute('ProjectContractorList')
 </script>
-```
 
-**Typed route names**: Vue Router v5 generates a `RouteNamedMap` — no more string-typos in `router.push({ name: '...' })`.
-
----
-
-### Phase 2 — Nuxt-Inspired Layout System
-
-**Goal**: Replace named router slots (`components: { topbar, sidebar, mobilebar }`) with dynamic layout components resolved from `route.meta.layout`.
-
-**Create `src/layouts/`** — one file per role, each wraps `<slot>` with role chrome:
-
-```vue
-<!-- src/layouts/manager.vue -->
 <template>
-  <div class="layout-wrapper" :class="containerClass">
-    <ManagerTopbar />
-    <ManagerMenu />
-    <div class="layout-main-container">
-      <div class="layout-main">
-        <slot />
-      </div>
-    </div>
-    <ManagerMobileBar />
-  </div>
+  <ProjectContractorListView :projectId="(route.params.projectId as string)" />
 </template>
-
-<script setup lang="ts">
-const { layoutState } = useLayout()
-const containerClass = computed(() => ({
-  'layout-overlay': layoutState.menuMode === 'overlay',
-  'layout-static': layoutState.menuMode === 'static',
-  'layout-static-inactive': layoutState.menuMode === 'static' && !layoutState.staticMenuActive,
-}))
-</script>
 ```
 
-**`src/App.vue`** — resolves layout dynamically:
+- Authentication and role redirects live in `src/router/guards.ts` (`requiresAuth`, `homeRouteFor`).
 
-```vue
-<template>
-  <component :is="currentLayout">
-    <RouterView />
-  </component>
-  <Toast />
-</template>
+### Layouts
 
-<script setup lang="ts">
-import type { Component } from 'vue'
-import ManagerLayout from '@/layouts/manager.vue'
-import ProjectLayout from '@/layouts/project.vue'
-import TenantLayout from '@/layouts/tenant.vue'
-import ContractorLayout from '@/layouts/contractor.vue'
-import PublicLayout from '@/layouts/public.vue'
+- `App.vue` renders the layout named in `route.meta.layout` (`manager`, `project`, `tenant`, `contractor`, `public`,
+  `auth`) around `<RouterView>`. Each role layout wraps `AppRoleLayout` with its own menu, topbar and mobile bar.
+- Layout chrome belongs to `src/layouts/components/`, layout-scoped composables to `src/layouts/composables/`.
+- Menu entries and mobile bar items use i18n keys (`managerMenu.*`, `projectMenu.*`, `tenantMenu.*`,
+  `consultantMenu.*`); the mobile bar reuses the keys of the sidebar menu.
 
-type LayoutKey = 'manager' | 'project' | 'tenant' | 'contractor' | 'public'
+### Feature Slices
 
-const layouts: Record<LayoutKey, Component> = {
-  manager: ManagerLayout,
-  project: ProjectLayout,
-  tenant: TenantLayout,
-  contractor: ContractorLayout,
-  public: PublicLayout,
-}
+A feature slice is `src/features/<view>/<domain>/`. `<view>` is `manager`, `project`, `tenant`, `contractor` or
+`common`; `<domain>` is a camelCase business domain (`rentalAgreements`, `orderManagement`, …).
 
-const route = useRoute()
-const currentLayout = computed(
-  () => layouts[(route.meta.layout as LayoutKey) ?? 'public']
-)
+**Slice layout** — only the folders a slice needs:
 
-// EventStore listeners (toast, session-expired) remain here
-</script>
+```
+features/project/contractors/
+├── components/      # ContractorListCard.vue, NewContractorButton.vue, ...
+├── composables/     # use*.ts used by this slice (sibling of components/, not inside it)
+├── services/        # ContractorService.ts — the only place that calls apiClient
+├── stores/          # [Name]Store.ts, only if several components share state
+├── views/           # ProjectContractorListView.vue, ProjectContractorDetailView.vue
+├── *.ts             # Domain helpers without a folder of their own (e.g. common/issues/issueLabels.ts)
+└── index.ts         # Public API
 ```
 
-**Extend `vue-router` types** for typed meta:
-```ts
-// src/router/typed-meta.d.ts
-import 'vue-router'
-declare module 'vue-router' {
-  interface RouteMeta {
-    layout?: 'manager' | 'project' | 'tenant' | 'contractor' | 'public'
-    requiresAuth?: boolean
-  }
-}
-```
-
----
-
-### Phase 3 — Feature-Sliced Structure (incremental)
-
-**Goal**: Co-locate components, services, and stores by domain instead of by technical type.
-
-**Rules**:
-- Features are grouped by view: `src/features/<view>/<domain>/`, where `<view>` is one of `manager`, `project`, `tenant`, `contractor`
-- New features are created under the view they belong to
-- Existing code moves to its feature slice when the file is next modified
-- Never reach into a feature's internals from outside — use `index.ts` as the public API. This applies to components as well as types and services (see the `RentalUnitTreeNodeJson`/`ContractorJson` re-exports in `rentableUnits/index.ts` and `contractors/index.ts`). If the barrel doesn't yet export something a consumer needs, add the export to `index.ts` rather than importing the full path. There are two intentional exceptions: `src/stores/UserSession.ts` imports `UserService` directly so that the eagerly loaded store does not pull the route-level views of the `users` barrel into the main chunk, and `src/router/guards.ts` imports `ProjectStore` directly because the router is loaded by the global test setup — importing the `projects` barrel there would evaluate it before a test file's `vi.mock` calls are registered (see the comments there)
-- Types needed by several views belong to the `common/` domain, not to a view-specific service. Example: the issue enums (`IssueType`, `IssueStatus`, `IssueCategory`, `IssuePriority`) are defined in `features/common/issues/issueTypes.ts` and exported via `@/features/common/issues`; `project/issues/services/IssueService.ts` only re-exports them
-- Features of one role must not be used by another role: `manager`, `tenant` and `contractor` never import from each other, and pages of one role (`src/pages/<role>/`) only use features of their own role or `common/`. The `project` view belongs to the manager role (a manager manages the projects), so dependencies between `manager` and `project` are allowed — e.g. `pages/manager/dashboard.vue` uses `ProjectDashboardIssueCard` from `project/issues`
-- A domain used by more than one role (e.g. organizations, used by `manager`, `tenant` and `contractor`) does not belong to any single view — it goes into `src/features/common/<domain>/`. This is the feature-level counterpart to shared UI atoms (see below); when in doubt, start the domain under the view that needs it first and promote it to `common/` once a second view needs it too
-- Views (`*View.vue`) go in `src/features/<view>/<domain>/views/` and are exported via `index.ts`; there is no global `src/views/` folder. Views that belong to no role-based view (e.g. the public landing page) live in `features/common/<domain>/`
-
-**Base/generic components and composables (not tied to a feature domain)**:
-- The earlier idea of a top-level `src/shared/` directory has been discarded — `src/components/` and `src/composables/` are its permanent replacement, not a staging area before a future move
-- Generic, reusable UI components (e.g. `BaseCard`, `BaseDialog`, `KpiCard`, `PhoneInput`, `AddressCard`, `TimelineCard`) used by ≥2 features live directly in `src/components/` (there is no `common/` subfolder)
-- Generic composables used by ≥2 features (e.g. `useAddressForm`) live in `src/composables/`
-- Don't confuse these with `features/common/<domain>/`: `components/`/`composables/` are for generic, domain-agnostic building blocks; `features/common/` is for a cohesive feature domain that happens to be used by more than one view
+**Public API (`index.ts`)**
+- The barrel exports everything other code may use: views, components, services, stores **and** types
+  (`export { tenantService, type TenantJson } from './services/TenantService'`). If a consumer needs something the
+  barrel does not export yet, add it to the barrel.
+- **Outside the slice** (pages, other slices, layouts) import only via the barrel.
+- **Inside the slice** import with direct paths (`@/features/project/contractors/components/ContractorListCard.vue`),
+  never via the own barrel: the barrel re-exports the views, so a view importing its own barrel is a circular import
+  and pulls the whole slice into every chunk.
+- Two intentional exceptions import a module directly from outside its slice (see the comments there):
+  `src/stores/UserSession.ts` → `UserService` (keeps the route-level views of the `users` barrel out of the main
+  chunk) and `src/router/guards.ts` → `ProjectStore` (the global test setup loads the router; importing the barrel
+  there would evaluate it before a test's `vi.mock` calls are registered).
 
 ```ts
-// ✅ Correct — import through public API (components and types alike)
+// ✅ Outside the slice — through the public API
 import { TenantCard, type TenantJson } from '@/features/project/tenants'
 
-// ❌ Wrong — reaching into internals
+// ✅ Inside the slice — direct path
 import TenantCard from '@/features/project/tenants/components/TenantCard.vue'
+
+// ❌ Outside the slice — reaching into internals
 import type { TenantJson } from '@/features/project/tenants/services/TenantService'
 ```
 
-**Import order** — follow the pattern established in `PropertyDataCard.vue`:
+**Dependency rules**
+- `manager`, `tenant` and `contractor` never import from each other, and pages of one role (`src/pages/<role>/`)
+  only use features of their own role or `common/`.
+- `project` belongs to the manager role (a manager manages the projects), so `manager` ↔ `project` dependencies are
+  allowed — e.g. `pages/manager/dashboard.vue` uses `ProjectDashboardIssueCard` from `project/issues`.
+- `common/` never imports from a view slice (`manager`, `project`, `tenant`, `contractor`).
+- Slices may use `src/components/`, `src/composables/`, `src/services/`, `src/stores/` and `src/helper/`; those
+  generic folders never import from `features/` (sole exception: `UserSession` → `UserService`, see above).
+  Layouts may use feature barrels (e.g. `ManagerTopbar` uses `useProjectStore` from `common/projects`).
+- Types needed by several roles belong to a `common/` domain, not to a view-specific service. Example: the issue enums
+  are defined in `features/common/issues/issueTypes.ts`; `project/issues/services/IssueService.ts` only re-exports
+  them. Likewise unit type labels and icons come only from `common/rentableUnits`.
+- There is no global `src/views/` folder — views live in the `views/` folder of their slice.
+
+### Where Does New Code Go?
+
+Decide in this order:
+
+1. **Used by exactly one role** → `features/<view>/<domain>/` of that role (`manager`, `project`, `tenant`,
+   `contractor`). Pick an existing domain if it fits, otherwise create a new slice with an `index.ts`.
+2. **Used by more than one role, or by no role** (public pages, login) → `features/common/<domain>/`.
+   If a domain starts in one role and a second role needs it later, move it to `common/` instead of importing across
+   roles.
+3. **Generic and domain-agnostic** (a card wrapper, an input, a formatting helper that knows nothing about the
+   business domain) and used by ≥2 features → `src/components/`, `src/composables/` or `src/helper/`.
+   Until a second feature needs it, keep it in the slice.
+4. **App-wide infrastructure** (HTTP client, session, event bus) → `src/services/`, `src/stores/`.
+
+Don't confuse `src/components/` with `features/common/`: the former holds domain-agnostic building blocks, the latter
+cohesive business domains that several roles share.
+
+### Implementing a New Feature
+
+1. **API:** update the OpenAPI spec in `/openapi` if needed and run `npm run openapi`. Add or extend the resource
+   service in `features/<view>/<domain>/services/` (one service per backend resource, see "Service Layer Pattern").
+2. **UI:** build components in `components/` (cards on `BaseCard`, dialogs on `BaseDialog`, forms with PrimeVue Forms +
+   Zod), and a `*View.vue` in `views/` that composes the cards. Add a store only for state shared by several components.
+3. **Public API:** export the view and everything other code needs from the slice's `index.ts`.
+4. **Route:** add a page in `src/pages/<role>/...` with a `<route>` block (name, layout, `requiresAuth`) that renders
+   the view. Add menu and mobile bar entries in `src/layouts/components/` if the page needs navigation.
+5. **i18n:** add every key to `src/i18n/locales/de.json` **and** `en.json`.
+6. **Tests:** Vitest specs in `test/` at the mirrored path (`test/features/<view>/<domain>/...`, `test/pages/...`);
+   dialog-based workflows (button → dialog → table) as Cypress specs in `cypress/e2e/`.
+7. **Check:** `npm run lint`, `npm run type-check`, `npm run test:unit`.
+
+### Import Order
+
+Follow the pattern established in `PropertyDataCard.vue`:
 ```ts
 // 1. Vue core
 import { ref, reactive, computed, onMounted } from 'vue';
@@ -317,55 +260,17 @@ import Button from 'primevue/button';
 import { Form } from '@primevue/forms';
 import { z } from 'zod';
 
-// 4. Internal shared components
+// 4. Internal generic components
 import BaseCard from '@/components/BaseCard.vue';
 
-// 5. Services & Types
-import { myService } from '@/services/MyService';
-import type { MyType } from '@/services/MyService';
+// 5. Feature modules, services & types
+import { tenantService, type TenantJson } from '@/features/project/tenants';
 
 // Props & Emits defined directly in <script setup> (no import section)
 ```
 
-`src/services/AddressService.ts` stays as a generic service (used by `AddressCard` and five features).
-
----
-
-### Migration Status
-
-| Phase | Status | Description |
-|-------|--------|-------------|
-| 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
-| 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | ✅ Done | 18 feature slices across all views, each with an `index.ts` public API; no cross-domain imports bypass the barrels; all domain services and stores live in their slices; no role uses features of another role |
-
-**Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
-
----
-
-## Current Project Structure
-
-> **Note**: The current structure matches the target structure above.
-
-```
-src/
-├── pages/               # File-based routes (Phase 1)
-├── layouts/             # Role-based layouts (Phase 2)
-├── features/            # Feature slices by view (Phase 3)
-├── extensions/          # Downstream extension points (empty upstream)
-├── components/          # Generic UI components (permanent)
-├── composables/         # Generic composables (permanent)
-├── services/            # ApiClient.ts, AuthService.ts, AddressService.ts (permanent)
-├── stores/              # UserSession.ts, EventStore.ts (permanent)
-├── router/              # Thin wrapper + guards.ts
-├── i18n/, types/, helper/, constants/, telemetry/, assets/
-└── App.vue, main.ts, sw.ts
-
-test/
-├── features/, pages/, layouts/, components/, composables/, services/, stores/, ...   # mirror src/
-├── setup/               # Test configuration and helpers
-└── mocks/               # MSW handlers and fixtures
-```
+Only one import per module — use inline `type` modifiers instead of a second `import type` from the same module
+(enforced by `import-x/no-duplicates`).
 
 ## Development Commands
 
@@ -471,9 +376,10 @@ const newMember = await apiClient.post('/api/v1/projects/{projectId}/members',
 ### State Management Architecture
 
 **Pinia Stores** (composition API pattern):
-- `UserSessionStore` - Authentication state, user roles, login/logout
-- `ProjectStore` - Projects list, selection, filtering
-- `EventStore` - Custom typed event bus for cross-component communication
+- App-wide stores in `src/stores/`: `UserSessionStore` (authentication state, user contexts, login/logout) and
+  `EventStore` (typed event bus for cross-component communication)
+- Domain stores live in the `stores/` folder of their feature slice, e.g. `ProjectStore` (`common/projects`),
+  `OrganizationStore` (`common/organizations`), `RentableUnitsStore` (`project/rentableUnits`)
 
 Store files are named `[Name]Store.ts` (e.g., `ProjectStore.ts`). Keep stores focused and domain-specific.
 
@@ -493,13 +399,7 @@ The backend returns the user's contexts (`MANAGER`, `CONTRACTOR`, `TENANT`) in `
 - Switching between views happens through context-dependent menu entries (e.g. "Persönliche Mietverhältnisse" in the manager menu is only visible with the `TENANT` context)
 - Named routes facilitate conditional navigation
 
-**View Organization**:
-- `src/pages/` - Route targets (thin; render feature views/components)
-- `src/features/<view>/<domain>/views/` - Feature-specific page-level components
-- `src/components/` - Generic reusable components
-- `src/layouts/` - Layouts and layout chrome (topbar, sidebar, mobile bar)
-
-Routes are generated from `src/pages/` and lazy-loaded automatically.
+Pages, layouts and views are described in "Project Architecture" above.
 
 ### Component Standards
 
@@ -787,8 +687,13 @@ export const projectMemberService = new ProjectMemberService();
 ### Testing Organization
 
 **Unit Tests** (Vitest):
-- Located in `/test` directory mirroring `/src` structure
+- Located in `/test` directory mirroring `/src` structure (`src/features/project/tenants/components/TenantCard.vue`
+  → `test/features/project/tenants/components/TenantCard.spec.ts`)
 - Test files: `*.spec.ts`
+- `vi.mock` targets the module the code under test actually imports: inside a slice that is the direct module path
+  (e.g. `vi.mock('@/features/project/contractors/components/ContractorListCard.vue', () => ({ default: … }))`), for
+  pages it is the feature barrel. When a page spec mocks a whole barrel, spread the real store into the mock
+  (`...(await vi.importActual('@/features/common/projects/stores/ProjectStore'))`) so layouts and guards keep working
 - Setup in `test/setup/vitest.setup.ts` configures PrimeVue, router, i18n, Pinia globally
 - Use `createTestingPinia()` from `@pinia/testing` for store tests
 - Mock API calls using MSW (Mock Service Worker)
@@ -881,8 +786,10 @@ Key environment variables in `.env`:
 - **Never use `any`** — not in production code, not in tests. ESLint enforces `@typescript-eslint/no-explicit-any`.
   - In tests: import the real type from the service and annotate mock data directly (e.g. `const mockTree: PropertyListJson = { ... }`) instead of casting with `as any`.
   - If a cast is truly unavoidable, use `as unknown as TargetType` and add a comment explaining why.
-- Create interfaces in `src/types/` for complex types
-- Use type imports: `import type { ComponentType } from './types'`
+- Domain types live in their feature slice (API types as aliases in the slice's `*Service.ts`, exported via
+  `index.ts`); `src/types/` only holds app-wide declarations (e.g. service worker globals)
+- Use type imports: `import type { ComponentType } from './types'`, or an inline `type` modifier when the module
+  is imported anyway
 - Prefer `interface` over `type` for object definitions
 
 ### ESLint Rules
