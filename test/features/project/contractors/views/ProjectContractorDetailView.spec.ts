@@ -3,8 +3,8 @@ import { mount } from '@vue/test-utils';
 import ProjectContractorDetailView from '@/features/project/contractors/views/ProjectContractorDetailView.vue';
 import { contractorService } from '@/features/project/contractors/services/ContractorService';
 
-vi.mock('@/features/project/contractors', () => ({
-  ContractorBaseDataCard: {
+vi.mock('@/features/project/contractors/components/ContractorBaseDataCard.vue', () => ({
+  default: {
     name: 'ContractorBaseDataCard',
     template: '<div data-test="contractor-base-data-card" />',
     props: ['projectId', 'contractorId'],

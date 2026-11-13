@@ -3,7 +3,7 @@ import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import Message from 'primevue/message';
-import { ContractorClientListCard } from '@/features/contractor/customers';
+import ContractorClientListCard from '@/features/contractor/customers/components/ContractorClientListCard.vue';
 import { useOrganizationStore } from '@/features/common/organizations';
 
 const { t } = useI18n();

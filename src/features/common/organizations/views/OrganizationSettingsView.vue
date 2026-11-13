@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
-import { OrganizationBaseDataCard, OrganizationEmployeeCard } from '@/features/common/organizations';
+import OrganizationBaseDataCard from '@/features/common/organizations/components/OrganizationBaseDataCard.vue';
+import OrganizationEmployeeCard from '@/features/common/organizations/components/OrganizationEmployeeCard.vue';
 import AddressCard from '@/components/AddressCard.vue';
 import { organizationService } from '@/features/common/organizations/services/OrganizationService';
 import type { AddressJson } from '@/services/AddressService';

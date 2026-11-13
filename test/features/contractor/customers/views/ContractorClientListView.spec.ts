@@ -3,8 +3,8 @@ import { mount } from '@vue/test-utils';
 import ContractorClientListView from '@/features/contractor/customers/views/ContractorClientListView.vue';
 import { useOrganizationStore } from '@/features/common/organizations/stores/OrganizationStore';
 
-vi.mock('@/features/contractor/customers', () => ({
-  ContractorClientListCard: {
+vi.mock('@/features/contractor/customers/components/ContractorClientListCard.vue', () => ({
+  default: {
     props: ['organizationId'],
     template: '<div data-test="contractor-client-list-card">{{ organizationId }}</div>',
   },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ContractorBaseDataCard } from '@/features/project/contractors';
+import ContractorBaseDataCard from '@/features/project/contractors/components/ContractorBaseDataCard.vue';
 import AddressCard from '@/components/AddressCard.vue';
 import type { AddressJson } from '@/services/AddressService';
 import { contractorService } from '@/features/project/contractors/services/ContractorService';

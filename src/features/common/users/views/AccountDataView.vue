@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { UserContactDataCard, UserAddressCard, UserDangerZoneCard } from '@/features/common/users';
+import UserContactDataCard from '@/features/common/users/components/UserContactDataCard.vue';
+import UserAddressCard from '@/features/common/users/components/UserAddressCard.vue';
+import UserDangerZoneCard from '@/features/common/users/components/UserDangerZoneCard.vue';
 </script>
 
 <template>
