@@ -1,7 +1,7 @@
 import { computed, type ComputedRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
-import { shouldShowDevLogin } from '@/helper/platform';
+import { shouldShowDevLogin } from '@/features/common/authentication/platform';
 import { safeRedirectPath } from '@/helper/redirectHelper';
 
 export type LoginProvider = 'google' | 'apple';

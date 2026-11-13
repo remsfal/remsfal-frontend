@@ -17,7 +17,7 @@ vi.mock('vue-router', async (importOriginal) => {
 });
 
 const platformMocks = vi.hoisted(() => ({ shouldShowDevLogin: vi.fn(() => false) }));
-vi.mock('@/helper/platform', () => ({ shouldShowDevLogin: platformMocks.shouldShowDevLogin }));
+vi.mock('@/features/common/authentication/platform', () => ({ shouldShowDevLogin: platformMocks.shouldShowDevLogin }));
 
 const originalLocation = globalThis.location;
 
