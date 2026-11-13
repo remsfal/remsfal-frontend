@@ -6,6 +6,7 @@ import Button from 'primevue/button';
 import type { TreeNode } from 'primevue/treenode';
 import BaseDialog from '@/components/BaseDialog.vue';
 import { RentableUnitSelect, type UnitType } from '@/features/project/rentableUnits';
+import { getUnitTypeLabel } from '@/features/common/rentableUnits';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import RentalDetailsForm, { type RentalDetails } from './RentalDetailsForm.vue';
@@ -56,7 +57,7 @@ const dialogHeader = computed(() => {
   if (props.unit) {
     return t('rentalAgreement.unitsCard.adjustRentDialogTitle', {
       title: props.unit.unitTitle,
-      type: t(`unitTypes.${props.unit.unitType.toLowerCase()}`),
+      type: getUnitTypeLabel(props.unit.unitType, t),
     });
   }
   return t('rentalAgreement.unitsCard.addButton');

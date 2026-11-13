@@ -9,7 +9,7 @@ import type { MenuItem } from 'primevue/menuitem';
 import BaseCard from '@/components/BaseCard.vue';
 import {toRentableUnitView, EntityType,
   type RentalUnitTreeNodeJson, type RentalUnitNodeDataJson,} from '@/features/project/rentableUnits/services/PropertyService';
-import { getIconForUnitType } from '../unitTypeIcons';
+import { getIconForUnitType } from '@/features/common/rentableUnits';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{

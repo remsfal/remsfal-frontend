@@ -9,6 +9,7 @@ import {toRentableUnitView,
   type RentalUnitNodeDataJson,
   type RentalUnitTreeNodeJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import type { components } from '@/services/api/platform-schema';
+import { getUnitTypeLabel } from '@/features/common/rentableUnits';
 import NewRentableUnitButton from './NewRentableUnitButton.vue';
 import NewPropertyButton from './NewPropertyButton.vue';
 
@@ -54,10 +55,6 @@ function onNodeSelect(node: RentalUnitTreeNodeJson) {
     name: view as string,
     params: { projectId: props.projectId, unitId: node.key }
   } as Parameters<typeof router.push>[0]);
-}
-
-function translateType(type: string): string {
-  return t(`unitTypes.${type.toLowerCase()}`);
 }
 
 function onNewRentableUnit(title: string) {
@@ -111,7 +108,7 @@ function onNewRentableUnit(title: string) {
       bodyClass="hidden md:table-cell"
     >
       <template #body="{ node }">
-        <div>{{ translateType(node.data.type) }}</div>
+        <div>{{ getUnitTypeLabel(node.data.type, t) }}</div>
       </template>
     </Column>
 

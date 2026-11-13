@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { UNIT_TYPE_ICONS, getIconForUnitType } from '@/features/project/rentableUnits/unitTypeIcons';
-import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
+import { UNIT_TYPE_ICONS, getIconForUnitType } from '@/features/common/rentableUnits/unitTypeIcons';
+import type { UnitType } from '@/features/common/rentableUnits/unitTypes';
 
 describe('unitTypeIcons', () => {
   describe('UNIT_TYPE_ICONS', () => {

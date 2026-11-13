@@ -11,6 +11,7 @@ import { commercialService } from '@/features/project/rentableUnits/services/Com
 import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
+import { getUnitTypeLabel } from '@/features/common/rentableUnits';
 
 const props = defineProps<{
   projectId: string;
@@ -23,7 +24,7 @@ const appToast = useAppToast();
 const router = useRouter();
 const rentableUnitsStore = useRentableUnitsStore();
 
-const unitTypeLabel = computed(() => t(`unitTypes.${props.unitType.toLowerCase()}`));
+const unitTypeLabel = computed(() => getUnitTypeLabel(props.unitType, t));
 
 async function deleteUnit(): Promise<void> {
   try {

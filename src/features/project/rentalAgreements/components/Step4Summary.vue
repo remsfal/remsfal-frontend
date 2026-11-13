@@ -9,6 +9,7 @@ import BaseCard from '@/components/BaseCard.vue';
 // Types (imported from Step components)
 import type { SelectedUnit } from './Step2UnitsForm.vue';
 import type { TenantWritableJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import { getUnitTypeLabel } from '@/features/common/rentableUnits';
 
 // Props & Emits
 const props = defineProps<{
@@ -123,7 +124,7 @@ const totalRent = computed(() => {
                   {{ unit.unitTitle }}
                 </h4>
                 <p class="text-sm text-muted-color">
-                  {{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}
+                  {{ getUnitTypeLabel(unit.unitType, t) }}
                 </p>
               </div>
             </div>

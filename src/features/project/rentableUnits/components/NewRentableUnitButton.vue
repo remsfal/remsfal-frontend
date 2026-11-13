@@ -12,7 +12,7 @@ import BaseDialog from '@/components/BaseDialog.vue';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { EntityType, propertyService } from '@/features/project/rentableUnits/services/PropertyService';
-import { UNIT_TYPE_ICONS } from '../unitTypeIcons';
+import { UNIT_TYPE_ICONS } from '@/features/common/rentableUnits';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
