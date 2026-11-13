@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 
 // Mock capacitor core/utils
 vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: () => false } }));
-vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
 
 // Mock the Menu component to prevent it from importing dependencies that fail resolution
 vi.mock('@/layouts/components/ManagerMenu.vue', () => ({ default: { name: 'ManagerMenu', template: '<div></div>' } }));

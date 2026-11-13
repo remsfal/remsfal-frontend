@@ -30,7 +30,7 @@ The project is undergoing a planned architectural modernization in three phases.
 src/
 ├── layouts/                    # Role-based layout components (Nuxt-inspired)
 │   ├── manager.vue             # ManagerMenu + ManagerTopbar + ManagerMobileBar
-│   ├── project.vue             # ProjectMenu + ProjectTopbar + ProjectMobileBar
+│   ├── project.vue             # ProjectMenu + ManagerTopbar + ProjectMobileBar
 │   ├── tenant.vue              # TenantMenu + AppSimpleTopbar + TenantMobileBar
 │   ├── contractor.vue          # ContractorMenu + AppSimpleTopbar + ContractorMobileBar
 │   ├── public.vue              # AppSimpleTopbar + AppFooter (Landing page)

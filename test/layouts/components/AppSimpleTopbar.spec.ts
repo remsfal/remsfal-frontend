@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import ContractorTopbar from '@/layouts/components/AppSimpleTopbar.vue';
+import AppSimpleTopbar from '@/layouts/components/AppSimpleTopbar.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
 
 // Router mock
@@ -13,18 +13,16 @@ vi.mock('vue-router', () => ({
   RouterLink: { template: '<a><slot /></a>' },
 }));
 
-// Mock platform helper (since TopbarUserActions uses it)
-vi.mock('../../src/helper/platform', () => ({ shouldShowDevLogin: vi.fn().mockReturnValue(false), }));
-
-describe('ContractorTopbar.vue', () => {
-  it('should render TopbarUserActions', async () => {
+describe('AppSimpleTopbar.vue', () => {
+  // Used as the topbar of the tenant and the contractor layout
+  it.each(['tenant@example.com', 'contractor@example.com'])('renders TopbarUserActions for %s', async (email) => {
     const userStore = useUserSessionStore();
-    userStore.user = {email: 'contractor@example.com'} as User;
+    userStore.user = { email } as User;
 
-    const wrapper = mount(ContractorTopbar);
+    const wrapper = mount(AppSimpleTopbar);
 
     await flushPromises();
 
-    expect(wrapper.text()).toContain('contractor@example.com');
+    expect(wrapper.text()).toContain(email);
   });
 });

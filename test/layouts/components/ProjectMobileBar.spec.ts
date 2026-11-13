@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: () => false } }));
-vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
 
 // Mock ProjectMenu to avoid deep dependency resolution
 vi.mock('@/layouts/components/ProjectMenu.vue', () => ({ default: { name: 'ProjectMenu', template: '<div></div>' } }));
