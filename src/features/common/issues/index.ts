@@ -4,8 +4,7 @@ export {getIssueStatusLabel,
   getIssueTypeLabel,
   getIssueTypeSeverity,
   getIssuePriorityLabel,
-  getIssueCategoryLabel,
-  getUnitTypeLabel,} from './issueLabels';
+  getIssueCategoryLabel,} from './issueLabels';
 export {getGeneralCategory,
   getDefectCategories,
   getInquiryCategories,

@@ -89,7 +89,9 @@ src/
 │       │                       # services (ProjectService, ProjectMemberService, OrganizationMemberService),
 │       │                       # stores (ProjectStore)
 │       ├── users/              # components, services (UserService), views
-│       └── issues/             # issueTypes.ts (IssueType, IssueStatus, ...), issueLabels.ts, issueCategories.ts
+│       ├── issues/             # issueTypes.ts (IssueType, IssueStatus, ...), issueLabels.ts, issueCategories.ts
+│       └── rentableUnits/      # unitTypes.ts (UnitType), unitTypeIcons.ts, unitLabels.ts (getUnitTypeLabel,
+│                               # formatUnitLabel) — the only place to turn a unit type into a label or icon
 │
 ├── components/                 # Base/generic UI components used by ≥2 features (permanent, not a staging area),
 │                               # e.g. BaseCard.vue, BaseDialog.vue, KpiCard.vue, PhoneInput.vue, TimelineCard.vue

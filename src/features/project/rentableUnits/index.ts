@@ -10,7 +10,6 @@ export { default as SiteDataCard } from './components/SiteDataCard.vue';
 export { default as StorageDataCard } from './components/StorageDataCard.vue';
 export { default as FacilityAddressCard } from './components/FacilityAddressCard.vue';
 export { default as RentableUnitSelect } from './components/RentableUnitSelect.vue';
-export { getIconForUnitType, UNIT_TYPE_ICONS } from './unitTypeIcons';
 export { propertyService, toRentableUnitView, type UnitType, type RentalUnitTreeNodeJson } from './services/PropertyService';
 export { buildingService } from './services/BuildingService';
 export { apartmentService } from './services/ApartmentService';

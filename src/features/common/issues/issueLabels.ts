@@ -1,6 +1,5 @@
 import type { ComposerTranslation } from 'vue-i18n';
 import type { IssueCategory, IssuePriority, IssueStatus, IssueType } from './issueTypes';
-import type { UnitType } from '@/features/project/rentableUnits';
 import type { HintedString } from "@primevue/core";
 
 export const getIssueStatusLabel = (
@@ -120,17 +119,4 @@ export const getIssueCategoryLabel = (
   const labelKey = `issueCategory.${category}`;
   const label = t(labelKey);
   return label === labelKey ? category : label;
-};
-
-export const getUnitTypeLabel = (
-  unitType: UnitType | null | undefined,
-  t: ComposerTranslation,
-): string => {
-  if (!unitType) {
-    return '—';
-  }
-
-  const labelKey = `unitTypes.${unitType.toLowerCase()}`;
-  const label = t(labelKey);
-  return label === labelKey ? unitType : label;
 };

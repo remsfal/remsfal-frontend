@@ -10,6 +10,7 @@ import Divider from 'primevue/divider';
 // Types
 import type { IssueType } from '@/features/common/issues';
 import { formatTenancyLabel, type TenancyJson } from '@/features/tenant/tenancies';
+import { formatUnitLabel } from '@/features/common/rentableUnits';
 
 // Props & Emits
 const props = defineProps<{
@@ -48,7 +49,7 @@ const rentalUnitTitle = computed(() => {
   const tenancy = props.tenancies.find(t => t.agreementId === props.tenancyId);
   const unit = tenancy?.rentalUnits?.find(u => u.id === props.rentalUnitId);
   if (!unit) return null;
-  return unit.title || unit.location || unit.type || 'Einheit';
+  return formatUnitLabel(unit, t);
 });
 
 // Get type label

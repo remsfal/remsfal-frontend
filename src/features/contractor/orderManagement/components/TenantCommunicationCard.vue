@@ -12,6 +12,7 @@ import { useTimelineComposer } from '@/composables/useTimeline';
 import { useEventBus } from '@/stores/EventStore';
 import { issueRequestService, type IssueRequestJson } from '@/features/contractor/orderManagement/services/IssueRequestService';
 import type { QuotationRequestJson } from '@/features/contractor/orderManagement/services/QuotationRequestService';
+import { getUnitTypeLabel } from '@/features/common/rentableUnits';
 
 const props = defineProps<{ issueId: string; request: QuotationRequestJson }>();
 
@@ -46,7 +47,7 @@ const placeOfPerformance = computed(() =>
 );
 
 const rentalUnitTypeLabel = computed(() =>
-  props.request.rentalUnitType ? t(`unitTypes.${props.request.rentalUnitType.toLowerCase()}`) : null,
+  props.request.rentalUnitType ? getUnitTypeLabel(props.request.rentalUnitType, t) : null,
 );
 
 const hasTenantBlock = computed(() => !!tenantNames.value || !!rentalUnitTypeLabel.value);

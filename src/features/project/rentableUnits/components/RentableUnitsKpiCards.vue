@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
 import KpiCard from '@/components/KpiCard.vue';
 import { type RentalUnitTreeNodeJson, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
-import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
+import { getIconForUnitType, getUnitTypeLabel, UNIT_TYPE_ICONS } from '@/features/common/rentableUnits';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 defineProps<{ projectId: string }>();
@@ -73,7 +73,7 @@ watch(rentableUnitTree, (tree) => emit('update:rentableUnitTree', tree), { immed
         v-for="kpi in kpis"
         :key="kpi.type"
         :icon="getIconForUnitType(kpi.type)"
-        :title="t(`unitTypes.${kpi.type.toLowerCase()}`)"
+        :title="getUnitTypeLabel(kpi.type, t)"
         :value="kpi.count"
         :subtext="`${kpi.space} m²`"
       />

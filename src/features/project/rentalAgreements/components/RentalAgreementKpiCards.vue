@@ -4,9 +4,8 @@ import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import Message from 'primevue/message';
 import KpiCard from '@/components/KpiCard.vue';
-import {getIconForUnitType,
-  type RentalUnitTreeNodeJson,
-  type UnitType,} from '@/features/project/rentableUnits';
+import { type RentalUnitTreeNodeJson, type UnitType } from '@/features/project/rentableUnits';
+import { getIconForUnitType, getUnitTypeLabel } from '@/features/common/rentableUnits';
 import {rentalAgreementService,
   type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
@@ -155,7 +154,7 @@ onMounted(() => fetchData(props.projectId));
         v-for="vacancy in vacancyByType"
         :key="vacancy.type"
         :icon="getIconForUnitType(vacancy.type)"
-        :title="t('rentalAgreement.kpi.vacancyByType', { type: t(`unitTypes.${vacancy.type.toLowerCase()}`) })"
+        :title="t('rentalAgreement.kpi.vacancyByType', { type: getUnitTypeLabel(vacancy.type, t) })"
         :value="vacancy.count"
         iconBackground="var(--color-orange-600)"
       />

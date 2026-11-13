@@ -6,7 +6,7 @@ import TenantContactButtons from './TenantContactButtons.vue';
 import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';
-import { getIconForUnitType, type UnitType } from '@/features/project/rentableUnits';
+import { formatUnitLabel, getIconForUnitType, type UnitType } from '@/features/common/rentableUnits';
 
 const props = withDefaults(
   defineProps<{
@@ -43,24 +43,6 @@ const hasRentalUnits = computed(() => {
 
 const getUnitIcon = (type?: string): string =>
   type ? getIconForUnitType(type as UnitType) : 'pi pi-question-circle';
-
-// Improved unitLabel function with fallbacks
-const unitLabel = (unit: { type?: string; title?: string; location?: string }) => {
-  const title = unit.title || unit.location;
-
-  if (!title) {
-    // Fallback: Only Type-Name or unknown
-    return unit.type ? t(`unitTypes.${unit.type.toLowerCase()}`) : t('tenantList.card.unknownUnit');
-  }
-
-  // If Type is available: "Apartment 3A", otherwise only Title
-  if (unit.type) {
-    const typeName = t(`unitTypes.${unit.type.toLowerCase()}`);
-    return `${typeName} ${title}`;
-  }
-
-  return title;
-};
 </script>
 
 <template>
@@ -94,7 +76,7 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
             <Tag
               v-for="(unit, index) in displayedUnits"
               :key="unit.id || index"
-              :value="unitLabel(unit)"
+              :value="formatUnitLabel(unit, t)"
               :icon="getUnitIcon(unit.type)"
               severity="secondary"
             />

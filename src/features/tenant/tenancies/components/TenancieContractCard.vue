@@ -4,6 +4,7 @@ import Divider from 'primevue/divider';
 
 import BaseCard from '@/components/BaseCard.vue';
 import { formatTenancyLabel, type TenancyJson } from '@/features/tenant/tenancies/services/TenancyService';
+import { formatUnitLabel } from '@/features/common/rentableUnits';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{
@@ -41,16 +42,6 @@ const totalRent = (contract: TenancyJson) => {
     (contract.operatingCostsPrepayment ?? 0) +
     (contract.heatingCostsPrepayment ?? 0);
 };
-
-const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) => {
-  const unitType = unit.type ? t(`unitTypes.${unit.type.toLowerCase()}`) : null;
-  const unitDetails = [unit.title, unit.location]
-    .map((part) => part?.trim())
-    .filter((part): part is string => Boolean(part))
-    .filter((part, index, parts) => parts.findIndex((value) => value.toLowerCase() === part.toLowerCase()) === index)
-    .join(' ');
-  return [unitType, unitDetails].filter(Boolean).join(' ') || t('tenantList.card.unknownUnit');
-};
 </script>
 
 <template>
@@ -67,7 +58,7 @@ const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) 
                 <Tag
                   v-for="(unit, index) in contract.rentalUnits"
                   :key="unit.id || index"
-                  :value="formatUnitLabel(unit)"
+                  :value="formatUnitLabel(unit, t)"
                   severity="secondary"
                   rounded
                 />

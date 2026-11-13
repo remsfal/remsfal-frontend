@@ -16,6 +16,7 @@ import {getDefectCategories,
   type CategoryOption,
   type IssueCategory,
   type IssueType,} from '@/features/common/issues';
+import { formatUnitLabel } from '@/features/common/rentableUnits';
 
 // Props & Emits
 const props = defineProps<{
@@ -121,7 +122,7 @@ const selectedTenancy = computed<TenancyJson | undefined>(() =>
 const rentalUnitOptions = computed(() => {
   const units = selectedTenancy.value?.rentalUnits ?? [];
   return units.map((unit: RentalUnitJson) => ({
-    label: unit.title || unit.location || unit.type || 'Einheit',
+    label: formatUnitLabel(unit, t),
     value: unit.id,
   }));
 });

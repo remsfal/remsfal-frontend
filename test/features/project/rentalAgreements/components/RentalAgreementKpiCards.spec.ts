@@ -128,13 +128,14 @@ describe('RentalAgreementKpiCards', () => {
     expect(cards[3]!.props('value')).toBe(2);
 
     // apt-2 is only referenced by the ended agreement, so it counts as vacant; apt-3 has no agreement at all.
-    expect(cards[4]!.props('title')).toBe('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.apartment"}');
+    // The mocked t() echoes keys, so getUnitTypeLabel falls back to the raw unit type.
+    expect(cards[4]!.props('title')).toBe('rentalAgreement.kpi.vacancyByType-{"type":"APARTMENT"}');
     expect(cards[4]!.props('value')).toBe(2);
     expect(cards[4]!.props('icon')).toBe('pi pi-building');
 
     // building-1 is rented by the still-current "future end" agreement, so its vacancy is 0 -> no card.
     const titles = cards.map((card) => card.props('title'));
-    expect(titles).not.toContain('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.building"}');
+    expect(titles).not.toContain('rentalAgreement.kpi.vacancyByType-{"type":"BUILDING"}');
   });
 
   it('excludes container units (with children) from vacancy, but counts childless containers', async () => {
@@ -188,12 +189,12 @@ describe('RentalAgreementKpiCards', () => {
     );
 
     // building-1 has a child (apt-1), so it's not a leaf and is excluded from vacancy entirely.
-    expect(vacancyCards.has('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.building"}')).toBe(false);
+    expect(vacancyCards.has('rentalAgreement.kpi.vacancyByType-{"type":"BUILDING"}')).toBe(false);
     // apt-1 is a leaf -> counted as vacant (no agreements at all).
-    expect(vacancyCards.get('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.apartment"}')).toBe(1);
+    expect(vacancyCards.get('rentalAgreement.kpi.vacancyByType-{"type":"APARTMENT"}')).toBe(1);
     // property-1 has a child so it's excluded; property-2 is childless (a leaf) and is the only
     // contributor to the PROPERTY vacancy count.
-    expect(vacancyCards.get('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.property"}')).toBe(1);
+    expect(vacancyCards.get('rentalAgreement.kpi.vacancyByType-{"type":"PROPERTY"}')).toBe(1);
   });
 
   it('deduplicates tenants that appear in multiple active agreements', async () => {
