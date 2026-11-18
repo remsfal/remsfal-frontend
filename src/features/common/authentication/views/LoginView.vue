@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 import LoginProviderButton from '../components/LoginProviderButton.vue';
 import EmailLoginForm from '../components/EmailLoginForm.vue';
 import EmailCodeForm from '../components/EmailCodeForm.vue';
 import LoginLegalNotice from '../components/LoginLegalNotice.vue';
+import BackToOverviewLink from '@/components/BackToOverviewLink.vue';
 import { useLogin } from '../composables/useLogin';
 import { useEmailLogin } from '../composables/useEmailLogin';
 
@@ -84,13 +84,7 @@ const {
       </div>
 
       <div class="text-center mt-8">
-        <RouterLink
-          :to="{ name: 'LandingPage' }"
-          class="text-sm font-medium text-primary hover:underline"
-        >
-          <i class="pi pi-arrow-left text-xs mr-1" />
-          {{ t('login.backToHome') }}
-        </RouterLink>
+        <BackToOverviewLink />
       </div>
     </div>
   </div>

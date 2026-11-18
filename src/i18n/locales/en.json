@@ -21,6 +21,8 @@
   "accountSettings.dangerZone.confirmTitle": "Really delete account?",
   "accountSettings.dangerZone.confirmMessage": "Are you sure you want to delete your account? All data will be permanently deleted.",
   "accountSettings.dangerZone.deleteSuccess": "Account successfully deleted.",
+  "backToOverview.home": "Back to home",
+  "backToOverview.overview": "Go to personal overview",
   "breadcrumb.overview": "Overview",
   "button.add": "Add",
   "button.save": "Save",
@@ -386,7 +388,6 @@
   "login.withApple": "Sign in with Apple",
   "login.devLogin": "Dev Login",
   "login.description": "When signing in with Google or Apple, the respective provider's privacy policy and terms of use apply.",
-  "login.backToHome": "Back to home",
   "login.or": "or",
   "login.email.label": "Email address",
   "login.email.placeholder": "name{'@'}example.com",
@@ -1041,6 +1042,5 @@
   "emailVerification.title": "Email Verification",
   "emailVerification.loading": "Verifying your email address …",
   "emailVerification.successMessage": "Your additional email address has been verified successfully.",
-  "emailVerification.errorMessage": "The email address could not be verified. The verification link is invalid or has expired.",
-  "emailVerification.backToSettings": "Go to personal overview"
+  "emailVerification.errorMessage": "The email address could not be verified. The verification link is invalid or has expired."
 }

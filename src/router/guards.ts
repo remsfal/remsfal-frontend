@@ -1,17 +1,11 @@
-import type { Router, RouteLocationRaw } from 'vue-router'
+import type { Router } from 'vue-router'
 import { useUserSessionStore } from '@/stores/UserSession'
+import { homeRouteFor } from '@/router/homeRoute'
 // NOTE: imports the store module directly, not the `@/features/common/projects` barrel —
 // the router is loaded by the global test setup, which would evaluate the barrel before the
 // `vi.mock` calls of a test file are registered, so components would bypass those mocks.
 import { useProjectStore } from '@/features/common/projects/stores/ProjectStore'
 import { safeRedirectPath } from '@/helper/redirectHelper'
-
-function homeRouteFor(sessionStore: ReturnType<typeof useUserSessionStore>): RouteLocationRaw {
-  if (sessionStore.isManager) return { name: 'ProjectSelection' }
-  if (sessionStore.isContractor) return { name: 'ContractorDashboard' }
-  if (sessionStore.isTenant) return { name: 'TenantDashboard' }
-  return { name: 'ProjectSelection' }
-}
 
 export function setupRouterGuards(router: Router) {
   router.beforeEach((to) => {
