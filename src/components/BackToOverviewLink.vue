@@ -13,7 +13,7 @@ const { isLoggedIn, homeRoute } = useHomeRoute();
     class="inline-flex items-center gap-2 font-bold text-primary hover:underline print:hidden"
     data-test="back-to-overview"
   >
-    <i class="pi pi-arrow-left text-[1em]!" aria-hidden="true" />
+    <i class="pi pi-arrow-left" aria-hidden="true" />
     <span>{{ isLoggedIn ? t('backToOverview.overview') : t('backToOverview.home') }}</span>
   </RouterLink>
 </template>

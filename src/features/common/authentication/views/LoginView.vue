@@ -83,7 +83,7 @@ const {
         </template>
       </div>
 
-      <div class="text-center text-sm mt-8">
+      <div class="text-center mt-8">
         <BackToOverviewLink />
       </div>
     </div>
