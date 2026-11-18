@@ -5,8 +5,7 @@
 
 <template>
   <div
-    class="auth-layout min-h-screen flex items-center justify-center overflow-hidden
-      px-4 py-8 bg-surface-50 dark:bg-surface-950"
+    class="auth-layout min-h-screen flex items-center justify-center overflow-hidden px-4 py-8"
   >
     <slot />
   </div>
