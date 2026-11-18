@@ -3,6 +3,9 @@ import { mount, flushPromises } from '@vue/test-utils';
 import VerifyAdditionalEmailView from '@/features/common/users/views/VerifyAdditionalEmailView.vue';
 import { authService } from '@/services/AuthService';
 import router from '@/router';
+import { useUserSessionStore } from '@/stores/UserSession';
+
+type SessionUser = ReturnType<typeof useUserSessionStore>['user'];
 
 vi.mock('@/services/AuthService', () => ({ authService: { verifyAdditionalEmail: vi.fn() } }));
 
@@ -61,14 +64,17 @@ describe('VerifyAdditionalEmailView', () => {
     expect(wrapper.text()).toContain('konnte nicht bestätigt werden');
   });
 
-  it('renders a link back to the account settings', async () => {
+  it('renders a link to the personal overview', async () => {
+    useUserSessionStore().user = { email: 'a@b.de', userContexts: ['TENANT'] } as SessionUser;
     await router.push({ name: 'VerifyAdditionalEmail', query: { token: 'valid-token' } });
     vi.mocked(authService.verifyAdditionalEmail).mockResolvedValue(true);
 
     const wrapper = mount(VerifyAdditionalEmailView);
     await flushPromises();
 
-    const link = wrapper.find('a[href="/manager/account-data"]');
-    expect(link.exists()).toBe(true);
+    const link = wrapper.find('[data-test="back-to-overview"]');
+    expect(link.attributes('href')).toBe('/tenant/dashboard');
+    expect(link.text()).toBe('Zur persönlichen Übersicht');
+    useUserSessionStore().user = null;
   });
 });

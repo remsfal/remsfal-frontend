@@ -2,9 +2,9 @@
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import Button from 'primevue/button';
 import Message from 'primevue/message';
 import BaseCard from '@/components/BaseCard.vue';
+import BackToOverviewLink from '@/components/BackToOverviewLink.vue';
 import { authService } from '@/services/AuthService';
 
 const { t } = useI18n();
@@ -48,9 +48,7 @@ onMounted(async () => {
         {{ t('emailVerification.errorMessage') }}
       </Message>
       <div class="flex justify-center mt-4">
-        <Button as="router-link" :to="{ name: 'ManagerAccountData' }" severity="info">
-          {{ t('emailVerification.backToSettings') }}
-        </Button>
+        <BackToOverviewLink />
       </div>
     </template>
   </BaseCard>

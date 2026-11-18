@@ -21,6 +21,8 @@
   "accountSettings.dangerZone.confirmTitle": "Konto wirklich löschen?",
   "accountSettings.dangerZone.confirmMessage": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Alle Daten werden unwiderruflich gelöscht.",
   "accountSettings.dangerZone.deleteSuccess": "Konto wurde erfolgreich gelöscht.",
+  "backToOverview.home": "Zurück zur Startseite",
+  "backToOverview.overview": "Zur persönlichen Übersicht",
   "breadcrumb.overview": "Übersicht",
   "button.add": "Hinzufügen",
   "button.save": "Speichern",
@@ -406,7 +408,6 @@
   "login.withApple": "Mit Apple anmelden",
   "login.devLogin": "Dev Login",
   "login.description": "Bei der Anmeldung mit Google oder Apple gelten die Datenschutz- und Nutzungsbestimmungen des jeweiligen Anbieters.",
-  "login.backToHome": "Zurück zur Startseite",
   "login.or": "oder",
   "login.email.label": "E-Mail-Adresse",
   "login.email.placeholder": "name{'@'}beispiel.de",
@@ -1041,6 +1042,5 @@
   "emailVerification.title": "E-Mail-Bestätigung",
   "emailVerification.loading": "Deine E-Mail-Adresse wird bestätigt …",
   "emailVerification.successMessage": "Deine zusätzliche E-Mail-Adresse wurde erfolgreich bestätigt.",
-  "emailVerification.errorMessage": "Die E-Mail-Adresse konnte nicht bestätigt werden. Der Bestätigungslink ist ungültig oder abgelaufen.",
-  "emailVerification.backToSettings": "Zur persönlichen Übersicht"
+  "emailVerification.errorMessage": "Die E-Mail-Adresse konnte nicht bestätigt werden. Der Bestätigungslink ist ungültig oder abgelaufen."
 }

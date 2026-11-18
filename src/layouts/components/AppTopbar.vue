@@ -3,8 +3,10 @@ import { useLayout } from '@/layouts/composables/layout';
 import { RouterLink, useRoute } from 'vue-router';
 import Button from 'primevue/button';
 import { ref, watch, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue';
+import { useHomeRoute } from '@/composables/useHomeRoute';
 
 const { toggleDarkMode, isDarkTheme } = useLayout();
+const { homeRoute } = useHomeRoute();
 const route = useRoute();
 
 const isMobileMenuOpen = ref(false);
@@ -45,7 +47,7 @@ onUnmounted(() => {
   <header>
     <div class="layout-topbar">
       <div class="layout-topbar-logo-container">
-        <RouterLink to="/" class="layout-topbar-logo">
+        <RouterLink :to="homeRoute" class="layout-topbar-logo">
           <img src="@/assets/remsfal-logo.svg" alt="logo">
         </RouterLink>
       </div>

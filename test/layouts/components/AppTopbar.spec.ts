@@ -2,6 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import AppTopbar from '@/layouts/components/AppTopbar.vue';
 import { useLayout } from '@/layouts/composables/layout';
+import { useUserSessionStore } from '@/stores/UserSession';
+
+type SessionUser = ReturnType<typeof useUserSessionStore>['user'];
 
 // Mock the layout composable
 vi.mock('@/layouts/composables/layout', () => ({ useLayout: vi.fn(), }));
@@ -44,5 +47,18 @@ describe('AppTopbar', () => {
     // Should not throw error when clicked
     await burgerButton.trigger('click');
     expect(true).toBe(true); // If we get here, the click handler exists
+  });
+
+  it('links the logo to the landing page when logged out', () => {
+    useUserSessionStore().user = null;
+    const wrapper = mount(AppTopbar);
+    expect(wrapper.find('.layout-topbar-logo').attributes('href')).toBe('/');
+  });
+
+  it('links the logo to the personal overview when logged in', () => {
+    useUserSessionStore().user = { email: 'a@b.de', userContexts: ['CONTRACTOR'] } as SessionUser;
+    const wrapper = mount(AppTopbar);
+    expect(wrapper.find('.layout-topbar-logo').attributes('href')).toBe('/contractor/dashboard');
+    useUserSessionStore().user = null;
   });
 });
