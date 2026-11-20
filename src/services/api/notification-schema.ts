@@ -539,6 +539,10 @@ export interface components {
       /** @description Representative of the billing recipient (c/o) */
       careOf?: string;
       billingAddress?: components["schemas"]["AddressJson"];
+      /** @description Unique identifier of the organization that manages the project */
+      managingOrganizationId?: components["schemas"]["UUID"];
+      /** @description Name of the organization that manages the project */
+      managingOrganizationName?: string;
     };
     /** @description A list of clients (projects with billing data) of a contractor organization */
     ClientProjectListJson: {
@@ -940,6 +944,10 @@ export interface components {
       billingAddress?: components["schemas"]["AddressJson"];
       /** @description Project members (managed separately via members endpoint) */
       members?: $Read<components["schemas"]["ProjectMemberJson"][]>;
+      /** @description Unique identifier of the organization that manages this project. On creation, the project is created for this organization instead of for the authenticated user (requires the employee role OWNER or MANAGER). On update, the organization must already be a project member with role PROPRIETOR. */
+      managingOrganizationId?: components["schemas"]["UUID"];
+      /** @description Name of the organization that manages this project */
+      managingOrganizationName?: $Read<string>;
     };
     /** @description A list of projects */
     ProjectListJson: {
@@ -1261,6 +1269,10 @@ export interface components {
       agreementId?: $Read<components["schemas"]["UUID"]>;
       /** @description Title of the project this rental agreement belongs to */
       projectTitle?: $Read<string>;
+      /** @description Unique identifier of the organization that manages the project */
+      managingOrganizationId?: $Read<components["schemas"]["UUID"]>;
+      /** @description Name of the organization that manages the project */
+      managingOrganizationName?: $Read<string>;
       /** @description Address of the building this rental agreement belongs to */
       address?: $Read<components["schemas"]["AddressJson"]>;
       /** @description List of tenants in this rental agreement */
