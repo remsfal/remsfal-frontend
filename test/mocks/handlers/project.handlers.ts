@@ -49,10 +49,11 @@ export const projectHandlers = [
 
   // POST create project
   http.post(`${API_BASE}/projects`, async ({ request }) => {
-    const body = (await request.json()) as { title: string };
+    const body = (await request.json()) as { title: string; managingOrganizationId?: string };
     return HttpResponse.json({
       id: 'new-project-id',
       title: body.title,
+      managingOrganizationId: body.managingOrganizationId,
       memberRole: 'MANAGER',
     });
   }),

@@ -298,6 +298,13 @@ components:
           description: Representative of the billing recipient (c/o)
         billingAddress:
           $ref: "#/components/schemas/AddressJson"
+        managingOrganizationId:
+          description: Unique identifier of the organization that manages the project
+          type: string
+          $ref: "#/components/schemas/UUID"
+        managingOrganizationName:
+          type: string
+          description: Name of the organization that manages the project
     ClientProjectListJson:
       description: A list of clients (projects with billing data) of a contractor
         organization
@@ -1171,6 +1178,18 @@ components:
             $ref: "#/components/schemas/ProjectMemberJson"
           description: Project members (managed separately via members endpoint)
           readOnly: true
+        managingOrganizationId:
+          description: "Unique identifier of the organization that manages this project.\
+            \ On creation, the project is created for this organization instead of\
+            \ for the authenticated user (requires the employee role OWNER or MANAGER).\
+            \ On update, the organization must already be a project member with role\
+            \ PROPRIETOR."
+          type: string
+          $ref: "#/components/schemas/UUID"
+        managingOrganizationName:
+          type: string
+          description: Name of the organization that manages this project
+          readOnly: true
       required:
       - title
     ProjectListJson:
@@ -1796,6 +1815,15 @@ components:
         projectTitle:
           type: string
           description: Title of the project this rental agreement belongs to
+          readOnly: true
+        managingOrganizationId:
+          description: Unique identifier of the organization that manages the project
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        managingOrganizationName:
+          type: string
+          description: Name of the organization that manages the project
           readOnly: true
         address:
           description: Address of the building this rental agreement belongs to

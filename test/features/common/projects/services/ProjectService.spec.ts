@@ -50,11 +50,12 @@ const handlers = [
   }),
 
   http.post('/api/v1/projects', async ({ request }) => {
-    const body = (await request.json()) as { title: string };
+    const body = (await request.json()) as { title: string; managingOrganizationId?: string };
     return HttpResponse.json(
       {
         id: 'new-project-id',
         title: body.title,
+        managingOrganizationId: body.managingOrganizationId,
         memberRole: 'MANAGER',
       },
       { status: 201 },
@@ -141,6 +142,13 @@ describe('ProjectService', () => {
       expect(result.id).toBe('new-project-id');
       expect(result.title).toBe('New Project');
       expect(result.memberRole).toBe('MANAGER');
+      expect(result.managingOrganizationId).toBeUndefined();
+    });
+
+    it('should create a project for an organization', async () => {
+      const result = await projectService.createProject('Organization Project', 'org-123');
+      expect(result.title).toBe('Organization Project');
+      expect(result.managingOrganizationId).toBe('org-123');
     });
 
     it('should handle creation errors', async () => {

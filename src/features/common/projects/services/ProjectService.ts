@@ -27,9 +27,10 @@ export default class ProjectService {
     return filteredProjects;
   }
 
-  // Create a new project
-  async createProject(title: string): Promise<ProjectJson> {
-    const project = await apiClient.post('/api/v1/projects', { title }) as ProjectJson;
+  // Create a new project, either for the current user or for an organization the user manages
+  async createProject(title: string, managingOrganizationId?: string): Promise<ProjectJson> {
+    const payload: ProjectWritableJson = managingOrganizationId ? { title, managingOrganizationId } : { title };
+    const project = await apiClient.post('/api/v1/projects', payload) as ProjectJson;
     console.log('POST create project:', project);
     return project;
   }
