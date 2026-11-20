@@ -106,7 +106,9 @@ async function syncProjects() {
         const response = await fetch('/api/v1/projects', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: project.title }),
+          body: JSON.stringify(project.managingOrganizationId
+            ? { title: project.title, managingOrganizationId: project.managingOrganizationId }
+            : { title: project.title }),
         });
 
         if (response.ok) {

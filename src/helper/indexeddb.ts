@@ -3,7 +3,7 @@ import { openDB } from 'idb';
 interface ProjectDB {
   projects: {
     key: number; // timestamp as key
-    value: { title: string; createdAt: number };
+    value: { title: string; managingOrganizationId?: string; createdAt: number };
   };
 }
 
@@ -17,9 +17,12 @@ export async function initDB() {
   });
 }
 
-export async function saveProject(title: string) {
+export async function saveProject(title: string, managingOrganizationId?: string) {
   const db = await initDB();
-  const project = { title, createdAt: Date.now() };
+  const project: ProjectDB['projects']['value'] = { title, createdAt: Date.now() };
+  if (managingOrganizationId) {
+    project.managingOrganizationId = managingOrganizationId;
+  }
   await db.add('projects', project);
   console.info('Project saved to IndexedDB:', project);
 }
