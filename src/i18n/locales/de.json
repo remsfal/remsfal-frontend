@@ -1045,5 +1045,7 @@
   "emailVerification.title": "E-Mail-Bestätigung",
   "emailVerification.loading": "Deine E-Mail-Adresse wird bestätigt …",
   "emailVerification.successMessage": "Deine zusätzliche E-Mail-Adresse wurde erfolgreich bestätigt.",
-  "emailVerification.errorMessage": "Die E-Mail-Adresse konnte nicht bestätigt werden. Der Bestätigungslink ist ungültig oder abgelaufen."
+  "emailVerification.errorMessage": "Die E-Mail-Adresse konnte nicht bestätigt werden. Der Bestätigungslink ist ungültig oder abgelaufen.",
+  "appMode.construction.message": "Die Plattform für die Verwaltung von Wohn- und Gewerbeimmobilien ist bald hier verfügbar.",
+  "appMode.maintenance.message": "Die Plattform wird gerade gewartet und ist in Kürze wieder verfügbar."
 }

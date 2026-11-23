@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type Component } from 'vue'
+import { computed, defineAsyncComponent, type Component } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
@@ -14,6 +14,12 @@ import TenantLayout from '@/layouts/tenant.vue'
 import ContractorLayout from '@/layouts/contractor.vue'
 import PublicLayout from '@/layouts/public.vue'
 import AuthLayout from '@/layouts/auth.vue'
+import { isAppClosed } from '@/helper/appMode'
+
+// Only needed while the app is closed (CONSTRUCTION/MAINTENANCE), so they are loaded on demand
+// and stay out of the main bundle of the running app.
+const ClosedLayout = defineAsyncComponent(() => import('@/layouts/closed.vue'))
+const AppClosedNotice = defineAsyncComponent(() => import('@/layouts/components/AppClosedNotice.vue'))
 
 type LayoutKey = 'manager' | 'project' | 'tenant' | 'contractor' | 'public' | 'auth'
 
@@ -28,7 +34,13 @@ const layouts: Record<LayoutKey, Component> = {
 
 const route = useRoute()
 const router = useRouter()
-const currentLayout = computed(() => layouts[(route.meta.layout as LayoutKey) ?? 'public'])
+// While the app is closed (CONSTRUCTION/MAINTENANCE) every page renders in the closed layout;
+// the router guard has already sent all routes without `availableWhenClosed` to the landing page,
+// which shows the notice instead of its regular content.
+const appClosed = isAppClosed()
+const currentLayout = computed(() =>
+  appClosed ? ClosedLayout : layouts[(route.meta.layout as LayoutKey) ?? 'public'])
+const showClosedNotice = computed(() => appClosed && !route.meta.availableWhenClosed)
 
 const { t } = useI18n()
 const toast = useToast()
@@ -71,7 +83,8 @@ bus.on('auth:session-expired', () => {
 
 <template>
   <component :is="currentLayout">
-    <RouterView :key="route.fullPath" />
+    <AppClosedNotice v-if="showClosedNotice" />
+    <RouterView v-else :key="route.fullPath" />
   </component>
   <Toast />
 </template>

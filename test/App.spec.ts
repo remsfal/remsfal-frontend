@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { flushPromises, mount } from '@vue/test-utils';
 import App from '@/App.vue';
 import { useEventBus } from '@/stores/EventStore';
 import { clearUserClientData } from '@/helper/clientDataCleanup';
+import { setAppMode } from '@/helper/appMode';
 
 vi.mock('@/helper/clientDataCleanup', () => ({ clearUserClientData: vi.fn().mockResolvedValue(undefined) }));
 
@@ -35,6 +36,11 @@ vi.mock('@/layouts/project.vue', () => ({ default: { template: '<div class="layo
 vi.mock('@/layouts/tenant.vue', () => ({ default: { template: '<div class="layout-tenant"><slot /></div>' } }));
 vi.mock('@/layouts/contractor.vue', () => ({ default: { template: '<div class="layout-contractor"><slot /></div>' } }));
 vi.mock('@/layouts/public.vue', () => ({ default: { template: '<div class="layout-public"><slot /></div>' } }));
+// Loaded via defineAsyncComponent, which only unwraps `default` of an ES module
+vi.mock('@/layouts/closed.vue', () => ({
+  __esModule: true,
+  default: { template: '<div class="layout-closed"><slot /></div>' },
+}));
 
 describe('App.vue', () => {
   it('renders RouterView inside a layout', () => {
@@ -152,5 +158,41 @@ describe('App.vue', () => {
 
     expect(pushMock).toHaveBeenCalledWith({ name: 'Login', query: { redirect: '/manager/account-settings' } });
     expect(clearUserClientData).toHaveBeenCalled();
+  });
+
+  describe('while the app is closed', () => {
+    const stubs = {
+      Toast: true, ConfirmDialog: true, DynamicDialog: true 
+    };
+
+    afterEach(() => {
+      setAppMode('DEVELOPMENT');
+      mockRoute.meta = {};
+    });
+
+    it('shows the closed notice instead of the page in the closed layout', async () => {
+      setAppMode('CONSTRUCTION');
+      mockRoute.meta = { layout: 'manager' };
+      const wrapper = mount(App, { global: { stubs } });
+      // ClosedLayout and AppClosedNotice are async components
+      await vi.waitFor(() => expect(wrapper.find('.layout-closed').exists()).toBe(true));
+      await flushPromises();
+
+      expect(wrapper.find('.layout-manager').exists()).toBe(false);
+      expect(wrapper.find('[data-test="app-closed-notice"]').exists()).toBe(true);
+      expect(wrapper.find('#router-view').exists()).toBe(false);
+    });
+
+    it('renders pages flagged with availableWhenClosed in the closed layout', async () => {
+      setAppMode('MAINTENANCE');
+      mockRoute.meta = { layout: 'public', availableWhenClosed: true };
+      const wrapper = mount(App, { global: { stubs } });
+      // ClosedLayout and AppClosedNotice are async components
+      await vi.waitFor(() => expect(wrapper.find('.layout-closed').exists()).toBe(true));
+      await flushPromises();
+
+      expect(wrapper.find('#router-view').exists()).toBe(true);
+      expect(wrapper.find('[data-test="app-closed-notice"]').exists()).toBe(false);
+    });
   });
 });

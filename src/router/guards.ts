@@ -6,8 +6,19 @@ import { homeRouteFor } from '@/router/homeRoute'
 // `vi.mock` calls of a test file are registered, so components would bypass those mocks.
 import { useProjectStore } from '@/features/common/projects/stores/ProjectStore'
 import { safeRedirectPath } from '@/helper/redirectHelper'
+import { isAppClosed } from '@/helper/appMode'
 
 export function setupRouterGuards(router: Router) {
+  // Registered first: while the app is closed (CONSTRUCTION/MAINTENANCE), only pages flagged with
+  // `availableWhenClosed` are reachable; every other route lands on the start page, which then
+  // shows the closed notice. The redirect aborts the navigation, so no later guard runs for it.
+  router.beforeEach((to) => {
+    if (!isAppClosed() || to.meta.availableWhenClosed || to.name === 'LandingPage') {
+      return
+    }
+    return { name: 'LandingPage' }
+  })
+
   router.beforeEach((to) => {
     const projectId = (to.params as Record<string, string>).projectId
     if (projectId) {
@@ -18,6 +29,9 @@ export function setupRouterGuards(router: Router) {
   })
 
   router.beforeEach((to) => {
+    if (isAppClosed()) {
+      return
+    }
     const sessionStore = useUserSessionStore()
     const isLoggedIn = !!sessionStore.user
 
