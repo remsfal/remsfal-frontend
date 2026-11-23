@@ -1521,20 +1521,14 @@
         }
       },
       "PushSubscriptionJson" : {
-        "description" : "Firebase Installation ID oder FCM-Token eines Geräts für Push-Benachrichtigungen",
+        "description" : "FCM-Token eines Geräts für Push-Benachrichtigungen",
         "type" : "object",
-        "required" : [ "fidToken", "platform" ],
+        "required" : [ "token" ],
         "properties" : {
-          "fidToken" : {
+          "token" : {
             "type" : "string",
-            "description" : "Firebase Installation ID oder FCM-Registrierungstoken",
+            "description" : "FCM-Registrierungstoken",
             "pattern" : "\\S"
-          },
-          "platform" : {
-            "type" : "string",
-            "description" : "Plattform des Geräts",
-            "enum" : [ "WEB", "ANDROID", "IOS" ],
-            "pattern" : "WEB|ANDROID|IOS"
           }
         }
       },
@@ -2830,7 +2824,7 @@
         },
         "responses" : {
           "201" : {
-            "description" : "FID/FCM-Token registriert"
+            "description" : "FCM-Token registriert"
           },
           "400" : {
             "description" : "Ungültige Anfrage"
@@ -2866,11 +2860,11 @@
         } ]
       }
     },
-    "/notification/v1/push-subscriptions/{fidToken}" : {
+    "/notification/v1/push-subscriptions/{token}" : {
       "delete" : {
-        "summary" : "Removes the push subscription of the current user for the given FID or Token",
+        "summary" : "Removes the push subscription of the current user for the given Token",
         "parameters" : [ {
-          "name" : "fidToken",
+          "name" : "token",
           "in" : "path",
           "required" : true,
           "schema" : {

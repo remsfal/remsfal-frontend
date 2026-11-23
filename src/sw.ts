@@ -1,44 +1,58 @@
 import { precacheAndRoute } from 'workbox-precaching';
 import { getAllProjects, deleteProject } from '@/helper/indexeddb';
 import { RUNTIME_CACHE_PREFIX } from '@/helper/clientDataCleanup';
-import { initializeApp } from 'firebase/app';
-import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw';
 
 declare const self: ServiceWorkerGlobalScope;
 
 precacheAndRoute(self.__WB_MANIFEST);
 
 // Workbox owns its own precache cache (prefixed "workbox-precache-") and cleans it up
-// via its own activate listener, so this handler must only ever touch caches under
+// via its own activated listener, so this handler must only ever touch caches under
 // our own runtime-cache prefix, never sweep every cache indiscriminately.
 // v1 also stored personal API responses — bumping the version makes the activate
 // handler below purge it on existing installations.
 const RUNTIME_CACHE_NAME = `${RUNTIME_CACHE_PREFIX}v2`;
 
-const firebaseApp = initializeApp({
-  apiKey: 'AIzaSyD4NEv5CPRskeRXJm0rzPs-Ix52qZx5BWw',
-  authDomain: 'remsfal-fcb-notification.firebaseapp.com',
-  projectId: 'remsfal-fcb-notification',
-  storageBucket: 'remsfal-fcb-notification.firebasestorage.app',
-  messagingSenderId: '156263737138',
-  appId: '1:156263737138:web:e66c4c6c854634ab20d92b',
-  measurementId: 'G-S1PJW7645W',
-});
+interface WebPushPayload {
+  notification?: { title?: unknown; body?: unknown };
+  data?: { issueId?: unknown };
+}
 
-const messaging = getMessaging(firebaseApp);
+self.addEventListener('push', (event) => {
+  let payload: WebPushPayload | undefined;
+  try {
+    payload = event.data?.json() as WebPushPayload | undefined;
+  } catch {
+    console.warn('[Service Worker] Could not read the push payload as JSON');
+    return;
+  }
 
-onBackgroundMessage(messaging, (payload) => {
-  void self.registration.showNotification(
-    payload.notification?.title ?? 'REMSFAL',
-    { body: payload.notification?.body ?? '' },
-  )
-  console.log('[push] background message received', payload);
+  const notification = payload?.notification;
+  if (!notification) return;
+
+  const { title, body } = notification;
+  const issueId = payload?.data?.issueId;
+  event.waitUntil(
+    self.registration.showNotification(typeof title === 'string' && title ? title : 'REMSFAL', {
+      body: typeof body === 'string' ? body : '',
+      icon: '/android-chrome-192x192.png',
+      data: { issueId: typeof issueId === 'string' ? issueId : undefined },
+    }),
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(self.clients.openWindow('/'));
-});
+
+  event.notification.close()
+
+  const issueId: unknown = event.notification.data?.issueId
+  const path = typeof issueId === 'string' && issueId
+    ? `/tenant/issues/${encodeURIComponent(issueId)}`
+    : '/'
+
+  const url = new URL(path, self.location.origin)
+  event.waitUntil(self.clients.openWindow(url.href))
+})
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
@@ -84,7 +98,7 @@ async function networkFirst(event: FetchEvent): Promise<Response> {
     return matchCachedResponse(event.request);
   }
   if (response.ok) {
-    // Keep the SW alive until the cache write finishes; a failed write must not
+    // Keep the SW alive until the cache writing finishes; a failed write must not
     // break the response, so errors are only logged.
     event.waitUntil(updateRuntimeCache(event.request, response.clone()));
   }

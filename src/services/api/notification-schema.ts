@@ -307,7 +307,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description FID/FCM-Token registriert */
+                /** @description FCM-Token registriert */
                 201: {
                     headers: {
                         [name: string]: unknown;
@@ -391,7 +391,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/notification/v1/push-subscriptions/{fidToken}": {
+    "/notification/v1/push-subscriptions/{token}": {
         parameters: {
             query?: never;
             header?: never;
@@ -401,13 +401,13 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Removes the push subscription of the current user for the given FID or Token */
+        /** Removes the push subscription of the current user for the given Token */
         delete: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    fidToken: string;
+                    token: string;
                 };
                 cookie?: never;
             };
@@ -1096,15 +1096,10 @@ export interface components {
         PropertyListJson: {
             properties?: $Read<components["schemas"]["RentalUnitTreeNodeJson"][]>;
         };
-        /** @description Firebase Installation ID oder FCM-Token eines Geräts für Push-Benachrichtigungen */
+        /** @description FCM-Token eines Geräts für Push-Benachrichtigungen */
         PushSubscriptionJson: {
-            /** @description Firebase Installation ID oder FCM-Registrierungstoken */
-            fidToken: string;
-            /**
-             * @description Plattform des Geräts
-             * @enum {string}
-             */
-            platform: "WEB" | "ANDROID" | "IOS";
+            /** @description FCM-Registrierungstoken */
+            token: string;
         };
         /** @description A quotation response submitted by a contractor */
         QuotationJson: {

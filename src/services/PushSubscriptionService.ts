@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getMessaging, isSupported, onMessage, onRegistered, register } from 'firebase/messaging'
+import { getMessaging, getToken, isSupported } from 'firebase/messaging'
 import { apiClient } from '@/services/ApiClient'
 import { useUserSessionStore } from '@/stores/UserSession'
 
@@ -13,9 +13,7 @@ const app = initializeApp({
   measurementId: 'G-S1PJW7645W',
 })
 
-let unsubscribe: (() => void) | null = null
-let unsubscribeMessage: (() => void) | null = null
-let currentFid: string | null = null
+let currentToken: string | null = null
 
 export type PushRegistrationResult = 'registered' | 'needs-permission' | 'denied' | 'unsupported' | 'no-session'
 
@@ -41,44 +39,36 @@ export async function registerPush(askPermission = false): Promise<PushRegistrat
   if (permission !== 'granted') return 'denied'
 
   const messaging = getMessaging(app)
-  unsubscribeMessage?.()
-  unsubscribeMessage = onMessage(messaging, async (payload) => {
-    try{
-      const registration = await navigator.serviceWorker.ready
-      await registration.showNotification(payload.notification?.title ?? 'REMSFAL', {body: payload.notification?.body,})
-      console.log('[push] notification shown');
-    }
-    catch(error){
-      console.warn('[push] notification failed', error)
-    }
-  })
 
   const serviceWorkerRegistration = await navigator.serviceWorker.ready
   console.log('[push] sw ready:', serviceWorkerRegistration.active?.scriptURL);
-  unsubscribe?.()
-  unsubscribe = onRegistered(messaging, async (fid) => {
-    currentFid = fid
-    try{
-      await apiClient.post('/notification/v1/push-subscriptions', { fidToken: currentFid, platform: 'WEB' })
-    }
-    catch(error){
-      console.warn('[push] registration failed', error)
-    }
-  })
-
-  await register(messaging, {
+  const token = await getToken(messaging, {
     vapidKey: 'BCpPpz-9d-FcGX1D0f_SjQXwh_yxDe4yy0S6pLBZOsYK7dVqDDca4LeqS3jnz6CrU-0MRUAm8ekek6dDM7fpCW4',
     serviceWorkerRegistration,
   })
+
+  if (!token) {
+    throw new Error('FCM did not return a registration token')
+  }
+
+  currentToken = token
+  try {
+    await apiClient.post('/notification/v1/push-subscriptions', {token: token})
+  }
+  catch (error) {
+    console.warn('[push] registration failed', error)
+    throw error
+  }
+
   return 'registered'
 }
 
 export async function unregisterPush(): Promise<void> {
-  if (!currentFid) return
-  const fid = currentFid
-  currentFid = null
+  if (!currentToken) return
+  const token = currentToken
+  currentToken = null
   try {
-    await apiClient.delete('/notification/v1/push-subscriptions/{fidToken}', { pathParams: { fidToken: fid } })
+    await apiClient.delete('/notification/v1/push-subscriptions/{token}', { pathParams: { token: token } })
   } catch (error) {
     console.warn('[push] unregister failed', error)
   }

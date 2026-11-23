@@ -175,6 +175,19 @@ npx cap sync
 npx cap open android   # or: npx cap open ios
 ```
 
+### Push notifications
+
+- iOS receives remote notifications through APNs via Firebase Cloud Messaging (FCM). The web app,
+  Android and iOS use FCM registration tokens with the same backend subscription API.
+- On Android, the Capacitor Push Notifications plugin creates the channel and the backend selects
+  it in the FCM message. This removes the Firebase default-channel declaration from
+  `AndroidManifest.xml`.
+- The web service worker displays background notifications once. Tapping an issue notification
+  opens the corresponding tenant issue using the `issueId` from the payload on web, Android and iOS.
+
+In manual tests, the issue opened on Android, iOS, Chrome and Firefox. Safari displayed the
+notification, but opening the issue remained unreliable.
+
 ### Docker
 
 For production, the built app is served by nginx. Build the application first, then the container image:
