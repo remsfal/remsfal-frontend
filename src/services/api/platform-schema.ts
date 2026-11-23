@@ -1030,7 +1030,10 @@ export interface paths {
     };
     put?: never;
     post?: never;
-    /** Delete an existing organization. */
+    /**
+     * Delete an existing organization.
+     * @description Projects in which the organization is the only active proprietor or the managing organization have to be deleted or transferred first.
+     */
     delete: {
       parameters: {
         query?: never;
@@ -1066,6 +1069,13 @@ export interface paths {
         };
         /** @description The organization does not exist */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The organization is the only active proprietor or the managing organization of at least one project */
+        409: {
           headers: {
             [name: string]: unknown;
           };
@@ -1334,7 +1344,10 @@ export interface paths {
     };
     put?: never;
     post?: never;
-    /** Delete an existing employee. */
+    /**
+     * Delete an existing employee.
+     * @description The last active employee with role OWNER or MANAGER can not be removed, the organization has to be deleted instead.
+     */
     delete: {
       parameters: {
         query?: never;
@@ -1372,6 +1385,13 @@ export interface paths {
         };
         /** @description The organization or the employee does not exist */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The employee is the last active owner or manager of the organization */
+        409: {
           headers: {
             [name: string]: unknown;
           };
@@ -1425,6 +1445,13 @@ export interface paths {
         };
         /** @description The organization or the employee does not exist */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The employee is the last active owner or manager of the organization */
+        409: {
           headers: {
             [name: string]: unknown;
           };
@@ -1653,6 +1680,13 @@ export interface paths {
           content: {
             "application/json": components["schemas"]["ProjectJson"];
           };
+        };
+        /** @description Invalid request message, e.g. the managing organization is not a project member with role PROPRIETOR or has no active owner or manager */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
         /** @description No user authentication provided via session cookie */
         401: {
@@ -3077,7 +3111,10 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    /** Delete an existing project member. */
+    /**
+     * Delete an existing project member.
+     * @description A project must always have an active proprietor. Inactive members (who have never logged in) may hold the role PROPRIETOR, but they do not count as proprietor.
+     */
     delete: {
       parameters: {
         query?: never;
@@ -3113,11 +3150,21 @@ export interface paths {
           };
           content?: never;
         };
+        /** @description The project would have no active proprietor anymore */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
       };
     };
     options?: never;
     head?: never;
-    /** Update role of a project member. */
+    /**
+     * Update role of a project member.
+     * @description A project must always have an active proprietor. Inactive members (who have never logged in) may hold the role PROPRIETOR, but they do not count as proprietor.
+     */
     patch: {
       parameters: {
         query?: never;
@@ -3154,6 +3201,13 @@ export interface paths {
         };
         /** @description The project or the member does not exist */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The project would have no active proprietor anymore */
+        409: {
           headers: {
             [name: string]: unknown;
           };
@@ -3317,6 +3371,13 @@ export interface paths {
           };
           content?: never;
         };
+        /** @description The project would have no active proprietor anymore */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
       };
     };
     options?: never;
@@ -3365,6 +3426,13 @@ export interface paths {
         };
         /** @description The project or organization assignment does not exist */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The project would have no active proprietor anymore */
+        409: {
           headers: {
             [name: string]: unknown;
           };
@@ -4607,7 +4675,10 @@ export interface paths {
     };
     put?: never;
     post?: never;
-    /** Delete an existing rental agreement */
+    /**
+     * Delete an existing rental agreement
+     * @description Tenants of the rental agreement are deleted as well, unless they are part of another rental agreement of the project. Linked user accounts are not deleted.
+     */
     delete: {
       parameters: {
         query?: never;
@@ -4631,6 +4702,13 @@ export interface paths {
         };
         /** @description No user authentication provided via session cookie */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The rental agreement does not exist */
+        404: {
           headers: {
             [name: string]: unknown;
           };
@@ -4762,7 +4840,10 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    /** Remove a tenant from a rental agreement */
+    /**
+     * Remove a tenant from a rental agreement
+     * @description The tenant is deleted, unless it is part of another rental agreement of the project. A linked user account is not deleted.
+     */
     delete: {
       parameters: {
         query?: never;
@@ -5481,7 +5562,10 @@ export interface paths {
     };
     put?: never;
     post?: never;
-    /** Delete this user identified by the cookie. */
+    /**
+     * Delete this user identified by the cookie.
+     * @description Organizations in which the user is the last active employee with role OWNER or MANAGER are deleted together with the user. Projects in which the user is the only active proprietor, directly or via such an organization, have to be deleted or transferred first. The same applies to projects managed by such an organization.
+     */
     delete: {
       parameters: {
         query?: never;
@@ -5507,6 +5591,13 @@ export interface paths {
         };
         /** @description Not Allowed */
         403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The user is the only active proprietor of a project or the last active owner or manager of an organization that is required by a project */
+        409: {
           headers: {
             [name: string]: unknown;
           };
@@ -6105,7 +6196,7 @@ export interface components {
       billingAddress?: components["schemas"]["AddressJson"];
       /** @description Project members (managed separately via members endpoint) */
       members?: $Read<components["schemas"]["ProjectMemberJson"][]>;
-      /** @description Unique identifier of the organization that manages this project. On creation, the project is created for this organization instead of for the authenticated user (requires the employee role OWNER or MANAGER). On update, the organization must already be a project member with role PROPRIETOR. */
+      /** @description Unique identifier of the organization that manages this project. On creation, the project is created for this organization instead of for the authenticated user (requires the employee role OWNER or MANAGER). On update, the organization must already be a project member with role PROPRIETOR and have at least one active employee with role OWNER or MANAGER. */
       managingOrganizationId?: components["schemas"]["UUID"];
       /** @description Name of the organization that manages this project */
       managingOrganizationName?: $Read<string>;

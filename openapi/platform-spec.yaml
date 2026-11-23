@@ -1183,7 +1183,8 @@ components:
             \ On creation, the project is created for this organization instead of\
             \ for the authenticated user (requires the employee role OWNER or MANAGER).\
             \ On update, the organization must already be a project member with role\
-            \ PROPRIETOR."
+            \ PROPRIETOR and have at least one active employee with role OWNER or\
+            \ MANAGER."
           type: string
           $ref: "#/components/schemas/UUID"
         managingOrganizationName:
@@ -2679,6 +2680,8 @@ paths:
       - SecurityScheme: []
     delete:
       summary: Delete an existing organization.
+      description: Projects in which the organization is the only active proprietor
+        or the managing organization have to be deleted or transferred first.
       parameters:
       - description: ID of the organization
         required: true
@@ -2693,6 +2696,9 @@ paths:
           description: No user authentication provided via session cookie
         "404":
           description: The organization does not exist
+        "409":
+          description: The organization is the only active proprietor or the managing
+            organization of at least one project
         "403":
           description: Not Allowed
       security:
@@ -2809,6 +2815,8 @@ paths:
           description: No user authentication provided via session cookie
         "404":
           description: The organization or the employee does not exist
+        "409":
+          description: The employee is the last active owner or manager of the organization
         "403":
           description: Not Allowed
       security:
@@ -2842,6 +2850,8 @@ paths:
       - SecurityScheme: []
     delete:
       summary: Delete an existing employee.
+      description: "The last active employee with role OWNER or MANAGER can not be\
+        \ removed, the organization has to be deleted instead."
       parameters:
       - description: Id of the employee
         name: employeeId
@@ -2862,6 +2872,8 @@ paths:
           description: No user authentication provided via session cookie
         "404":
           description: The organization or the employee does not exist
+        "409":
+          description: The employee is the last active owner or manager of the organization
         "403":
           description: Not Allowed
       security:
@@ -2951,6 +2963,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProjectJson"
+        "400":
+          description: "Invalid request message, e.g. the managing organization is\
+            \ not a project member with role PROPRIETOR or has no active owner or\
+            \ manager"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3853,6 +3869,9 @@ paths:
   /api/v1/projects/{projectId}/members/{memberId}:
     patch:
       summary: Update role of a project member.
+      description: "A project must always have an active proprietor. Inactive members\
+        \ (who have never logged in) may hold the role PROPRIETOR, but they do not\
+        \ count as proprietor."
       parameters:
       - description: ID of the member
         required: true
@@ -3883,8 +3902,13 @@ paths:
           description: No user authentication provided via session cookie
         "404":
           description: The project or the member does not exist
+        "409":
+          description: The project would have no active proprietor anymore
     delete:
       summary: Delete an existing project member.
+      description: "A project must always have an active proprietor. Inactive members\
+        \ (who have never logged in) may hold the role PROPRIETOR, but they do not\
+        \ count as proprietor."
       parameters:
       - description: ID of the member
         required: true
@@ -3905,6 +3929,8 @@ paths:
           description: No user authentication provided via session cookie
         "404":
           description: The project or the member does not exist
+        "409":
+          description: The project would have no active proprietor anymore
   /api/v1/projects/{projectId}/organizations:
     get:
       summary: Retrieve information of all organizations assigned to the project
@@ -3989,6 +4015,8 @@ paths:
           description: Insufficient permissions
         "404":
           description: The project or organization assignment does not exist
+        "409":
+          description: The project would have no active proprietor anymore
     delete:
       summary: Remove an organization from the project
       parameters:
@@ -4013,6 +4041,8 @@ paths:
           description: Insufficient permissions
         "404":
           description: The project or organization assignment does not exist
+        "409":
+          description: The project would have no active proprietor anymore
   /api/v1/projects/{projectId}/properties:
     get:
       summary: Retrieve information for all properties
@@ -4813,6 +4843,9 @@ paths:
           description: The rental agreement does not exist
     delete:
       summary: Delete an existing rental agreement
+      description: "Tenants of the rental agreement are deleted as well, unless they\
+        \ are part of another rental agreement of the project. Linked user accounts\
+        \ are not deleted."
       parameters:
       - description: ID of the tenancy
         required: true
@@ -4831,6 +4864,8 @@ paths:
           description: Rental agreement was deleted successfully
         "401":
           description: No user authentication provided via session cookie
+        "404":
+          description: The rental agreement does not exist
   /api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants:
     post:
       summary: Add a tenant to a rental agreement
@@ -4869,6 +4904,8 @@ paths:
   /api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants/{tenantId}:
     delete:
       summary: Remove a tenant from a rental agreement
+      description: "The tenant is deleted, unless it is part of another rental agreement\
+        \ of the project. A linked user account is not deleted."
       parameters:
       - description: ID of the tenancy
         required: true
@@ -5313,11 +5350,20 @@ paths:
       - SecurityScheme: []
     delete:
       summary: Delete this user identified by the cookie.
+      description: "Organizations in which the user is the last active employee with\
+        \ role OWNER or MANAGER are deleted together with the user. Projects in which\
+        \ the user is the only active proprietor, directly or via such an organization,\
+        \ have to be deleted or transferred first. The same applies to projects managed\
+        \ by such an organization."
       responses:
         "204":
           description: The former logged in user was deleted successfully
         "401":
           description: No user authentication provided via session cookie
+        "409":
+          description: The user is the only active proprietor of a project or the
+            last active owner or manager of an organization that is required by a
+            project
         "403":
           description: Not Allowed
       security:

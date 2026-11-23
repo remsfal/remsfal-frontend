@@ -3833,7 +3833,7 @@ export interface components {
       billingAddress?: components["schemas"]["AddressJson"];
       /** @description Project members (managed separately via members endpoint) */
       members?: $Read<components["schemas"]["ProjectMemberJson"][]>;
-      /** @description Unique identifier of the organization that manages this project. On creation, the project is created for this organization instead of for the authenticated user (requires the employee role OWNER or MANAGER). On update, the organization must already be a project member with role PROPRIETOR. */
+      /** @description Unique identifier of the organization that manages this project. On creation, the project is created for this organization instead of for the authenticated user (requires the employee role OWNER or MANAGER). On update, the organization must already be a project member with role PROPRIETOR and have at least one active employee with role OWNER or MANAGER. */
       managingOrganizationId?: components["schemas"]["UUID"];
       /** @description Name of the organization that manages this project */
       managingOrganizationName?: $Read<string>;
