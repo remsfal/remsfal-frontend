@@ -22,7 +22,7 @@ const emit = defineEmits<{
   keyReturned: [payload: { keyDescription: string; returnedAt: string; amount: number }];
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const visible = ref(false);
 const formKey = ref(0);
 
@@ -35,7 +35,9 @@ const outstandingTotals = computed(() => {
   return totals;
 });
 
-const outstandingDescriptions = computed(() => Array.from(outstandingTotals.value.keys()).sort());
+const outstandingDescriptions = computed(() =>
+  Array.from(outstandingTotals.value.keys()).sort((a, b) => a.localeCompare(b, locale.value)),
+);
 
 const triggerDisabled = computed(() => !!props.disabled);
 

@@ -52,7 +52,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     const newProject = {
       id: 'Club', name: 'Club', memberRole: 'MANAGER' as const 
     };
-    await store.addProjectToList(newProject);
+    store.addProjectToList(newProject);
 
     // Verify that all projects are still in the list (this was the bug - only new project was shown)
     expect(store.projects).toHaveLength(6);
@@ -80,7 +80,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     const updatedProject = {
       id: 'test1', name: 'Updated Test 1', memberRole: 'MANAGER' as const 
     };
-    await store.addProjectToList(updatedProject);
+    store.addProjectToList(updatedProject);
 
     // Should still have 2 projects, but the first one should be updated
     expect(store.projects).toHaveLength(2);
@@ -105,7 +105,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     const newProject = {
       id: 'new1', name: 'New Project', memberRole: 'MANAGER' as const 
     };
-    await store.addProjectToList(newProject);
+    store.addProjectToList(newProject);
     store.setSelectedProject(newProject);
 
     // Verify new project is selected and all projects are maintained
@@ -132,7 +132,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     };
 
     // Simulate the new behavior: add project to list instead of searching/filtering
-    await store.addProjectToList(newProject);
+    store.addProjectToList(newProject);
     store.setSelectedProject(newProject);
 
     // Verify the new project was added to the list and selected
@@ -228,7 +228,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
       const newProject = {
         id: 'first-project', name: 'First Project', memberRole: 'MANAGER' as const 
       };
-      await store.addProjectToList(newProject);
+      store.addProjectToList(newProject);
 
       expect(store.projects).toHaveLength(1);
       expect(store.projects[0]).toEqual(newProject);
@@ -244,7 +244,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
       const updatedProject = {
         id: 'test-project', name: 'Updated Test Project', memberRole: 'MANAGER' as const 
       };
-      await store.addProjectToList(updatedProject);
+      store.addProjectToList(updatedProject);
 
       expect(store.projects).toHaveLength(1);
       expect(store.projects[0]).toEqual(updatedProject);
@@ -266,7 +266,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
       const updatedProject = {
         id: 'project1', name: 'Updated Project 1', memberRole: 'MANAGER' as const 
       };
-      await store.addProjectToList(updatedProject);
+      store.addProjectToList(updatedProject);
 
       expect(store.projects).toHaveLength(2);
       expect(store.totalProjects).toBe(2); // Should not increment when updating
@@ -279,7 +279,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
         memberRole: 'MANAGER' as const 
       };
       
-      await store.addProjectToList(specialProject);
+      store.addProjectToList(specialProject);
 
       expect(store.projects[0]).toEqual(specialProject);
       expect(store.projects[0].name).toBe('Projekt mit Ümlaut & Sonderzeichen!');
@@ -383,8 +383,8 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
         id: 'new2', name: 'New Project 2', memberRole: 'STAFF' as const 
       };
       
-      await store.addProjectToList(newProject1);
-      await store.addProjectToList(newProject2);
+      store.addProjectToList(newProject1);
+      store.addProjectToList(newProject2);
 
       // Verify all projects are maintained (the core of the burger menu bug fix)
       expect(store.projects).toHaveLength(5);
@@ -414,13 +414,13 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
       const newProject = {
         id: 'new-project', name: 'New Project', memberRole: 'MANAGER' as const 
       };
-      await store.addProjectToList(newProject);
+      store.addProjectToList(newProject);
 
       // Update an existing project (project1 stays in position 1 after the new project was added)
       const updatedProject = {
         id: 'project1', name: 'Updated Project 1', memberRole: 'PROPRIETOR' as const 
       };
-      await store.addProjectToList(updatedProject);
+      store.addProjectToList(updatedProject);
 
       // Should have 3 projects total (2 original, 1 new), with 1 updated
       expect(store.projects).toHaveLength(3);

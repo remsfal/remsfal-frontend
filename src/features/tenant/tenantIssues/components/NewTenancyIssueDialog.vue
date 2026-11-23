@@ -95,13 +95,13 @@ async function loadTenancies() {
 // Load tenancies when dialog opens
 watch(() => props.visible, (visible) => {
   if (visible && tenancies.value.length === 0) {
-    loadTenancies();
+    void loadTenancies();
   }
 });
 
 onMounted(() => {
   if (props.visible && tenancies.value.length === 0) {
-    loadTenancies();
+    void loadTenancies();
   }
 });
 
@@ -140,11 +140,12 @@ function generateIssueTitle(state: TenantIssueFormState): string {
   const { issueType, issueCategory } = state;
 
   // Category or Type label
-  const categoryText = issueCategory
-    ? t(`issueCategory.${issueCategory}`)
-    : issueType
-      ? t(`tenantIssue.types.${issueType}`)
-      : '';
+  let categoryText = '';
+  if (issueCategory) {
+    categoryText = t(`issueCategory.${issueCategory}`);
+  } else if (issueType) {
+    categoryText = t(`tenantIssue.types.${issueType}`);
+  }
 
   // For DEFECT: "Category bei Reporter"
   if (issueType === 'DEFECT') {

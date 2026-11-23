@@ -104,7 +104,7 @@ const groupedEntries = computed<GroupedEntries | null>(() => {
     .map(([key, entries]) => ({
       key,
       label: labels.get(key) || key,
-      entries: entries.sort((a, b) =>
+      entries: entries.toSorted((a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ),
     }))

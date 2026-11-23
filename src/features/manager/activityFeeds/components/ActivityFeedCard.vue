@@ -145,7 +145,7 @@ const handleEntrySelect = (entry: ActivityFeedEntry) => {
 };
 
 const handleEntryNavigate = (entry: ActivityFeedEntry) => {
-  navigateToIssue(entry);
+  void navigateToIssue(entry);
 };
 
 const handleEntryMarkRead = (entry: ActivityFeedEntry) => {

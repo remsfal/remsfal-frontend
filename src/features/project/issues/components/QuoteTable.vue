@@ -36,7 +36,7 @@ async function placeOrder(quotation: QuotationJson) {
 }
 
 onMounted(() => {
-  fetchQuotations();
+  void fetchQuotations();
 });
 </script>
 

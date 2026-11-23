@@ -99,7 +99,7 @@ async function createProject(title: string, managingOrganizationId?: string) {
       name: newProject.title,
       memberRole: managingOrganizationId ? ('MANAGER' as const) : ('PROPRIETOR' as const),
     };
-    await projectStore.addProjectToList(projectItem);
+    projectStore.addProjectToList(projectItem);
     projectStore.setSelectedProject(projectItem);
 
     await router.push({ name: 'ProjectDashboard', params: { projectId: newProject.id } });

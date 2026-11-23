@@ -57,7 +57,7 @@ onMounted(() => fetchProject(props.projectId));
 watch(
   () => props.projectId,
   (newProjectId) => {
-    fetchProject(newProjectId);
+    void fetchProject(newProjectId);
   },
 );
 

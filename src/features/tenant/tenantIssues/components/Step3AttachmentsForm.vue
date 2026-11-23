@@ -60,9 +60,9 @@ function handleBack() {
     <div class="flex flex-col gap-6">
       <!-- Upload Instructions -->
       <div class="flex flex-col gap-2">
-        <label class="font-semibold">
+        <span class="font-semibold">
           {{ t('tenantIssue.step3.uploadLabel') }}
-        </label>
+        </span>
         <Message severity="info" size="small" variant="simple">
           {{ t('tenantIssue.step3.uploadHint') }}
         </Message>

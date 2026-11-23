@@ -103,7 +103,7 @@ const onSubmit = (event: FormSubmitEvent) => {
     return;
   }
 
-  createIssue({
+  void createIssue({
     title, description, type, agreementId,
   });
 };

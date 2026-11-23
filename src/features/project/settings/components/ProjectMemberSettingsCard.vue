@@ -64,11 +64,11 @@ const removeMember = async (memberId: string) => {
 };
 
 onMounted(() => {
-  fetchMembers();
+  void fetchMembers();
 });
 
 function onNewMember(email: string) {
-  fetchMembers();
+  void fetchMembers();
   appToast.success(t('projectSettings.newMemberAddedDetail', [email]), {summary: t('projectSettings.newMemberAdded'),});
 }
 </script>

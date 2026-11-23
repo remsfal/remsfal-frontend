@@ -90,19 +90,19 @@ const fetchIssue = async () => {
 
 /* Handle save events from child components */
 const handleDetailsSaved = () => {
-  fetchIssue(); // refresh after saving details
+  void fetchIssue(); // refresh after saving details
 };
 
 const handleDescriptionSaved = () => {
-  fetchIssue(); // refresh after saving description
+  void fetchIssue(); // refresh after saving description
 };
 
 const handleAttachmentsSaved = () => {
-  fetchIssue(); // refresh after attachment upload/delete
+  void fetchIssue(); // refresh after attachment upload/delete
 };
 
 const handleRelationshipsSaved = () => {
-  fetchIssue(); // refresh after relationship changes
+  void fetchIssue(); // refresh after relationship changes
 };
 
 /* Fetch issue on mount and when props change */

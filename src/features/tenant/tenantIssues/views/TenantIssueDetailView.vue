@@ -57,13 +57,13 @@ const cancelIssue = async () => {
 };
 
 onMounted(() => {
-  fetchIssue();
+  void fetchIssue();
 });
 
 watch(
   () => props.issueId,
   () => {
-    fetchIssue();
+    void fetchIssue();
   }
 );
 
@@ -73,7 +73,7 @@ const openCancelDialog = () => {
 
 const confirmCancelIssue = () => {
   showCancelDialog.value = false;
-  cancelIssue();
+  void cancelIssue();
 };
 </script>
 

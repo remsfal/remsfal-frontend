@@ -35,7 +35,7 @@ function onRequestClick(request: QuotationRequestJson) {
 }
 
 onMounted(() => {
-  fetchRequests();
+  void fetchRequests();
 });
 </script>
 

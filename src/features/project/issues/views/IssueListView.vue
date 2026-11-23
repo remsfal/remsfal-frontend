@@ -33,10 +33,11 @@ function toArray<T>(value?: T | T[]): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
-function isExactSet<T>(values: T[], expected: T[]): boolean {
+function isExactSet<T extends string>(values: T[], expected: T[]): boolean {
   if (values.length !== expected.length) return false;
-  const sorted = [...values].sort();
-  const expectedSorted = [...expected].sort();
+  const compare = (a: T, b: T) => a.localeCompare(b);
+  const sorted = values.toSorted(compare);
+  const expectedSorted = expected.toSorted(compare);
   return sorted.every((value, index) => value === expectedSorted[index]);
 }
 

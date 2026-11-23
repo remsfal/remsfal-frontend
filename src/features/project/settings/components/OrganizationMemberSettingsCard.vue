@@ -95,11 +95,11 @@ const removeOrganization = async (organizationId: string) => {
 };
 
 onMounted(() => {
-  fetchOrganizations();
+  void fetchOrganizations();
 });
 
 function onNewOrganization(organizationName: string) {
-  fetchOrganizations();
+  void fetchOrganizations();
   appToast.success(
     t('projectSettings.newOrganizationAddedDetail', [organizationName]),
     { summary: t('projectSettings.newOrganizationAdded') },

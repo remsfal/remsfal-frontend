@@ -57,7 +57,7 @@ export const useProjectStore = defineStore('project-store', {
       console.log('Project selection changed:', this.selectedProject);
     },
 
-    async addProjectToList(project: ProjectItem) {
+    addProjectToList(project: ProjectItem) {
       // Check if project already exists in the list
       const existingIndex = this.projects.findIndex((p) => p.id === project.id);
       if (existingIndex >= 0) {
@@ -103,7 +103,7 @@ export const useProjectStore = defineStore('project-store', {
       // Fetch the single project and add it to the list without overwriting existing projects
       const projectItem = await this.fetchSingleProject(projectId);
       if (projectItem) {
-        await this.addProjectToList(projectItem);
+        this.addProjectToList(projectItem);
         this.setSelectedProject(projectItem);
       }
     },

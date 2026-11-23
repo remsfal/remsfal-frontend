@@ -34,7 +34,7 @@ async function loadTenants() {
 }
 
 onMounted(() => {
-  loadTenants();
+  void loadTenants();
 });
 
 // Filtering
