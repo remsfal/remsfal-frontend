@@ -31,12 +31,6 @@ LABEL org.opencontainers.image.authors="REMSFAL maintainers <info@remsfal.de>" \
       org.opencontainers.image.title="REMSFAL Frontend" \
       org.opencontainers.image.url="https://github.com/remsfal/remsfal-frontend"
 
-RUN apt-get update && apt-get upgrade -y \
-    && apt-get --no-install-recommends install -y \
-    htop  \
-    vim  \
-    && rm -rf /var/lib/apt/lists/*
-
 # copy config as root; the entrypoint renders the templates into conf.d as user nginx
 COPY docker/nginx /etc/nginx
 RUN rm -f /etc/nginx/conf.d/default.conf && chown nginx:nginx /etc/nginx/conf.d
