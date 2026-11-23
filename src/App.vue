@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type Component } from 'vue'
+import { computed, defineAsyncComponent, type Component } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
@@ -14,9 +14,12 @@ import TenantLayout from '@/layouts/tenant.vue'
 import ContractorLayout from '@/layouts/contractor.vue'
 import PublicLayout from '@/layouts/public.vue'
 import AuthLayout from '@/layouts/auth.vue'
-import ClosedLayout from '@/layouts/closed.vue'
-import AppClosedNotice from '@/layouts/components/AppClosedNotice.vue'
 import { isAppClosed } from '@/helper/appMode'
+
+// Only needed while the app is closed (CONSTRUCTION/MAINTENANCE), so they are loaded on demand
+// and stay out of the main bundle of the running app.
+const ClosedLayout = defineAsyncComponent(() => import('@/layouts/closed.vue'))
+const AppClosedNotice = defineAsyncComponent(() => import('@/layouts/components/AppClosedNotice.vue'))
 
 type LayoutKey = 'manager' | 'project' | 'tenant' | 'contractor' | 'public' | 'auth'
 
