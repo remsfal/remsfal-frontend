@@ -61,7 +61,7 @@ async function persistKeys(newKeys: RentalAgreementKeysJson[]) {
 }
 
 function onNewKey(key: RentalAgreementKeysJson) {
-  persistKeys([...keys.value, key]);
+  void persistKeys([...keys.value, key]);
 }
 
 function onKeyReturned(payload: { keyDescription: string; returnedAt: string; amount: number }) {
@@ -71,7 +71,7 @@ function onKeyReturned(payload: { keyDescription: string; returnedAt: string; am
     returnedAt: payload.returnedAt,
   };
 
-  persistKeys([...keys.value, returnEntry]);
+  void persistKeys([...keys.value, returnEntry]);
 }
 </script>
 

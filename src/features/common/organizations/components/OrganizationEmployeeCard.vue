@@ -66,11 +66,11 @@ const removeEmployee = async (employeeId: string) => {
 };
 
 onMounted(() => {
-  fetchEmployees();
+  void fetchEmployees();
 });
 
 function onNewEmployee(email: string) {
-  fetchEmployees();
+  void fetchEmployees();
   appToast.success(t('organization.employees.addSuccessDetail', [email]), {summary: t('organization.employees.addSuccess'),});
 }
 </script>

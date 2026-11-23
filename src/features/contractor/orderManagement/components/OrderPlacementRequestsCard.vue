@@ -39,7 +39,7 @@ async function updateStatus(placement: OrderPlacementJson, status: 'CONFIRMED' |
 }
 
 onMounted(() => {
-  fetchOrderPlacements();
+  void fetchOrderPlacements();
 });
 </script>
 

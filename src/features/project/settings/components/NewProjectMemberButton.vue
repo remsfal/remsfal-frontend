@@ -43,7 +43,7 @@ const onSubmit = (event: FormSubmitEvent) => {
     return;
   }
 
-  addMember(email, role as MemberRole);
+  void addMember(email, role as MemberRole);
 };
 
 const addMember = async (email: string, role: MemberRole) => {

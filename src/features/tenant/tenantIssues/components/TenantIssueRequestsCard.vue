@@ -39,7 +39,7 @@ const openRequest = (event: DataTableRowClickEvent) => {
 };
 
 const onAnswered = () => {
-  fetchRequests();
+  void fetchRequests();
 };
 
 const formattedDate = (request: IssueRequestJson) => {

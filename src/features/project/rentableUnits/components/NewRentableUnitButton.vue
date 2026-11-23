@@ -141,20 +141,19 @@ async function onSubmit(event: FormSubmitEvent) {
       break;
   }
 
-  creationPromise
-    .then(() => {
-      emit('newUnit', titleVal);
-      titleMatchesLocation.value = true;
-      currentTitle.value = '';
-      initialValues.value = {
-        title: '', location: '', description: ''
-      };
-      formKey.value++;
-      visible.value = false;
-    })
-    .catch((error) => {
-      console.error('Failed to create rentable unit:', error);
-    });
+  try {
+    await creationPromise;
+    emit('newUnit', titleVal);
+    titleMatchesLocation.value = true;
+    currentTitle.value = '';
+    initialValues.value = {
+      title: '', location: '', description: ''
+    };
+    formKey.value++;
+    visible.value = false;
+  } catch (error) {
+    console.error('Failed to create rentable unit:', error);
+  }
 }
 
 async function createProperty(title: string, loc: string | undefined, desc: string | undefined): Promise<void> {

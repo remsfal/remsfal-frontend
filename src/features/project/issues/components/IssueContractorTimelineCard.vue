@@ -54,7 +54,7 @@ watch(() => props.issueId, loadRequestedContractors);
 
 const unsubscribeQuotationRequestCreated = eventBus.on('quotationRequest:created', ({ issueId }) => {
   if (issueId === props.issueId) {
-    loadRequestedContractors();
+    void loadRequestedContractors();
   }
 });
 onUnmounted(unsubscribeQuotationRequestCreated);

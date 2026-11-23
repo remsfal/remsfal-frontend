@@ -46,7 +46,7 @@ const onSubmit = (event: FormSubmitEvent) => {
     return;
   }
 
-  addOrganization(organizationId, role as MemberRole);
+  void addOrganization(organizationId, role as MemberRole);
 };
 
 const addOrganization = async (organizationId: string, role: MemberRole) => {

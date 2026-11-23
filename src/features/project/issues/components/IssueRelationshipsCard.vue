@@ -103,7 +103,7 @@ function resolveRow(id: string): RelationRow {
     };
   }
   if (!loadingProjectIssues.value) {
-    fetchMissingIssue(id);
+    void fetchMissingIssue(id);
   }
   return {
     id, title: id, type: undefined 

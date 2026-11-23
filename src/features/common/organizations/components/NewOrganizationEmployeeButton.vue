@@ -44,7 +44,7 @@ const onSubmit = (event: FormSubmitEvent) => {
     return;
   }
 
-  addEmployee(email, employeeRole as EmployeeRole);
+  void addEmployee(email, employeeRole as EmployeeRole);
 };
 
 const addEmployee = async (email: string, employeeRole: EmployeeRole) => {

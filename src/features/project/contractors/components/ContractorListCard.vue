@@ -35,7 +35,7 @@ const fetchContractors = async () => {
 };
 
 onMounted(() => {
-  fetchContractors();
+  void fetchContractors();
 });
 
 function onRowClick(contractor: ContractorJson) {

@@ -47,7 +47,7 @@ async function loadTenant() {
 }
 
 onMounted(() => {
-  loadTenant();
+  void loadTenant();
 });
 
 async function onSubmit(tenant: TenantWritableJson) {
