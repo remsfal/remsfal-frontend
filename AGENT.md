@@ -152,6 +152,8 @@ const route = useRoute('ProjectContractorList')
 
 - `App.vue` renders the layout named in `route.meta.layout` (`manager`, `project`, `tenant`, `contractor`, `public`,
   `auth`) around `<RouterView>`. Each role layout wraps `AppRoleLayout` with its own menu, topbar and mobile bar.
+- While the app is closed (CONSTRUCTION/MAINTENANCE, see "Environment Configuration"), `App.vue` uses the `closed`
+  layout for every page, regardless of `route.meta.layout`.
 - Layout chrome belongs to `src/layouts/components/`, layout-scoped composables to `src/layouts/composables/`.
 - Menu entries and mobile bar items use i18n keys (`managerMenu.*`, `projectMenu.*`, `tenantMenu.*`,
   `consultantMenu.*`); the mobile bar reuses the keys of the sidebar menu.
@@ -779,6 +781,20 @@ Key environment variables in `.env`:
 **Service Worker**: Disabled by default in development. Set `VITE_SERVICE_WORKER_ENABLED=true` to enable for local testing.
 
 **OpenTelemetry**: See `src/telemetry/otel.ts`. Exports traces (XHR auto-instrumentation) and error logs (`reportError()`, used by `ApiClient.ts`'s interceptors and the global Vue/window error handlers in `main.ts`) via OTLP/HTTP to the same Grafana `otel-lgtm` stack the backend (`remsfal-backend`) already uses — no separate frontend error-tracking service.
+
+**App mode** (`src/helper/appMode.ts`): The frontend runs in one of four modes.
+- `DEVELOPMENT` — always on the Vite dev server (`import.meta.env.DEV`); never read from the runtime config.
+- `CONSTRUCTION` / `MAINTENANCE` — the app is closed: `App.vue` renders every page in the `closed` layout (no topbar,
+  only content + `AppFooter`), and the first router guard sends every route without `meta.availableWhenClosed` to the
+  landing page, which shows `AppClosedNotice` (logo + `appMode.*.message`). `main.ts` skips session refresh,
+  telemetry, service worker and IndexedDB, so no backend is needed. Flag pages that must stay reachable (e.g. legal
+  texts in downstream projects) with `availableWhenClosed: true` in their `<route>` block.
+- `PRODUCTION` — the full app.
+
+Built bundles read the mode at runtime from `/app-config.json`, which the nginx container renders from the
+environment variable `REMSFAL_APP_MODE` (`docker/nginx/templates/default.conf.template`). A missing or invalid config
+(native apps, `vite preview`, older images) falls back to `PRODUCTION`. The listen port is set via `NGINX_PORT`
+(default 80).
 
 ## Code Quality Standards
 

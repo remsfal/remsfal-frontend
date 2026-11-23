@@ -1045,5 +1045,7 @@
   "emailVerification.title": "Email Verification",
   "emailVerification.loading": "Verifying your email address …",
   "emailVerification.successMessage": "Your additional email address has been verified successfully.",
-  "emailVerification.errorMessage": "The email address could not be verified. The verification link is invalid or has expired."
+  "emailVerification.errorMessage": "The email address could not be verified. The verification link is invalid or has expired.",
+  "appMode.construction.message": "The platform for managing residential and commercial properties will be available here soon.",
+  "appMode.maintenance.message": "The platform is currently undergoing maintenance and will be back shortly."
 }

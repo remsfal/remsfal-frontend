@@ -24,17 +24,25 @@ import { initDB } from '@/helper/indexeddb';
 import { addOnlineEventListener, registerServiceWorker } from '@/helper/service-worker-init';
 import i18n from '@/i18n/i18n';
 import { initTelemetry, reportError } from '@/telemetry/otel';
+import { isAppClosed, loadAppMode } from '@/helper/appMode';
 
 // Add Font Awesome Icons to the Library (only icons actually used in the app)
 library.add(faLightbulb, faTriangleExclamation, faRocket, faScrewdriverWrench, faFileLines,
   faChartLine, faBuildingUser, faCheckCircle);
+
+// Resolve the operating mode (DEVELOPMENT/CONSTRUCTION/MAINTENANCE/PRODUCTION) first: while the
+// app is closed, nothing may talk to the backend, telemetry or service worker — they may not exist yet.
+await loadAppMode();
+const appClosed = isAppClosed();
 
 const pinia = createPinia();
 const app = createApp(App);
 // Install Pinia first (needed for stores)
 app.use(pinia);
 
-initTelemetry();
+if (!appClosed) {
+  initTelemetry();
+}
 app.config.errorHandler = (err, _instance, info) => {
   reportError('[vue error handler]', err, { 'vue.info': info });
 };
@@ -48,11 +56,13 @@ window.addEventListener('unhandledrejection', (event) => {
 // Initialize session BEFORE installing the router.
 // Vue Router 4 triggers the initial navigation synchronously during app.use(router),
 // which fires the beforeEach guard. The session must be populated at that point.
-const { useUserSessionStore } = await import('@/stores/UserSession');
-const { useProjectStore } = await import('@/features/common/projects');
-const sessionStore = useUserSessionStore();
-await sessionStore.refreshSessionState();
-useProjectStore().refreshProjectList();
+if (!appClosed) {
+  const { useUserSessionStore } = await import('@/stores/UserSession');
+  const { useProjectStore } = await import('@/features/common/projects');
+  const sessionStore = useUserSessionStore();
+  await sessionStore.refreshSessionState();
+  useProjectStore().refreshProjectList();
+}
 
 // Install Router for SPA (initial navigation fires here — session is already set)
 app.use(router);
@@ -83,15 +93,17 @@ app.component('FontAwesomeIcon', FontAwesomeIcon as Component);
 
 app.mount('#app');
 
-// Register Service Worker
-registerServiceWorker();
+if (!appClosed) {
+  // Register Service Worker
+  registerServiceWorker();
 
-// Add Online Event Listener
-addOnlineEventListener();
+  // Add Online Event Listener
+  addOnlineEventListener();
 
-// Initialize IndexedDB when the app starts (last, so nothing above waits for it)
-try {
-  await initDB();
-} catch (error) {
-  console.error('IndexedDB initialization failed:', error);
+  // Initialize IndexedDB when the app starts (last, so nothing above waits for it)
+  try {
+    await initDB();
+  } catch (error) {
+    console.error('IndexedDB initialization failed:', error);
+  }
 }

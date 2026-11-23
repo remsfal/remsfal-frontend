@@ -1,0 +1,28 @@
+# Rendered at container start by the nginx image's entrypoint (envsubst) into /etc/nginx/conf.d/.
+# Only variables defined in the environment are substituted, so nginx variables like $uri stay untouched.
+#   NGINX_PORT        port nginx listens on (default 80, see Dockerfile)
+#   REMSFAL_APP_MODE  CONSTRUCTION | MAINTENANCE | PRODUCTION (default PRODUCTION, see Dockerfile)
+server {
+    listen       ${NGINX_PORT};
+    listen  [::]:${NGINX_PORT};
+    server_name  localhost;
+
+    # Runtime configuration read by the frontend at startup (src/helper/appMode.ts).
+    # Never cached, so a mode switch takes effect with the next page load.
+    location = /app-config.json {
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+        return 200 '{"mode":"${REMSFAL_APP_MODE}"}';
+    }
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}

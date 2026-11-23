@@ -14,6 +14,9 @@ import TenantLayout from '@/layouts/tenant.vue'
 import ContractorLayout from '@/layouts/contractor.vue'
 import PublicLayout from '@/layouts/public.vue'
 import AuthLayout from '@/layouts/auth.vue'
+import ClosedLayout from '@/layouts/closed.vue'
+import AppClosedNotice from '@/layouts/components/AppClosedNotice.vue'
+import { isAppClosed } from '@/helper/appMode'
 
 type LayoutKey = 'manager' | 'project' | 'tenant' | 'contractor' | 'public' | 'auth'
 
@@ -28,7 +31,13 @@ const layouts: Record<LayoutKey, Component> = {
 
 const route = useRoute()
 const router = useRouter()
-const currentLayout = computed(() => layouts[(route.meta.layout as LayoutKey) ?? 'public'])
+// While the app is closed (CONSTRUCTION/MAINTENANCE) every page renders in the closed layout;
+// the router guard has already sent all routes without `availableWhenClosed` to the landing page,
+// which shows the notice instead of its regular content.
+const appClosed = isAppClosed()
+const currentLayout = computed(() =>
+  appClosed ? ClosedLayout : layouts[(route.meta.layout as LayoutKey) ?? 'public'])
+const showClosedNotice = computed(() => appClosed && !route.meta.availableWhenClosed)
 
 const { t } = useI18n()
 const toast = useToast()
@@ -71,7 +80,8 @@ bus.on('auth:session-expired', () => {
 
 <template>
   <component :is="currentLayout">
-    <RouterView :key="route.fullPath" />
+    <AppClosedNotice v-if="showClosedNotice" />
+    <RouterView v-else :key="route.fullPath" />
   </component>
   <Toast />
 </template>

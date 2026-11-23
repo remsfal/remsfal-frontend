@@ -13,6 +13,15 @@
 #
 # docker run -i --rm -p 8080:80 remsfal/frontend:dev
 #
+# Runtime configuration (environment variables, rendered from docker/nginx/templates/ at start):
+#
+#   REMSFAL_APP_MODE  CONSTRUCTION | MAINTENANCE | PRODUCTION (default: PRODUCTION)
+#   NGINX_PORT        port nginx listens on (default: 80; use e.g. 8080 for non-root without capabilities)
+#
+# docker run -i --rm -p 8080:80 -e REMSFAL_APP_MODE=CONSTRUCTION remsfal/frontend:dev
+#
+# With a read-only root filesystem, /etc/nginx/conf.d and /tmp must be writable mounts (e.g. emptyDir).
+#
 ####
 FROM nginx:stable
 
@@ -28,8 +37,12 @@ RUN apt-get update && apt-get upgrade -y \
     vim  \
     && rm -rf /var/lib/apt/lists/*
 
-# copy config as root
+# copy config as root; the entrypoint renders the templates into conf.d as user nginx
 COPY docker/nginx /etc/nginx
+RUN rm -f /etc/nginx/conf.d/default.conf && chown nginx:nginx /etc/nginx/conf.d
+
+ENV REMSFAL_APP_MODE=PRODUCTION \
+    NGINX_PORT=80
 
 USER nginx
 COPY dist /usr/share/nginx/html
