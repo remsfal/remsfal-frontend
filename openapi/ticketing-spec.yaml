@@ -4251,7 +4251,7 @@ paths:
       - SecurityScheme: []
 info:
   title: remsfal-ticketing API
-  version: 1.0.17
+  version: 1.0.18-SNAPSHOT
 servers:
 - url: http://localhost:8081
   description: Auto generated value

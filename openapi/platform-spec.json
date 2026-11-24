@@ -7333,7 +7333,7 @@
   },
   "info" : {
     "title" : "remsfal-platform API",
-    "version" : "1.0.17"
+    "version" : "1.0.18-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "http://localhost:8080",
