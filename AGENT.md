@@ -105,7 +105,9 @@ src/
 │   ├── overrides/              # Mirror of src/: replaces the upstream file with the same relative path
 │   ├── pages/                  # Additional routes (second routesFolder)
 │   ├── features/               # New downstream code
-│   └── locales/                # de.json / en.json merged over the upstream messages
+│   ├── locales/                # de.json / en.json merged over the upstream messages
+│   ├── main.ts                 # Optional entry point: install(app) registers downstream plugins
+│   └── package.json            # npm workspace for downstream dependencies (none upstream)
 │
 ├── App.vue                     # Root: resolves route.meta.layout → renders the layout around <RouterView>
 ├── main.ts                     # Bootstrap only
@@ -851,7 +853,8 @@ environment variable `REMSFAL_APP_MODE` (`docker/nginx/templates/default.conf.te
 
 Downstream projects (e.g. the commercial `remsfal/online-frontend`) merge `main` regularly. Every upstream file they
 modify causes merge conflicts sooner or later. They therefore put **all** their code into `src/extensions/` and only
-**add** files there. Upstream ships the folder empty (`.gitkeep` + `README.md`) and never adds content to it.
+**add** files there. Upstream ships the folder empty (`.gitkeep`, `README.md` and a `package.json` without
+dependencies) and never adds content to it.
 
 | Folder | Mechanism | Rules |
 |---|---|---|
@@ -859,6 +862,8 @@ modify causes merge conflicts sooner or later. They therefore put **all** their 
 | `pages/` | Second `routesFolder` of the vue-router plugin | Same conventions as `src/pages/` (`<route>` block, layout meta). Only for routes that do not exist upstream. |
 | `features/` | Plain code | Same structure as `src/features/`; imported via `@/extensions/features/...`. No upstream counterpart needed. |
 | `locales/` | Merged in `src/i18n/i18n.ts` (`withExtensionMessages`) | `de.json` / `en.json` with flat keys. Keys are added to — and may override — the upstream messages. Linted like the upstream locale files. |
+| `main.ts` | Loaded by `extensionsPlugin` (`src/helper/extensionEntry.ts`) | Optional. Exports `install(app)`, which registers downstream plugins (e.g. `app.use(createHead())`). Called once in `src/main.ts` after all upstream plugins and before `mount` — also while the app is closed. The unit test setup installs it as well, so downstream components find their plugins in tests. |
+| `package.json` | npm workspace `src/extensions` (root `package.json`) | Downstream dependencies go here (`npm install <pkg>@<version> -w src/extensions --save-exact`), never into the root `package.json`. npm installs them into the shared `node_modules`, so they are imported as usual. |
 
 **Writing an override:**
 - Keep the public interface of the original (props, emits, exposed members, named exports): callers are upstream code
@@ -882,8 +887,14 @@ modify causes merge conflicts sooner or later. They therefore put **all** their 
 **Testing:** Unit tests run **without** shadowing, so upstream specs keep testing the originals. Downstream tests live in
 `test/extensions/...` and import overrides directly (`@/extensions/overrides/...`).
 
-**Upstream responsibilities:** never put content into `src/extensions/`; when renaming or moving a file, keep in mind
-that downstream overrides of it break (with a clear build error) and mention it in the PR.
+**Dependencies:** The root `package.json` stays identical to upstream. `package-lock.json` differs downstream by the
+workspace dependencies; git usually merges it without conflicts. If it does conflict, take the upstream version and
+rebuild it with `npm install --package-lock-only`, which adds the workspace dependencies again. Downstream versions are
+pinned exactly (`--save-exact`), so this rebuild does not upgrade them.
+
+**Upstream responsibilities:** never put content into `src/extensions/` and keep `src/extensions/package.json` free of
+dependencies; when renaming or moving a file, keep in mind that downstream overrides of it break (with a clear build
+error) and mention it in the PR.
 
 **Generated route types:** `src/typed-router.d.ts` is not versioned (it would contain the downstream routes and
 conflict on every upstream route change). Vite and Vitest regenerate it, and `npm run type-check` creates it first via

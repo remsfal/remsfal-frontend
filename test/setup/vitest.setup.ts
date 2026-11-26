@@ -11,6 +11,7 @@ import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
 import DialogService from 'primevue/dialogservice';
 import ConfirmationService from 'primevue/confirmationservice';
+import { extensionsPlugin } from '@/helper/extensionEntry';
 // Set up MSW server globally
 import '../mocks/setupTests';
 
@@ -72,6 +73,8 @@ config.global.plugins = [
   createTestingPinia({ createSpy: vi.fn, stubActions: false }),
   router,
   i18n,
+  // Downstream plugins from src/extensions/main.ts (none upstream), as in main.ts
+  extensionsPlugin,
 ];
 
 config.global.directives = {
