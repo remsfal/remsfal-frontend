@@ -62,9 +62,9 @@ export default defineConfig({
       filename: 'sw.ts',
       injectRegister: false,
       manifest: {
-        name: 'remsfal - Cloud Service for Facility Management',
-        short_name: 'remsfal',
-        description: 'remsfal - Cloud Service for Facility Management',
+        name: 'REMSFAL - REmote Management Services for connected FAciLities',
+        short_name: 'REMSFAL',
+        description: 'REMSFAL - REmote Management Services for connected FAciLities',
         start_url: '/',
         scope: '/',
         display: 'standalone',
