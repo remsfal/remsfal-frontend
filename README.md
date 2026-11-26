@@ -123,8 +123,8 @@ Build-time configuration is done via Vite environment variables in [`.env`](.env
 |------------------------------------|-----------------------------------------------------------------------|
 | `VITE_BASE_URL`                    | Public base URL of the application                                    |
 | `VITE_SERVICE_WORKER_ENABLED`      | Enables the service worker (disabled in development by default)       |
-| `VITE_OTEL_ENABLED`                | Enables OpenTelemetry tracing and logging in the browser              |
-| `VITE_OTEL_EXPORTER_OTLP_ENDPOINT` | Base URL of the OTLP/HTTP endpoint (`/otlp` via the dev proxy)        |
+| `VITE_OTEL_ENABLED`                | Enables OpenTelemetry tracing and logging on the dev server           |
+| `VITE_OTEL_EXPORTER_OTLP_ENDPOINT` | Base URL of the OTLP/HTTP endpoint on the dev server (`/otlp` proxy)  |
 | `VITE_OTEL_SERVICE_NAME`           | Service name reported to OpenTelemetry                                |
 
 The service worker is disabled locally so that code changes are reflected immediately without caching issues.
@@ -185,6 +185,15 @@ npm run build
 docker build -f docker/Dockerfile -t remsfal/frontend:dev .
 docker run -i --rm -p 8080:80 remsfal/frontend:dev
 ```
+
+The container is configured at runtime, so the same image runs in every environment:
+
+| Variable                | Description                                                                  |
+|-------------------------|------------------------------------------------------------------------------|
+| `REMSFAL_APP_MODE`      | `CONSTRUCTION`, `MAINTENANCE` or `PRODUCTION` (default)                      |
+| `REMSFAL_OTEL_ENABLED`  | `true` sends browser traces and error logs via OpenTelemetry (default false) |
+| `REMSFAL_OTLP_ENDPOINT` | Base URL of the OTLP/HTTP endpoint (default `/otlp`)                         |
+| `NGINX_PORT`            | Port nginx listens on (default 80)                                           |
 
 ### CI/CD
 

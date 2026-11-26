@@ -15,8 +15,11 @@
 #
 # Runtime configuration (environment variables, rendered from docker/nginx/templates/ at start):
 #
-#   REMSFAL_APP_MODE  CONSTRUCTION | MAINTENANCE | PRODUCTION (default: PRODUCTION)
-#   NGINX_PORT        port nginx listens on (default: 80; use e.g. 8080 for non-root without capabilities)
+#   REMSFAL_APP_MODE       CONSTRUCTION | MAINTENANCE | PRODUCTION (default: PRODUCTION)
+#   REMSFAL_OTEL_ENABLED   true sends browser traces and error logs via OTLP/HTTP (default: false)
+#   REMSFAL_OTLP_ENDPOINT  base URL of the OTLP/HTTP endpoint, the exporters append /v1/traces and /v1/logs
+#                          (default: /otlp, i.e. a route to the collector on the same host)
+#   NGINX_PORT             port nginx listens on (default: 80; use e.g. 8080 for non-root without capabilities)
 #
 # docker run -i --rm -p 8080:80 -e REMSFAL_APP_MODE=CONSTRUCTION remsfal/frontend:dev
 #
@@ -36,6 +39,8 @@ COPY docker/nginx /etc/nginx
 RUN rm -f /etc/nginx/conf.d/default.conf && chown nginx:nginx /etc/nginx/conf.d
 
 ENV REMSFAL_APP_MODE=PRODUCTION \
+    REMSFAL_OTEL_ENABLED=false \
+    REMSFAL_OTLP_ENDPOINT=/otlp \
     NGINX_PORT=80
 
 USER nginx

@@ -8,13 +8,14 @@
  * - PRODUCTION: The full application.
  *
  * Built bundles read the mode at runtime from `/app-config.json`, which the nginx container
- * renders from the environment variable `REMSFAL_APP_MODE` (see docker/nginx/templates/).
+ * renders from the environment variable `REMSFAL_APP_MODE` (see runtimeConfig.ts).
  * The same image can therefore be switched between modes without a rebuild.
  */
+import { getRuntimeValue, loadRuntimeConfig } from '@/helper/runtimeConfig'
+
 export type AppMode = 'DEVELOPMENT' | 'CONSTRUCTION' | 'MAINTENANCE' | 'PRODUCTION'
 
 const RUNTIME_MODES: readonly AppMode[] = ['CONSTRUCTION', 'MAINTENANCE', 'PRODUCTION']
-const APP_CONFIG_URL = '/app-config.json'
 
 let currentMode: AppMode = import.meta.env.DEV ? 'DEVELOPMENT' : 'PRODUCTION'
 
@@ -23,23 +24,19 @@ function isRuntimeMode(value: unknown): value is AppMode {
 }
 
 /**
- * Resolves the mode once at startup, before the app is mounted. Falls back to PRODUCTION
- * whenever no valid runtime config is available (e.g. native apps, `vite preview`, or an
- * image started without `REMSFAL_APP_MODE`), so existing deployments keep working unchanged.
+ * Loads the runtime config and resolves the mode once at startup, before the app is mounted.
+ * Falls back to PRODUCTION whenever no valid runtime config is available (e.g. native apps,
+ * `vite preview`, or an image started without `REMSFAL_APP_MODE`), so existing deployments keep
+ * working unchanged.
  */
 export async function loadAppMode(): Promise<AppMode> {
   if (import.meta.env.DEV) {
     currentMode = 'DEVELOPMENT'
     return currentMode
   }
-  try {
-    const response = await fetch(APP_CONFIG_URL, { cache: 'no-store' })
-    const config: unknown = response.ok ? await response.json() : null
-    const mode = (config as { mode?: unknown } | null)?.mode
-    currentMode = isRuntimeMode(mode) ? mode : 'PRODUCTION'
-  } catch {
-    currentMode = 'PRODUCTION'
-  }
+  await loadRuntimeConfig()
+  const mode = getRuntimeValue('mode')
+  currentMode = isRuntimeMode(mode) ? mode : 'PRODUCTION'
   return currentMode
 }
 

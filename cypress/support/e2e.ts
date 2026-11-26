@@ -45,7 +45,7 @@ beforeEach(() => {
 });
 
 // initTelemetry() (src/telemetry/otel.ts) only no-ops under Vitest (`MODE === 'test'`); the dev
-// and preview builds Cypress serves both read .env, which enables OTel against `/otlp`. With no
+// server Cypress may serve reads .env, which enables OTel against `/otlp`. With no
 // collector listening there locally, every batched span/log export fails and clutters the Cypress
 // command log with noisy failed-request entries. Stub both endpoints so exports succeed silently.
 beforeEach(() => {

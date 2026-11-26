@@ -8,9 +8,30 @@ import { LoggerProvider, BatchLogRecordProcessor } from '@opentelemetry/sdk-logs
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xml-http-request';
+import { getRuntimeValue } from '@/helper/runtimeConfig';
 
 const SERVICE_NAME = import.meta.env.VITE_OTEL_SERVICE_NAME || 'remsfal-frontend';
-const OTLP_ENDPOINT = import.meta.env.VITE_OTEL_EXPORTER_OTLP_ENDPOINT;
+
+export interface TelemetrySettings {
+  enabled: boolean;
+  endpoint?: string;
+}
+
+/**
+ * The dev server reads the Vite variables from `.env` (enabled unless `VITE_OTEL_ENABLED=false`).
+ * Built bundles read the runtime config instead (`REMSFAL_OTEL_ENABLED`, `REMSFAL_OTLP_ENDPOINT`,
+ * see runtimeConfig.ts), so the same image can send telemetry in one environment and none in
+ * another. Telemetry stays off unless the runtime config enables it explicitly.
+ */
+export function resolveTelemetrySettings(): TelemetrySettings {
+  if (import.meta.env.DEV) {
+    return {
+      enabled: import.meta.env.VITE_OTEL_ENABLED !== 'false',
+      endpoint: import.meta.env.VITE_OTEL_EXPORTER_OTLP_ENDPOINT || undefined,
+    };
+  }
+  return { enabled: getRuntimeValue('otelEnabled') === 'true', endpoint: getRuntimeValue('otlpEndpoint') };
+}
 
 /**
  * Sets up browser-side OpenTelemetry tracing (XHR auto-instrumentation, so axios requests are
@@ -18,14 +39,16 @@ const OTLP_ENDPOINT = import.meta.env.VITE_OTEL_EXPORTER_OTLP_ENDPOINT;
  * export via OTLP/HTTP to the same Grafana `otel-lgtm` collector the backend already uses, so a
  * failed request shows up as one Tempo trace spanning both the frontend and backend spans.
  *
- * No-ops under Vitest and when explicitly disabled/unconfigured, so `logs.getLogger()` in
- * reportError() stays a safe no-op (OTel's api-logs proxy pattern) instead of hitting the network.
+ * No-ops under Vitest and when disabled/unconfigured (see resolveTelemetrySettings()), so
+ * `logs.getLogger()` in reportError() stays a safe no-op (OTel's api-logs proxy pattern) instead
+ * of hitting the network. Must run after loadAppMode(), which loads the runtime config.
  */
 export function initTelemetry(): void {
   if (import.meta.env.MODE === 'test') return;
-  if (import.meta.env.VITE_OTEL_ENABLED === 'false') return;
-  if (!OTLP_ENDPOINT) {
-    console.warn('[otel] VITE_OTEL_EXPORTER_OTLP_ENDPOINT not set — telemetry disabled');
+  const { enabled, endpoint } = resolveTelemetrySettings();
+  if (!enabled) return;
+  if (!endpoint) {
+    console.warn('[otel] no OTLP endpoint configured — telemetry disabled');
     return;
   }
 
@@ -37,7 +60,7 @@ export function initTelemetry(): void {
 
   const tracerProvider = new WebTracerProvider({
     resource,
-    spanProcessors: [new BatchSpanProcessor(new OTLPTraceExporter({ url: `${OTLP_ENDPOINT}/v1/traces` }))],
+    spanProcessors: [new BatchSpanProcessor(new OTLPTraceExporter({ url: `${endpoint}/v1/traces` }))],
   });
   tracerProvider.register();
 
@@ -46,7 +69,7 @@ export function initTelemetry(): void {
   const loggerProvider = new LoggerProvider({
     resource,
     processors: [
-      new BatchLogRecordProcessor({ exporter: new OTLPLogExporter({ url: `${OTLP_ENDPOINT}/v1/logs` }) }),
+      new BatchLogRecordProcessor({ exporter: new OTLPLogExporter({ url: `${endpoint}/v1/logs` }) }),
     ],
   });
   logs.setGlobalLoggerProvider(loggerProvider);
