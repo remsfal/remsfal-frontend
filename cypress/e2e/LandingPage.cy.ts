@@ -11,7 +11,6 @@ describe('Test Landing Page', () => {
 
   it('User is logged out by visiting the app root url', () => {
     cy.visit('/')
-    // Only the brand: downstream projects replace the landing page and set their own page title.
     cy.title().should('contain', 'REMSFAL')
   })
 })
