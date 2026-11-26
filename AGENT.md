@@ -776,13 +776,16 @@ Use singular forms for type labels in selects/dropdowns.
 Key environment variables in `.env`:
 - `VITE_BASE_URL` - Base URL for application (default: http://localhost:5173)
 - `VITE_SERVICE_WORKER_ENABLED` - Enable service worker (default: false in dev)
-- `VITE_OTEL_ENABLED` - Enable browser OpenTelemetry (traces + error logs), set to `false` to disable
-- `VITE_OTEL_EXPORTER_OTLP_ENDPOINT` - Base URL the OTLP/HTTP exporters POST to (dev default: `/otlp`, proxied by Vite to the `otel-lgtm` collector on `localhost:4318`; unset in `.env.production` since prod routing to the collector is external to this repo — ops must set it at deploy time)
+- `VITE_OTEL_ENABLED` - Enable browser OpenTelemetry (traces + error logs) on the dev server, set to `false` to disable
+- `VITE_OTEL_EXPORTER_OTLP_ENDPOINT` - Base URL the OTLP/HTTP exporters POST to on the dev server (`/otlp`, proxied by Vite to the `otel-lgtm` collector on `localhost:4318`)
 - `VITE_OTEL_SERVICE_NAME` - `service.name` resource attribute reported to the collector (default: `remsfal-frontend`)
 
 **Service Worker**: Disabled by default in development. Set `VITE_SERVICE_WORKER_ENABLED=true` to enable for local testing.
 
-**OpenTelemetry**: See `src/telemetry/otel.ts`. Exports traces (XHR auto-instrumentation) and error logs (`reportError()`, used by `ApiClient.ts`'s interceptors and the global Vue/window error handlers in `main.ts`) via OTLP/HTTP to the same Grafana `otel-lgtm` stack the backend (`remsfal-backend`) already uses — no separate frontend error-tracking service.
+**OpenTelemetry**: See `src/telemetry/otel.ts`. Exports traces (XHR auto-instrumentation) and error logs (`reportError()`, used by `ApiClient.ts`'s interceptors and the global Vue/window error handlers in `main.ts`) via OTLP/HTTP to the same Grafana `otel-lgtm` stack the backend (`remsfal-backend`) already uses — no separate frontend error-tracking service. Built bundles ignore the two `VITE_OTEL_*` switches above and
+read `otelEnabled`/`otlpEndpoint` from the runtime config instead (`src/helper/runtimeConfig.ts`): telemetry is off unless
+the container sets `REMSFAL_OTEL_ENABLED=true`; `REMSFAL_OTLP_ENDPOINT` defaults to `/otlp`, a route to the collector on
+the same host that the deployment has to provide.
 
 **App mode** (`src/helper/appMode.ts`): The frontend runs in one of four modes.
 - `DEVELOPMENT` — always on the Vite dev server (`import.meta.env.DEV`); never read from the runtime config.
@@ -793,8 +796,8 @@ Key environment variables in `.env`:
   texts in downstream projects) with `availableWhenClosed: true` in their `<route>` block.
 - `PRODUCTION` — the full app.
 
-Built bundles read the mode at runtime from `/app-config.json`, which the nginx container renders from the
-environment variable `REMSFAL_APP_MODE` (`docker/nginx/templates/default.conf.template`). A missing or invalid config
+Built bundles read the mode at runtime from `/app-config.json` (`src/helper/runtimeConfig.ts`), which the nginx
+container renders from the environment variable `REMSFAL_APP_MODE` (`docker/nginx/templates/default.conf.template`). A missing or invalid config
 (native apps, `vite preview`, older images) falls back to `PRODUCTION`. The listen port is set via `NGINX_PORT`
 (default 80).
 
