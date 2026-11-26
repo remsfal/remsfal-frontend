@@ -25,6 +25,7 @@ import { addOnlineEventListener, registerServiceWorker } from '@/helper/service-
 import i18n from '@/i18n/i18n';
 import { initTelemetry, reportError } from '@/telemetry/otel';
 import { isAppClosed, loadAppMode } from '@/helper/appMode';
+import { extensionsPlugin } from '@/helper/extensionEntry';
 
 // Add Font Awesome Icons to the Library (only icons actually used in the app)
 library.add(faLightbulb, faTriangleExclamation, faRocket, faScrewdriverWrench, faFileLines,
@@ -90,6 +91,9 @@ app.directive('tooltip', Tooltip);
 // Register Font Awesome Icon globally
 // PrimeVue components are auto-imported via PrimeVueResolver (vite.config.ts)
 app.component('FontAwesomeIcon', FontAwesomeIcon as Component);
+
+// Optional downstream plugins (src/extensions/main.ts), also while the app is closed
+app.use(extensionsPlugin);
 
 app.mount('#app');
 

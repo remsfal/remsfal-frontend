@@ -10,6 +10,8 @@ That keeps regular upstream merges free of conflicts.
 | `pages/`     | Additional routes (file-based routing, same conventions as `src/pages/`).               |
 | `features/`  | New downstream code. Import it via `@/extensions/features/...`.                         |
 | `locales/`   | `de.json` / `en.json` with additional keys; they are merged over (and may override) the upstream messages. |
+| `main.ts`    | Optional entry point: `export function install(app: App)` registers downstream plugins before the app is mounted. |
+| `package.json` | npm workspace for downstream dependencies: `npm install <pkg>@<version> -w src/extensions --save-exact`. Upstream ships it without dependencies. |
 
 Example: `overrides/features/common/landing/views/LandingPageView.vue` replaces
 `src/features/common/landing/views/LandingPageView.vue`.

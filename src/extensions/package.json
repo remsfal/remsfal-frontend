@@ -1,0 +1,7 @@
+{
+  "name": "@remsfal/frontend-extensions",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Dependencies of downstream extensions; upstream ships this package without dependencies (see README.md)."
+}
