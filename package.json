@@ -93,7 +93,7 @@
     "@vitest/coverage-istanbul": "^5.1.0",
     "@vue/test-utils": "^2.6.0",
     "@vue/tsconfig": "^0.9.1",
-    "autoprefixer": "^10.6.2",
+    "autoprefixer": "^10.7.0",
     "baseline-browser-mapping": "^2.11.38",
     "chai": "^6.3.0",
     "cypress": "^16.3.0",
