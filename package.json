@@ -86,7 +86,7 @@
     "@primevue/auto-import-resolver": ">=4.5.5 <5.0.0",
     "@stylistic/eslint-plugin": "^6.0.1",
     "@tailwindcss/postcss": "^4.3.5",
-    "@tsconfig/node-lts": "^24.0.1",
+    "@tsconfig/node-lts": "^26.0.1",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.6",
     "@vitejs/plugin-vue": "^6.0.11",
