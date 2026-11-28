@@ -1140,6 +1140,7 @@ components:
       - id
       - name
       - memberRole
+      - readOnly
       properties:
         id:
           readOnly: true
@@ -1149,6 +1150,11 @@ components:
           type: string
         memberRole:
           $ref: "#/components/schemas/MemberRole"
+        readOnly:
+          type: boolean
+          description: "Whether write access to the project is blocked, e.g. because\
+            \ of an unpaid invoice"
+          readOnly: true
     ProjectJson:
       description: A project
       type: object
@@ -1190,6 +1196,11 @@ components:
         managingOrganizationName:
           type: string
           description: Name of the organization that manages this project
+          readOnly: true
+        readOnly:
+          type: boolean
+          description: "Whether write access to the project is blocked, e.g. because\
+            \ of an unpaid invoice"
           readOnly: true
       required:
       - title

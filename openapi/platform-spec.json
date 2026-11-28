@@ -1351,7 +1351,7 @@
       "ProjectItemJson" : {
         "description" : "A project item with the user's member role only",
         "type" : "object",
-        "required" : [ "id", "name", "memberRole" ],
+        "required" : [ "id", "name", "memberRole", "readOnly" ],
         "properties" : {
           "id" : {
             "readOnly" : true,
@@ -1363,6 +1363,11 @@
           },
           "memberRole" : {
             "$ref" : "#/components/schemas/MemberRole"
+          },
+          "readOnly" : {
+            "type" : "boolean",
+            "description" : "Whether write access to the project is blocked, e.g. because of an unpaid invoice",
+            "readOnly" : true
           }
         }
       },
@@ -1410,6 +1415,11 @@
           "managingOrganizationName" : {
             "type" : "string",
             "description" : "Name of the organization that manages this project",
+            "readOnly" : true
+          },
+          "readOnly" : {
+            "type" : "boolean",
+            "description" : "Whether write access to the project is blocked, e.g. because of an unpaid invoice",
             "readOnly" : true
           }
         },

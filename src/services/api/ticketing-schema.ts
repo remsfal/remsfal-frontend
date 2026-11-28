@@ -3822,6 +3822,8 @@ export interface components {
       id: $Read<components["schemas"]["UUID"]>;
       name: string;
       memberRole: components["schemas"]["MemberRole"];
+      /** @description Whether write access to the project is blocked, e.g. because of an unpaid invoice */
+      readOnly: $Read<boolean>;
     };
     /** @description A project */
     ProjectJson: {
@@ -3837,6 +3839,8 @@ export interface components {
       managingOrganizationId?: components["schemas"]["UUID"];
       /** @description Name of the organization that manages this project */
       managingOrganizationName?: $Read<string>;
+      /** @description Whether write access to the project is blocked, e.g. because of an unpaid invoice */
+      readOnly?: $Read<boolean>;
     };
     /** @description A list of projects */
     ProjectListJson: {
